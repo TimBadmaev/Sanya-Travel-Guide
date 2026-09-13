@@ -1,4 +1,7 @@
-import { loadChecklist, loadConfig, loadPlaces, loadErrorMessage } from "../data.js";
+import { loadChecklist, loadConfig, loadPlaces, loadPlan, loadErrorMessage } from "../data.js";
+import { TODAY_STATE, getPeriodDates, isDayEmpty, resolveDayTitle, resolveToday } from "../logic/plan.js";
+import { countPlannedDays } from "../logic/myplan.js";
+import { EMPTY_DAY_TEXT, createTypeChip, typesMap } from "./plan.js";
 import { storage } from "../storage.js";
 import {
   ORIGIN_PRECISION,
@@ -101,6 +104,51 @@ function appendActionLink(container, label, href, className) {
   return link;
 }
 
+// Блок «Мой план» (Итерация 6, ITERATION-6-RESEARCH.md §10): смотрит только
+// на stg:myplan; рекомендация — лишь ссылка, пока план не начат. Период — из
+// plan.json; без него (нет ни в кэше, ни в сети) блока нет, Главная прежняя.
+// Полный день не дублируется: одна карточка-ссылка.
+function renderPlanBlock(container, { plan, places, config, tripState }) {
+  if (!plan) return;
+  const today = getTodayIso();
+  if (resolveToday(plan.meta, today).state !== TODAY_STATE.DURING) {
+    if (tripState === TRIP_STATE.BEFORE) appendActionLink(container, "План поездки", "#/plan", "home-link home-plan-link");
+    return;
+  }
+  const myPlan = storage.getMyPlan();
+  const day = myPlan.days[today];
+  const card = document.createElement("a");
+  card.className = "home-plan";
+  const label = document.createElement("span");
+  label.className = "home-plan__label";
+  card.appendChild(label);
+  let action;
+  if (!isDayEmpty(day)) {
+    card.href = "#/plan";
+    label.textContent = "Сегодня по плану";
+    const title = document.createElement("span");
+    title.className = "home-plan__title";
+    title.textContent = resolveDayTitle(day, places) || EMPTY_DAY_TEXT;
+    const chip = createTypeChip(day.type, typesMap(config));
+    if (chip) title.append(" ", chip);
+    card.appendChild(title);
+    action = "Открыть мой план";
+  } else if (countPlannedDays(myPlan, getPeriodDates(plan.meta)) > 0) {
+    card.href = "#/plan";
+    label.textContent = "Сегодня ничего не запланировано";
+    action = "Открыть мой план";
+  } else {
+    card.href = "#/recommended";
+    label.textContent = "План поездки не начат";
+    action = "Посмотреть рекомендованный план";
+  }
+  const actionEl = document.createElement("span");
+  actionEl.className = "home-plan__action";
+  actionEl.textContent = `${action} ›`;
+  card.appendChild(actionEl);
+  container.appendChild(card);
+}
+
 export async function renderHome(container, ctx) {
   const trip = storage.getTrip();
 
@@ -119,11 +167,19 @@ export async function renderHome(container, ctx) {
   let config;
   let checklist;
   let places;
+  let plan;
   try {
     // Справочник — ради названия района, чек-лист — ради прогресса и
     // ближайших дел, места — ради счётчика «Сохранено: N». Новых сетевых
     // запросов не добавляет: всё через Promise-кэш data.js.
-    [config, checklist, places] = await Promise.all([loadConfig(), loadChecklist(), loadPlaces()]);
+    // Рекомендованный план (Итерация 6) — необязательный: его отсутствие не
+    // превращает Главную в ошибку, просто нет блока плана.
+    [config, checklist, places, plan] = await Promise.all([
+      loadConfig(),
+      loadChecklist(),
+      loadPlaces(),
+      loadPlan().catch(() => null),
+    ]);
   } catch (e) {
     console.error(e);
     if (ctx.isCurrent()) {
@@ -206,6 +262,7 @@ export async function renderHome(container, ctx) {
     }
 
     appendActionLink(container, "Весь чек-лист", "#/prepare", "btn btn--primary home-action");
+    renderPlanBlock(container, { plan, places, config, tripState: state });
     return;
   }
 
@@ -231,6 +288,10 @@ export async function renderHome(container, ctx) {
       ["Хочу природу", scenarioHref("nature")],
       ["В помещении", scenarioHref("indoor")],
     ]);
+
+    // Блок плана — сразу под сценариями: на 320×568 сценарии остаются целиком
+    // на первом экране (ITERATION-6-RESEARCH.md §16.8, проверка 62).
+    renderPlanBlock(container, { plan, places, config, tripState: state });
 
     if (savedCount > 0) {
       const label = `Сохранено: ${savedCount} ${pluralizeRu(savedCount, ["место", "места", "мест"])}`;
@@ -263,6 +324,7 @@ export async function renderHome(container, ctx) {
     "#/settings",
     "btn btn--primary home-action"
   );
+  renderPlanBlock(container, { plan, places, config, tripState: state });
 
   // Прогресс подготовки — только если что-то уже отмечено (MVP-UX-SPEC §3).
   if (doneCount > 0) {

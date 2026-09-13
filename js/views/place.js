@@ -5,6 +5,7 @@ import { haversineKm, formatDistance } from "../logic/distance.js";
 import { formatVerifiedDate } from "../logic/checklist.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
 import { bindCopyButton, renderShowScreen } from "./taxi.js";
+import { renderAddToDayBlock } from "./plan.js";
 
 // Карточка места (#/place/<id>) и «Показать таксисту» (#/place/<id>/taxi).
 // Список — в places.js (PRODUCT.md 10.2, PLACES-IMPLEMENTATION.md [PI-3]).
@@ -71,6 +72,16 @@ function appendPoints(parent, title, points) {
 
 export async function renderPlace(container, ctx) {
   const { id } = ctx.params;
+  // S1 (Итерация 6): addTo=<дата> — карточка открыта из выбора места для дня.
+  // Режим действует только при переходе со списка #/places?addTo=<та же
+  // дата>; иначе параметр снимается replace-ом (обычная карточка).
+  const addTo = ctx.query.get("addTo");
+  const fromHash = ctx.from || "";
+  const fromPath = fromHash.replace(/^#/, "").split("?")[0];
+  if (addTo !== null && !(fromPath === "/places" && new URLSearchParams(fromHash.split("?")[1] || "").get("addTo") === addTo)) {
+    window.location.replace(`#/place/${id}`);
+    return;
+  }
   container.innerHTML = '<p class="loading">Загрузка места…</p>';
 
   // Карточке нужен и справочник районов: без него не получить центр района
@@ -105,16 +116,20 @@ export async function renderPlace(container, ctx) {
   container.innerHTML = "";
 
   // 0. «← К местам» — вверху: низ экрана занят sticky-блоком ([PI-5]).
+  // Итерация 6: из дня «Моего плана» или рекомендации возврат — в этот день;
+  // в режиме addTo — в список выбора с тем же addTo.
+  const fromDay = /^\/(plan|recommended)\/[^/]+$/.test(fromPath);
+  const parentHash = fromDay ? fromHash : addTo ? `#/places?addTo=${addTo}` : "#/places";
   const backLink = document.createElement("a");
-  backLink.href = "#/places";
+  backLink.href = parentHash;
   backLink.className = "place-detail__back";
-  backLink.textContent = "← К местам";
+  backLink.textContent = fromDay ? "← Назад" : "← К местам";
   // ctx.back вместо обычной ссылки (ITERATION-2-FOUNDATION.md §6.5): со списка
   // — history.back() с его фильтрами и прокруткой; с глубокой ссылки —
   // replace на список. История не растёт.
   backLink.addEventListener("click", (event) => {
     event.preventDefault();
-    ctx.back("#/places");
+    ctx.back(parentHash);
   });
   container.appendChild(backLink);
 
@@ -186,6 +201,20 @@ export async function renderPlace(container, ctx) {
   // 4. Описание и «Почему стоит».
   appendParagraph(container, "place-detail__summary", place.summary);
   appendPoints(container, "Почему стоит", place.why);
+
+  // 4a. «Мой план» (Итерация 6): в режиме выбора — «Добавить на <дату>»,
+  // иначе — переход к выбору дня. После описания, а не между расстоянием и
+  // описанием (порядок блоков MVP-UX-SPEC §5), и не в закреплённом блоке:
+  // «Показать таксисту» остаётся главной sticky-кнопкой (R6-4).
+  if (addTo) {
+    renderAddToDayBlock(container, ctx, { place, places, date: addTo });
+  } else {
+    const planLink = document.createElement("a");
+    planLink.href = `#/place/${place.id}/plan`;
+    planLink.className = "btn btn--secondary place-plan-link";
+    planLink.textContent = "Добавить в мой план";
+    container.appendChild(planLink);
+  }
 
   // 5. Лучшее время, часы, цена — только непустые; у мест нет поля volatile,
   // пометка «может измениться» — всегда, когда блок показан ([PI-12]).

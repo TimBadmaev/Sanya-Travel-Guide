@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ялунвань: план на две недели</title>
+<style>
+  :root{
+    color-scheme: light;
+    --page:#f9f9f7; --surface:#fcfcfb;
+    --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+    --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+    --beach:#cde2fb; --exc:#ffe0cc; --shop:#d7f2e6; --rest:#f0efec;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --page:#0d0d0d; --surface:#1a1a19;
+      --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+      --beach:#104281; --exc:#7a3517; --shop:#0f4d38; --rest:#2c2c2a;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19;
+    --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --beach:#104281; --exc:#7a3517; --shop:#0f4d38; --rest:#2c2c2a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:15px;line-height:1.58;padding:28px 20px 64px}
+  .wrap{max-width:1120px;margin:0 auto}
+  h1{font-size:25px;line-height:1.25;margin:0 0 6px;letter-spacing:-0.01em}
+  .sub{color:var(--ink2);font-size:14px;margin:0 0 24px}
+  h2{font-size:18px;margin:0 0 6px;letter-spacing:-0.005em}
+  h3{font-size:15.5px;margin:20px 0 6px}
+  h4{font-size:12.5px;margin:14px 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .note{color:var(--ink2);font-size:13.5px;margin:0 0 16px}
+  .fine{color:var(--muted);font-size:12px;margin:12px 0 0}
+  section{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:20px 20px 22px;margin:0 0 20px}
+  .theme-btn{position:fixed;top:14px;right:14px;z-index:20;background:var(--surface);
+    color:var(--ink2);border:1px solid var(--border);border-radius:8px;padding:6px 11px;
+    font:inherit;font-size:12px;cursor:pointer}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--grid);vertical-align:top}
+  thead th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    font-weight:600;border-bottom:1px solid var(--axis)}
+  tbody tr:last-child td{border-bottom:none}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .rowname{font-weight:600;white-space:nowrap}
+  .tbl{overflow-x:auto;margin:0 -4px;padding:0 4px}
+  .callout{border-left:3px solid var(--s2);padding:12px 14px;margin:16px 0;
+    background:color-mix(in srgb, var(--s2) 6%, transparent);border-radius:0 8px 8px 0}
+  .callout p:first-child{margin-top:0} .callout p:last-child{margin-bottom:0}
+  .win{border-left:3px solid var(--s1);padding-left:14px;margin:16px 0}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:20px}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+  .tile .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  .tile .val{font-size:22px;font-weight:650;line-height:1.2;letter-spacing:-0.02em}
+  .tile .cap{font-size:13px;color:var(--ink2);margin-top:5px}
+  ul{margin:6px 0 0;padding-left:20px} li{margin-bottom:5px}
+  a{color:var(--s1)}
+  .st{display:inline-flex;align-items:center;gap:6px;font-weight:600;white-space:nowrap}
+  .st i{width:9px;height:9px;border-radius:50%;flex:none}
+  .st.good i{background:var(--good)} .st.warn i{background:var(--warn)}
+  .st.ser i{background:var(--serious)} .st.crit i{background:var(--crit)}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .t-beach{background:var(--beach)} .t-exc{background:var(--exc)}
+  .t-shop{background:var(--shop)} .t-rest{background:var(--rest)}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 14px;font-size:12.5px;color:var(--ink2);align-items:center}
+  strong{font-weight:650}
+  .conf{display:inline-block;font-size:11px;padding:2px 7px;border-radius:5px;
+    border:1px solid var(--border);color:var(--ink2);margin-left:6px;vertical-align:1px}
+</style>
+</head>
+<body>
+<button class="theme-btn" id="themeBtn">Тема</button>
+<div class="wrap">
+
+<h1>Ялунвань: две недели, 17–30 ноября 2026</h1>
+<p class="sub">План отдыха. Курс: 1 ¥ ≈ 12,6 ₽. Все суммы — на двоих, если не указано иначе. Цены ориентировочные, собраны из китайских источников августа 2026.</p>
+
+<div class="callout">
+  <p><strong>Сначала о датах — там нестыковка.</strong> 17 ноября 2026 — это <strong>вторник</strong>, не четверг. И «примерно через две недели в пятницу» — это либо 27 ноября (получается 11 дней), либо 4 декабря (18 дней). Ни то, ни другое не даёт заявленных 13–14 дней.</p>
+  <p>Я построил план на <strong>17–30 ноября (14 дней, 13 ночей)</strong> — это точно попадает в оптимальное погодное окно и совпадает по длительности. Если вы всё-таки возвращаетесь в пятницу 27 ноября, просто уберите последние три дня: план устроен так, что финал безболезненно обрезается.</p>
+</div>
+
+<div class="tiles">
+  <div class="tile">
+    <div class="lbl">Баланс поездки</div>
+    <div class="val">10 из 14 дней</div>
+    <div class="cap">чистый пляж и отдых. Три полноценные вылазки и один день шопинга</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">Погода в эти даты</div>
+    <div class="val">27–29 °C</div>
+    <div class="cap">Вода 26 °C. Ожидаемо ~2 дождливых дня из 14. Сезон тайфунов закрыт</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">Бюджет на еду</div>
+    <div class="val">≈ 5 200 ¥</div>
+    <div class="cap">65 000 ₽ за 13 дней на двоих, завтраки уже в отеле</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">Бюджет на экскурсии</div>
+    <div class="val">≈ 3 100 ¥</div>
+    <div class="cap">39 000 ₽ — комфортный вариант с четырьмя выездами</div>
+  </div>
+</div>
+
+<section>
+  <h2>Погода 17–30 ноября: почему это лучшие даты года</h2>
+  <p class="note">Климатические нормы и метеоархив, не прогноз. Реальный прогноз появится примерно с 22–25 октября.</p>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Параметр</th><th class="num">17 ноября</th><th class="num">30 ноября</th><th>Что это значит</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Воздух днём</td><td class="num">28–29 °C</td><td class="num">26–27 °C</td><td>Идеально для пляжа, не изнуряет</td></tr>
+      <tr><td class="rowname">Ночью</td><td class="num">21–22 °C</td><td class="num">19–21 °C</td><td>Возьмите лёгкую ветровку на последние вечера</td></tr>
+      <tr><td class="rowname">Вода</td><td class="num">26,2 °C</td><td class="num">25,6 °C</td><td>Разницу не почувствуете, купаться комфортно весь период</td></tr>
+      <tr><td class="rowname">Шанс дождя в день</td><td class="num">19 %</td><td class="num">11 %</td><td>Ожидаемо <strong>около 2 дождливых дней из 14</strong>, и это короткие ливни</td></tr>
+      <tr><td class="rowname">Ясное небо</td><td class="num">51 %</td><td class="num">56 %</td><td>Вторая неделя солнечнее первой</td></tr>
+      <tr><td class="rowname">Ветер</td><td class="num" colspan="2">4,8 м/с, восточный ~74 % времени</td><td>Ноябрь — самый ветреный месяц года в Санье</td></tr>
+      <tr><td class="rowname">Тайфуны</td><td class="num" colspan="2">сезон закончился в середине ноября</td><td>Вы выходите из него — главное преимущество этих дат</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout">
+    <p><strong>Единственная погодная деталь, которая реально меняет ваш день.</strong> Ноябрь — самый ветреный месяц, ветер восточный и разгоняется к середине дня. Ялунвань закрыт горами с трёх сторон и развёрнут на юг, поэтому волн там почти не бывает — в китайских каталогах сёрф-спотов бухта вообще отсутствует. Но рябь и ветер на пляже к обеду появляются.</p>
+    <p><strong>Планируйте купание на 8:00–11:00 и после 16:00.</strong> Утро в Ялунване почти всегда стеклянное. Это же причина, почему все выезды в плане стоят на вторую половину дня там, где это возможно.</p>
+    <p>Риск последних дней: с конца ноября приходят первые холодные вторжения. Ночи могут упасть до 15–16 °C, днём остаётся 25–27 °C, но ветер усиливается. Вероятность за период — около четверти.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Ялунвань: что там есть без экскурсий</h2>
+  <p class="note">Главный вопрос — можно ли комфортно исследовать бухту самостоятельно. Ответ: да, и на это спокойно уходит 3–4 отдельных выхода.</p>
+
+  <h3>Пешком, 5–15 минут</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Место</th><th>Что это</th><th class="num">Время</th><th>Стоит ли</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Пляж Ялунвань</td><td>7,5 км белого песка. Восточный конец почти пустой — до него 40 минут вдоль воды</td><td class="num">сколько угодно</td><td><span class="st good"><i></i>ядро поездки</span></td></tr>
+      <tr><td class="rowname">Байхуагу<br>百花谷, Ялунвань-лу 112</td><td>Единственная торговая улица курортной зоны. Работает круглосуточно, рейтинг 4,5 при 630 отзывах. Супермаркет, фруктовые лавки, Starbucks, KFC, хайнаньские рестораны, морепродукты</td><td class="num">1–3 ч</td><td><span class="st good"><i></i>ваша база</span></td></tr>
+      <tr><td class="rowname">Фуд-плаза Байхуа</td><td>Открытый фуд-корт, 50+ точек, вечером самый живой. Блюда от 39 ¥, лапша от 15 ¥</td><td class="num">вечер</td><td><span class="st good"><i></i>да</span></td></tr>
+      <tr><td class="rowname">Центральная площадь<br>亚龙湾中心广场</td><td>Тотемный столб, открытая площадь, точка отсчёта всей бухты</td><td class="num">30 мин</td><td><span class="st warn"><i></i>по пути</span></td></tr>
+      <tr><td class="rowname">Азиатско-Тихоокеанский центр<br>亚龙湾路 115</td><td>Ещё один кластер ресторанов: барбекю из морепродуктов, сычуаньская кухня, аквариумы с живым уловом</td><td class="num">ужин</td><td><span class="st good"><i></i>да</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Такси 10–20 минут, всё ещё «своя территория»</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Место</th><th>Что это</th><th class="num">Цена</th><th class="num">Время</th><th>Вердикт</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Тропический лесопарк Ялунваня<br>亚龙湾热带天堂</td><td>Гора над бухтой, стеклянная дорожка, висячие мосты, лучший вид на залив сверху. Здесь снимали «Если ты единственный»</td><td class="num">130–158 ¥/чел<br>вкл. автобус</td><td class="num">3–4 ч</td><td><span class="st good"><i></i>обязательно</span></td></tr>
+      <tr><td class="rowname">Аутлет «Посёлок №1»<br>壹号小镇, Лунси-лу 6</td><td>200+ брендов: Nike, Adidas, Kappa, Fendi. Скидки заметные</td><td class="num">бесплатно</td><td class="num">1 ч</td><td><span class="st warn"><i></i>только заглянуть</span></td></tr>
+      <tr><td class="rowname">Подводный мир Ялунваня<br>亚龙湾海底世界</td><td>Заповедник кораллов на западном конце бухты, лодки с прозрачным дном, снорклинг</td><td class="num">от 100 ¥</td><td class="num">2–3 ч</td><td><span class="st warn"><i></i>если хочется воды</span></td></tr>
+      <tr><td class="rowname">Долина роз<br>亚龙湾国际玫瑰谷</td><td>Розовые поля и парк за бухтой. Красиво для фото, но зимой цветение слабее</td><td class="num">~68 ¥</td><td class="num">2 ч</td><td><span class="st warn"><i></i>переоценено</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout">
+    <p><strong>Про аутлет в Ялунване — честная проверка.</strong> Формально это находка: Nike, Adidas и Fendi в 10 минутах от отеля со скидками. Фактически на Qunar у него <strong>всего 26 отзывов, рейтинг 3 из 5, и свежих отзывов после 2022 года нет</strong>. В отзывах 2020–2022: «людей немного», часть ресторанов закрыта, поток падает.</p>
+    <p>Вывод: зайдите на час, раз он рядом — вдруг повезёт. Но <strong>планировать шопинг-день вокруг него нельзя</strong>, для этого есть настоящий вариант в городе.</p>
+  </div>
+
+  <h3>Велосипеды и прогулки</h3>
+  <p>Внутри курортной зоны Ялунваня расстояния небольшие, и между отелями, пляжем и Байхуагу ходят бесплатные гольф-кары отелей — это основной способ перемещения. Прокат велосипедов в самой бухте развит слабо: шеринговые сервисы (Hellobike, Meituan) в курортной зоне работают нестабильно, а полноценные велодорожки — это Санья-Бей с его 20-километровым «Кокосовым бульваром», а не Ялунвань.</p>
+  <p><strong>Практический вывод:</strong> в Ялунване вы ходите пешком, а не ездите на велосипеде. Расстояния это позволяют — от отеля до Байхуагу 300–600 м, вдоль всего пляжа 7,5 км. Если хочется именно велосипедной прогулки, это отдельная поездка в Санья-Бей.</p>
+</section>
+
+<section>
+  <h2>Рейтинг экскурсий</h2>
+
+  <h3>Обязательно посетить</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Место</th><th>Чем интересно</th><th class="num">Билет /чел</th><th class="num">Дорога из Ялунваня</th><th class="num">Времени</th><th>Самому или экскурсия</th><th>Утомительность</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="rowname">Тропический лесопарк Ялунваня</td>
+        <td>Стеклянная дорожка и панорама бухты сверху. Единственное место, где вы увидите Ялунвань целиком</td>
+        <td class="num">130–158 ¥</td><td class="num">10 мин, 25–30 ¥</td><td class="num">3–4 ч</td>
+        <td><span class="st good"><i></i>только самому</span></td><td>низкая</td>
+      </tr>
+      <tr>
+        <td class="rowname">Остров Уичжичжоу<br>蜈支洲岛</td>
+        <td>Самая прозрачная вода региона — видимость до 15–20 м. Кораллы, снорклинг, дайвинг. Главный «вау» поездки</td>
+        <td class="num">133–144 ¥<br>+138 шаттл по острову</td><td class="num">40 мин, 100–120 ¥</td><td class="num">целый день</td>
+        <td><span class="st good"><i></i>только самому</span></td><td>средняя</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Очень желательно</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Место</th><th>Чем интересно</th><th class="num">Билет /чел</th><th class="num">Дорога</th><th class="num">Времени</th><th>Формат</th><th>Утомительность</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="rowname">Наньшань<br>南山</td>
+        <td>108-метровая статуя Гуаньинь, стоящая в море. Единственное по-настоящему «китайское» место в округе. С 2026 работает вечернее световое шоу 夜禅南山</td>
+        <td class="num">108–129 ¥<br>+30 ¥ электрокар</td><td class="num">65 мин, 130–150 ¥</td><td class="num">4–5 ч</td>
+        <td><span class="st good"><i></i>самому</span></td><td>средняя, много ходьбы</td>
+      </tr>
+      <tr>
+        <td class="rowname">Тяньяхайцзяо<br>天涯海角</td>
+        <td>«Край света» — валуны с иероглифами на берегу. Символическое место, лучшее на закате</td>
+        <td class="num"><strong>0 ¥ по брони</strong><br>источники расходятся</td><td class="num">50 мин, турлиния 18 ¥</td><td class="num">2 ч</td>
+        <td><span class="st good"><i></i>самому</span></td><td>низкая</td>
+      </tr>
+      <tr>
+        <td class="rowname">Шоу «Санья Цяньгуцин»<br>三亚千古情</td>
+        <td>Масштабное костюмированное шоу об истории Хайнаня. 4,6 из 5 при 5 738 отзывах — редкий случай, когда туристическое шоу действительно хвалят. Парк работает 15:00–21:30</td>
+        <td class="num">~300–400 ¥</td><td class="num">35 мин, 90–110 ¥</td><td class="num">вечер, 3–4 ч</td>
+        <td><span class="st good"><i></i>самому, билет онлайн</span></td><td>низкая</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Можно пропустить</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Место</th><th class="num">Билет /чел</th><th class="num">Дорога</th><th>Почему пропустить именно вам</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Яньода 呀诺达</td><td class="num">168–208 ¥</td><td class="num">60 мин, 80–120 ¥</td><td>Тропический лес — целый день, много ходьбы и лестниц. Лучший сезон май–сентябрь, в ноябре зелень скромнее. Лесопарк Ялунваня даёт похожие впечатления за 3 часа в 10 минутах от отеля</td></tr>
+      <tr><td class="rowname">Бинланггу 槟榔谷</td><td class="num">~100–140 ¥</td><td class="num">1,5 ч</td><td>Этнографическая деревня народов ли и мяо. Целый день дороги ради постановочной программы. Для пляжной поездки — чистая потеря дня</td></tr>
+      <tr><td class="rowname">Обезьяний остров 南湾猴岛</td><td class="num">~118–168 ¥</td><td class="num">1,5 ч</td><td>Канатная дорога и полудикие макаки. Отзывы устойчиво жалуются на агрессивность обезьян и попрошайничество. Далеко, утомительно, необязательно</td></tr>
+      <tr><td class="rowname">Фэньцзечжоу 分界洲岛</td><td class="num">127–132 ¥</td><td class="num">1,5 ч</td><td>Хороший остров с видимостью 8–20 м, но Уичжичжоу ближе, крупнее и лучше. Дублировать формат нет смысла</td></tr>
+      <tr><td class="rowname">Дасяодунтянь 大小洞天</td><td class="num">~90 ¥</td><td class="num">50 мин</td><td>Даосский парк на скалах. Красиво, но по эмоции проигрывает Наньшаню, который рядом. Берите что-то одно</td></tr>
+      <tr><td class="rowname">Аквапарк Атлантис</td><td class="num">~330–420 ¥</td><td class="num">25 мин</td><td>Целый день и большие деньги ради горок. В ноябре вода в открытых бассейнах прохладная. Аквариум «Затерянное пространство» (~210–230 ¥, 1–3 часа) — другое дело, его можно совместить с дьюти-фри</td></tr>
+      <tr><td class="rowname">Фениксовый остров 凤凰岛</td><td class="num">—</td><td class="num">35 мин</td><td><strong>Не ездить.</strong> Проект финансово рухнул и был продан за бесценок, комплекс в упадке. Как достопримечательность перестал существовать — только вид издалека с набережной Санья-Бей</td></tr>
+      <tr><td class="rowname">Лухуэйтоу 鹿回头</td><td class="num">~35–45 ¥</td><td class="num">35 мин</td><td>Смотровая над Саньей. Само по себе слабо, но <strong>отлично совмещается</strong> с вечером в Дадунхае — заезжайте туда на закат по дороге на ужин</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout">
+    <p><strong>Что переоценено в рекламе.</strong> Тяньяхайцзяо в китайских гидах прямо описывают как «顺路打卡拍照即可» — заехать сфотографироваться по пути, целый день не нужен; «символическое значение больше, чем сам вид, огромные очереди». Обезьяний остров и Бинланггу выглядят экзотично на картинках, но по отзывам это долгая дорога ради постановки. Аквапарк Атлантис в ноябре — не сезон.</p>
+    <p><strong>И противоречие, которое надо проверить на месте.</strong> Про Тяньяхайцзяо источники расходятся: июльский обзор 2026 года утверждает, что вход полностью бесплатный с 2023 года по бронированию за 0 ¥ через WeChat, а другой гид того же года даёт 81 ¥ в высокий сезон и 68 ¥ в низкий с отдельными бесплатными днями. Ставки низкие в любом случае — проверьте в официальном аккаунте перед выездом.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Самостоятельно или экскурсия</h2>
+  <p class="note">Короткий ответ: <strong>берите всё самостоятельно.</strong> В Санье организованные экскурсии почти всегда означают обязательные заезды в магазины, чужой темп и раннюю побудку. Разница в деньгах при этом небольшая, а иногда самостоятельно выходит дешевле.</p>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Направление</th><th class="num">Экскурсия<br>на двоих</th><th class="num">Самому:<br>билеты + DiDi</th><th>Вердикт</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Лесопарк Ялунваня</td><td class="num">не продаётся отдельно</td><td class="num">~320 ¥ + 60 ¥</td><td><span class="st good"><i></i>только самому</span> Это соседняя гора, гид не нужен</td></tr>
+      <tr><td class="rowname">Уичжичжоу</td><td class="num">700–1000 ¥</td><td class="num">~290 ¥ + 276 ¥ шаттл + 240 ¥ такси</td><td><span class="st good"><i></i>самому</span> Логистика элементарная: паром каждые 20 минут с 8:30 до 16:00. Гид только заберёт время</td></tr>
+      <tr><td class="rowname">Наньшань + Тяньяхайцзяо</td><td class="num">600–900 ¥</td><td class="num">~280 ¥ + 300 ¥ такси</td><td><span class="st good"><i></i>самому</span> Два объекта на одной дороге на запад, объединяются в один день без всякого гида</td></tr>
+      <tr><td class="rowname">Шоу Цяньгуцин</td><td class="num">билет ~600–800 ¥</td><td class="num">тот же билет + 200 ¥ такси</td><td><span class="st good"><i></i>купить билет онлайн</span> «Экскурсия» здесь — это просто трансфер с наценкой</td></tr>
+      <tr><td class="rowname">Яньода</td><td class="num">500–800 ¥</td><td class="num">~336 ¥ + 240 ¥ такси</td><td><span class="st warn"><i></i>если поедете — самому</span></td></tr>
+      <tr><td class="rowname">Дальний день с несколькими точками</td><td class="num">—</td><td class="num">чартер 700–900 ¥/день</td><td><span class="st good"><i></i>машина с водителем</span> 7-местный GL8 на 8 часов и 100 км, включая бензин, платные дороги, парковку и страховку. Для дня «Наньшань + Тяньяхайцзяо» на двоих это удобнее и сопоставимо по деньгам с двумя DiDi</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="fine">Единственное, что действительно имеет смысл покупать как услугу, а не как экскурсию, — это дайвинг на Уичжичжоу (около 580 ¥ за 45 минут) и водные аттракционы: их всё равно оформляют на месте.</p>
+</section>
+
+<section>
+  <h2>Транспорт из Ялунваня</h2>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Куда</th><th class="num">Расстояние</th><th class="num">Время</th><th class="num">DiDi / такси</th><th>Альтернатива</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Центр Саньи</td><td class="num">25 км</td><td class="num">30 мин</td><td class="num">60–100 ¥</td><td>Автобусы 24, 25 — 2–5 ¥, 1 ч 10 мин</td></tr>
+      <tr><td class="rowname">Дадунхай</td><td class="num">20 км</td><td class="num">35 мин</td><td class="num">55–80 ¥</td><td>Автобусы 24, 25</td></tr>
+      <tr><td class="rowname">Хайтанвань, дьюти-фри CDF</td><td class="num">20 км</td><td class="num">25 мин</td><td class="num">~100 ¥</td><td><strong>Бесплатный шаттл CDF каждые 30 минут</strong></td></tr>
+      <tr><td class="rowname">Причал на Уичжичжоу</td><td class="num">30 км</td><td class="num">40 мин</td><td class="num">100–120 ¥</td><td>—</td></tr>
+      <tr><td class="rowname">Наньшань</td><td class="num">60 км</td><td class="num">65 мин</td><td class="num">130–150 ¥</td><td>Турлиния 18 ¥</td></tr>
+      <tr><td class="rowname">Тяньяхайцзяо</td><td class="num">45 км</td><td class="num">50 мин</td><td class="num">~120 ¥</td><td>Турлиния каждые 12 мин, 6:00–19:20, <strong>18 ¥</strong></td></tr>
+      <tr><td class="rowname">Дасяодунтянь</td><td class="num">45 км</td><td class="num">50 мин</td><td class="num">~120 ¥</td><td>Турлиния каждые 30 мин, 6:00–18:40, <strong>10 ¥</strong></td></tr>
+      <tr><td class="rowname">Аэропорт Фэнхуан</td><td class="num">40 км</td><td class="num">45 мин</td><td class="num">120–150 ¥</td><td>—</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="fine">Источники по ценам DiDi расходятся: туристические блоги дают 55 ¥ до Дадунхая, чартерные компании — 80–100 ¥ до города. Реальность обычно посередине; чартерным компаниям выгодно завышать оценку такси. Закладывайте верхнюю границу.</p>
+  <div class="callout">
+    <p><strong>Машина не нужна.</strong> DiDi в Санье работает надёжно, машин много, приложение переводится. Всё, что вам нужно, — заранее настроить Alipay или WeChat Pay с привязанной картой: без этого не работают ни такси, ни уличная еда, ни онлайн-билеты в парки. Это единственная реальная подготовка к поездке.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Еда: цены и бюджет</h2>
+  <p class="note">Ориентиры на конец 2026 года. В Ялунване внутри отелей дороже городских цен примерно вдвое, в Байхуагу — умеренно, на Первом рынке в Санье — дёшево.</p>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Позиция</th><th class="num">Юани</th><th class="num">Рубли</th><th>Комментарий</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Лапша, рис в фуд-корте Байхуагу</td><td class="num">15–39</td><td class="num">190–490</td><td>Самая дешёвая еда в шаговой доступности</td></tr>
+      <tr><td class="rowname">Недорогой обед на двоих</td><td class="num">80–150</td><td class="num">1 000–1 900</td><td>Кафе, фуд-корт, лапшичная</td></tr>
+      <tr><td class="rowname">Ужин в нормальном ресторане на двоих</td><td class="num">200–350</td><td class="num">2 500–4 400</td><td>Байхуагу, Азиатско-Тихоокеанский центр</td></tr>
+      <tr><td class="rowname">Хороший ресторан, морепродукты на двоих</td><td class="num">400–700</td><td class="num">5 000–8 800</td><td>Краб, лобстер. В Ялунване основные блюда 200–400 ¥ за штуку</td></tr>
+      <tr><td class="rowname">Морепродукты на Первом рынке в Санье</td><td class="num">300–600</td><td class="num">3 800–7 600</td><td>Покупаете на весе, готовят в соседнем кафе. Обязательно торгуйтесь и следите за весами</td></tr>
+      <tr><td class="rowname">Кофе</td><td class="num">15–38</td><td class="num">190–480</td><td>Luckin и местные 15–25, Starbucks 30–38</td></tr>
+      <tr><td class="rowname">Вода 0,5 л</td><td class="num">2–4</td><td class="num">25–50</td><td>В отеле те же бутылки стоят 15–25 ¥ — покупайте в супермаркете Байхуагу</td></tr>
+      <tr><td class="rowname">Пиво</td><td class="num">5–45</td><td class="num">60–570</td><td>В магазине 5–8, в баре 25–45</td></tr>
+      <tr><td class="rowname">Коктейль</td><td class="num">45–80</td><td class="num">570–1 000</td><td>Пляжные бары и лобби отелей</td></tr>
+      <tr><td class="rowname">Кокос, манго</td><td class="num">10–25</td><td class="num">125–315</td><td>Кокос 10–15 ¥, манго 15–25 ¥ за кг</td></tr>
+      <tr><td class="rowname">Пакет фруктов на рынке</td><td class="num">30–60</td><td class="num">380–760</td><td>Драконий фрукт, манго, маракуйя</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Дневной бюджет на двоих, завтрак в отеле</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Уровень</th><th class="num">В день, ¥</th><th class="num">В день, ₽</th><th class="num">13 дней, ¥</th><th class="num">13 дней, ₽</th><th>Как это выглядит</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Экономно</td><td class="num">260</td><td class="num">3 300</td><td class="num">3 400</td><td class="num">42 800</td><td>Обед в фуд-корте, ужин в кафе, вода из супермаркета</td></tr>
+      <tr class="hl"><td class="rowname">Комфортно</td><td class="num">400</td><td class="num">5 000</td><td class="num">5 200</td><td class="num">65 500</td><td>Нормальный обед, хороший ужин, кофе, фрукты, иногда коктейль</td></tr>
+      <tr><td class="rowname">С размахом</td><td class="num">600–700</td><td class="num">7 600–8 800</td><td class="num">7 800–9 100</td><td class="num">98 000–115 000</td><td>Морепродукты через день, вино, отельные рестораны</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="fine">Китайские источники 2026 года дают «300–500 ¥ в день на двоих, чтобы питаться хорошо» — это совпадает с комфортным уровнем. Ялунвань дороже города, поэтому берите верх диапазона.</p>
+</section>
+
+<section>
+  <h2>Бюджет на экскурсии, на двоих</h2>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Вариант</th><th>Что входит</th><th class="num">Билеты</th><th class="num">Транспорт</th><th class="num">Еда в эти дни</th><th class="num">Итого ¥</th><th class="num">Итого ₽</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="rowname">3 экскурсии<br>минимум</td>
+        <td>Лесопарк Ялунваня, Уичжичжоу без островного шаттла, Наньшань + Тяньяхайцзяо</td>
+        <td class="num">~880</td><td class="num">~600</td><td class="num">~450</td><td class="num"><strong>1 930</strong></td><td class="num"><strong>24 300</strong></td>
+      </tr>
+      <tr class="hl">
+        <td class="rowname">4 экскурсии<br>комфортный</td>
+        <td>То же + островной шаттл на Уичжичжоу + шоу «Санья Цяньгуцин»</td>
+        <td class="num">~1 850</td><td class="num">~800</td><td class="num">~600</td><td class="num"><strong>3 250</strong></td><td class="num"><strong>41 000</strong></td>
+      </tr>
+      <tr>
+        <td class="rowname">5 экскурсий<br>расширенный</td>
+        <td>То же + аквариум Атлантиса или Яньода</td>
+        <td class="num">~2 300</td><td class="num">~1 000</td><td class="num">~750</td><td class="num"><strong>4 050</strong></td><td class="num"><strong>51 000</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="fine">Если добавите дайвинг на Уичжичжоу (~580 ¥ с человека за 45 минут) или водные аттракционы (300–600 ¥ за штуку), прибавляйте сверху. Скрытые расходы, о которых предупреждают китайские гиды: островной шаттл на Уичжичжоу 138 ¥ и электрокар в Наньшане 30 ¥ — они не входят в билет.</p>
+</section>
+
+<section>
+  <h2>Шопинг: где реально есть Uniqlo и Nike</h2>
+  <p class="note">Проверял именно действующие магазины, а не списки из старых статей. Результат оказался неочевидным.</p>
+
+  <div class="callout">
+    <p><strong>Главное открытие.</strong> До октября 2024 года Uniqlo в Санье вообще не было. <strong>1 октября 2024 открылся первый магазин Uniqlo в городе</strong> — в новом торговом центре <strong>三亚大悦城 (Sanya Joy City)</strong> на проспекте Инбинь. Площадь магазина больше 1000 м². Там же открылись <strong>Nike SPORT M</strong> (первый в городе), <strong>Adidas Mega Plus</strong>, The North Face, New Balance, Salomon, FILA.</p>
+    <p>То есть вопрос «где Uniqlo и Nike в Санье» имеет ровно один правильный ответ, и это не дьюти-фри и не аутлет в Ялунване.</p>
+  </div>
+
+  <h3>Ваш шопинг-маршрут: один день на проспекте Инбинь</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th class="num">Время</th><th>Место</th><th>Что там</th><th>Детали</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="num">11:00</td>
+        <td class="rowname">三亚大悦城<br>Sanya Joy City<br>проспект Инбинь</td>
+        <td><strong>Uniqlo</strong> (1000+ м²), <strong>Nike SPORT M</strong>, <strong>Adidas Mega Plus</strong>, The North Face, New Balance, Salomon, FILA, MAIA ACTIVE</td>
+        <td>Открыт 01.10.2024, ~100 000 м², около 220 брендов, 60 % из них — первые в городе. Первый в Китае молл в стиле тропического леса, внутри водопады. Более 20 ресторанов</td>
+      </tr>
+      <tr>
+        <td class="num">14:00</td>
+        <td class="rowname">Обед там же</td>
+        <td>20+ ресторанов и кафе в самом ТЦ</td>
+        <td>Не надо никуда ехать</td>
+      </tr>
+      <tr>
+        <td class="num">15:30</td>
+        <td class="rowname">三亚海旅免税城<br>проспект Инбинь, 303</td>
+        <td>1033 бренда, из них 271 впервые в дьюти-фри. Часы, ювелирка, чемоданы, парфюмерия, косметика, электроника, алкоголь — 40+ категорий</td>
+        <td>95 000 м², работает 10:00–22:00, тел. 400-900-1888. Соседнее здание, идти пешком</td>
+      </tr>
+      <tr>
+        <td class="num">18:00</td>
+        <td class="rowname">三亚千古情<br>проспект Инбинь, 333</td>
+        <td>Вечернее шоу, 4,6 из 5 при 5 738 отзывах</td>
+        <td>Парк работает 15:00–21:30. В двух шагах от предыдущих двух точек — идеально закрывает день</td>
+      </tr>
+      <tr>
+        <td class="num">22:00</td>
+        <td class="rowname">DiDi домой</td>
+        <td>—</td>
+        <td>~100 ¥, 35 минут</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="fine">Все три точки стоят на одном проспекте в пределах пешей доступности друг от друга. Это единственный способ закрыть шопинг, дьюти-фри и вечернее развлечение за один выезд без метаний по городу.</p>
+
+  <h3>Альтернативы и что о них надо знать</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Место</th><th>Адрес и часы</th><th>Плюсы</th><th>Минусы</th><th>Ехать ли</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="rowname">CDF 三亚国际免税城<br>Хайтанвань</td>
+        <td>Хайтан-бэй-лу 118, 10:00–22:00/22:30</td>
+        <td>850+ брендов, крупнейший дьюти-фри мира. <strong>Бесплатный шаттл из Ялунваня каждые 30 минут</strong>. Скидки 15–30 %, на косметику до 30 %</td>
+        <td>Рейтинг 3,8 из 5 при 937 отзывах. <strong>Спортивных брендов мало</strong> — «относительно немного, но базовые потребности закрывает». Толпы в сезон, встречаются проблемы с получением товара в аэропорту</td>
+        <td><span class="st warn"><i></i>если нужна косметика и люкс</span> За Nike и Uniqlo — нет</td>
+      </tr>
+      <tr>
+        <td class="rowname">Аутлет «Посёлок №1»<br>в самом Ялунване</td>
+        <td>Лунси-лу 6</td>
+        <td>200+ брендов включая Nike, Adidas, Kappa, Fendi. Заметные скидки. В 10 минутах от отеля</td>
+        <td><strong>Всего 26 отзывов, рейтинг 3 из 5, свежих отзывов после 2022 года нет.</strong> В отзывах 2020–2022 — падение потока, часть заведений закрыта</td>
+        <td><span class="st warn"><i></i>зайти на час</span> Раз он рядом. Но день на него не планировать</td>
+      </tr>
+      <tr>
+        <td class="rowname">Nike в Дадунхае<br>大菠萝店</td>
+        <td>ТЦ «Ананас», Дадунхай</td>
+        <td>Отдельный монобрендовый Nike в городе</td>
+        <td>Обычный магазин без аутлетных цен</td>
+        <td><span class="st warn"><i></i>по пути</span> Если поедете ужинать в Дадунхай</td>
+      </tr>
+      <tr>
+        <td class="rowname">夏日百货, 一方百货<br>Дадунхай</td>
+        <td>Дадунхай, у площади</td>
+        <td>Шестиэтажный универмаг, одежда, спорттовары, косметика, местные бренды</td>
+        <td>Уровень средний, международных брендов мало</td>
+        <td><span class="st warn"><i></i>совмещать с ужином</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="fine">Отдельный совет по дьюти-фри: на Хайнане беспошлинные покупки оформляются с вывозом при вылете. Берите товар с собой сразу, если такая опция есть — в отзывах CDF растёт число жалоб на невозможность забрать оплаченное в аэропорту в пиковые дни.</p>
+</section>
+
+<section>
+  <h2>Календарь: 17–30 ноября</h2>
+  <div class="legend">
+    <span class="tag t-beach">пляж</span>
+    <span class="tag t-rest">лёгкий день</span>
+    <span class="tag t-exc">выезд</span>
+    <span class="tag t-shop">шопинг</span>
+    <span style="margin-left:6px">Бюджет — на двоих, без проживания. Завтраки в отеле.</span>
+  </div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Дата</th><th>План</th><th>Формат</th><th>Утро → день → вечер</th><th class="num">Бюджет</th><th>Комментарий</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="rowname">17 ноя<br><span style="font-weight:400;color:var(--muted)">вторник</span></td>
+        <td>Прилёт, заселение</td><td><span class="tag t-rest">лёгкий</span></td>
+        <td>Дорога → заселение, разбор вещей → короткий выход на пляж, ужин в Байхуагу</td>
+        <td class="num">250 ¥<br>3 100 ₽</td>
+        <td>Ничего не планировать. Купить воду и фрукты в супермаркете Байхуагу — в отеле те же бутылки втрое дороже</td>
+      </tr>
+      <tr>
+        <td class="rowname">18 ноя<br><span style="font-weight:400;color:var(--muted)">среда</span></td>
+        <td>Чистый пляж</td><td><span class="tag t-beach">пляж</span></td>
+        <td>Пляж 8:00–11:00 → бассейн, сиеста → ужин в фуд-плазе Байхуа</td>
+        <td class="num">300 ¥<br>3 800 ₽</td>
+        <td>Первый полноценный день. Утро — самая гладкая вода</td>
+      </tr>
+      <tr>
+        <td class="rowname">19 ноя<br><span style="font-weight:400;color:var(--muted)">четверг</span></td>
+        <td>Пляж + разведка бухты пешком</td><td><span class="tag t-beach">пляж</span></td>
+        <td>Пляж → прогулка: Центральная площадь, Байхуагу, заглянуть в аутлет «Посёлок №1» → ужин в Азиатско-Тихоокеанском центре</td>
+        <td class="num">350 ¥<br>4 400 ₽</td>
+        <td>Осваиваете территорию. Здесь же решите, интересен ли аутлет вообще</td>
+      </tr>
+      <tr>
+        <td class="rowname">20 ноя<br><span style="font-weight:400;color:var(--muted)">пятница</span></td>
+        <td>Тропический лесопарк Ялунваня</td><td><span class="tag t-exc">выезд</span></td>
+        <td>Пляж 8:00–11:00 → парк 14:00–18:00: стеклянная дорожка, панорама бухты → ужин в Байхуагу</td>
+        <td class="num">700 ¥<br>8 800 ₽</td>
+        <td>Первый выезд специально лёгкий и без ранней побудки: 10 минут на такси, вы не покидаете Ялунвань</td>
+      </tr>
+      <tr>
+        <td class="rowname">21 ноя<br><span style="font-weight:400;color:var(--muted)">суббота</span></td>
+        <td>Чистый пляж</td><td><span class="tag t-beach">пляж</span></td>
+        <td>Пляж → бассейн → ужин</td>
+        <td class="num">300 ¥<br>3 800 ₽</td>
+        <td>Выходной: везде людно, идеальный день чтобы никуда не ехать</td>
+      </tr>
+      <tr>
+        <td class="rowname">22 ноя<br><span style="font-weight:400;color:var(--muted)">воскресенье</span></td>
+        <td>Пляж + закат на восточном конце</td><td><span class="tag t-beach">пляж</span></td>
+        <td>Пляж → отдых → прогулка вдоль воды на восток, где почти нет людей</td>
+        <td class="num">300 ¥<br>3 800 ₽</td>
+        <td>До восточного конца пляжа около 40 минут пешком. Самая красивая прогулка в бухте</td>
+      </tr>
+      <tr>
+        <td class="rowname">23 ноя<br><span style="font-weight:400;color:var(--muted)">понедельник</span></td>
+        <td><strong>Остров Уичжичжоу</strong></td><td><span class="tag t-exc">выезд</span></td>
+        <td>Выезд 7:30 → паром 8:30 → остров до 15:00: снорклинг, пляжи, шаттл по острову → возврат 16:30 → ужин в отеле</td>
+        <td class="num">1 050 ¥<br>13 200 ₽</td>
+        <td>Главная экскурсия поездки, специально в будний день — меньше очередей на паром. Вода с видимостью до 15–20 м</td>
+      </tr>
+      <tr>
+        <td class="rowname">24 ноя<br><span style="font-weight:400;color:var(--muted)">вторник</span></td>
+        <td>Восстановление</td><td><span class="tag t-rest">лёгкий</span></td>
+        <td>Долгое утро → пляж → бассейн → ужин рядом</td>
+        <td class="num">300 ¥<br>3 800 ₽</td>
+        <td>После целого дня на острове — намеренно пустой день. Это правило: после тяжёлого выезда следующий день свободен</td>
+      </tr>
+      <tr>
+        <td class="rowname">25 ноя<br><span style="font-weight:400;color:var(--muted)">среда</span></td>
+        <td><strong>Шопинг + шоу</strong></td><td><span class="tag t-shop">шопинг</span></td>
+        <td>Выезд 10:30 → 大悦城: Uniqlo, Nike, Adidas → обед там же → 海旅免税城 → шоу «Санья Цяньгуцин» 18:00 → домой 22:00</td>
+        <td class="num">1 100 ¥<br>13 900 ₽<br><span style="color:var(--muted);font-weight:400">+ покупки</span></td>
+        <td>Три точки на одном проспекте. Будний день — в моллах свободно</td>
+      </tr>
+      <tr>
+        <td class="rowname">26 ноя<br><span style="font-weight:400;color:var(--muted)">четверг</span></td>
+        <td>Чистый пляж</td><td><span class="tag t-beach">пляж</span></td>
+        <td>Пляж → бассейн → ужин в Байхуагу</td>
+        <td class="num">300 ¥<br>3 800 ₽</td>
+        <td>Отдых после длинного городского дня</td>
+      </tr>
+      <tr>
+        <td class="rowname">27 ноя<br><span style="font-weight:400;color:var(--muted)">пятница</span></td>
+        <td>Наньшань + Тяньяхайцзяо</td><td><span class="tag t-exc">выезд</span></td>
+        <td>Выезд 9:00 → Наньшань 10:00–14:00 → обед → Тяньяхайцзяо 15:30–18:00 на закат → возврат 19:30</td>
+        <td class="num">900 ¥<br>11 300 ₽</td>
+        <td>Оба объекта на дороге на запад, объединяются в один день. Тяньяхайцзяо именно на закате — это его главное</td>
+      </tr>
+      <tr>
+        <td class="rowname">28 ноя<br><span style="font-weight:400;color:var(--muted)">суббота</span></td>
+        <td>Чистый пляж</td><td><span class="tag t-beach">пляж</span></td>
+        <td>Пляж → бассейн → ужин</td>
+        <td class="num">300 ¥<br>3 800 ₽</td>
+        <td>Выходной, никуда не едем</td>
+      </tr>
+      <tr>
+        <td class="rowname">29 ноя<br><span style="font-weight:400;color:var(--muted)">воскресенье</span></td>
+        <td>Пляж + прощальный ужин</td><td><span class="tag t-beach">пляж</span></td>
+        <td>Пляж → сборы без спешки → вечером либо Дадунхай с морепродуктами и Лухуэйтоу на закат, либо спокойный ужин в бухте</td>
+        <td class="num">300–700 ¥<br>3 800–8 800 ₽</td>
+        <td>Единственный день с развилкой. Если устали — остаётесь в Ялунване</td>
+      </tr>
+      <tr>
+        <td class="rowname">30 ноя<br><span style="font-weight:400;color:var(--muted)">понедельник</span></td>
+        <td>Выезд</td><td><span class="tag t-rest">лёгкий</span></td>
+        <td>Утро на пляже → поздний выезд → аэропорт</td>
+        <td class="num">300 ¥<br>3 800 ₽</td>
+        <td>Попросите поздний выезд заранее. Аэропорт 45 минут, 120–150 ¥</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout">
+    <p><strong>Логика расписания.</strong> Первые три дня без единого обязательства. Первый выезд — самый лёгкий и в своей же бухте. Тяжёлая экскурсия одна, и после неё пустой день. Между двумя дальними выездами (23 и 27 ноября) — три дня передышки. Все выезды на будни, все выходные — на пляже. Последние два дня без переездов.</p>
+    <p><strong>Итого: 4 дня с активностью из 14.</strong> Десять дней — пляж и отдых. Это те самые 70–75 %.</p>
+  </div>
+</section>
+
+<section>
+  <h2>«Идеальная неделя» — если хочется совсем расслабленно</h2>
+  <p class="note">Ваш запрос из пункта 5: 3–4 пляжных дня, 2 лёгких, 2–3 экскурсии, 1 шопинг. Вот как это выглядит на семи днях — можно использовать как ядро, если решите сократить поездку.</p>
+  <div class="tbl">
+  <table>
+    <thead><tr><th class="num">День</th><th>План</th><th>Формат</th><th class="num">Бюджет</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td>Прилёт, заселение, вечер в Байхуагу</td><td><span class="tag t-rest">лёгкий</span></td><td class="num">250 ¥</td></tr>
+      <tr><td class="num">2</td><td>Чистый пляж</td><td><span class="tag t-beach">пляж</span></td><td class="num">300 ¥</td></tr>
+      <tr><td class="num">3</td><td>Пляж утром, лесопарк Ялунваня днём</td><td><span class="tag t-exc">выезд</span></td><td class="num">700 ¥</td></tr>
+      <tr><td class="num">4</td><td>Чистый пляж</td><td><span class="tag t-beach">пляж</span></td><td class="num">300 ¥</td></tr>
+      <tr><td class="num">5</td><td>Остров Уичжичжоу</td><td><span class="tag t-exc">выезд</span></td><td class="num">1 050 ¥</td></tr>
+      <tr><td class="num">6</td><td>Восстановление: пляж и прогулка по бухте</td><td><span class="tag t-rest">лёгкий</span></td><td class="num">300 ¥</td></tr>
+      <tr><td class="num">7</td><td>Шопинг на Инбинь + шоу вечером</td><td><span class="tag t-shop">шопинг</span></td><td class="num">1 100 ¥</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="fine">Наньшань и Тяньяхайцзяо в семидневный вариант не помещаются без потери расслабленности. Если неделя — жертвуйте именно ими: они дальше всех и дают меньше всего на единицу усталости.</p>
+</section>
+
+<section>
+  <h2>Топ-10 мест: рейтинг для вашей поездки</h2>
+  <p class="note">Оценка от 1 до 10 именно с точки зрения человека, который приехал лежать на пляже, а не закрывать чек-лист.</p>
+  <div class="tbl">
+  <table>
+    <thead><tr><th class="num">Оценка</th><th>Место</th><th>Почему стоит или не стоит</th></tr></thead>
+    <tbody>
+      <tr><td class="num"><strong>10</strong></td><td class="rowname">Пляж Ялунваня</td><td>Ради него всё и затевалось. 7,5 км, белый мукообразный песок, видимость 8–12 м, волн почти нет. Единственное место, где вы проведёте больше половины поездки</td></tr>
+      <tr><td class="num"><strong>9</strong></td><td class="rowname">Остров Уичжичжоу</td><td>Самая прозрачная вода региона, до 15–20 м. Это единственная поездка, которая усиливает вашу главную цель, а не отвлекает от неё. Целый день, но окупается</td></tr>
+      <tr><td class="num"><strong>9</strong></td><td class="rowname">Тропический лесопарк Ялунваня</td><td>Лучшее соотношение впечатления к усилию: 10 минут на такси, 3 часа, и вы видите свою бухту сверху со стеклянной дорожки</td></tr>
+      <tr><td class="num"><strong>8</strong></td><td class="rowname">Байхуагу и фуд-плаза</td><td>Не достопримечательность, а инфраструктура — но именно она делает Ялунвань пригодным для жизни, а не только для лежания. Круглосуточно, 4,5 из 5</td></tr>
+      <tr><td class="num"><strong>8</strong></td><td class="rowname">Шоу «Санья Цяньгуцин»</td><td>4,6 из 5 при 5 738 отзывах — редкость для туристического шоу. Вечернее, не съедает пляжный день, идеально клеится к шопингу на том же проспекте</td></tr>
+      <tr><td class="num"><strong>7</strong></td><td class="rowname">Наньшань</td><td>Единственное по-настоящему китайское по духу место рядом. 108-метровая Гуаньинь в море впечатляет. Но 65 минут дороги и много ходьбы</td></tr>
+      <tr><td class="num"><strong>7</strong></td><td class="rowname">大悦城 + 海旅免税城</td><td>Закрывает всю вашу шопинг-задачу за один выезд: Uniqlo, Nike, Adidas плюс дьюти-фри в соседнем здании</td></tr>
+      <tr><td class="num"><strong>6</strong></td><td class="rowname">Тяньяхайцзяо</td><td>Символ, а не зрелище. Китайские гиды сами пишут «заехать сфотографироваться». Спасает закат и то, что вход, скорее всего, бесплатный. Только в связке с Наньшанем</td></tr>
+      <tr><td class="num"><strong>5</strong></td><td class="rowname">Дадунхай и Лухуэйтоу</td><td>Городская жизнь, морепродукты на Первом рынке, панорама с холма на закате. Приятный вечер, но не обязательный</td></tr>
+      <tr><td class="num"><strong>4</strong></td><td class="rowname">CDF в Хайтанване</td><td>Крупнейший дьюти-фри мира и бесплатный шаттл из Ялунваня — звучит отлично. Но 3,8 из 5, толпы, спортивных брендов мало. Едьте, только если нужна косметика или люкс</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="fine">Вне десятки и намеренно: Яньода, Бинланггу, Обезьяний остров, Фэньцзечжоу, аквапарк Атлантиса — каждое съедает полный день ради впечатления, которое для пляжной поездки необязательно. Фениксовый остров — не ездить вообще, проект в упадке.</p>
+</section>
+
+<section>
+  <h2>Карта поездки</h2>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Уровень</th><th>Места</th><th class="num">Дорога</th></tr></thead>
+    <tbody>
+      <tr><td class="rowname">Ялунвань — пешком</td><td>Пляж на всю длину, Байхуагу, фуд-плаза Байхуа, Центральная площадь, Азиатско-Тихоокеанский центр</td><td class="num">5–20 мин пешком</td></tr>
+      <tr><td class="rowname">Ялунвань — 10 минут на такси</td><td>Тропический лесопарк, аутлет «Посёлок №1», Подводный мир, Долина роз</td><td class="num">25–40 ¥</td></tr>
+      <tr><td class="rowname">Санья — средняя дистанция</td><td>Дадунхай с рынком и ужином, Лухуэйтоу, дьюти-фри CDF в Хайтанване, аквариум Атлантиса</td><td class="num">25–35 мин, 55–100 ¥</td></tr>
+      <tr><td class="rowname">Дальний выезд, почти целый день</td><td>Уичжичжоу, Наньшань, Тяньяхайцзяо, шопинг на Инбинь с шоу, Яньода</td><td class="num">40–65 мин, 100–150 ¥</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="tbl" style="margin-top:16px">
+  <table>
+    <thead><tr><th>Топ-5 экскурсий</th><th>Топ-5 самостоятельных поездок</th><th>Топ-5 для пляжного отдыха</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>
+          1. Уичжичжоу<br>
+          2. Лесопарк Ялунваня<br>
+          3. Шоу «Санья Цяньгуцин»<br>
+          4. Наньшань<br>
+          5. Аквариум Атлантиса
+        </td>
+        <td>
+          1. Лесопарк Ялунваня<br>
+          2. Тяньяхайцзяо турлинией за 18 ¥<br>
+          3. Дадунхай и Первый рынок<br>
+          4. Шопинг на проспекте Инбинь<br>
+          5. Дьюти-фри CDF бесплатным шаттлом
+        </td>
+        <td>
+          1. Ялунвань, центральный участок<br>
+          2. Ялунвань, восточный конец — почти пусто<br>
+          3. Пляжи Уичжичжоу<br>
+          4. Тайянвань за восточным мысом<br>
+          5. Дадунхай — для контраста и вечера
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Что убрать, если устанете</h2>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Приоритет</th><th>Что</th><th>Почему</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="rowname"><span class="st good"><i></i>Оставить обязательно</span></td>
+        <td>Пляж каждый день · Уичжичжоу · Тропический лесопарк Ялунваня · шопинг-день</td>
+        <td>Пляж — цель поездки. Уичжичжоу — единственное, что её усиливает. Лесопарк — максимум впечатления за минимум усилий. Шопинг вы обозначили как отдельную задачу</td>
+      </tr>
+      <tr>
+        <td class="rowname"><span class="st warn"><i></i>Оставить желательно</span></td>
+        <td>Шоу «Санья Цяньгуцин» · вечер в Дадунхае с морепродуктами</td>
+        <td>Оба вечерние и не отнимают пляжный день. Шоу к тому же уже стоит в шопинг-дне — отказ ничего не упрощает, кроме бюджета</td>
+      </tr>
+      <tr>
+        <td class="rowname"><span class="st ser"><i></i>Отменить без сожаления</span></td>
+        <td>Наньшань + Тяньяхайцзяо · Лухуэйтоу · аутлет в Ялунване · CDF в Хайтанване</td>
+        <td>День 27 ноября — первый кандидат на вылет. Это самая длинная дорога в поездке ради статуи и валунов. Если к 26 ноября вы поймёте, что не хочется никуда ехать, — не езжайте, вы ничего критичного не потеряете</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Итоговый маршрут — и почему именно он</h2>
+  <div class="win">
+    <p><strong>17–30 ноября, Ялунвань. Четыре выезда за четырнадцать дней: лесопарк Ялунваня (20-го), Уичжичжоу (23-го), шопинг с шоу (25-го), Наньшань с Тяньяхайцзяо (27-го). Всё остальное — пляж.</strong></p>
+
+    <h4>Логика, по которой он собран</h4>
+    <ul>
+      <li><strong>Первые три дня пустые.</strong> Ни одного обязательства до 20 ноября. Перелёт, смена часовых поясов и климата — это само по себе нагрузка</li>
+      <li><strong>Первый выезд — самый лёгкий и в своей же бухте.</strong> Лесопарк в 10 минутах, без ранней побудки, с возможностью провести утро на пляже. Вы разминаетесь, а не бросаетесь в бой</li>
+      <li><strong>Тяжёлый выезд ровно один.</strong> Уичжичжоу с ранним подъёмом. После него 24 ноября намеренно пустое</li>
+      <li><strong>Между двумя дальними поездками три дня.</strong> 23-е и 27-е разнесены максимально, между ними лёгкий шопинг-день и пляж</li>
+      <li><strong>Все выезды на будни, все выходные на пляже.</strong> В субботу и воскресенье в Санье переполнено везде — и на пляжах, и в моллах, и на паромах</li>
+      <li><strong>Шопинг собран в один выезд.</strong> Uniqlo, Nike, Adidas, дьюти-фри и вечернее шоу стоят на одном проспекте в пешей доступности друг от друга. Это экономит вам целый отдельный день</li>
+      <li><strong>Последние два дня без переездов.</strong> 29-е с развилкой на случай усталости, 30-е — утро на пляже и спокойный выезд</li>
+      <li><strong>Купание утром.</strong> Ноябрь — самый ветреный месяц, ветер разгоняется к обеду. Поэтому все выезды стоят на вторую половину дня везде, где это возможно</li>
+    </ul>
+
+    <h4>Сколько это стоит</h4>
+    <div class="tbl">
+    <table>
+      <thead><tr><th>Статья</th><th class="num">Юани</th><th class="num">Рубли</th></tr></thead>
+      <tbody>
+        <tr><td>Еда, 13 дней, комфортный уровень</td><td class="num">5 200</td><td class="num">65 500</td></tr>
+        <tr><td>Экскурсии и транспорт, 4 выезда</td><td class="num">3 250</td><td class="num">41 000</td></tr>
+        <tr><td>Такси на мелкие перемещения и аэропорт</td><td class="num">600</td><td class="num">7 600</td></tr>
+        <tr><td>Резерв на непредвиденное</td><td class="num">800</td><td class="num">10 000</td></tr>
+        <tr><td class="rowname"><strong>Итого без проживания и покупок</strong></td><td class="num"><strong>9 850</strong></td><td class="num"><strong>124 000</strong></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="fine">Покупки в моллах и дьюти-фри сюда не входят — это отдельная переменная. Экономный вариант того же маршрута выходит около 7 500 ¥ (95 000 ₽), с размахом — около 14 000 ¥ (176 000 ₽).</p>
+  </div>
+</section>
+
+<section>
+  <h2>Что проверить перед поездкой</h2>
+  <ul>
+    <li><strong>Даты.</strong> 17 ноября — вторник. Уточните обратный рейс: если возвращаетесь в пятницу 27 ноября, план обрезается после дня шопинга, и вы теряете только Наньшань</li>
+    <li><strong>Alipay или WeChat Pay с привязанной картой</strong> — настроить до вылета. Без этого не работает ни DiDi, ни онлайн-бронь билетов, ни уличная еда. Это главная подготовка</li>
+    <li><strong>Билеты онлайн заранее</strong> — на Уичжичжоу, Наньшань и шоу. Китайские гиды 2026 года настойчиво предупреждают не покупать у уличных перекупщиков и не брать комбо-билеты у дороги</li>
+    <li><strong>Тяньяхайцзяо</strong> — уточнить, бесплатен ли вход и нужна ли бронь: источники расходятся</li>
+    <li><strong>Погода</strong> — реальный прогноз появится с 22–25 октября. Если на неделю выпадает дождь, меняйте местами пляжный и экскурсионный день: план для этого и построен с запасом</li>
+    <li><strong>Морепродукты</strong> — на Первом рынке торгуйтесь и следите за весами: это самая частая жалоба туристов в Санье</li>
+    <li><strong>Поздний выезд 30 ноября</strong> — просить заранее, лучше при бронировании</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Источники</h2>
+  <ul style="font-size:13.5px">
+    <li><a href="https://travel.sina.cn/2026-07-16/detail-inihzfcz8120142.d.html">Разбор шести главных достопримечательностей Саньи, июль 2026</a> · <a href="https://www.sina.cn/gc/article/nimwckz1073137.html">Актуальные цены и «避坑», август 2026</a></li>
+    <li><a href="https://k.sina.cn/article_7879776540_1d5abd91c06801vtao.html">Цены билетов и скрытые расходы, 2026</a> · <a href="https://daochicar.com/sanya-travel-guide-2026/">Транспорт и расстояния из Ялунваня, 2026</a></li>
+    <li><a href="https://m.winshang.com/news728134.html">Открытие 三亚大悦城: бренды, Uniqlo, Nike, Adidas</a> · <a href="https://i.ifeng.com/c/8dJtUIVmQjC">Первый Uniqlo в Санье</a></li>
+    <li><a href="https://www.hltmsp.com/index/store/index">海旅免税城 — официальный сайт, адрес и часы</a> · <a href="https://touch.go.qunar.com/poi/7528706">CDF 三亚国际免税城 — отзывы и шаттлы</a></li>
+    <li><a href="https://touch.go.qunar.com/poi/10503319">Аутлет «Посёлок №1» в Ялунване — отзывы</a> · <a href="https://www.visitsanya.com/">Официальный туристический портал Саньи</a></li>
+    <li><a href="https://piao.qunar.com/ticket/detail_192049.html">Шоу «Санья Цяньгуцин» — адрес, часы, рейтинг</a> · <a href="https://www.atlantissanya.cn/marine-and-waterpark/aquaventure-waterpark">Atlantis Sanya — официальный сайт</a></li>
+    <li><a href="https://weatherspark.com/y/120758/Average-Weather-in-Sanya-China-Year-Round">Weather Spark — климат Саньи по месяцам</a> · <a href="https://www.climatestotravel.com/climate/china/hainan">Climates to Travel — Хайнань</a></li>
+    <li><a href="https://www.163.com/dy/article/KKTSRHKG0556IYL7.html">Бюджет поездки в Санью на двоих, 2026</a> · <a href="https://you.ctrip.com/travels/sanya61/3990162.html">Отчёт о поездке: Ялунвань и Санья-Бей</a></li>
+  </ul>
+  <p class="fine">Цены на билеты и еду — ориентировочные, собраны из нескольких китайских источников 2026 года; там, где источники расходятся, приведён диапазон и отмечено расхождение. Погодные цифры — климатические нормы и метеоархив, а не прогноз на конкретные даты.</p>
+</section>
+
+</div>
+<script>
+document.getElementById('themeBtn').addEventListener('click', function(){
+  var cur = document.documentElement.getAttribute('data-theme');
+  var dark = cur ? cur === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+});
+</script>
+</body>
+</html>

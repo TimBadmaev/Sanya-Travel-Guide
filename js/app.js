@@ -5,6 +5,8 @@ import { renderPrepare } from "./views/prepare.js";
 import { renderSettings } from "./views/settings.js";
 import { renderInfo, renderInfoDetail } from "./views/info.js";
 import { renderHandy, renderHandyPhrase, renderHandyTaxi } from "./views/handy.js";
+import { renderMyPlan, renderMyPlanDay, renderMoveDay, renderPlacePlan } from "./views/plan.js";
+import { renderRecommended, renderRecommendedDay } from "./views/recommended.js";
 import { initPwa } from "./pwa.js";
 
 // Таблица маршрутов вместо объекта точных маршрутов (ITERATION-2-FOUNDATION.md
@@ -25,6 +27,15 @@ const routes = [
   { pattern: /^\/handy$/, render: renderHandy, nav: "/info" },
   { pattern: /^\/handy\/phrase\/(?<id>[^/]+)$/, render: renderHandyPhrase, nav: "/info", fullscreen: true },
   { pattern: /^\/handy\/taxi$/, render: renderHandyTaxi, nav: "/info", fullscreen: true },
+  // «Мой план» и рекомендованный план (Итерация 6): вложенные экраны
+  // Главной, пятой вкладки нет (D-07) — подсвечена «Сейчас», как у #/settings.
+  { pattern: /^\/plan$/, render: renderMyPlan, nav: "/" },
+  { pattern: /^\/plan\/(?<date>[^/]+)$/, render: renderMyPlanDay, nav: "/" },
+  { pattern: /^\/plan\/(?<date>[^/]+)\/move$/, render: renderMoveDay, nav: "/" },
+  { pattern: /^\/recommended$/, render: renderRecommended, nav: "/" },
+  { pattern: /^\/recommended\/(?<date>[^/]+)$/, render: renderRecommendedDay, nav: "/" },
+  // Выбор дня для места — продолжение карточки места.
+  { pattern: /^\/place\/(?<id>[^/]+)\/plan$/, render: renderPlacePlan, nav: "/places" },
 ];
 
 // Счётчик навигаций (§4): экран после каждого await сверяет ctx.isCurrent(),

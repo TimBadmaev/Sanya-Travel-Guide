@@ -16,6 +16,7 @@ import {
 } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
+import { formatDayMonth, isIsoDate } from "../logic/plan.js";
 
 // Ключ иконки категории (config.categories[].icon) → эмодзи. Деталь
 // отображения, как ICONS в info.js (PLACES-IMPLEMENTATION.md [PI-7], [OQ-14]).
@@ -52,11 +53,28 @@ function renderErrorState(container, message, onRetry) {
 
 // Фильтры живут только в URL (PLACES-IMPLEMENTATION.md §11): #/places?f=a,b.
 // Радиус сценариев «Сейчас» — тоже в URL (near=1) и переживает смену чипов.
-function placesHash(tokens, near) {
+// Итерация 6 (S1): выбор места для дня «Моего плана» — addTo=<дата> — тоже
+// живёт в URL и переживает смену чипов и «Показать все».
+function placesHash(tokens, near, addTo) {
   const params = [];
   if (tokens.length) params.push(`f=${serializeFilters(tokens)}`);
   if (near) params.push("near=1");
+  if (addTo) params.push(`addTo=${addTo}`);
   return params.length ? `#/places?${params.join("&")}` : "#/places";
+}
+
+// Плашка режима выбора (S1): «Отмена» возвращает в день без новой записи.
+function renderAddToNotice(addTo, onCancel) {
+  const notice = document.createElement("p");
+  notice.className = "area-notice addto-notice";
+  notice.append(`Выбираете место на ${formatDayMonth(addTo)}. `);
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "area-notice__link area-notice__button";
+  button.textContent = "Отмена";
+  button.addEventListener("click", onCancel);
+  notice.appendChild(button);
+  return notice;
 }
 
 // Плашка радиуса (Q-21): список ограничен, и это видно; «Показать все»
@@ -75,9 +93,9 @@ function renderNearNotice(precision, onShowAll) {
   return notice;
 }
 
-function renderPlaceRow(place, category, distanceText) {
+function renderPlaceRow(place, category, distanceText, addTo) {
   const card = document.createElement("a");
-  card.href = `#/place/${place.id}`;
+  card.href = addTo ? `#/place/${place.id}?addTo=${addTo}` : `#/place/${place.id}`;
   card.className = "info-card";
 
   const icon = document.createElement("span");
@@ -152,6 +170,23 @@ function renderEmptyState(message, buttonText, onClick) {
 }
 
 export async function renderPlaces(container, ctx) {
+  // S1: режим выбора открывается только поверх самого дня (#/plan/<дата>).
+  // Так карточка места после добавления может вернуться в день на две записи
+  // назад (plan.js, renderAddToDayBlock). Иначе — глубокая ссылка: replace на
+  // день, откуда выбор и начинается.
+  const addTo = ctx.query.get("addTo");
+  if (addTo !== null) {
+    if (!isIsoDate(addTo)) {
+      window.location.replace("#/plan");
+      return;
+    }
+    const fromPath = (ctx.from || "").replace(/^#/, "").split("?")[0];
+    if (fromPath !== `/plan/${addTo}`) {
+      window.location.replace(`#/plan/${addTo}`);
+      return;
+    }
+  }
+
   container.innerHTML = '<p class="loading">Загрузка мест…</p>';
 
   let places;
@@ -211,6 +246,10 @@ export async function renderPlaces(container, ctx) {
   heading.textContent = "Места";
   container.appendChild(heading);
 
+  if (addTo) {
+    container.appendChild(renderAddToNotice(addTo, () => ctx.back(`#/plan/${addTo}`)));
+  }
+
   if (!places.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
@@ -266,7 +305,7 @@ export async function renderPlaces(container, ctx) {
       const list = document.createElement("div");
       list.className = "info-list";
       found.forEach((place) => {
-        list.appendChild(renderPlaceRow(place, categoriesById.get(place.category), distanceTexts.get(place.id)));
+        list.appendChild(renderPlaceRow(place, categoriesById.get(place.category), distanceTexts.get(place.id), addTo));
       });
       results.appendChild(list);
       return;
@@ -310,7 +349,7 @@ export async function renderPlaces(container, ctx) {
       chip.setAttribute("aria-pressed", String(tokens.includes(chip.dataset.token)));
     });
     renderResults();
-    history.replaceState(history.state, "", placesHash(tokens, near));
+    history.replaceState(history.state, "", placesHash(tokens, near, addTo));
   }
 
   // Снять радиус (Q-21) — так же без навигации, как снятие чипа. Фокус — на
@@ -320,7 +359,7 @@ export async function renderPlaces(container, ctx) {
     near = false;
     if (nearNotice) nearNotice.remove();
     renderResults();
-    history.replaceState(history.state, "", placesHash(tokens, near));
+    history.replaceState(history.state, "", placesHash(tokens, near, addTo));
     if (chips.length) chips[0].focus();
   }
 

@@ -84,11 +84,22 @@ export async function loadPhrases() {
 
 // Справочники (D-20). Районы — только verified; категории и теги статуса
 // не имеют (MVP-UX-SPEC §10). Возвращается новый объект с новыми массивами.
+// planDayTypes — типы дня рекомендованного плана (Итерация 6); у файла без
+// справочника — пустой массив.
 export async function loadConfig() {
   const config = await loadJSON("data/config.json");
   return {
     areas: config.areas.filter((area) => area.status === "verified"),
     categories: config.categories.slice(),
     tags: config.tags.slice(),
+    planDayTypes: Array.isArray(config.planDayTypes) ? config.planDayTypes.slice() : [],
   };
+}
+
+// Рекомендованный план (Итерация 6, ITERATION-6-RESEARCH.md §13.1): один
+// объект { meta, days }, а не массив. Только чтение — «Мой план» живёт в
+// stg:myplan (storage.js). Возвращается новый объект с новым массивом дней.
+export async function loadPlan() {
+  const plan = await loadJSON("data/plan.json");
+  return { meta: { ...plan.meta }, days: plan.days.slice() };
 }

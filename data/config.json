@@ -40,5 +40,13 @@
     { "id": "photo", "name": "Для фото" },
     { "id": "island", "name": "Остров" },
     { "id": "local", "name": "Местная жизнь" }
+  ],
+  "planDayTypes": [
+    { "id": "arrival", "name": "Прилёт" },
+    { "id": "beach", "name": "Пляж" },
+    { "id": "light", "name": "Лёгкий день" },
+    { "id": "trip", "name": "Выезд" },
+    { "id": "shopping", "name": "Шопинг" },
+    { "id": "departure", "name": "Отъезд" }
   ]
 }

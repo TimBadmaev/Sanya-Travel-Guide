@@ -1250,3 +1250,341 @@ textarea.settings-field__input {
 .about__version:empty {
   display: none;
 }
+
+/* ===== Итерация 6 (ITERATION-6-IMPLEMENTATION.md) — только новые правила ===== */
+
+/* Кнопки-ссылки и кнопки экранов плана: у .btn нет display, а min-height на
+   inline-ссылке не работает (тот же приём, что у .place-actions .btn). */
+.plan-button,
+.place-plan-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+
+.plan-button[hidden] {
+  display: none;
+}
+
+.plan-subtitle {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.plan-empty {
+  margin-bottom: var(--space-4);
+}
+
+.plan-bottom {
+  margin-top: var(--space-4);
+}
+
+/* Список дат: строка целиком — одна зона нажатия (ссылка или кнопка). */
+.plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.plan-row {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  min-height: var(--tap-min);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.plan-row__date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.plan-row__title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Пустой день — валидное состояние, а не ошибка: обычный приглушённый текст. */
+.plan-row__title--empty {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.plan-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 2px;
+}
+
+.plan-row__mark {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+
+.plan-row__note {
+  font-size: var(--font-size-sm);
+  color: var(--color-critical);
+}
+
+.plan-row.is-today {
+  border: 2px solid var(--color-primary);
+}
+
+.plan-row.is-today .plan-row__date {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.plan-row.is-past {
+  background: var(--color-surface-alt);
+}
+
+.plan-row.is-disabled {
+  cursor: default;
+  background: var(--color-surface-alt);
+}
+
+.plan-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.plan-row .plan-chip,
+.plan-row.is-past .plan-chip {
+  background: var(--color-bg);
+}
+
+/* День */
+
+.plan-day__date {
+  margin: 0 0 var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.view-title.plan-day__title--empty {
+  color: var(--color-text-muted);
+}
+
+.plan-day__type {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+}
+
+.plan-day__summary {
+  margin: 0 0 var(--space-4);
+}
+
+.plan-rhythm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  list-style: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.plan-rhythm li {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-rhythm__label {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.plan-places {
+  margin-bottom: var(--space-4);
+}
+
+.plan-day__alt {
+  margin: 0 0 var(--space-4);
+}
+
+.plan-rec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.plan-rec__text {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.plan-edit__title {
+  margin-top: var(--space-5);
+}
+
+.plan-edit,
+.plan-actions,
+.plan-follow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.plan-actions {
+  margin-top: var(--space-5);
+}
+
+.plan-follow {
+  margin-bottom: var(--space-4);
+}
+
+.plan-edit__note,
+.plan-hint {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.plan-added {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.plan-status {
+  margin: 0;
+  color: var(--color-critical);
+}
+
+.plan-status:empty {
+  display: none;
+}
+
+/* Инлайн-подтверждение: кнопки всегда столбиком — длинные подписи на 320 px
+   не сжимаются и не дают горизонтальной прокрутки. */
+.plan-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-critical-bg);
+  border-radius: var(--radius);
+}
+
+.plan-pick .plan-confirm {
+  margin-top: var(--space-2);
+}
+
+.plan-confirm__text {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.plan-confirm__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.plan-confirm__buttons .btn {
+  width: 100%;
+}
+
+/* «Почему план такой», «Если устали» — свёрнутые блоки. */
+.plan-more {
+  margin-top: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.plan-more__summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.plan-more .info-detail__points {
+  margin: 0;
+  padding: 0 var(--space-4) var(--space-3) calc(var(--space-4) + var(--space-4));
+}
+
+.plan-sources {
+  margin-top: var(--space-4);
+}
+
+/* Карточка места: «Добавить в мой план» / «Добавить на <дату>» (S1). */
+.place-plan-link,
+.place-plan {
+  margin: 0 0 var(--space-4);
+}
+
+.place-plan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.place-plan__note {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius);
+}
+
+/* Главная: одна карточка-ссылка, полный день не дублируется (§10.2). */
+.home-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: var(--tap-min);
+  margin: var(--space-3) 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-plan__label {
+  color: var(--color-text-muted);
+}
+
+.home-plan__title {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.home-plan__action {
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}

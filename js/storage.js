@@ -11,6 +11,9 @@ export const KEYS = {
   // Итерация 5: подсказка «Добавьте на экран „Домой“» закрыта. Отдельный
   // флаг, к схеме stg:trip не относится.
   installHintDismissed: "stg:installHintDismissed",
+  // Итерация 6: «Мой план» — полная копия пользовательских дней. Отдельный
+  // ключ, stg:schema остаётся 1 (ITERATION-6-RESEARCH.md §12.2).
+  myplan: "stg:myplan",
 };
 
 function checkStorageAvailable() {
@@ -266,8 +269,87 @@ function setInstallHintDismissed() {
   }
 }
 
+// «Мой план» (Итерация 6, ITERATION-6-RESEARCH.md §13.3): { planId, days },
+// days — объект «ГГГГ-ММ-ДД → день». Белый список полей дня — как у
+// normalizeHome(): всё неизвестное отбрасывается. Минимальный валидный день —
+// одни placeIds (§13.3.1). Мест в дне не больше MY_PLAN_MAX_PLACES — то же
+// ограничение, что у операций в logic/myplan.js.
+const MY_PLAN_MAX_PLACES = 3;
+const MY_PLAN_TEXT_FIELDS = ["type", "title", "summary", "morning", "afternoon", "evening", "alt"];
+const MY_PLAN_ORIGINS = ["recommended", "user"];
+
+function normalizeStringList(value) {
+  return Array.isArray(value) ? value.filter((item) => typeof item === "string" && item) : [];
+}
+
+// День без содержимого — null: пустой день = отсутствие ключа.
+function normalizeMyPlanDay(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const day = {};
+  MY_PLAN_TEXT_FIELDS.forEach((field) => {
+    if (typeof value[field] === "string" && value[field]) day[field] = value[field];
+  });
+  const placeIds = [...new Set(normalizeStringList(value.placeIds))].slice(0, MY_PLAN_MAX_PLACES);
+  if (placeIds.length) day.placeIds = placeIds;
+  const tips = normalizeStringList(value.tips);
+  if (tips.length) day.tips = tips;
+  if (!Object.keys(day).length) return null;
+  day.origin = MY_PLAN_ORIGINS.includes(value.origin) ? value.origin : "user";
+  return day;
+}
+
+function normalizeMyPlan(value) {
+  const days = {};
+  const source = value && value.days && typeof value.days === "object" && !Array.isArray(value.days) ? value.days : {};
+  Object.keys(source).forEach((date) => {
+    if (!isValidDateString(date)) return;
+    const day = normalizeMyPlanDay(source[date]);
+    if (day) days[date] = day;
+  });
+  return { planId: typeof value.planId === "string" && value.planId ? value.planId : null, days };
+}
+
+// Не бросает исключение: нет ключа — пустой план; повреждённое значение —
+// пустой план и одна ошибка в консоли, сырое значение не перезаписывается
+// ([I3-4], прецедент stay и home).
+function getMyPlan() {
+  const empty = { planId: null, days: {} };
+  if (!storageAvailable) return empty;
+  ensureSchema();
+  let parsed;
+  try {
+    const raw = window.localStorage.getItem(KEYS.myplan);
+    if (raw === null) return empty;
+    parsed = JSON.parse(raw);
+  } catch (e) {
+    console.error("Не удалось прочитать stg:myplan", e);
+    return empty;
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    console.error("Значение stg:myplan не является объектом — игнорируется");
+    return empty;
+  }
+  return normalizeMyPlan(parsed);
+}
+
+// Полная перезапись stg:myplan через белый список (прецедент setTrip).
+function setMyPlan(myPlan) {
+  if (!storageAvailable) return false;
+  ensureSchema();
+  const value = normalizeMyPlan(myPlan && typeof myPlan === "object" ? myPlan : {});
+  try {
+    window.localStorage.setItem(KEYS.myplan, JSON.stringify(value));
+    return true;
+  } catch (e) {
+    console.error("Не удалось сохранить stg:myplan", e);
+    return false;
+  }
+}
+
 export const storage = {
   isAvailable: () => storageAvailable,
+  getMyPlan,
+  setMyPlan,
   isInstallHintDismissed,
   setInstallHintDismissed,
   getChecklistState,
