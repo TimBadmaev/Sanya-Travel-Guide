@@ -1,0 +1,1252 @@
+/*
+  Sanya Travel Guide — базовые стили MVP.
+  Без внешних шрифтов и библиотек (D-28). Системные шрифты, простая палитра.
+*/
+
+:root {
+  /* Цвет: тёплый песочный фон + лагунный тил как основной акцент,
+     янтарный — только для отметки «Важно». */
+  --color-bg: #f6f3ec;
+  --color-surface: #ffffff;
+  --color-surface-alt: #efeae0;
+  --color-border: #e2dcc9;
+
+  --color-text: #1e2a28;
+  --color-text-muted: #5b6b69;
+
+  --color-primary: #0b6e6e;
+  --color-primary-dark: #084f4f;
+
+  --color-critical: #8a4e10;
+  --color-critical-bg: #f5e6ce;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-md: 18px;
+  --font-size-lg: 22px;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+
+  --nav-height: 64px;
+  --tap-min: 44px;
+}
+
+* ,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  font-family: -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+a {
+  color: var(--color-primary);
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* clip, не hidden (ITERATION-2-FOUNDATION.md §6.1): hidden делает #app
+     скролл-контейнером (computed overflow-y тоже становится auto), а sticky-
+     потомки внутри такого контейнера не прокручиваются вместе с документом
+     и «застревают». clip обрезает так же, но контейнер не создаёт. */
+  overflow-x: clip;
+}
+
+/* Header */
+
+.app-header {
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+.app-header__eyebrow {
+  margin: 0 0 2px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.app-header__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* единственный акцентный элемент дизайна: тонкая полоса «лагуна → закат» под шапкой */
+.app-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), #f2c15a);
+}
+
+/* Main / views */
+
+.app-main {
+  flex: 1;
+  width: 100%;
+  /* overflow-y: auto здесь ни на что не влияло — прокручивается документ
+     (#app растёт вместе с контентом, только min-height). Убрано вместе с
+     overflow-x: clip у #app, чтобы не оставалось скролл-контейнера,
+     запирающего position: sticky (§6.1). */
+  padding: var(--space-4);
+  padding-bottom: calc(var(--nav-height) + var(--space-5) + env(safe-area-inset-bottom));
+}
+
+.view-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+}
+
+.loading {
+  color: var(--color-text-muted);
+}
+
+/* Bottom navigation */
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 10;
+}
+
+.bottom-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--nav-height);
+  text-decoration: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.bottom-nav__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.bottom-nav__item.is-active {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* Stub screens */
+
+.stub {
+  padding: var(--space-5) var(--space-3);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.stub .view-title {
+  color: var(--color-text);
+}
+
+/* Buttons */
+
+.btn {
+  appearance: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  min-height: var(--tap-min);
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Error / empty states */
+
+.error-state,
+.empty-state {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.error-state p {
+  margin-top: 0;
+}
+
+/* Progress block */
+
+.progress-block {
+  margin-bottom: var(--space-4);
+}
+
+.progress-block__text {
+  margin: 0 0 var(--space-2);
+  font-weight: 600;
+}
+
+.progress {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.progress__fill {
+  height: 100%;
+  width: 0%;
+  background: var(--color-primary);
+  transition: width 0.2s ease;
+}
+
+/* Accordion phases */
+
+.phase-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.phase {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.phase__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-4);
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.phase__header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+}
+
+.phase__chevron {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.phase[data-open="true"] .phase__chevron {
+  transform: rotate(180deg);
+}
+
+.phase__body {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--space-4) var(--space-3);
+}
+
+.phase[data-open="false"] .phase__body {
+  display: none;
+}
+
+/* Task list */
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.task {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.task:first-child {
+  border-top: none;
+}
+
+.task__checkbox-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  flex-shrink: 0;
+}
+
+.task__checkbox {
+  width: 24px;
+  height: 24px;
+  accent-color: var(--color-primary);
+}
+
+.task__label {
+  /* Теперь <button> (не <label>) — сбрасываем нативные стили кнопки,
+     чтобы вид тела строки не изменился. */
+  appearance: none;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  flex: 1;
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.task__title {
+  font-size: var(--font-size-base);
+}
+
+.task.is-done .task__title {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.badge-critical {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-critical-bg);
+  color: var(--color-critical);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+.task__details-toggle {
+  appearance: none;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: var(--space-2);
+  margin: -8px -8px -8px 0;
+  min-height: var(--tap-min);
+  cursor: pointer;
+}
+
+.task__details {
+  flex-basis: 100%;
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.task__details p {
+  margin: 0 0 var(--space-2);
+}
+
+.task__details p:last-child {
+  margin-bottom: 0;
+}
+
+.task__meta {
+  color: var(--color-text-muted);
+}
+
+.task__meta--volatile {
+  color: var(--color-critical);
+}
+
+.task__meta a {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* Sources — переиспользуется в task__details (Подготовка) и детальном
+   экране Справки. Ссылки блочные, с зоной нажатия ≥44px (PRODUCT.md 8.9),
+   при этом текст остаётся компактным — увеличивается только padding. */
+
+.sources__label {
+  margin-bottom: 0;
+}
+
+.sources__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.sources__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  width: fit-content;
+  max-width: 100%;
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* Info list */
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: inherit;
+}
+
+.info-card__icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.info-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.info-card__title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.info-card__summary {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* Info detail */
+
+.info-detail__summary {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.info-detail__points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-4);
+}
+
+.info-detail__points li {
+  font-size: var(--font-size-base);
+}
+
+.info-detail__back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  margin-top: var(--space-4);
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ===== Места (PLACES-IMPLEMENTATION.md §15) — только новые правила ===== */
+
+.btn--secondary {
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-border);
+}
+
+.error-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+/* Пустое состояние с кнопкой (div, не p) — без двойного отступа сверху,
+   как у .error-state p. */
+.empty-state p {
+  margin-top: 0;
+}
+
+/* Ряд чипов — до краёв экрана, прокручивается горизонтально внутри себя;
+   страница не переполняется (у #app — overflow-x: clip). Вертикальный
+   padding — чтобы не обрезался фокус-контур. */
+.chips {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  margin: 0 calc(-1 * var(--space-4)) var(--space-3);
+  padding: var(--space-1) var(--space-4);
+  scrollbar-width: none;
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex: 0 0 auto;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.places-count {
+  margin: 0 0 var(--space-3);
+  font-weight: 600;
+}
+
+/* Карточка места */
+
+.place-detail__back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  margin-bottom: var(--space-2);
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.place-detail__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.place-detail__head .view-title {
+  margin-bottom: var(--space-1);
+}
+
+.place-detail__zh {
+  margin: 0;
+  font-size: var(--font-size-md);
+  overflow-wrap: anywhere;
+}
+
+.place-detail__save {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.place-params {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+}
+
+.place-params li {
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-surface-alt);
+  border-radius: 999px;
+  font-size: var(--font-size-base);
+}
+
+.place-detail__summary {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.place-detail__subtitle {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+/* Закреплённые действия карточки: sticky над нижней панелью (§14.1), на всю
+   ширину экрана. Не fixed — занимает место в потоке и не перекрывает подвал. */
+.place-actions {
+  position: sticky;
+  bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-4) calc(-1 * var(--space-4)) 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+/* У .btn нет display, а min-height на inline-ссылке не работает. */
+.place-actions .btn,
+.taxi__actions .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  text-decoration: none;
+}
+
+.place-actions__status,
+.taxi__status {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--color-critical);
+}
+
+.place-actions__status:empty,
+.taxi__status:empty {
+  display: none;
+}
+
+/* «Показать таксисту» — полноэкранный режим (§14.2) */
+
+#app.is-fullscreen .app-header,
+#app.is-fullscreen .bottom-nav {
+  display: none;
+}
+
+#app.is-fullscreen .app-main {
+  padding-top: calc(var(--space-4) + env(safe-area-inset-top));
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+}
+
+.taxi {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 2 * var(--space-4) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  min-height: calc(100dvh - 2 * var(--space-4) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+
+.taxi__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+
+.taxi__name,
+.taxi__address {
+  margin: 0;
+  overflow-wrap: anywhere;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.taxi__name {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.taxi__address {
+  font-size: 28px;
+  line-height: 1.4;
+}
+
+.taxi__ru {
+  margin: 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
+.taxi__actions {
+  position: sticky;
+  bottom: env(safe-area-inset-bottom);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-block: var(--space-3);
+  background: var(--color-bg);
+}
+
+/* ===== Итерация 3 (ITERATION-3-IMPLEMENTATION.md §17) — только новые правила ===== */
+
+/* Главная «Сейчас» */
+
+.home-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* Иконка настроек — единственный вход в #/settings, зона нажатия ≥44×44. */
+.home-head__settings {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  margin-top: calc(-1 * var(--space-2));
+  font-size: 22px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.home-status {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+}
+
+.home-status__meta {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.home-status + .progress-block,
+.home-status + .home-scenarios,
+.home-status__meta + .progress-block {
+  margin-top: var(--space-4);
+}
+
+.home-subtitle {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.home-scenarios {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* У .btn нет display, а min-height на inline-ссылке не работает (тот же
+   приём, что у .place-actions .btn). */
+.home-scenarios__item,
+.home-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+}
+
+.home-action {
+  margin-bottom: var(--space-4);
+}
+
+.home-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  width: fit-content;
+  max-width: 100%;
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.home-help {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ближайшие дела: те же строки .task, что в «Подготовке», в карточке. */
+.home-tasks {
+  margin: 0 0 var(--space-4);
+  padding: 0 var(--space-4);
+  list-style: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+/* Экран поездки (#/settings) */
+
+.settings__intro {
+  margin: 0 0 var(--space-5);
+  color: var(--color-text-muted);
+}
+
+.settings-section {
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  border: none;
+}
+
+.settings-section__title {
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.settings-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.settings-field__label {
+  flex: 0 0 100px;
+}
+
+/* 16px обязательно: при меньшем шрифте iOS зумит страницу на фокусе. */
+.settings-field__input {
+  flex: 1 1 140px;
+  min-width: 0;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+/* Вариант выбора района — строка целиком, зона нажатия ≥44px. Длинная
+   подпись («Другое / за пределами центральных районов») переносится. */
+.settings-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-2);
+  cursor: pointer;
+}
+
+/* Подвопрос «Где именно?» — вложенная радиогруппа под выбранным районом.
+   Отступ слева выравнивает её по подписи района, а не по краю экрана. */
+.settings-subsection {
+  margin: 0 0 var(--space-3) var(--space-5);
+  padding: 0;
+  border: none;
+}
+
+.settings-subsection__title {
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.settings-option--nested {
+  background: var(--color-bg);
+}
+
+.settings-option__radio {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--color-primary);
+}
+
+.settings-option__label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.settings-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.settings-actions .btn {
+  width: 100%;
+}
+
+.settings-actions__skip {
+  appearance: none;
+  align-self: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  background: none;
+  border: none;
+  color: var(--color-primary-dark);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings__status {
+  margin: 0;
+  color: var(--color-critical);
+}
+
+.settings__status:empty {
+  display: none;
+}
+
+/* Плашка «Выберите район» / пояснение для района без центра (§10) */
+
+.area-notice {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+}
+
+.area-notice__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* Расстояние на карточке места — блок 3 порядка 9.2 */
+
+.place-detail__distance {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  font-weight: 600;
+}
+
+/* ===== Итерация 4 (ITERATION-4-IMPLEMENTATION.md) — только новые правила ===== */
+
+/* «Под рукой» (#/handy) */
+
+.handy__subtitle {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.view-title + .handy__subtitle {
+  margin-top: 0;
+}
+
+.handy__hint {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.handy-home {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.handy-home p {
+  margin: 0;
+}
+
+.handy-home__address {
+  font-size: var(--font-size-md);
+  overflow-wrap: anywhere;
+}
+
+.handy-home__name {
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* У .btn нет display, а min-height на inline-ссылке не работает. */
+.handy-home__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+}
+
+.contact__number {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.contact .info-card__summary,
+.phrase .info-card__summary {
+  overflow-wrap: anywhere;
+}
+
+.phrase__zh {
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+}
+
+/* Пиньинь на полноэкранной фразе — между иероглифами (32px) и переводом. */
+.taxi__pinyin {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+/* Настройки: адрес для таксиста — подпись над полем, поле во всю ширину. */
+
+.settings__hint {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.settings-field--stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.settings-field--stacked .settings-field__label,
+.settings-field--stacked .settings-field__input {
+  flex: none;
+}
+
+textarea.settings-field__input {
+  resize: vertical;
+  line-height: 1.4;
+}
+
+/* Плашка радиуса сценариев «Сейчас» (Q-21): «Показать все» — кнопка, а не
+   ссылка (меняет query без навигации), но выглядит как ссылка плашки. */
+.area-notice__button {
+  appearance: none;
+  padding: 0;
+  background: none;
+  border: none;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ===== Итерация 5 (ITERATION-5-IMPLEMENTATION.md) — только новые правила ===== */
+
+/* Установленное приложение (standalone, viewport-fit=cover): шапка не уходит
+   под системную строку. В браузере inset равен 0 — вид не меняется. */
+.app-header {
+  padding-top: calc(var(--space-4) + env(safe-area-inset-top));
+}
+
+/* Плашки PWA (js/pwa.js) над нижней панелью. Их высоту pwa.js пишет в
+   --pwa-bars-height: нижний отступ экрана и sticky-действия карточки места
+   поднимаются, контент под плашками не прячется. Без плашек переменная 0. */
+.app-main {
+  padding-bottom: calc(var(--nav-height) + var(--space-5) + env(safe-area-inset-bottom) + var(--pwa-bars-height, 0px));
+}
+
+.place-actions {
+  bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--pwa-bars-height, 0px));
+}
+
+.pwa-bars {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  pointer-events: none;
+}
+
+/* На полноэкранных экранах показа плашек нет: там нет нижней панели, а
+   кнопки «Скопировать» / «Закрыть» внизу не должны перекрываться. */
+.pwa-bars[hidden],
+#app.is-fullscreen ~ .pwa-bars {
+  display: none;
+}
+
+.pwa-bar {
+  pointer-events: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(30, 42, 40, 0.16);
+}
+
+.pwa-bar__body {
+  flex: 1 1 150px;
+  min-width: 0;
+}
+
+.pwa-bar__text {
+  margin: 0;
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.pwa-bar__note {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.pwa-bar__action {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: var(--space-2) var(--space-3);
+}
+
+.pwa-bar__action:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pwa-bar__close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* «О приложении» внизу «Справки»: дисклеймер (Q-12) и версия (S1). */
+.about {
+  margin-top: var(--space-5);
+}
+
+.about__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.about__disclaimer {
+  margin: 0 0 var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.about__version {
+  margin: 0;
+}
+
+.about__version:empty {
+  display: none;
+}

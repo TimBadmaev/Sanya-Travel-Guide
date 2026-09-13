@@ -1,0 +1,44 @@
+{
+  "areas": [
+    { "id": "dadonghai", "name": "Дадунхай", "center": { "lat": 18.218626, "lng": 109.517611 },
+      "spots": [
+        { "id": "dadonghai-beach-front", "name": "У пляжа Дадунхай", "point": { "lat": 18.218626, "lng": 109.517611 }, "source": "OpenStreetMap/Nominatim, узел «大东海» (CONTENT-PLACES.md §2)", "verifiedAt": "2026-09-11" },
+        { "id": "dadonghai-luhuitou", "name": "Со стороны парка Лухуйтоу", "point": { "lat": 18.227154, "lng": 109.498405 }, "source": "OpenStreetMap, узел «鹿回头公园» (data/places.json → luhuitou-park)", "verifiedAt": "2026-09-11" }
+      ],
+      "status": "verified" },
+    { "id": "yalong", "name": "Ялонг Бэй (Ялунвань)", "center": { "lat": 18.210833, "lng": 109.654444 },
+      "spots": [
+        { "id": "yalong-beach-front", "name": "У пляжа Ялонг Бэй", "point": { "lat": 18.224358, "lng": 109.624165 }, "source": "OpenStreetMap, узел «亚龙湾» (data/places.json → yalong-bay-beach)", "verifiedAt": "2026-09-11" },
+        { "id": "yalong-forest-park", "name": "У лесного парка «Тропический рай»", "point": { "lat": 18.253056, "lng": 109.639624 }, "source": "OpenStreetMap, узел «亚龙湾热带天堂森林公园» (data/places.json → yalong-tropical-forest-park)", "verifiedAt": "2026-09-11" }
+      ],
+      "status": "verified" },
+    { "id": "sanya-bay", "name": "Санья Бэй (Саньявань)", "center": { "lat": 18.258045, "lng": 109.450092 },
+      "spots": [
+        { "id": "sanya-bay-beach-front", "name": "У пляжа Санья Бэй (Кокосовая аллея)", "point": { "lat": 18.261233, "lng": 109.490052 }, "source": "OpenStreetMap, узел «三亚湾» (data/places.json → sanya-bay-beach)", "verifiedAt": "2026-09-11" }
+      ],
+      "status": "verified" },
+    { "id": "haitang", "name": "Хайтанг Бэй (Хайтан)", "center": { "lat": 18.309225, "lng": 109.736080 }, "status": "verified" },
+    { "id": "city", "name": "Центр Саньи", "center": { "lat": 18.253330, "lng": 109.503610 },
+      "spots": [
+        { "id": "city-first-market", "name": "У Первого рынка (исторический центр)", "point": { "lat": 18.240184, "lng": 109.504561 }, "source": "OpenStreetMap, узел «第一市场» (data/places.json → sanya-first-market)", "verifiedAt": "2026-09-11" }
+      ],
+      "status": "verified" },
+    { "id": "other", "name": "Другое / за пределами центральных районов", "center": null, "status": "verified" }
+  ],
+  "categories": [
+    { "id": "beach", "name": "Пляжи", "icon": "beach" },
+    { "id": "nature", "name": "Природа", "icon": "nature" },
+    { "id": "culture", "name": "Культура", "icon": "culture" },
+    { "id": "entertainment", "name": "Развлечения", "icon": "entertainment" },
+    { "id": "market", "name": "Рынки", "icon": "market" },
+    { "id": "shopping", "name": "Покупки", "icon": "shopping" }
+  ],
+  "tags": [
+    { "id": "view", "name": "Виды" },
+    { "id": "sunset", "name": "Закат" },
+    { "id": "kids", "name": "С детьми" },
+    { "id": "photo", "name": "Для фото" },
+    { "id": "island", "name": "Остров" },
+    { "id": "local", "name": "Местная жизнь" }
+  ]
+}

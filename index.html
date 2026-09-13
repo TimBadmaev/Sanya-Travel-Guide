@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#0b6e6e" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Sanya Guide" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Sanya Travel Guide</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon-180.png" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <p class="app-header__eyebrow">Санья · Хайнань</p>
+      <h1 class="app-header__title">Sanya Travel Guide</h1>
+    </header>
+
+    <main id="view" class="app-main" aria-live="polite"></main>
+
+    <nav class="bottom-nav" aria-label="Основная навигация">
+      <a href="#/" class="bottom-nav__item" data-route="/">
+        <span class="bottom-nav__icon" aria-hidden="true">☀️</span>
+        <span class="bottom-nav__label">Сейчас</span>
+      </a>
+      <a href="#/places" class="bottom-nav__item" data-route="/places">
+        <span class="bottom-nav__icon" aria-hidden="true">📍</span>
+        <span class="bottom-nav__label">Места</span>
+      </a>
+      <a href="#/prepare" class="bottom-nav__item" data-route="/prepare">
+        <span class="bottom-nav__icon" aria-hidden="true">🧳</span>
+        <span class="bottom-nav__label">Подготовка</span>
+      </a>
+      <a href="#/info" class="bottom-nav__item" data-route="/info">
+        <span class="bottom-nav__icon" aria-hidden="true">ℹ️</span>
+        <span class="bottom-nav__label">Справка</span>
+      </a>
+    </nav>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

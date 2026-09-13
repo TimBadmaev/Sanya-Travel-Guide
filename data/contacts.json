@@ -1,0 +1,138 @@
+[
+  {
+    "id": "police",
+    "group": "emergency",
+    "label": "Полиция",
+    "number": "110",
+    "tel": "tel:110",
+    "note": "Звонок бесплатный, круглосуточно. Английский на линии не гарантирован",
+    "sources": [
+      { "title": "U.S. Embassy & Consulates in China — «Emergency Contacts»", "url": "https://china.usembassy-china.org.cn/services/emergency-contact/" },
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "ambulance",
+    "group": "emergency",
+    "label": "Скорая помощь",
+    "number": "120",
+    "tel": "tel:120",
+    "note": "Звонок бесплатный, круглосуточно",
+    "sources": [
+      { "title": "U.S. Embassy & Consulates in China — «Emergency Contacts»", "url": "https://china.usembassy-china.org.cn/services/emergency-contact/" },
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "fire",
+    "group": "emergency",
+    "label": "Пожарная служба",
+    "number": "119",
+    "tel": "tel:119",
+    "note": "Звонок бесплатный, круглосуточно",
+    "sources": [
+      { "title": "U.S. Embassy & Consulates in China — «Emergency Contacts»", "url": "https://china.usembassy-china.org.cn/services/emergency-contact/" },
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "traffic-accident",
+    "group": "emergency",
+    "label": "ДТП",
+    "number": "122",
+    "tel": "tel:122",
+    "note": "Звонок бесплатный, круглосуточно",
+    "sources": [
+      { "title": "U.S. Embassy & Consulates in China — «Emergency Contacts»", "url": "https://china.usembassy-china.org.cn/services/emergency-contact/" },
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "taxi-order",
+    "group": "taxi",
+    "label": "Заказать такси",
+    "number": "96789",
+    "tel": "tel:96789",
+    "note": "Служба заказа такси Саньи",
+    "sources": [
+      { "title": "Аэропорт Саньи — «Taxis»", "url": "https://en.sanyaairport.com/enczqc" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "taxi-complaint",
+    "group": "taxi",
+    "label": "Жалоба на такси",
+    "number": "12328",
+    "tel": "tel:12328",
+    "note": "Транспортное бюро Саньи: жалобы и предложения по работе такси. Пригодится номер машины и чек",
+    "sources": [
+      { "title": "Аэропорт Саньи — «Taxis»", "url": "https://en.sanyaairport.com/enczqc" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "city-hotline",
+    "group": "city",
+    "label": "Горячая линия города",
+    "number": "12345",
+    "tel": "tel:12345",
+    "note": "Госуслуги и жалобы. Также работает мини-программа «Sanya TrustTour» (三亚放心游) в WeChat",
+    "sources": [
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "price-hotline",
+    "group": "consumer",
+    "label": "Спор о цене",
+    "number": "12358",
+    "tel": "tel:12358",
+    "note": "Ценовые споры и контроль цен",
+    "sources": [
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "consumer-hotline",
+    "group": "consumer",
+    "label": "Защита прав потребителей",
+    "number": "0898-88261315",
+    "tel": "tel:0898-88261315",
+    "note": "Официальная линия Саньи",
+    "sources": [
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "food-safety",
+    "group": "consumer",
+    "label": "Качество еды",
+    "number": "0898-88281474",
+    "tel": "tel:0898-88281474",
+    "note": "Жалобы на безопасность пищевых продуктов",
+    "sources": [
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "ru-consulate",
+    "group": "consulate",
+    "label": "Генконсульство России в Гуанчжоу",
+    "number": "+86-20-8518-5001",
+    "tel": "tel:+862085185001",
+    "note": "Консульские вопросы по провинции Хайнань решаются генконсульствами в Гуанчжоу. Адрес: 26A Development Centre, No.3 Linjiang Dadao, Zhujiang Xincheng, 510623",
+    "sources": [
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" }
+    ],
+    "verifiedAt": "2026-09-13"
+  }
+]

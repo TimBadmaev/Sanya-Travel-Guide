@@ -1,0 +1,393 @@
+[
+  {
+    "id": "dadonghai-beach",
+    "status": "verified",
+    "name": { "ru": "Пляж Дадунхай", "zh": "大东海" },
+    "addressZh": "海南省三亚市吉阳区大东海旅游区",
+    "area": "dadonghai",
+    "category": "beach",
+    "tags": ["kids"],
+    "location": { "lat": 18.218626, "lng": 109.517611 },
+    "summary": "Городской пляж в 2 км от центра Саньи с развитой инфраструктурой и пологим спуском в воду",
+    "why": [
+      "Свободный вход и удобная транспортная доступность",
+      "Пологое дно и спокойная вода, считается безопасным для купания с детьми",
+      "Рядом кафе, дайвинг- и вейкбординг-центры"
+    ],
+    "durationHours": [1, 3],
+    "effort": "low",
+    "setting": "outdoor",
+    "price": { "type": "free", "note": "Вход на пляж свободный; отдельно платно — шезлонги, водные аттракционы, аренда снаряжения" },
+    "bestTime": "Утро или после 16:00 — в середине дня жарко",
+    "tips": [
+      "При штормовом предупреждении пляжи в Санье закрывают, купание запрещают. Проверьте прогноз перед выходом."
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Dadonghai»", "url": "https://www.visitsanya.com/destination/dadonghai" },
+      { "title": "Wikipedia — «Dadonghai»", "url": "https://en.wikipedia.org/wiki/Dadonghai" },
+      { "title": "海口本地宝 — «三亚大东海旅游区游玩攻略»", "url": "http://haikou.bendibao.com/tour/2024125/70361.shtm" },
+      { "title": "OpenStreetMap — «大东海»", "url": "https://www.openstreetmap.org/node/12369401263" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "yalong-bay-beach",
+    "status": "verified",
+    "name": { "ru": "Пляж Ялонг Бэй", "zh": "亚龙湾" },
+    "addressZh": "海南省三亚市吉阳区亚龙湾国家旅游度假区",
+    "area": "yalong",
+    "category": "beach",
+    "tags": ["kids"],
+    "location": { "lat": 18.224358, "lng": 109.624165 },
+    "summary": "Один из самых известных пляжей Саньи с белым песком и прозрачной водой",
+    "why": [
+      "Признан одним из красивейших пляжей острова",
+      "Пологий вход и спокойная вода — источники прямо называют пляж безопасным для купания с детьми",
+      "Прозрачность воды 8–12 м, у берега виден коралловый риф"
+    ],
+    "durationHours": [2, 4],
+    "effort": "low",
+    "setting": "outdoor",
+    "price": { "type": "free", "note": "Общественная часть пляжа бесплатна; вход через территорию некоторых отелей может по факту ограничиваться — предпочтительно заходить через общественный вход" },
+    "bestTime": "Утро или после 16:00 — в середине дня жарко",
+    "tips": [
+      "При штормовом предупреждении пляжи в Санье закрывают, купание запрещают. Проверьте прогноз перед выходом."
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Yalong Bay»", "url": "https://www.visitsanya.com/destination/yalong-bay" },
+      { "title": "海口本地宝 — «三亚海边海湾景点推荐»", "url": "https://m.haikou.bendibao.com/tour/54695.shtm" },
+      { "title": "OpenStreetMap — «亚龙湾»", "url": "https://www.openstreetmap.org/way/462460504" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "yalong-tropical-forest-park",
+    "status": "verified",
+    "name": { "ru": "Лесной парк «Тропический рай» Ялонг Бэй", "zh": "亚龙湾热带天堂森林公园" },
+    "addressZh": "海南省三亚市吉阳区亚龙湾国家旅游度假区",
+    "area": "yalong",
+    "category": "nature",
+    "location": { "lat": 18.253056, "lng": 109.639624 },
+    "summary": "Тропический лес-парк над Ялонг Бэй со смотровыми площадками, известный как место съёмок фильма «Если ты — единственный 2»",
+    "why": [
+      "Панорамный вид на бухту Ялонг с высоты",
+      "Несколько маршрутов и аттракционов разного уровня активности"
+    ],
+    "durationHours": [3, 5],
+    "effort": "medium",
+    "setting": "outdoor",
+    "price": { "type": "paid", "note": "Билет с автобусом до вершины и обратно: 158 CNY с 1 октября по 30 апреля, 140 CNY с 1 мая по 30 сентября" },
+    "bestTime": "Утро: подъём в гору легче до дневной жары",
+    "tips": [
+      "При штормовом предупреждении горные объекты могут закрыть."
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Yalong Bay Tropical Paradise Forest Park»", "url": "https://www.visitsanya.com/destination/yalong-bay-tropical-paradise-forest-park" },
+      { "title": "Официальный сайт парка — «票价信息»", "url": "https://park.ylwpark.com/" },
+      { "title": "OpenStreetMap — «亚龙湾热带天堂森林公园»", "url": "https://www.openstreetmap.org/way/1469685542" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "sanya-bay-beach",
+    "status": "verified",
+    "name": { "ru": "Пляж Санья Бэй", "zh": "三亚湾" },
+    "addressZh": "海南省三亚市天涯区三亚湾路",
+    "area": "sanya-bay",
+    "category": "beach",
+    "tags": ["sunset", "photo", "kids"],
+    "location": { "lat": 18.261233, "lng": 109.490052 },
+    "summary": "Протяжённый городской пляж с 20-километровой кокосовой набережной, одно из лучших в городе мест для заката",
+    "why": [
+      "Официально признан одной из лучших точек заката в Санье",
+      "Свободный вход, открыт круглосуточно",
+      "Источники прямо отмечают, что здесь проще купаться с детьми, чем на некоторых других пляжах города"
+    ],
+    "durationHours": [1, 3],
+    "effort": "low",
+    "setting": "outdoor",
+    "price": { "type": "free", "note": "Свободный вход, набережная открыта круглосуточно" },
+    "bestTime": "Закат",
+    "tips": [
+      "При штормовом предупреждении пляжи в Санье закрывают, купание запрещают. Проверьте прогноз перед выходом."
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Sanya Bay»", "url": "https://www.visitsanya.com/destination/sanya-bay" },
+      { "title": "Wikipedia — «三亚湾»", "url": "https://zh.wikipedia.org/wiki/%E4%B8%89%E4%BA%9A%E6%B9%BE" },
+      { "title": "OpenStreetMap — «海月广场»", "url": "https://www.openstreetmap.org/node/2050879681" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "tianya-haijiao",
+    "status": "verified",
+    "name": { "ru": "Тяньяхайцзяо", "zh": "天涯海角" },
+    "addressZh": "海南省三亚市天涯区马岭山麓",
+    "area": "sanya-bay",
+    "category": "culture",
+    "tags": ["kids", "photo"],
+    "location": { "lat": 18.2911, "lng": 109.3472 },
+    "summary": "Историческая скальная бухта в ~24 км к западу от центра Саньи, символ культурного значения «край света» в китайской литературе",
+    "why": [
+      "Место, воспетое в классической китайской поэзии как символ вечной разлуки/верности — популярно у молодожёнов",
+      "Плоская, удобная для колясок набережная с крупными резными камнями",
+      "С 2023 года вход бесплатный"
+    ],
+    "durationHours": [2, 4],
+    "effort": "low",
+    "setting": "outdoor",
+    "price": { "type": "free", "note": "Вход бесплатный с 1 июня 2023 года по предварительной бесплатной записи онлайн; при входе нужен документ, удостоверяющий личность" },
+    "bestTime": "Утро или вечер",
+    "sources": [
+      { "title": "Sanya Tourism Board — «Tianya Haijiao»", "url": "https://www.visitsanya.com/destination/tianya-haijiao" },
+      { "title": "Синьхуа — «三亚天涯海角游览区6月1日起免费开放»", "url": "http://www.news.cn/2023-05/26/c_1129647888.htm" },
+      { "title": "Гуанмин жибао — «6月1日起，三亚天涯海角游览区免费开放！»", "url": "https://m.gmw.cn/2023-05/26/content_1303385325.htm" },
+      { "title": "三亚发布 — «免费！性价比拉满！»", "url": "https://m.163.com/dy/article/JUE2DGIN0514RF2M.html" },
+      { "title": "Wikipedia — «Tianya Haijiao»", "url": "https://en.wikipedia.org/wiki/Tianya_Haijiao" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "luhuitou-park",
+    "status": "verified",
+    "name": { "ru": "Парк Лухуйтоу", "zh": "鹿回头风景区" },
+    "addressZh": "海南省三亚市吉阳区小东海路与鹿岭路交叉口东北150米",
+    "area": "dadonghai",
+    "category": "nature",
+    "tags": ["view", "sunset"],
+    "location": { "lat": 18.227154, "lng": 109.498405 },
+    "summary": "Смотровая площадка на холме между Санья Бэй и Дадунхаем с легендой о девушке-оленихе",
+    "why": [
+      "Панорамный вид сразу на несколько бухт Саньи с одной точки",
+      "Известное место для встречи заката",
+      "Историческая легенда о происхождении названия парка"
+    ],
+    "durationHours": [1, 2],
+    "effort": "medium",
+    "setting": "outdoor",
+    "price": { "type": "free", "note": "Вход бесплатный; туристический автобус до вершины и обратно — платно" },
+    "bestTime": "Ближе к закату — ради вида на бухты",
+    "tips": [
+      "При штормовом предупреждении горные объекты могут закрыть."
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Luhuitou Scenic Area»", "url": "https://www.visitsanya.com/destination/luhuitou-park" },
+      { "title": "Синьхуа — «三亚天涯海角游览区6月1日起免费开放»", "url": "http://www.news.cn/2023-05/26/c_1129647888.htm" },
+      { "title": "海口本地宝 — «三亚鹿回头景区游玩攻略»", "url": "http://haikou.bendibao.com/tour/20241128/70214.shtm" },
+      { "title": "OpenStreetMap — «鹿回头»", "url": "https://www.openstreetmap.org/node/6988593385" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "wuzhizhou-island",
+    "status": "verified",
+    "name": { "ru": "Остров Улучжичжоу", "zh": "蜈支洲岛" },
+    "addressZh": "海南省三亚市海棠区林旺镇后海村蜈支洲岛码头游客中心",
+    "area": "haitang",
+    "category": "nature",
+    "tags": ["island"],
+    "location": { "lat": 18.275159, "lng": 109.722647 },
+    "summary": "Коралловый остров в бухте Хайтанг с одним из лучших пляжей и дайв-спотов острова Хайнань",
+    "why": [
+      "Один из наиболее хорошо сохранившихся коралловых рифов Китая",
+      "Популярные дайвинг, снорклинг и водные виды спорта",
+      "Относительно уединённая природа по сравнению с материковыми пляжами"
+    ],
+    "durationHours": [4, 7],
+    "effort": "medium",
+    "setting": "outdoor",
+    "price": { "type": "paid", "note": "Билет включает вход на остров и паром туда и обратно; цена зависит от сезона" },
+    "bestTime": "Выезжать утром: это поездка на полдня, с паромом в обе стороны",
+    "tips": [
+      "При штормовом предупреждении переправу на остров останавливают — уточняйте до выезда к причалу."
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Wuzhizhou Island»", "url": "https://www.visitsanya.com/destination/wuzhizhou-island" },
+      { "title": "Wikipedia — «Wuzhizhou Island»", "url": "https://en.wikipedia.org/wiki/Wuzhizhou_Island" },
+      { "title": "海口本地宝 — «海南蜈支洲岛旅游区游玩攻略»", "url": "http://haikou.bendibao.com/xiuxian/2024424/65305.shtm" },
+      { "title": "OpenStreetMap — «蜈支洲岛码头游客中心»", "url": "https://www.openstreetmap.org/way/1483322796" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "nanshan-cultural-zone",
+    "status": "verified",
+    "name": { "ru": "Наньшань", "zh": "南山文化旅游区" },
+    "addressZh": "海南省三亚市崖州区南山村",
+    "area": "other",
+    "category": "culture",
+    "tags": ["kids"],
+    "location": { "lat": 18.300091, "lng": 109.206633 },
+    "summary": "Буддийский культурный комплекс с одной из самых высоких в мире статуй Гуаньинь (108 м) над морем",
+    "why": [
+      "108-метровая статуя Гуаньинь — один из известнейших буддийских символов Китая",
+      "Большая ухоженная территория с тремя тематическими парками",
+      "Подходит для семейного отдыха (детские площадки, паровозики)"
+    ],
+    "durationHours": [4, 8],
+    "effort": "low",
+    "setting": "outdoor",
+    "price": { "type": "paid", "note": "Билет сезонный: 129 CNY с октября по апрель, 108 CNY с мая по сентябрь" },
+    "bestTime": "Целый день, выезжать утром",
+    "tips": [
+      "Территория большая, по ней ходят электрокары — заложите целый день."
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Sanya Nanshan Cultural Tourism Zone»", "url": "https://www.visitsanya.com/destination/nanshan-culture-tourism-zone" },
+      { "title": "TravelChinaGuide — «Nanshan Culture Tourism Zone»", "url": "https://www.travelchinaguide.com/attraction/hainan/sanya/nanshan-cultural-tourism-zone/" },
+      { "title": "Жэньминь жибао (Хайнань) — детская программа в зоне Наньшань", "url": "http://hi.people.com.cn/n2/2021/0521/c228872-34738853.html" },
+      { "title": "OpenStreetMap — «南山文化旅游区»", "url": "https://www.openstreetmap.org/way/1300132266" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "sanya-first-market",
+    "status": "verified",
+    "name": { "ru": "Первый рынок", "zh": "第一市场" },
+    "addressZh": "海南省三亚市天涯区新建街155号",
+    "area": "city",
+    "category": "market",
+    "tags": ["local"],
+    "location": { "lat": 18.240184, "lng": 109.504561 },
+    "summary": "Известный продуктовый рынок Саньи в историческом центре города — морепродукты, тропические фрукты, сувениры",
+    "why": [
+      "Официально описан как лучшее место почувствовать «настоящую» повседневную жизнь Саньи",
+      "Днём — продуктовый рынок, вечером — уличная еда"
+    ],
+    "durationHours": [1, 2],
+    "effort": "low",
+    "setting": "mixed",
+    "price": { "type": "free", "note": "Вход свободный; платите только за покупки и еду" },
+    "bestTime": "Вечер: днём продуктовый рынок, вечером уличная еда",
+    "tips": [
+      "О цене и весе договаривайтесь заранее. Спор о цене — горячая линия 12358."
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «First Market Night Market»", "url": "https://www.visitsanya.com/destination/first-market-night-market" },
+      { "title": "360地图 — «第一市场海鲜市场»", "url": "https://m.map.360.cn/m/search/detail/pid=1f6e67a3dced9732" },
+      { "title": "途牛 — «三亚第一市场»", "url": "https://m.tuniu.com/shopping/1916660/" },
+      { "title": "OpenStreetMap — «第一集贸市场»", "url": "https://www.openstreetmap.org/node/4742554677" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "sanya-song-cheng",
+    "status": "verified",
+    "name": { "ru": "«Тысячелетняя любовь»", "zh": "三亚千古情景区" },
+    "addressZh": "海南省三亚市吉阳区迎宾路333号",
+    "area": "city",
+    "category": "entertainment",
+    "tags": ["kids"],
+    "location": { "lat": 18.291948, "lng": 109.526476 },
+    "summary": "Тематический парк с вечерним костюмированным шоу об истории и легендах Хайнаня",
+    "why": [
+      "Масштабное шоу с современными спецэффектами о культуре острова",
+      "Тематические улицы и интерактивные зоны в течение дня",
+      "Отзывы явно отмечают формат, подходящий для семей с детьми"
+    ],
+    "durationHours": [2, 4],
+    "effort": "low",
+    "setting": "mixed",
+    "price": { "type": "paid", "note": "Вход по билету; стоимость зависит от категории билета" },
+    "bestTime": "Вечер — главное шоу вечернее",
+    "sources": [
+      { "title": "Sanya Tourism Board — «Sanya Songcheng Show Park»", "url": "https://www.visitsanya.com/destination/sanya-romance-of-the-ages" },
+      { "title": "Trip.com — «Sanya Romance Park»", "url": "https://www.trip.com/travel-guide/attraction/sanya/sanya-romance-park-10759147/" },
+      { "title": "OpenStreetMap — «三亚千古情景区»", "url": "https://www.openstreetmap.org/way/1353588490" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "yalong-bay-rose-valley",
+    "status": "verified",
+    "name": { "ru": "Долина роз Ялонг Бэй", "zh": "亚龙湾国际玫瑰谷", "en": "Yalong Bay International Rose Valley" },
+    "addressZh": "海南省三亚市吉阳区博后北路9号",
+    "area": "yalong",
+    "category": "nature",
+    "tags": ["photo"],
+    "location": { "lat": 18.238680, "lng": 109.602211 },
+    "summary": "Тематический парк-розарий рядом с Ялунванем: поля роз, зал культуры розы и креативный городок",
+    "why": [
+      "Розы разных сортов цветут круглый год, поля большие, между ними дорожки и цветочные стены",
+      "Есть выставочный зал культуры розы — о сортах, выращивании и добыче ароматов",
+      "Европейские постройки, белые арки и цветочные коридоры — популярная точка для съёмки"
+    ],
+    "durationHours": [1, 3],
+    "effort": "low",
+    "setting": "outdoor",
+    "price": { "type": "unknown" },
+    "hours": "08:00–17:30",
+    "bestTime": "Утро или после 16:00 — поля открытые",
+    "tips": [
+      "Телефон: 0898-38232350"
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Yalong Bay International Rose Valley»", "url": "https://www.visitsanya.com/destination/yalong-bay-rose-valley-scenic-area" },
+      { "title": "三亚市旅游发展局 — «亚龙湾国际玫瑰谷»", "url": "https://www.visitsanya.com/zh/destination/%e4%ba%9a%e9%be%99%e6%b9%be%e7%8e%ab%e7%91%b0%e8%b0%b7%e6%99%af%e5%8c%ba" },
+      { "title": "OpenStreetMap — «亚龙湾国际玫瑰谷»", "url": "https://www.openstreetmap.org/way/531264078" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "bohou-village",
+    "status": "draft",
+    "name": { "ru": "Деревня Бохоу", "zh": "博后村", "en": "Bohou Village" },
+    "addressZh": "海南省三亚市吉阳区吉阳镇博后路27号",
+    "area": "yalong",
+    "category": "culture",
+    "tags": ["local"],
+    "location": { "lat": 0, "lng": 0 },
+    "summary": "Лийская деревня у Ялунваня с гостевыми домами, мастерскими и ресторанами — ближайшее к бухте место с вечерней жизнью",
+    "why": [
+      "Более 70 бутик-гостевых домов, большинство переделаны из деревенских домов",
+      "В творческой базе деревни показывают лийскую парчу — объект нематериального наследия — и традиционную лепку керамики",
+      "Разнообразный выбор еды, который закрывает нехватку вечерней жизни в курортной зоне Ялунваня"
+    ],
+    "durationHours": [1, 3],
+    "effort": "low",
+    "setting": "mixed",
+    "price": { "type": "free", "note": "Вход в деревню свободный: это обычный посёлок. Еда, жильё и мастер-классы — платно" },
+    "hours": "Открыто круглый год, круглосуточно",
+    "bestTime": "Вечер: у озера Айцзя вечером собираются на кемпинг, а когда темнеет, подсветка озера перекликается с огнями Ялунваня",
+    "tips": [
+      "Ближайший к Ялунваню вариант поужинать вне отеля"
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Bohou Village»", "url": "https://www.visitsanya.com/destination/bohou-village" },
+      { "title": "三亚市旅游发展局 — «博后村»", "url": "https://www.visitsanya.com/zh/destination/%e5%8d%9a%e5%90%8e%e6%9d%91" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "sanya-shanhai-shell-museum",
+    "status": "draft",
+    "name": { "ru": "Музей культуры моря и раковин", "zh": "三亚山海贝文化博物馆", "en": "Sanya Shan Hai Shell Culture Museum" },
+    "addressZh": "海南省三亚市吉阳区榆亚路680号",
+    "area": "dadonghai",
+    "category": "culture",
+    "tags": ["kids"],
+    "location": { "lat": 18.259420, "lng": 109.566001 },
+    "summary": "Музей раковин и морской культуры с детской интерактивной зоной — вариант на случай дождя или дневной жары",
+    "why": [
+      "Коллекция раковин со всего мира с разбором строения, фактуры и образа жизни моллюсков",
+      "Зал о роли раковин в морской цивилизации: навигация, верования, быт рыбаков, ремёсла",
+      "Зона, где можно потрогать раковины, детские занятия и мастер-классы — отпечатки и украшения из раковин"
+    ],
+    "durationHours": [1, 2],
+    "effort": "low",
+    "setting": "indoor",
+    "price": { "type": "unknown" },
+    "hours": "Вторник–воскресенье, 09:00–18:00",
+    "bestTime": "Дождь или дневная жара. Понедельник — выходной",
+    "tips": [
+      "Понедельник — выходной, проверьте день недели",
+      "Телефон: 0898-88696212"
+    ],
+    "sources": [
+      { "title": "Sanya Tourism Board — «Sanya Shan Hai Shell Culture Museum»", "url": "https://www.visitsanya.com/destination/sanya-mountain-and-sea-shell-culture-museum" },
+      { "title": "三亚市旅游发展局 — «三亚山海贝文化博物馆»", "url": "https://www.visitsanya.com/zh/destination/%e4%b8%89%e4%ba%9a%e5%b1%b1%e6%b5%b7%e8%b4%9d%e6%96%87%e5%8c%96%e5%8d%9a%e7%89%a9%e9%a6%86" },
+      { "title": "OpenStreetMap — «三亚山海贝文化博物馆»", "url": "https://www.openstreetmap.org/node/13384240603" }
+    ],
+    "verifiedAt": "2026-09-13"
+  }
+]

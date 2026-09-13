@@ -1,0 +1,121 @@
+[
+  {
+    "id": "check-entry-rules-and-passport",
+    "status": "verified",
+    "phase": "early",
+    "topic": "documents",
+    "title": "Проверьте загранпаспорт и актуальные правила въезда",
+    "details": "Убедитесь, что загранпаспорт действителен на весь период поездки. Уточните на официальных ресурсах МИД КНР и посольства КНР в РФ актуальные условия безвизового режима для граждан РФ перед покупкой билетов.",
+    "critical": true,
+    "volatile": true,
+    "sources": [
+      { "title": "РИА Новости: безвизовый режим между РФ и КНР", "url": "https://ria.ru/20260520/knr-2093487152.html" }
+    ],
+    "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "prepare-payment-methods",
+    "status": "verified",
+    "phase": "early",
+    "topic": "money",
+    "title": "Продумайте способы оплаты в Китае",
+    "details": "Российские карты («Мир», российские Visa/Mastercard) в Китае, как правило, не работают. Заранее продумайте комбинацию: немного наличных юаней, а также способы электронной оплаты, доступные для иностранных карт. Перед поездкой сверьтесь с официальным разделом Visit Sanya об оплате.",
+    "critical": true,
+    "volatile": true,
+    "sources": [
+      { "title": "Visit Sanya: оплата и валюта", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/currency-and-payment" },
+      { "title": "Как платить в Китае — Travel To", "url": "https://travelto.ru/blog/kak-platit-v-kitae/" }
+    ],
+    "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "arrange-mobile-connection",
+    "status": "verified",
+    "phase": "week",
+    "topic": "connection",
+    "title": "Определитесь со связью на время поездки",
+    "details": "Заранее решите, как будете выходить в интернет на месте: роуминг у своего оператора или локальная SIM/eSIM. Уточните актуальные условия и тарифы непосредственно у оператора перед вылетом — они часто меняются.",
+    "critical": false,
+    "volatile": false,
+    "sources": [],
+    "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "install-configure-amap",
+    "status": "verified",
+    "phase": "days",
+    "topic": "apps",
+    "title": "Установите и изучите Amap (AMAP Global)",
+    "details": "Google Maps в Китае заблокирован — используйте Amap (Gaode Maps / AMap Global) вместо него. Международная версия Amap — AMAP Global — доступна на русском языке и работает в Китае без VPN. Установите приложение и заранее посмотрите, как им пользоваться.",
+    "critical": false,
+    "volatile": true,
+    "sources": [
+      { "title": "AMAP Global: многоязычная версия карт", "url": "https://www.malaymail.com/news/money/mediaoutreach/2025/07/11/alibabas-amap-launches-chinas-first-multilingual-map-with-14-new-languages-for-overseas-users/394781" }
+    ],
+    "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "download-offline-materials",
+    "status": "verified",
+    "phase": "days",
+    "topic": "other",
+    "title": "Сохраните нужные материалы для офлайн-доступа",
+    "details": "Скачайте на телефон билеты, бронь отеля, страховку и другие важные документы, чтобы они были под рукой даже без интернета.",
+    "critical": false,
+    "volatile": false,
+    "sources": [],
+    "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "install-app-home-screen",
+    "status": "verified",
+    "phase": "days",
+    "topic": "apps",
+    "title": "Откройте приложение и добавьте его на экран «Домой»",
+    "details": "Сделайте это дома, пока есть быстрый интернет: откройте приложение по ссылке и добавьте его на экран «Домой» (в Safari: «Поделиться» → «На экран „Домой“»). Запущенное с иконки, оно работает без интернета, а отметки чек-листа и избранное сохраняются на телефоне.",
+    "critical": false,
+    "volatile": false,
+    "sources": [],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "pack-for-tropical-climate",
+    "status": "verified",
+    "phase": "packing",
+    "topic": "packing",
+    "title": "Соберите вещи с учётом тропического климата",
+    "details": "Лёгкая дышащая одежда, головной убор, солнцезащитный крем и компактный дождевик пригодятся в Санье в любое время года. Точный прогноз погоды и вероятность дождей стоит проверить ближе к дате поездки.",
+    "critical": false,
+    "volatile": false,
+    "sources": [],
+    "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "bring-documents-and-printouts",
+    "status": "verified",
+    "phase": "departure",
+    "topic": "documents",
+    "title": "Возьмите с собой документы и распечатки",
+    "details": "Загранпаспорт, посадочные талоны, бронь отеля и полис страхования — держите под рукой как в телефоне, так и в бумажном виде на случай проблем со связью или разрядки телефона.",
+    "critical": true,
+    "volatile": false,
+    "sources": [
+      { "title": "РИА Новости: безвизовый режим между РФ и КНР", "url": "https://ria.ru/20260520/knr-2093487152.html" }
+    ],
+    "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "check-connection-and-payment-on-arrival",
+    "status": "verified",
+    "phase": "arrival",
+    "topic": "connection",
+    "title": "Проверьте связь и оплату по прилёте",
+    "details": "Сразу после прилёта убедитесь, что мобильный интернет и выбранный способ оплаты работают, и откройте Amap, чтобы сориентироваться на месте.",
+    "critical": false,
+    "volatile": true,
+    "sources": [
+      { "title": "AMAP Global: многоязычная версия карт", "url": "https://www.malaymail.com/news/money/mediaoutreach/2025/07/11/alibabas-amap-launches-chinas-first-multilingual-map-with-14-new-languages-for-overseas-users/394781" }
+    ],
+    "verifiedAt": "2026-09-10"
+  }
+]

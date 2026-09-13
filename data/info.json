@@ -1,0 +1,111 @@
+[
+  {
+    "id": "payment",
+    "status": "verified",
+    "title": "Оплата",
+    "summary": "Как платить в Китае, если карта «Мир» и российские Visa/Mastercard не работают.",
+    "points": [
+      "Карта «Мир» и обычные российские Visa/Mastercard в Китае не работают — рассчитывать на них нельзя.",
+      "Карта UnionPay российского банка может сработать, но нестабильно: уточните в своём банке актуальный статус непосредственно перед поездкой.",
+      "Основной способ платить — привязать банковскую карту не российского банка к Alipay или WeChat Pay и платить QR-кодом.",
+      "В такси Саньи есть пилот «Hainan Trusted Pay» — оранжевые машины принимают карты Visa и Mastercard и Apple Pay. Российские карты этих систем за рубежом не работают, поэтому на этот способ рассчитывать нельзя.",
+      "Есть вариант без привязки основной карты — временная предоплаченная карта UnionPay («Tour Mate Card»), оформляется в приложении UnionPay.",
+      "Наличные юани принимают почти везде — держите их как резерв, снять можно в банкомате по иностранной карте или обменять в банке/аэропорту.",
+      "Возьмите несколько независимых способов оплаты одновременно — не полагайтесь на один."
+    ],
+    "volatile": true,
+    "sources": [
+      { "title": "Sanya Tourism Board — «Currency and Payment»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/currency-and-payment" },
+      { "title": "Sanya Tourism Board — «Taxis/Ride-Hailing Services»", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/taxis-ride-hailing-services" },
+      { "title": "vc.ru — «Какие российские карты работают в Китае 2026»", "url": "https://vc.ru/travel/2964975-rossijskie-karty-v-kitae" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "connectivity",
+    "status": "verified",
+    "title": "Связь и интернет",
+    "summary": "Мобильный интернет в Санье быстрый, но привычные сервисы — включая Telegram и WhatsApp — заблокированы без VPN.",
+    "points": [
+      "В Санье работают все три китайских оператора (China Mobile, China Unicom, China Telecom) с 4G/5G — покрытие хорошее.",
+      "Для местной SIM-карты нужен паспорт — обязательна регистрация по документу.",
+      "eSIM — удобная альтернатива: можно активировать ещё до вылета, без очереди на месте.",
+      "В Китае заблокированы Google (включая Google Maps и Gmail), YouTube, Instagram, Facebook, WhatsApp, Telegram, X — и это не зависит от того, какая у вас SIM или Wi-Fi.",
+      "WeChat, Alipay и Amap работают без ограничений и без VPN.",
+      "Бесплатный Wi-Fi есть в отелях, кафе и ТЦ, но обычно нужно подтверждение по SMS или через WeChat.",
+      "Если решите пользоваться VPN — установите и проверьте его до вылета: сайты VPN-сервисов сами заблокированы внутри Китая."
+    ],
+    "volatile": true,
+    "sources": [
+      { "title": "Sanya Tourism Board — «Internet and Communication»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/internet-and-communication" },
+      { "title": "«Living Behind the Great Firewall» — VPN and Internet Reality for Expats in China", "url": "https://migaku.com/blog/language-fun/living-behind-the-great-firewall-vpn-and-internet-reality-for-expats-in-china" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "taxi-amap",
+    "status": "verified",
+    "title": "Передвижение: такси и Amap",
+    "summary": "Google Maps не работает — используйте Amap (доступен на русском) и показывайте водителю адрес на китайском.",
+    "points": [
+      "Google Maps в Китае не работает — используйте Amap (Gaode Maps / AMap Global).",
+      "В Amap можно переключить язык интерфейса; названия объектов ищутся и отображаются не только по-китайски. Полнота перевода на русский по источникам расходится — проверьте в приложении до вылета.",
+      "Раздел вызова такси в Amap пока переведён не полностью — ориентируйтесь на карту и адрес, а не только на текст.",
+      "Для вызова машины можно также использовать DiDi — через отдельное приложение или мини-программу внутри WeChat/Alipay.",
+      "Оплата такси обычно проходит через Alipay/WeChat Pay или привязанную карту — той же, что вы настроили для повседневных покупок.",
+      "Amap и DiDi требуют интернет на телефоне — без сети не работают.",
+      "Самый надёжный способ объясниться с водителем — показать китайское название и адрес на экране: работает, даже если приложение подвело."
+    ],
+    "volatile": true,
+    "sources": [
+      { "title": "Правительство Шанхая — «AMap на русском языке»", "url": "https://russian.shanghai.gov.cn/ru-UsefulApps/20260610/34a0fc56ffea46a1add7c0f1aca4d81a.html" },
+      { "title": "Malay Mail — анонс многоязычной карты Amap (14 языков), 2025-07-11", "url": "https://www.malaymail.com/news/money/mediaoutreach/2025/07/11/alibabas-amap-launches-chinas-first-multilingual-map-with-14-new-languages-for-overseas-users/394781" },
+      { "title": "Live Learn China — гид по Amap для иностранцев, 2026", "url": "https://livelearnchina.com/how-to-use-amap-gaode-maps-in-china-as-a-foreigner-2026-guide/" },
+      { "title": "«DiDi for Foreigners in China 2026»", "url": "https://chinafortravelers.com/guides/didi-for-foreigners-china/" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "emergency",
+    "status": "verified",
+    "title": "Экстренные номера и помощь",
+    "summary": "В Китае нет единого номера вроде 112 — запомните 110 (полиция), 120 (скорая), 119 (пожарная) и контакт консульства России.",
+    "points": [
+      "Полиция — 110, скорая помощь — 120, пожарная служба — 119, ДТП — 122. Все звонки бесплатные, работают круглосуточно по всей стране.",
+      "Английский на этих линиях не гарантирован — за пределами крупных городов будьте готовы, что оператор говорит только по-китайски.",
+      "Если объясниться самостоятельно сложно — попросите позвонить сотрудника отеля или человека рядом.",
+      "Генеральное консульство России в Гуанчжоу отвечает за провинцию Хайнань: +86-20-85185001 — обращайтесь при потере паспорта и другой консульской помощи.",
+      "В Санье есть общая линия поддержки и жалоб для туристов — 12345, а также мини-программа «Sanya TrustTour» в WeChat.",
+      "Крупные больницы Саньи: Sanya Central Hospital, +86-898-38226026; Sanya People's Hospital, +86-898-88021011.",
+      "Китайские больницы обычно просят оплату или депозит перед приёмом — продумайте доступ к деньгам заранее."
+    ],
+    "volatile": true,
+    "sources": [
+      { "title": "U.S. Embassy & Consulates in China — «Emergency Contacts»", "url": "https://china.usembassy-china.org.cn/services/emergency-contact/" },
+      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" },
+      { "title": "Генеральное консульство России в Гуанчжоу — официальный сайт", "url": "https://guangzhou.mid.ru/" }
+    ],
+    "verifiedAt": "2026-09-11"
+  },
+  {
+    "id": "climate",
+    "status": "verified",
+    "title": "Сезон и климат",
+    "summary": "В Санье нет зимы: тепло круглый год; дожди возможны с мая по октябрь, а повышенный риск тайфунов приходится на июль–октябрь (пик — август-сентябрь).",
+    "points": [
+      "Климат тропический: настоящей зимы нет, средняя температура около 25,7°C, больше 2500 часов солнца в год.",
+      "Зима (декабрь–февраль), 21–27°C — самый комфортный и самый людный туристический сезон.",
+      "Весна (март–май), 25–30°C — вода прогревается, хорошее время для дайвинга и снорклинга.",
+      "Лето (июнь–август), 28–33°C — жарко и влажно, характерны короткие ливни во второй половине дня.",
+      "Осень (сентябрь–ноябрь), 25–28°C — дожди стихают, влажность падает, многие считают это лучшим сезоном.",
+      "Повышенный риск тайфунов — примерно с июля по октябрь, пик в августе-сентябре; ближе к датам поездки проверяйте свежий прогноз.",
+      "В сезон дождей (май–октябрь) берите компактный зонт и закладывайте в планы «план Б» в помещении."
+    ],
+    "volatile": true,
+    "sources": [
+      { "title": "Sanya Tourism Board — «Geography and Climate»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/geography-and-climate" },
+      { "title": "TropicalHainan.com — «Typhoon Season 2026 Forecast»", "url": "https://www.tropicalhainan.com/typhoon-season-2026-what-hainan-residents-can-expect-in-the-coming-months/" }
+    ],
+    "verifiedAt": "2026-09-11"
+  }
+]
