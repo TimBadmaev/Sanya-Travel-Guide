@@ -53,12 +53,22 @@
     "tips": [
       "При штормовом предупреждении пляжи в Санье закрывают, купание запрещают. Проверьте прогноз перед выходом."
     ],
+    "photos": [
+      {
+        "file": "yalong-bay-beach-1.webp",
+        "alt": "Широкий светлый пляж бухты Ялонг Бэй вдоль пальм и зелёных холмов",
+        "author": "Kusafiri",
+        "license": "CC BY-SA 3.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Strand_in_der_Yalong_Bay_Bucht_in_Sanya_auf_der_Insel_Hainan.jpg"
+      }
+    ],
+    "more": { "title": "Visit Sanya", "url": "https://www.visitsanya.com/destination/yalong-bay" },
     "sources": [
       { "title": "Sanya Tourism Board — «Yalong Bay»", "url": "https://www.visitsanya.com/destination/yalong-bay" },
       { "title": "海口本地宝 — «三亚海边海湾景点推荐»", "url": "https://m.haikou.bendibao.com/tour/54695.shtm" },
       { "title": "OpenStreetMap — «亚龙湾»", "url": "https://www.openstreetmap.org/way/462460504" }
     ],
-    "verifiedAt": "2026-09-11"
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "yalong-tropical-forest-park",
@@ -77,16 +87,28 @@
     "effort": "medium",
     "setting": "outdoor",
     "price": { "type": "paid", "note": "Билет с автобусом до вершины и обратно: 158 CNY с 1 октября по 30 апреля, 140 CNY с 1 мая по 30 сентября" },
+    "hours": "08:00–18:00",
     "bestTime": "Утро: подъём в гору легче до дневной жары",
     "tips": [
       "При штормовом предупреждении горные объекты могут закрыть."
     ],
+    "photos": [
+      {
+        "file": "yalong-tropical-forest-park-1.webp",
+        "alt": "Стеклянная смотровая дорожка над тропическим лесом, внизу — бухта Ялонг Бэй",
+        "author": "STW932",
+        "license": "CC BY-SA 4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yalong_Bay_Park_15.jpg"
+      }
+    ],
+    "more": { "title": "Visit Sanya", "url": "https://www.visitsanya.com/destination/yalong-bay-tropical-paradise-forest-park" },
     "sources": [
       { "title": "Sanya Tourism Board — «Yalong Bay Tropical Paradise Forest Park»", "url": "https://www.visitsanya.com/destination/yalong-bay-tropical-paradise-forest-park" },
+      { "title": "三亚市旅游发展局 — «亚龙湾热带天堂森林公园»", "url": "https://www.visitsanya.com/zh/destination/%e4%ba%9a%e9%be%99%e6%b9%be%e7%83%ad%e5%b8%a6%e5%a4%a9%e5%a0%82%e6%a3%ae%e6%9e%97%e5%85%ac%e5%9b%ad" },
       { "title": "Официальный сайт парка — «票价信息»", "url": "https://park.ylwpark.com/" },
       { "title": "OpenStreetMap — «亚龙湾热带天堂森林公园»", "url": "https://www.openstreetmap.org/way/1469685542" }
     ],
-    "verifiedAt": "2026-09-11"
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "sanya-bay-beach",
@@ -137,15 +159,40 @@
     "effort": "low",
     "setting": "outdoor",
     "price": { "type": "free", "note": "Вход бесплатный с 1 июня 2023 года по предварительной бесплатной записи онлайн; при входе нужен документ, удостоверяющий личность" },
+    "hours": "С 1 марта по 30 сентября — 08:00–18:30; с 1 октября до конца февраля — 08:00–18:00",
     "bestTime": "Утро или вечер",
+    "tips": [
+      "Возьмите паспорт: вход по бесплатной онлайн-записи, при входе нужен документ, удостоверяющий личность.",
+      "При штормовом предупреждении пляжи в Санье закрывают, купание запрещают. Проверьте прогноз перед выходом.",
+      "Телефон: 0898-88910131"
+    ],
+    "photos": [
+      {
+        "file": "tianya-haijiao-1.webp",
+        "alt": "Песчаный пляж Тяньяхайцзяо: волны у берега и большие валуны, у которых гуляют люди",
+        "author": "N509FZ",
+        "license": "CC BY-SA 4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Beach_of_Tianya-Haijiao_near_Tianya_Rock_(20230325134441).jpg"
+      },
+      {
+        "file": "tianya-haijiao-2.webp",
+        "alt": "Высокий камень «Наньтянь Ичжу» с красной надписью у кромки моря",
+        "author": "N509FZ",
+        "license": "CC BY-SA 4.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nantian_Yizhu_Rock_at_Tianya-Haijiao_(20230325135141).jpg"
+      }
+    ],
+    "more": { "title": "Visit Sanya", "url": "https://www.visitsanya.com/destination/tianya-haijiao" },
+    "story": "«Тяньяхайцзяо» можно перевести как «край неба, угол моря». Для древнего Китая Хайнань и правда был краем света: сюда ссылали провинившихся чиновников, и дорога на остров считалась дорогой почти без возврата. Поэтому надписи на прибрежных валунах появились не для туристов. Иероглифы «Тянья» на одном из камней оставил Чэн Чжэ, начальник округа Ячжоу, ещё в эпоху Цин; рядом — камень «Хайцзяо» и высокий «Наньтянь Ичжу», «Столп южного неба». Со временем смысл места перевернулся: выражение «пойду за тобой хоть на край неба и угол моря» стало обещанием не расставаться, и теперь сюда приезжают пары и молодожёны. Стоя у камней, можно увидеть обе истории сразу — и изгнание, и клятву верности.",
     "sources": [
       { "title": "Sanya Tourism Board — «Tianya Haijiao»", "url": "https://www.visitsanya.com/destination/tianya-haijiao" },
       { "title": "Синьхуа — «三亚天涯海角游览区6月1日起免费开放»", "url": "http://www.news.cn/2023-05/26/c_1129647888.htm" },
       { "title": "Гуанмин жибао — «6月1日起，三亚天涯海角游览区免费开放！»", "url": "https://m.gmw.cn/2023-05/26/content_1303385325.htm" },
       { "title": "三亚发布 — «免费！性价比拉满！»", "url": "https://m.163.com/dy/article/JUE2DGIN0514RF2M.html" },
-      { "title": "Wikipedia — «Tianya Haijiao»", "url": "https://en.wikipedia.org/wiki/Tianya_Haijiao" }
+      { "title": "Wikipedia — «Tianya Haijiao»", "url": "https://en.wikipedia.org/wiki/Tianya_Haijiao" },
+      { "title": "Wikimedia Commons — «Beach of Tianya-Haijiao near Tianya Rock»", "url": "https://commons.wikimedia.org/wiki/File:Beach_of_Tianya-Haijiao_near_Tianya_Rock_(20230325134441).jpg" }
     ],
-    "verifiedAt": "2026-09-11"
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "luhuitou-park",
@@ -166,17 +213,20 @@
     "effort": "medium",
     "setting": "outdoor",
     "price": { "type": "free", "note": "Вход бесплатный; туристический автобус до вершины и обратно — платно" },
+    "hours": "08:00–22:30",
     "bestTime": "Ближе к закату — ради вида на бухты",
     "tips": [
       "При штормовом предупреждении горные объекты могут закрыть."
     ],
+    "more": { "title": "Visit Sanya", "url": "https://www.visitsanya.com/destination/luhuitou-park" },
+    "story": "«Лухуйтоу» значит «олень обернулся», и название пришло из легенды. Молодой охотник долго преследовал оленя и загнал его на этот обрыв над морем. Бежать дальше было некуда — и олень оглянулся. В тот же миг он превратился в девушку. Охотник опустил оружие, они полюбили друг друга и остались вместе навсегда. Скульптура на вершине показывает именно этот момент: олень с повёрнутой назад головой и люди рядом с ним. Для Саньи это давно не просто сказка, а один из символов города и знак верной любви, — поэтому у скульптуры так много пар, а на ограде висят замки. Посмотрите и вниз: с холма видно сразу три бухты — Санья Бэй, Дадунхай и Юйлинь.",
     "sources": [
       { "title": "Sanya Tourism Board — «Luhuitou Scenic Area»", "url": "https://www.visitsanya.com/destination/luhuitou-park" },
       { "title": "Синьхуа — «三亚天涯海角游览区6月1日起免费开放»", "url": "http://www.news.cn/2023-05/26/c_1129647888.htm" },
       { "title": "海口本地宝 — «三亚鹿回头景区游玩攻略»", "url": "http://haikou.bendibao.com/tour/20241128/70214.shtm" },
       { "title": "OpenStreetMap — «鹿回头»", "url": "https://www.openstreetmap.org/node/6988593385" }
     ],
-    "verifiedAt": "2026-09-11"
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "wuzhizhou-island",
@@ -197,17 +247,29 @@
     "effort": "medium",
     "setting": "outdoor",
     "price": { "type": "paid", "note": "Билет включает вход на остров и паром туда и обратно; цена зависит от сезона" },
+    "hours": "Катера на остров — 08:30–16:00, обратно — 09:00–19:30; время зависит от погоды и состояния моря",
     "bestTime": "Выезжать утром: это поездка на полдня, с паромом в обе стороны",
     "tips": [
       "При штормовом предупреждении переправу на остров останавливают — уточняйте до выезда к причалу."
     ],
+    "photos": [
+      {
+        "file": "wuzhizhou-island-1.webp",
+        "alt": "Белый песок, бирюзовая вода и беседка на камне у берега острова Улучжичжоу",
+        "author": "Lovelanlan",
+        "license": "CC0 1.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wuzhizhou_Island_-_01.jpg"
+      }
+    ],
+    "more": { "title": "Visit Sanya", "url": "https://www.visitsanya.com/destination/wuzhizhou-island" },
     "sources": [
       { "title": "Sanya Tourism Board — «Wuzhizhou Island»", "url": "https://www.visitsanya.com/destination/wuzhizhou-island" },
+      { "title": "Официальный сайт острова — «景区门票»", "url": "https://www.wuzhizhou.com/ticket/" },
       { "title": "Wikipedia — «Wuzhizhou Island»", "url": "https://en.wikipedia.org/wiki/Wuzhizhou_Island" },
       { "title": "海口本地宝 — «海南蜈支洲岛旅游区游玩攻略»", "url": "http://haikou.bendibao.com/xiuxian/2024424/65305.shtm" },
       { "title": "OpenStreetMap — «蜈支洲岛码头游客中心»", "url": "https://www.openstreetmap.org/way/1483322796" }
     ],
-    "verifiedAt": "2026-09-11"
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "nanshan-cultural-zone",
@@ -228,17 +290,30 @@
     "effort": "low",
     "setting": "outdoor",
     "price": { "type": "paid", "note": "Билет сезонный: 129 CNY с октября по апрель, 108 CNY с мая по сентябрь" },
+    "hours": "08:00–17:00",
     "bestTime": "Целый день, выезжать утром",
     "tips": [
       "Территория большая, по ней ходят электрокары — заложите целый день."
     ],
+    "photos": [
+      {
+        "file": "nanshan-cultural-zone-1.webp",
+        "alt": "Белая статуя Гуаньинь над морем, перед ней — площадка для молитв с курильницами",
+        "author": "Gary Todd",
+        "license": "CC0 1.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bodhisattva_Guanyin_Statue,_Nanshan_Guanyin_Park_(10098568155).jpg"
+      }
+    ],
+    "more": { "title": "Visit Sanya", "url": "https://www.visitsanya.com/destination/nanshan-culture-tourism-zone" },
+    "story": "Статую Гуаньинь в Наньшане строили шесть лет и освятили в апреле 2005 года. Её высота — 108 метров, и стоит она не на берегу, а прямо в море: к ней ведёт длинная дорожка над водой. Гуаньинь — бодхисаттва милосердия, одна из самых почитаемых фигур китайского буддизма; к ней обращаются за защитой и помощью. У статуи три лица, и смотрят они в разные стороны: одно — на остров, два — в открытое море. Так передана мысль, что милосердие обращено и к Китаю, и ко всему миру. Если подойти ближе, видно, что три фигуры держат разное: одна — сутру, другая — чётки, третья — цветок лотоса. Обойдите статую по кругу — с каждой стороны это немного другая Гуаньинь.",
     "sources": [
       { "title": "Sanya Tourism Board — «Sanya Nanshan Cultural Tourism Zone»", "url": "https://www.visitsanya.com/destination/nanshan-culture-tourism-zone" },
       { "title": "TravelChinaGuide — «Nanshan Culture Tourism Zone»", "url": "https://www.travelchinaguide.com/attraction/hainan/sanya/nanshan-cultural-tourism-zone/" },
       { "title": "Жэньминь жибао (Хайнань) — детская программа в зоне Наньшань", "url": "http://hi.people.com.cn/n2/2021/0521/c228872-34738853.html" },
+      { "title": "Wikipedia — «Guan Yin of the South Sea of Sanya»", "url": "https://en.wikipedia.org/wiki/Guan_Yin_of_the_South_Sea_of_Sanya" },
       { "title": "OpenStreetMap — «南山文化旅游区»", "url": "https://www.openstreetmap.org/way/1300132266" }
     ],
-    "verifiedAt": "2026-09-11"
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "sanya-first-market",
@@ -289,13 +364,20 @@
     "effort": "low",
     "setting": "mixed",
     "price": { "type": "paid", "note": "Вход по билету; стоимость зависит от категории билета" },
+    "hours": "15:00–21:30",
     "bestTime": "Вечер — главное шоу вечернее",
+    "tips": [
+      "Парк открывается во второй половине дня, а главное шоу вечернее — приезжайте не раньше обеда.",
+      "Программа и шоу могут меняться или отменяться из-за погоды — сверяйтесь с объявлениями на месте.",
+      "Телефон: 0898-88658333"
+    ],
     "sources": [
       { "title": "Sanya Tourism Board — «Sanya Songcheng Show Park»", "url": "https://www.visitsanya.com/destination/sanya-romance-of-the-ages" },
+      { "title": "Официальный сайт Songcheng — «三亚千古情»", "url": "https://songcn.com/show/5" },
       { "title": "Trip.com — «Sanya Romance Park»", "url": "https://www.trip.com/travel-guide/attraction/sanya/sanya-romance-park-10759147/" },
       { "title": "OpenStreetMap — «三亚千古情景区»", "url": "https://www.openstreetmap.org/way/1353588490" }
     ],
-    "verifiedAt": "2026-09-11"
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "yalong-bay-rose-valley",
@@ -321,6 +403,7 @@
     "tips": [
       "Телефон: 0898-38232350"
     ],
+    "more": { "title": "Visit Sanya", "url": "https://www.visitsanya.com/destination/yalong-bay-rose-valley-scenic-area" },
     "sources": [
       { "title": "Sanya Tourism Board — «Yalong Bay International Rose Valley»", "url": "https://www.visitsanya.com/destination/yalong-bay-rose-valley-scenic-area" },
       { "title": "三亚市旅游发展局 — «亚龙湾国际玫瑰谷»", "url": "https://www.visitsanya.com/zh/destination/%e4%ba%9a%e9%be%99%e6%b9%be%e7%8e%ab%e7%91%b0%e8%b0%b7%e6%99%af%e5%8c%ba" },
@@ -360,10 +443,10 @@
   },
   {
     "id": "sanya-shanhai-shell-museum",
-    "status": "draft",
+    "status": "verified",
     "name": { "ru": "Музей культуры моря и раковин", "zh": "三亚山海贝文化博物馆", "en": "Sanya Shan Hai Shell Culture Museum" },
     "addressZh": "海南省三亚市吉阳区榆亚路680号",
-    "area": "dadonghai",
+    "area": "other",
     "category": "culture",
     "tags": ["kids"],
     "location": { "lat": 18.259420, "lng": 109.566001 },

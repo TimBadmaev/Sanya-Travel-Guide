@@ -5,7 +5,7 @@
 
 // ЕДИНСТВЕННАЯ версия кэша. При каждой публикации обновления меняйте это
 // значение (README.md, «Как выпустить новую версию»).
-const CACHE_VERSION = "v6-1";
+const CACHE_VERSION = "v7-1";
 
 // Префикс нужен, чтобы activate удалял только кэши этого приложения: у всех
 // репозиториев на <аккаунт>.github.io общий origin и общее хранилище кэшей.
@@ -50,6 +50,13 @@ const PRECACHE = [
   "./assets/icons/icon-512.png",
   "./assets/icons/icon-maskable-512.png",
   "./assets/icons/apple-touch-icon-180.png",
+  // Фото мест (Итерация 7): каждый файл assets/photos/ — отдельной строкой.
+  "./assets/photos/nanshan-cultural-zone-1.webp",
+  "./assets/photos/tianya-haijiao-1.webp",
+  "./assets/photos/tianya-haijiao-2.webp",
+  "./assets/photos/wuzhizhou-island-1.webp",
+  "./assets/photos/yalong-bay-beach-1.webp",
+  "./assets/photos/yalong-tropical-forest-park-1.webp",
 ];
 
 const INDEX_URL = "./index.html";

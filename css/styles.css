@@ -1588,3 +1588,94 @@ textarea.settings-field__input {
   font-weight: 600;
   color: var(--color-primary-dark);
 }
+
+/* ===== Итерация 7 (NEXT-ITERATION-CONTENT-RESEARCH.md §7) — только новые правила ===== */
+
+/* Фото места: одно или два друг под другом, без карусели и зума.
+   Фиксированное 3:2 — вёрстка не прыгает, пока файл читается из кэша. */
+.place-photos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-2);
+}
+
+.place-photo {
+  margin: 0;
+}
+
+.place-photo__img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius);
+}
+
+/* Подпись с автором и лицензией — мелким шрифтом; ссылка-лицензия — тач-цель. */
+.place-photo__credit {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.place-photo__credit a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* «Больше фото и подробнее — Visit Sanya»: строка-ссылка ≥44 px. */
+.place-more {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  margin: 0 0 var(--space-4);
+  color: var(--color-primary);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* «Что здесь интересного»: свёрнутый блок после «Советов», без анимации. */
+.place-story {
+  margin: var(--space-4) 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.place-story__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-4);
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.place-story__chevron {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.place-story__toggle[aria-expanded="true"] .place-story__chevron {
+  transform: rotate(180deg);
+}
+
+.place-story__text {
+  margin: 0;
+  padding: 0 var(--space-4) var(--space-4);
+}

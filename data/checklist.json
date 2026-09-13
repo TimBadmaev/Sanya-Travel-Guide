@@ -9,9 +9,10 @@
     "critical": true,
     "volatile": true,
     "sources": [
+      { "title": "Генеральное консульство КНР во Владивостоке — «Визы в КНР»", "url": "https://vladivostok.china-consulate.gov.cn/rus/lswf_1/qz/" },
       { "title": "РИА Новости: безвизовый режим между РФ и КНР", "url": "https://ria.ru/20260520/knr-2093487152.html" }
     ],
-    "verifiedAt": "2026-09-10"
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "prepare-payment-methods",
@@ -29,6 +30,20 @@
     "verifiedAt": "2026-09-10"
   },
   {
+    "id": "get-medical-insurance",
+    "status": "verified",
+    "phase": "early",
+    "topic": "health",
+    "title": "Оформите медицинскую страховку на поездку",
+    "details": "Выберите полис, который действует в Китае на все даты поездки. Больницы в Китае обычно просят внести депозит до начала лечения — заранее уточните у страховой, как она оплачивает помощь за рубежом.",
+    "critical": true,
+    "volatile": false,
+    "sources": [
+      { "title": "U.S. Embassy & Consulates in China — «Medical Assistance»", "url": "https://china.usembassy-china.org.cn/medical-assistance/" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
     "id": "arrange-mobile-connection",
     "status": "verified",
     "phase": "week",
@@ -39,6 +54,36 @@
     "volatile": false,
     "sources": [],
     "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "set-up-alipay-wechat-pay",
+    "status": "verified",
+    "phase": "week",
+    "topic": "money",
+    "title": "Настройте Alipay или WeChat Pay до вылета",
+    "details": "Установите Alipay или WeChat, зарегистрируйтесь по своему номеру телефона и привяжите банковскую карту, которая работает за рубежом. Делайте это дома, пока есть привычный интернет: привязка и проверка карты могут занять время. После настройки убедитесь в приложении, что карта привязана и доступна для оплаты.",
+    "critical": true,
+    "volatile": true,
+    "sources": [
+      { "title": "Visit Sanya: оплата и валюта", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/currency-and-payment" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "fill-arrival-card",
+    "status": "verified",
+    "phase": "days",
+    "topic": "documents",
+    "title": "Заполните въездную карту онлайн",
+    "details": "С 20 ноября 2025 года въездную карту иностранца можно заполнить онлайн до прилёта — на официальном сайте Государственного миграционного управления КНР или в его приложении «NIA 12367». Это бесплатно: сайты, которые просят за это деньги, — не официальные. Не успели заранее — карту можно заполнить на пункте пропуска: по QR-коду, на терминале или на бумажном бланке.",
+    "critical": false,
+    "volatile": true,
+    "sources": [
+      { "title": "Государственное миграционное управление КНР — «Beware of Fraudulent Websites for Arrival Card Filling»", "url": "https://en.nia.gov.cn/n147418/n147463/c191530/content.html" },
+      { "title": "Официальная форма въездной карты — s.nia.gov.cn", "url": "https://s.nia.gov.cn/ArrivalCardFillingPC/" },
+      { "title": "Генеральное консульство КНР в Санкт-Петербурге — «关于实施外国人入境卡网上填报的通知»", "url": "https://saintpetersburg.china-consulate.gov.cn/zytz/202511/t20251125_11760042.htm" }
+    ],
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "install-configure-amap",
@@ -53,6 +98,20 @@
       { "title": "AMAP Global: многоязычная версия карт", "url": "https://www.malaymail.com/news/money/mediaoutreach/2025/07/11/alibabas-amap-launches-chinas-first-multilingual-map-with-14-new-languages-for-overseas-users/394781" }
     ],
     "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "download-amap-offline-map",
+    "status": "verified",
+    "phase": "days",
+    "topic": "apps",
+    "title": "Скачайте офлайн-карту Саньи в Amap",
+    "details": "Дома по Wi-Fi откройте в Amap раздел офлайн-карт («Me» → «Offline Maps») и скачайте карту Саньи — она поможет сориентироваться, если интернет пропадёт. Названия разделов в разных версиях приложения могут отличаться.",
+    "critical": false,
+    "volatile": true,
+    "sources": [
+      { "title": "Trip.com — «How to Use Amap (Gaode Map) Guide for Foreigners in China»", "url": "https://www.trip.com/guide/info/amap.html" }
+    ],
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "download-offline-materials",
@@ -79,16 +138,116 @@
     "verifiedAt": "2026-09-13"
   },
   {
+    "id": "add-home-address-chinese",
+    "status": "verified",
+    "phase": "days",
+    "topic": "documents",
+    "title": "Узнайте адрес проживания на китайском и внесите его в приложение",
+    "details": "Попросите у отеля или хозяина жилья точный адрес на китайском и сохраните его в настройках поездки. Он пригодится трижды: в анкете въездной карты есть поле «Адрес пребывания в Китае», в разделе «Под рукой» адрес можно показать таксисту, а при заселении — сверить с бронью.",
+    "critical": true,
+    "volatile": false,
+    "sources": [
+      { "title": "Официальная форма въездной карты — s.nia.gov.cn (поле «Адрес пребывания в Китае»)", "url": "https://s.nia.gov.cn/ArrivalCardFillingPhone/" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
     "id": "pack-for-tropical-climate",
     "status": "verified",
     "phase": "packing",
     "topic": "packing",
     "title": "Соберите вещи с учётом тропического климата",
-    "details": "Лёгкая дышащая одежда, головной убор, солнцезащитный крем и компактный дождевик пригодятся в Санье в любое время года. Точный прогноз погоды и вероятность дождей стоит проверить ближе к дате поездки.",
+    "details": "Лёгкая дышащая одежда — хлопок, лён или быстросохнущие ткани — и компактный дождевик пригодятся в Санье в любое время года. Точный прогноз погоды и вероятность дождей стоит проверить ближе к дате поездки.",
     "critical": false,
     "volatile": false,
-    "sources": [],
-    "verifiedAt": "2026-09-10"
+    "sources": [
+      { "title": "Visit Sanya — «Packing List»", "url": "https://www.visitsanya.com/planning/travel-guide/before-you-go/packing-list" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "pack-medicines",
+    "status": "verified",
+    "phase": "packing",
+    "topic": "health",
+    "title": "Возьмите свои лекарства и простую аптечку",
+    "details": "Лекарства, которые принимаете постоянно, — с запасом на всю поездку, плюс простая аптечка: пластырь, средства от укачивания и от расстройства желудка. Если везёте рецептурные препараты, возьмите рецепт или выписку и заранее уточните правила ввоза в Китай на официальных ресурсах.",
+    "critical": true,
+    "volatile": false,
+    "sources": [
+      { "title": "Visit Sanya — «Packing List»", "url": "https://www.visitsanya.com/planning/travel-guide/before-you-go/packing-list" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "pack-charger-and-adapter",
+    "status": "verified",
+    "phase": "packing",
+    "topic": "packing",
+    "title": "Возьмите зарядку, повербанк и переходник для розеток",
+    "details": "Телефон в поездке — это оплата, карта и этот гид, поэтому зарядка и повербанк понадобятся каждый день. Visit Sanya советует взять универсальный переходник под китайские розетки типов A и I.",
+    "critical": true,
+    "volatile": false,
+    "sources": [
+      { "title": "Visit Sanya — «Packing List»", "url": "https://www.visitsanya.com/planning/travel-guide/before-you-go/packing-list" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "pack-sun-protection",
+    "status": "verified",
+    "phase": "packing",
+    "topic": "packing",
+    "title": "Возьмите солнцезащиту: крем, головной убор и очки",
+    "details": "Солнце в Санье яркое круглый год. Возьмите крем с высоким SPF, головной убор с полями и солнцезащитные очки; для купания и снорклинга лучше подходит крем, безопасный для рифов.",
+    "critical": false,
+    "volatile": false,
+    "sources": [
+      { "title": "Visit Sanya — «Packing List»", "url": "https://www.visitsanya.com/planning/travel-guide/before-you-go/packing-list" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "pack-evening-layer",
+    "status": "verified",
+    "phase": "packing",
+    "topic": "packing",
+    "title": "Возьмите лёгкую кофту или ветровку на вечер",
+    "details": "Вечером у моря бывает ветрено, особенно в ноябре. Лёгкая вещь с длинным рукавом пригодится и на прогулке вечером, и в лесопарке — от солнца.",
+    "critical": false,
+    "volatile": false,
+    "sources": [
+      { "title": "Visit Sanya — «Packing List»", "url": "https://www.visitsanya.com/planning/travel-guide/before-you-go/packing-list" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "pack-beach-kit",
+    "status": "verified",
+    "phase": "packing",
+    "topic": "packing",
+    "title": "Соберите пляжный набор",
+    "details": "Два купальника, чтобы сменять, лёгкая накидка и водонепроницаемый чехол для телефона. Выбирайте вещи, которые высыхают за ночь.",
+    "critical": false,
+    "volatile": false,
+    "sources": [
+      { "title": "Visit Sanya — «Packing List»", "url": "https://www.visitsanya.com/planning/travel-guide/before-you-go/packing-list" }
+    ],
+    "verifiedAt": "2026-09-13"
+  },
+  {
+    "id": "pack-footwear",
+    "status": "verified",
+    "phase": "packing",
+    "topic": "packing",
+    "title": "Возьмите обувь для пляжа и для прогулок",
+    "details": "Сандалии — для пляжа и горячего песка, удобная закрытая обувь — для подъёмов и дорожек в лесопарке Ялунваня и парке Лухуйтоу.",
+    "critical": false,
+    "volatile": false,
+    "sources": [
+      { "title": "Visit Sanya — «Packing List»", "url": "https://www.visitsanya.com/planning/travel-guide/before-you-go/packing-list" }
+    ],
+    "verifiedAt": "2026-09-13"
   },
   {
     "id": "bring-documents-and-printouts",

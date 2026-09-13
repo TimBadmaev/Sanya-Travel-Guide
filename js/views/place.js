@@ -198,6 +198,43 @@ export async function renderPlace(container, ctx) {
     if (distanceText) appendParagraph(container, "place-detail__distance", `${distanceText} ${from}`);
   }
 
+  // 3a. Фото и «Больше фото и подробнее» (Итерация 7): после расстояния,
+  // перед описанием. Файлы лежат в assets/photos/ и есть в PRECACHE; без
+  // photos блока нет вообще. Подпись с автором и лицензией — условие CC BY.
+  if (Array.isArray(place.photos) && place.photos.length) {
+    const photos = document.createElement("div");
+    photos.className = "place-photos";
+    place.photos.forEach((photo) => {
+      const figure = document.createElement("figure");
+      figure.className = "place-photo";
+      const img = document.createElement("img");
+      img.className = "place-photo__img";
+      img.src = `assets/photos/${photo.file}`;
+      img.alt = photo.alt;
+      const credit = document.createElement("figcaption");
+      credit.className = "place-photo__credit";
+      credit.append(`Фото: ${photo.author} · `);
+      const license = document.createElement("a");
+      license.href = photo.sourceUrl;
+      license.target = "_blank";
+      license.rel = "noopener noreferrer";
+      license.textContent = photo.license;
+      credit.appendChild(license);
+      figure.append(img, credit);
+      photos.appendChild(figure);
+    });
+    container.appendChild(photos);
+  }
+  if (place.more && place.more.url) {
+    const more = document.createElement("a");
+    more.href = place.more.url;
+    more.target = "_blank";
+    more.rel = "noopener noreferrer";
+    more.className = "place-more";
+    more.textContent = `Больше фото и подробнее — ${place.more.title}`;
+    container.appendChild(more);
+  }
+
   // 4. Описание и «Почему стоит».
   appendParagraph(container, "place-detail__summary", place.summary);
   appendPoints(container, "Почему стоит", place.why);
@@ -235,6 +272,42 @@ export async function renderPlace(container, ctx) {
   // 6. Советы.
   if (Array.isArray(place.tips) && place.tips.length) {
     appendPoints(container, "Советы", place.tips);
+  }
+
+  // 6a. «Что здесь интересного» (Итерация 7): короткий рассказ, свёрнут при
+  // каждом открытии карточки — состояние нигде не запоминается. Без story
+  // блока нет.
+  if (typeof place.story === "string" && place.story) {
+    const story = document.createElement("section");
+    story.className = "place-story";
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "place-story__toggle";
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-controls", "place-story-text");
+    const toggleTitle = document.createElement("span");
+    toggleTitle.textContent = "Что здесь интересного";
+    const chevron = document.createElement("span");
+    chevron.className = "place-story__chevron";
+    chevron.setAttribute("aria-hidden", "true");
+    chevron.textContent = "⌄";
+    toggle.append(toggleTitle, chevron);
+
+    const text = document.createElement("p");
+    text.className = "place-story__text";
+    text.id = "place-story-text";
+    text.hidden = true;
+    text.textContent = place.story;
+
+    toggle.addEventListener("click", () => {
+      const open = text.hidden;
+      text.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+    });
+
+    story.append(toggle, text);
+    container.appendChild(story);
   }
 
   // 7. Подвал: дата проверки и источники.
