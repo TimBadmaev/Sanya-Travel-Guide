@@ -12,6 +12,7 @@ import {
   sortByDistance,
   filterWithinRadius,
   formatDuration,
+  nearbyPlaces,
   NEAR_RADIUS_KM,
 } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
@@ -169,6 +170,57 @@ function renderEmptyState(message, buttonText, onClick) {
   return wrap;
 }
 
+// === «Рядом со мной» (Итерация 8, первая функциональная часть) ===========
+// Отдельный, самодостаточный блок над списком: работает поверх browser
+// Geolocation API по явному действию пользователя, координаты живут только в
+// замыкании renderPlaces() на время текущего экрана — в localStorage не
+// пишутся (в отличие от stg:trip.stay, D-11, который остаётся точкой
+// «проживания», а не текущей позицией на прогулке) и никуда не отправляются.
+// Радиус — тот же NEAR_RADIUS_KM, что у сценариев «Сейчас» (Q-21).
+
+const NEARBY_STATUS = {
+  IDLE: "idle",
+  LOADING: "loading",
+  SUCCESS: "success",
+  EMPTY: "empty",
+  DENIED: "denied",
+  ERROR: "error",
+};
+
+// Стандартные коды GeolocationPositionError (MDN): 1 — пользователь отказал,
+// 2 — координаты недоступны, 3 — истекло время ожидания.
+const GEO_ERROR = { PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 };
+const GEO_TIMEOUT_MS = 10000;
+
+function getCurrentPosition() {
+  return new Promise((resolve, reject) => {
+    if (!("geolocation" in navigator)) {
+      reject({ code: "unsupported" });
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => resolve({ lat: position.coords.latitude, lng: position.coords.longitude }),
+      (error) => reject(error),
+      { enableHighAccuracy: false, timeout: GEO_TIMEOUT_MS, maximumAge: 60000 }
+    );
+  });
+}
+
+// Пользовательский текст без технических деталей (состояние F задания).
+function describeGeoError(error) {
+  const code = error && error.code;
+  if (code === GEO_ERROR.POSITION_UNAVAILABLE) {
+    return "Не удалось определить координаты. Проверьте, включена ли геолокация на телефоне, и попробуйте ещё раз.";
+  }
+  if (code === GEO_ERROR.TIMEOUT) {
+    return "Определение местоположения заняло слишком много времени. Попробуйте ещё раз.";
+  }
+  if (code === "unsupported") {
+    return "Этот браузер не поддерживает определение местоположения.";
+  }
+  return "Не удалось определить местоположение. Попробуйте ещё раз.";
+}
+
 export async function renderPlaces(container, ctx) {
   // S1: режим выбора открывается только поверх самого дня (#/plan/<дата>).
   // Так карточка места после добавления может вернуться в день на две записи
@@ -257,6 +309,113 @@ export async function renderPlaces(container, ctx) {
     container.appendChild(empty);
     return;
   }
+
+  // «Рядом со мной» (Итерация 8): состояние живёт только в замыкании этого
+  // рендера — своя точка, не resolveOrigin() и не stg:trip.stay.
+  let nearbyStatus = NEARBY_STATUS.IDLE;
+  let nearbyOrigin = null;
+  let nearbyResults = [];
+  let nearbyErrorText = "";
+
+  const nearbyPanel = document.createElement("div");
+  nearbyPanel.className = "nearby";
+  container.appendChild(nearbyPanel);
+
+  function resetNearby() {
+    if (!ctx.isCurrent()) return;
+    nearbyStatus = NEARBY_STATUS.IDLE;
+    nearbyOrigin = null;
+    nearbyResults = [];
+    renderNearbyPanel();
+  }
+
+  function requestNearby() {
+    if (!ctx.isCurrent()) return;
+    nearbyStatus = NEARBY_STATUS.LOADING;
+    renderNearbyPanel();
+    getCurrentPosition()
+      .then((point) => {
+        if (!ctx.isCurrent()) return;
+        nearbyOrigin = point;
+        nearbyResults = nearbyPlaces(places, point);
+        nearbyStatus = nearbyResults.length ? NEARBY_STATUS.SUCCESS : NEARBY_STATUS.EMPTY;
+        renderNearbyPanel();
+      })
+      .catch((error) => {
+        if (!ctx.isCurrent()) return;
+        nearbyStatus = error && error.code === GEO_ERROR.PERMISSION_DENIED ? NEARBY_STATUS.DENIED : NEARBY_STATUS.ERROR;
+        nearbyErrorText = describeGeoError(error);
+        renderNearbyPanel();
+      });
+  }
+
+  function renderNearbyPanel() {
+    nearbyPanel.innerHTML = "";
+
+    if (nearbyStatus === NEARBY_STATUS.LOADING) {
+      const p = document.createElement("p");
+      p.className = "loading";
+      p.textContent = "Определяем ваше местоположение…";
+      nearbyPanel.appendChild(p);
+      return;
+    }
+
+    if (nearbyStatus === NEARBY_STATUS.SUCCESS) {
+      const title = document.createElement("p");
+      title.className = "nearby__title";
+      title.textContent = `Рядом с вами · в радиусе ${NEAR_RADIUS_KM} км`;
+      nearbyPanel.appendChild(title);
+
+      const list = document.createElement("div");
+      list.className = "info-list";
+      nearbyResults.forEach((place) => {
+        const distanceText = formatDistance(haversineKm(nearbyOrigin, place.location));
+        list.appendChild(renderPlaceRow(place, categoriesById.get(place.category), distanceText, addTo));
+      });
+      nearbyPanel.appendChild(list);
+
+      const collapse = document.createElement("button");
+      collapse.type = "button";
+      collapse.className = "btn btn--secondary nearby__collapse";
+      collapse.textContent = "Свернуть";
+      collapse.addEventListener("click", resetNearby);
+      nearbyPanel.appendChild(collapse);
+      return;
+    }
+
+    if (nearbyStatus === NEARBY_STATUS.EMPTY) {
+      nearbyPanel.appendChild(
+        renderEmptyState(`В радиусе ${NEAR_RADIUS_KM} км от вас проверенных мест не нашлось.`, "Свернуть", resetNearby)
+      );
+      return;
+    }
+
+    if (nearbyStatus === NEARBY_STATUS.DENIED) {
+      nearbyPanel.appendChild(
+        renderEmptyState(
+          "Чтобы показать места рядом с вами, нужен доступ к геолокации браузера — без него нельзя определить, где вы сейчас. Можно пользоваться обычным списком мест ниже.",
+          "Свернуть",
+          resetNearby
+        )
+      );
+      return;
+    }
+
+    if (nearbyStatus === NEARBY_STATUS.ERROR) {
+      nearbyPanel.appendChild(renderEmptyState(nearbyErrorText, "Попробовать снова", requestNearby));
+      return;
+    }
+
+    // IDLE — состояние A до первого запроса геолокации.
+    const cta = document.createElement("button");
+    cta.type = "button";
+    cta.className = "btn btn--secondary nearby__cta";
+    cta.textContent = "📍 Показать места рядом со мной";
+    cta.addEventListener("click", requestNearby);
+    nearbyPanel.appendChild(cta);
+  }
+
+  renderNearbyPanel();
 
   const chipsRow = document.createElement("div");
   chipsRow.className = "chips";

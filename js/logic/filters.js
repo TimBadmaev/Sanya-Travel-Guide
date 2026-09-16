@@ -113,6 +113,29 @@ export function filterWithinRadius(places, center, radiusKm = NEAR_RADIUS_KM) {
   return places.filter((place) => haversineKm(center, place.location) <= radiusKm);
 }
 
+// Место с координатой-заглушкой {0,0} (черновик без подтверждённой точки —
+// сейчас так помечены bohou-village и linchunling-forest-park, оба status
+// "draft" и уже не доходят до этой функции через loadPlaces(), D-18) не может
+// участвовать в «Рядом со мной» (Итерация 8): в отличие от NaN у настоящей
+// нулевой точки координаты формально валидны, и haversineKm() её не отсеет —
+// без явной проверки место посчиталось бы в Гвинейском заливе.
+function hasUsableLocation(place) {
+  const loc = place && place.location;
+  return Boolean(loc) && Number.isFinite(loc.lat) && Number.isFinite(loc.lng) && !(loc.lat === 0 && loc.lng === 0);
+}
+
+// «Рядом со мной» (Итерация 8): places уже отфильтрованы по status
+// "verified" (loadPlaces(), D-18) — здесь дополнительно отсекаются места без
+// пригодной точки, дальше — тот же радиус и та же сортировка, что у
+// сценариев «Сейчас» (Q-21). origin — точка геолокации { lat, lng } на время
+// сеанса, не хранится (см. js/views/places.js). origin == null → пустой
+// массив: без точки считать нечего.
+export function nearbyPlaces(places, origin, radiusKm = NEAR_RADIUS_KM) {
+  if (!origin) return [];
+  const usable = places.filter(hasUsableLocation);
+  return sortByDistance(filterWithinRadius(usable, origin, radiusKm), origin);
+}
+
 // [1, 3] → "1–3 ч"; [2, 2] → "2 ч"; дробные — с запятой: "0,5–1 ч".
 export function formatDuration(durationHours) {
   const [min, max] = durationHours;
