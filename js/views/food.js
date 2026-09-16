@@ -1,5 +1,6 @@
 import { loadFood, loadConfig, loadErrorMessage } from "../data.js";
 import { renderShowScreen } from "./taxi.js";
+import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
 
 // Еда (ITERATION-8-CONTENT-ARCHITECTURE.md, Batch D): отдельный, короткий
 // экран по образцу views/handy.js — не карточка места, у food-записей нет
@@ -131,6 +132,19 @@ function renderFoodCard(item, area) {
     taxiLink.className = "btn btn--primary";
     taxiLink.textContent = "Показать таксисту";
     actions.appendChild(taxiLink);
+
+    // «Как добраться» — маршрут в Amap (amap.js), второе действие рядом с
+    // таксистом, не заменяющее его. Без валидной location кнопки нет.
+    if (isValidLocation(item.location)) {
+      const amapLink = document.createElement("a");
+      amapLink.href = buildAmapWalkingUrl(item.location, item.name.ru);
+      amapLink.target = "_blank";
+      amapLink.rel = "noopener noreferrer";
+      amapLink.className = "btn btn--secondary";
+      amapLink.textContent = "Как добраться";
+      actions.appendChild(amapLink);
+    }
+
     card.appendChild(actions);
   }
 

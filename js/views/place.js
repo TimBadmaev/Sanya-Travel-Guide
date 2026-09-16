@@ -4,6 +4,7 @@ import { EFFORT_LABELS, SETTING_LABELS, PRICE_LABELS, formatDuration } from "../
 import { haversineKm, formatDistance } from "../logic/distance.js";
 import { formatVerifiedDate } from "../logic/checklist.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
+import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
 import { bindCopyButton, renderShowScreen } from "./taxi.js";
 import { renderAddToDayBlock } from "./plan.js";
 
@@ -347,7 +348,23 @@ export async function renderPlace(container, ctx) {
 
   bindCopyButton(copyBtn, status, () => place.name.zh);
 
-  actions.append(taxiLink, copyBtn, status);
+  // «Как добраться» — маршрут в Amap (amap.js, разрешение Q-03). Отдельно от
+  // «Показать таксисту» (D-02, D-12): та остаётся главной закреплённой
+  // кнопкой, эта — второе, не конкурирующее с ней действие. Без валидной
+  // location кнопки нет (координат не выдумываем).
+  const buttons = [taxiLink];
+  if (isValidLocation(place.location)) {
+    const amapLink = document.createElement("a");
+    amapLink.href = buildAmapWalkingUrl(place.location, place.name.ru);
+    amapLink.target = "_blank";
+    amapLink.rel = "noopener noreferrer";
+    amapLink.className = "btn btn--secondary";
+    amapLink.textContent = "Как добраться";
+    buttons.push(amapLink);
+  }
+  buttons.push(copyBtn);
+
+  actions.append(...buttons, status);
   container.appendChild(actions);
 }
 
