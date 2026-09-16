@@ -21,6 +21,7 @@ import {
 } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
+import { setKnownPosition } from "../logic/geo.js";
 import { formatDayMonth, isIsoDate } from "../logic/plan.js";
 import { renderFoodSection, renderModeSwitcher, MODE } from "./food.js";
 
@@ -352,6 +353,9 @@ export async function renderPlaces(container, ctx) {
     renderNearbyPanel();
     getCurrentPosition()
       .then((point) => {
+        // Один и тот же грант разрешения — карточки Place/Food (geo.js)
+        // получают ту же позицию, не запрашивая её ещё раз.
+        setKnownPosition(point);
         if (!ctx.isCurrent()) return;
         nearbyOrigin = point;
         nearbyResults = nearbyPlaces(places, point);

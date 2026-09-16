@@ -5,6 +5,7 @@ import { haversineKm, formatDistance } from "../logic/distance.js";
 import { formatVerifiedDate } from "../logic/checklist.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
 import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
+import { userDistanceText, primeCurrentPosition } from "../logic/geo.js";
 import { bindCopyButton, renderShowScreen } from "./taxi.js";
 import { renderAddToDayBlock } from "./plan.js";
 
@@ -91,7 +92,10 @@ export async function renderPlace(container, ctx) {
   let places;
   let config;
   try {
-    [places, config] = await Promise.all([loadPlaces(), loadConfig()]);
+    // primeCurrentPosition() — тот же единственный за сессию, кэшированный
+    // промис, что и в app.js при старте (geo.js): ждём его здесь наравне с
+    // данными, а не запускаем ещё один запрос геолокации.
+    [places, config] = await Promise.all([loadPlaces(), loadConfig(), primeCurrentPosition()]);
   } catch (e) {
     console.error(e);
     if (ctx.isCurrent()) {
@@ -199,7 +203,14 @@ export async function renderPlace(container, ctx) {
     if (distanceText) appendParagraph(container, "place-detail__distance", `${distanceText} ${from}`);
   }
 
-  // 3a. Фото и «Больше фото и подробнее» (Итерация 7): после расстояния,
+  // 3a. «X км от вас» — от текущей позиции устройства (geo.js), отдельно от
+  // блока выше: не resolveOrigin(), не точка проживания, не участвует в
+  // сортировке/фильтрах («Рядом со мной» не трогаем). Вторичный, немаркий
+  // текст; без известной позиции или валидной location блока просто нет.
+  const userDistance = userDistanceText(place.location);
+  if (userDistance) appendParagraph(container, "place-detail__user-distance", userDistance);
+
+  // 3b. Фото и «Больше фото и подробнее» (Итерация 7): после расстояния,
   // перед описанием. Файлы лежат в assets/photos/ и есть в PRECACHE; без
   // photos блока нет вообще. Подпись с автором и лицензией — условие CC BY.
   if (Array.isArray(place.photos) && place.photos.length) {

@@ -9,6 +9,7 @@ import { renderHandy, renderHandyPhrase, renderHandyTaxi } from "./views/handy.j
 import { renderMyPlan, renderMyPlanDay, renderMoveDay, renderPlacePlan } from "./views/plan.js";
 import { renderRecommended, renderRecommendedDay } from "./views/recommended.js";
 import { initPwa } from "./pwa.js";
+import { primeCurrentPosition } from "./logic/geo.js";
 
 // Таблица маршрутов вместо объекта точных маршрутов (ITERATION-2-FOUNDATION.md
 // §3): якорные regexp с именованными группами параметров. Первое совпадение
@@ -170,3 +171,8 @@ if (document.readyState === "loading") {
 
 // Офлайн-режим и установка (Итерация 5): в роутинг не вмешивается.
 initPwa();
+
+// «X км от вас» на карточках Place/Food (geo.js): один тихий вызов на весь
+// запуск приложения, без диалога разрешения, если оно ещё не выдано —
+// см. geo.js. В роутинг не вмешивается.
+primeCurrentPosition();

@@ -1012,6 +1012,14 @@ button {
   font-weight: 600;
 }
 
+/* «X км от вас» (geo.js) — вторичный, немаркий текст, отдельный от блока
+   расстояния от точки проживания выше. */
+.place-detail__user-distance {
+  margin: calc(-1 * var(--space-3)) 0 var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
 /* ===== Итерация 4 (ITERATION-4-IMPLEMENTATION.md) — только новые правила ===== */
 
 /* «Под рукой» (#/handy) */

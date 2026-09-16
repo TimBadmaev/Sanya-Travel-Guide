@@ -1,6 +1,7 @@
 import { loadFood, loadConfig, loadErrorMessage } from "../data.js";
 import { renderShowScreen } from "./taxi.js";
 import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
+import { userDistanceText, primeCurrentPosition } from "../logic/geo.js";
 
 // Еда (ITERATION-8-CONTENT-ARCHITECTURE.md, Batch D): отдельный, короткий
 // экран по образцу views/handy.js — не карточка места, у food-записей нет
@@ -99,6 +100,18 @@ function renderFoodCard(item, area) {
   meta.textContent = [FOOD_KIND_LABELS[item.kind], area && area.name].filter(Boolean).join(" · ");
 
   body.append(title, meta);
+
+  // «X км от вас» — от текущей позиции устройства (geo.js), только для
+  // валидной location и только при уже известной позиции; не влияет на
+  // порядок карточек и не заменяет loader, скрывающий draft (D-18).
+  const userDistance = userDistanceText(item.location);
+  if (userDistance) {
+    const distance = document.createElement("p");
+    distance.className = "food-card__meta food-card__user-distance";
+    distance.textContent = userDistance;
+    body.appendChild(distance);
+  }
+
   head.append(icon, body);
   card.appendChild(head);
 
@@ -160,7 +173,10 @@ export async function renderFoodSection(container, ctx) {
   let food;
   let config;
   try {
-    [food, config] = await Promise.all([loadFood(), loadConfig()]);
+    // primeCurrentPosition() — тот же единственный за сессию, кэшированный
+    // промис, что и в app.js при старте (geo.js): ждём его здесь наравне с
+    // данными, а не запускаем ещё один запрос геолокации.
+    [food, config] = await Promise.all([loadFood(), loadConfig(), primeCurrentPosition()]);
   } catch (e) {
     console.error(e);
     if (ctx.isCurrent()) {
