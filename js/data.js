@@ -67,6 +67,15 @@ export async function loadPlaces() {
   return items.filter((item) => item.status === "verified");
 }
 
+// Еда (ITERATION-8-CONTENT-ARCHITECTURE.md §2.2/3.2): отдельный от places.json
+// слой ({ id, status, name, addressZh, area, kind, location, priceLevel,
+// hours, note, sources, verifiedAt }) — D-06 запрещает рестораны в местах.
+// Возвращает только status "verified" (D-18); пока таких записей нет.
+export async function loadFood() {
+  const items = await loadJSON("data/food.json");
+  return items.filter((item) => item.status === "verified");
+}
+
 // Контакты «Под рукой» (CONTENT-ITERATION-4.md §2): { id, group, label,
 // number, tel, note, sources, verifiedAt }. Поля status у записей нет —
 // раздел перенесён целиком как проверенный. Возвращается новый массив.
