@@ -16,6 +16,10 @@ export const FLAG_LABELS = {
   free: "Бесплатно",
   saved: "Сохранённые",
   kids: "С детьми",
+  // Подписи нужны только для подсказки «Снять «…»» при 0 результатах —
+  // отдельных чипов в общем ряду у этих двух токенов нет (см. выше).
+  medium3h: "До 3 часов",
+  moderate: "Средняя нагрузка",
 };
 
 export const EFFORT_LABELS = { low: "Лёгкая нагрузка", medium: "Средняя нагрузка", high: "Высокая нагрузка" };
@@ -33,8 +37,44 @@ const FLAG_PREDICATES = {
   kids: (place) => Array.isArray(place.tags) && place.tags.includes("kids"),
 };
 
+// Подборщик «Время + интерес + нагрузка» (Итерация 8, строка 8 таблицы 11.2
+// PRODUCT.md): два доп. токена того же f=-механизма, что и обычные чипы.
+// Не входят в FLAG_FILTERS (общий ряд чипов «Мест»), иначе продублировали бы
+// смысл уже существующих "short"/"easy" новыми похожими кнопками — их видит
+// только панель подборщика (js/views/places.js). Правило времени — то же,
+// что уже действует у "short" (durationHours[0] — минимально нужное время —
+// не больше выбранного бюджета); 3 ч — порог по прямому примеру из задания
+// (место с durationHours=[2,4] должно попадать в «до 3 часов»). "moderate" —
+// effort "medium"; отдельного флага для "high" нет — среди verified мест
+// такого effort сейчас нет вовсе (проверено по data/places.json), появление
+// такого места — повод добавить чип отдельным решением, а не автоматически.
+export const PICKER_TIME_TOKEN_3H = "medium3h";
+export const PICKER_EFFORT_TOKEN_MODERATE = "moderate";
+
+const PICKER_FLAG_PREDICATES = {
+  [PICKER_TIME_TOKEN_3H]: (place) => place.durationHours[0] <= 3,
+  [PICKER_EFFORT_TOKEN_MODERATE]: (place) => place.effort === "medium",
+};
+
+const ALL_FLAG_PREDICATES = { ...FLAG_PREDICATES, ...PICKER_FLAG_PREDICATES };
+
+// Готовые варианты подборщика (js/views/places.js) — единственное место,
+// где определены их токены и подписи. token: null — вариант без ограничения
+// (в tokens ничего не добавляется).
+export const TIME_BUDGETS = [
+  { token: "short", label: "До 2 часов" },
+  { token: PICKER_TIME_TOKEN_3H, label: "До 3 часов" },
+  { token: null, label: "Полдня и больше" },
+];
+
+export const EFFORT_BUDGETS = [
+  { token: null, label: "Любая нагрузка" },
+  { token: "easy", label: "Лёгкая нагрузка" },
+  { token: PICKER_EFFORT_TOKEN_MODERATE, label: "Средняя нагрузка" },
+];
+
 function isFlag(token) {
-  return FLAG_FILTERS.includes(token);
+  return token in ALL_FLAG_PREDICATES;
 }
 
 // raw — значение параметра f ("nature,short") или null. Пустые, неизвестные
@@ -67,7 +107,7 @@ export function applyFilters(places, tokens, { savedIds }) {
   return places.filter(
     (place) =>
       (!categories.length || categories.includes(place.category)) &&
-      flags.every((flag) => FLAG_PREDICATES[flag](place, savedIds))
+      flags.every((flag) => ALL_FLAG_PREDICATES[flag](place, savedIds))
   );
 }
 

@@ -1699,3 +1699,64 @@ textarea.settings-field__input {
 .nearby .info-list {
   margin-bottom: var(--space-3);
 }
+
+/* ===== Итерация 8 — подборщик «Время + интерес + нагрузка»
+   (js/views/places.js) — только новые правила ===== */
+
+.picker {
+  margin: 0 0 var(--space-4);
+}
+
+.picker__cta {
+  width: 100%;
+}
+
+.picker__summary {
+  margin: var(--space-2) 0 0;
+}
+
+.picker__form {
+  margin-top: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.picker__title {
+  margin: 0 0 var(--space-3);
+  font-weight: 600;
+}
+
+.picker__group {
+  margin-bottom: var(--space-3);
+}
+
+.picker__label {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* Как .chips, но без горизонтальной прокрутки и бегущей за край экрана
+   отрицательной подложки — здесь конечный список из 2–6 вариантов внутри
+   собственной карточки .picker__form, а не общий ряд чипов «Мест». */
+.picker__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.picker__actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.picker__actions .btn {
+  flex: 1;
+}
+
+.picker__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

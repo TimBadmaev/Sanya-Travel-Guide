@@ -14,6 +14,10 @@ import {
   formatDuration,
   nearbyPlaces,
   NEAR_RADIUS_KM,
+  TIME_BUDGETS,
+  EFFORT_BUDGETS,
+  PICKER_TIME_TOKEN_3H,
+  PICKER_EFFORT_TOKEN_MODERATE,
 } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
@@ -417,6 +421,18 @@ export async function renderPlaces(container, ctx) {
 
   renderNearbyPanel();
 
+  // === Подборщик «Время + интерес + нагрузка» (Итерация 8, вторая часть
+  // строки 8 таблицы 11.2 PRODUCT.md) =======================================
+  // Не отдельный список: подборщик только вычисляет 1–3 токена (время,
+  // интерес, опционально нагрузка) и подставляет их в тот же `tokens`, что и
+  // обычные чипы ниже — дальше работает уже существующая цепочка
+  // applyFilters() → sortByDistance() → renderPlaceRow() без единого нового
+  // рендер-пути. «Рядом со мной» (радиус) и `tokens` (что искать) — разные
+  // независимые переменные, поэтому подборщик не мешает и не подменяет near.
+  const pickerPanel = document.createElement("div");
+  pickerPanel.className = "picker";
+  container.appendChild(pickerPanel);
+
   const chipsRow = document.createElement("div");
   chipsRow.className = "chips";
   chipsRow.setAttribute("role", "group");
@@ -508,6 +524,12 @@ export async function renderPlaces(container, ctx) {
       chip.setAttribute("aria-pressed", String(tokens.includes(chip.dataset.token)));
     });
     renderResults();
+    // toggle() — единственное место, где токен без своего чипа (medium3h,
+    // moderate) может исчезнуть из tokens в обход самого подборщика
+    // («Снять «До 3 часов»» из подсказки при 0 результатах) — плашку
+    // «Подбор: …» нужно перерисовать вместе с результатами, иначе она
+    // разойдётся с tokens.
+    renderPickerPanel();
     history.replaceState(history.state, "", placesHash(tokens, near, addTo));
   }
 
@@ -530,5 +552,163 @@ export async function renderPlaces(container, ctx) {
     if (chip) chip.focus();
   }
 
+  // Форма открыта/закрыта — единственное собственное состояние подборщика;
+  // что уже подобрано — не хранится отдельно, а всегда читается из tokens
+  // (тот же принцип «источник истины — URL», что и у остального экрана),
+  // поэтому плашка «Подбор: …» верна и сразу после обычной перезагрузки
+  // #/places?f=nature,medium3h, а не только сразу после нажатия «Подобрать».
+  let pickerOpen = false;
+  let pickedTime;
+  let pickedInterest;
+  let pickedEffort;
+
+  function pickerSummaryParts() {
+    const parts = [];
+    if (tokens.includes(PICKER_TIME_TOKEN_3H)) parts.push(FLAG_LABELS[PICKER_TIME_TOKEN_3H]);
+    if (tokens.includes(PICKER_EFFORT_TOKEN_MODERATE)) parts.push(FLAG_LABELS[PICKER_EFFORT_TOKEN_MODERATE]);
+    return parts;
+  }
+
+  // «Сбросить подбор» снимает только два токена без собственного чипа
+  // (medium3h/moderate) — категория интереса остаётся обычным, видимым и
+  // управляемым чипом в общем ряду, снимать его отдельной кнопкой не нужно.
+  function removePickerTokens() {
+    if (!ctx.isCurrent()) return;
+    tokens = tokens.filter((t) => t !== PICKER_TIME_TOKEN_3H && t !== PICKER_EFFORT_TOKEN_MODERATE);
+    renderPickerPanel();
+    renderResults();
+    history.replaceState(history.state, "", placesHash(tokens, near, addTo));
+  }
+
+  // Подбор — не слияние с уже нажатыми чипами, а замена: пользователь явно
+  // задаёт «время + интерес + нагрузка» целиком, так предсказуемее, чем
+  // тихо объединять с тем, что было выбрано раньше.
+  function applyPicker() {
+    if (!ctx.isCurrent() || pickedTime === undefined || !pickedInterest) return;
+    tokens = [pickedTime, pickedInterest, pickedEffort].filter(Boolean);
+    chips.forEach((chip) => chip.setAttribute("aria-pressed", String(tokens.includes(chip.dataset.token))));
+    pickerOpen = false;
+    renderPickerPanel();
+    renderResults();
+    history.replaceState(history.state, "", placesHash(tokens, near, addTo));
+  }
+
+  // Одна группа радио-чипов (в отличие от общего ряда — выбор один из
+  // вариантов, не несколько): переиспользует внешний вид `.chip`, но не сам
+  // компонент общего ряда — там нужно было бы различать выбор одного
+  // значения и переключение нескольких.
+  function renderPickerGroup(label, options, selected, onSelect) {
+    const group = document.createElement("div");
+    group.className = "picker__group";
+    const groupLabel = document.createElement("p");
+    groupLabel.className = "picker__label";
+    groupLabel.textContent = label;
+    group.appendChild(groupLabel);
+
+    const row = document.createElement("div");
+    row.className = "picker__options";
+    row.setAttribute("role", "group");
+    row.setAttribute("aria-label", label);
+    options.forEach(({ token, label: optionLabel }) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chip";
+      btn.setAttribute("aria-pressed", String(token === selected));
+      btn.textContent = optionLabel;
+      btn.addEventListener("click", () => onSelect(token));
+      row.appendChild(btn);
+    });
+    group.appendChild(row);
+    return group;
+  }
+
+  function renderPickerPanel() {
+    pickerPanel.innerHTML = "";
+
+    if (!pickerOpen) {
+      const cta = document.createElement("button");
+      cta.type = "button";
+      cta.className = "btn btn--secondary picker__cta";
+      cta.textContent = "🎯 Подобрать по времени и интересу";
+      cta.addEventListener("click", () => {
+        pickedTime = undefined;
+        pickedInterest = undefined;
+        pickedEffort = null;
+        pickerOpen = true;
+        renderPickerPanel();
+      });
+      pickerPanel.appendChild(cta);
+
+      const parts = pickerSummaryParts();
+      if (parts.length) {
+        const summary = document.createElement("p");
+        summary.className = "area-notice picker__summary";
+        summary.append(`Подбор: ${parts.join(" · ")}. `);
+        const reset = document.createElement("button");
+        reset.type = "button";
+        reset.className = "area-notice__link area-notice__button";
+        reset.textContent = "Сбросить подбор";
+        reset.addEventListener("click", removePickerTokens);
+        summary.appendChild(reset);
+        pickerPanel.appendChild(summary);
+      }
+      return;
+    }
+
+    const form = document.createElement("div");
+    form.className = "picker__form";
+
+    const title = document.createElement("p");
+    title.className = "picker__title";
+    title.textContent = "Подобрать место";
+    form.appendChild(title);
+
+    form.appendChild(
+      renderPickerGroup("Сколько у вас времени?", TIME_BUDGETS, pickedTime, (value) => {
+        pickedTime = value;
+        renderPickerPanel();
+      })
+    );
+    form.appendChild(
+      renderPickerGroup(
+        "Что вам интересно?",
+        config.categories.map((c) => ({ token: c.id, label: c.name })),
+        pickedInterest,
+        (value) => {
+          pickedInterest = value;
+          renderPickerPanel();
+        }
+      )
+    );
+    form.appendChild(
+      renderPickerGroup("Нагрузка (необязательно)", EFFORT_BUDGETS, pickedEffort, (value) => {
+        pickedEffort = value;
+        renderPickerPanel();
+      })
+    );
+
+    const actions = document.createElement("div");
+    actions.className = "picker__actions";
+    const submit = document.createElement("button");
+    submit.type = "button";
+    submit.className = "btn btn--primary picker__submit";
+    submit.textContent = "Подобрать";
+    submit.disabled = pickedTime === undefined || !pickedInterest;
+    submit.addEventListener("click", applyPicker);
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "btn btn--secondary picker__cancel";
+    cancel.textContent = "Отмена";
+    cancel.addEventListener("click", () => {
+      pickerOpen = false;
+      renderPickerPanel();
+    });
+    actions.append(submit, cancel);
+    form.appendChild(actions);
+
+    pickerPanel.appendChild(form);
+  }
+
+  renderPickerPanel();
   renderResults();
 }
