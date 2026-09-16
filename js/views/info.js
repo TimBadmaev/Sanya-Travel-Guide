@@ -230,13 +230,22 @@ export async function renderInfoDetail(container, ctx) {
     const sourcesList = document.createElement("div");
     sourcesList.className = "sources__list";
     item.sources.forEach((src) => {
-      const a = document.createElement("a");
-      a.href = src.url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.textContent = src.title;
-      a.className = "sources__link";
-      sourcesList.appendChild(a);
+      if (src.url) {
+        const a = document.createElement("a");
+        a.href = src.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = src.title;
+        a.className = "sources__link";
+        sourcesList.appendChild(a);
+      } else {
+        // Пустой url (P2, ITERATION-8-FINAL-QA.md §5) — текст без ссылки,
+        // чтобы не создавать мёртвый <a href="">.
+        const span = document.createElement("span");
+        span.textContent = src.title;
+        span.className = "sources__link";
+        sourcesList.appendChild(span);
+      }
     });
     container.appendChild(sourcesList);
   }
