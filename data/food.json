@@ -1,17 +1,19 @@
 [
   {
     "id": "yalong-bay-dongrong-food-plaza",
-    "status": "draft",
+    "status": "verified",
     "name": { "ru": "Фудкорт «Дунжун» (Ялунвань)", "zh": "亚龙湾东榕美食广场" },
     "addressZh": "海南省三亚市吉阳区湾月路1号",
     "area": "yalong",
     "kind": "foodcourt",
-    "location": null,
+    "location": { "lat": 18.228508, "lng": 109.630803 },
     "priceLevel": "unknown",
     "note": "Рынок морепродуктов с оплатой только за обработку, рестораны нескольких кухонь (сычуаньская, хунаньская, кантонская, хайнаньская), супермаркет.",
     "sources": [
-      { "title": "touch.go.qunar.com — «东榕美食广场»", "url": "" },
-      { "title": "m.city8.com — «东榕美食广场»", "url": "" }
+      { "title": "touch.go.qunar.com — «东榕美食广场»", "url": "https://touch.go.qunar.com/poi/29461100" },
+      { "title": "m.city8.com — «东榕美食广场»", "url": "" },
+      { "title": "m.map.360.cn — «东榕美食广场(亚龙湾店)» (координаты объекта)", "url": "https://m.map.360.cn/m/search/detail/pid=ebed4eed7b1a7e80" },
+      { "title": "m.map.360.cn — «喜家港式茶餐厅(亚龙湾东榕美食广场店)» (независимое подтверждение координаты — заведение внутри той же площадки)", "url": "https://m.map.360.cn/m/search/detail/pid=6a25072b4def92e0" }
     ],
     "verifiedAt": "2026-09-16"
   },
@@ -49,17 +51,19 @@
   },
   {
     "id": "diadia-luhuitou",
-    "status": "draft",
+    "status": "verified",
     "name": { "ru": "Diadia Coconut Chicken (у 宝宏大酒店, Дадунхай)", "zh": "嗲嗲的椰子鸡·海南椰子鸡(宝宏大酒店店)" },
     "addressZh": "海南省三亚市吉阳区鹿岭路和海韵路交叉口东北80米",
     "area": "dadonghai",
     "kind": "restaurant",
-    "location": null,
+    "location": { "lat": 18.22382, "lng": 109.51837 },
     "priceLevel": "unknown",
-    "note": "Филиал сети «嗲嗲的椰子鸡» у отеля 宝宏大酒店, район Лухуэйтоу.",
+    "note": "Филиал сети «嗲嗲的椰子鸡» у отеля 宝宏大酒店 (锦江宝宏大酒店, 海韵路18号), район Дадунхай.",
     "sources": [
       { "title": "Trip.com — листинги «嗲嗲的椰子鸡·海南椰子鸡»", "url": "" },
-      { "title": "Dianping — рейтинг «必吃榜»", "url": "" }
+      { "title": "Dianping — рейтинг «必吃榜»", "url": "" },
+      { "title": "m.map.360.cn — «嗲嗲的椰子鸡(宝宏大酒店店)» (координаты объекта)", "url": "https://m.map.360.cn/m/search/detail/pid=e4abd718d510bb0f" },
+      { "title": "m.map.360.cn — «宝宏大酒店-海鲜烧烤自助餐厅» (независимое подтверждение координаты — ресторан того же отеля 锦江宝宏大酒店)", "url": "https://m.map.360.cn/m/search/detail/pid=778e135d0bc45dde" }
     ],
     "verifiedAt": "2026-09-16"
   }
