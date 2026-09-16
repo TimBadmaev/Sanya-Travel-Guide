@@ -1760,3 +1760,102 @@ textarea.settings-field__input {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ===== Batch D — режим «Еда» внутри #/places (js/views/food.js) —
+   только новые правила ===== */
+
+/* Переключатель «Места» / «Еда» — как .chips, но ровно два сегмента на всю
+   ширину, а не прокручиваемый ряд: это не фильтр, а выбор раздела. */
+.mode-switch {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+}
+
+.mode-switch__tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.mode-switch__tab[aria-selected="true"] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.food-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.food-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.food-card p {
+  margin: 0;
+}
+
+.food-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.food-card__icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.food-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.food-card__title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.food-card__meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.food-card__address,
+.food-card__detail {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.food-card__actions {
+  margin-top: var(--space-2);
+}
+
+.food-card__actions .btn {
+  width: 100%;
+}

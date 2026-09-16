@@ -1,6 +1,7 @@
 import { renderHome } from "./views/home.js";
 import { renderPlaces } from "./views/places.js";
 import { renderPlace, renderPlaceTaxi } from "./views/place.js";
+import { renderFoodTaxi } from "./views/food.js";
 import { renderPrepare } from "./views/prepare.js";
 import { renderSettings } from "./views/settings.js";
 import { renderInfo, renderInfoDetail } from "./views/info.js";
@@ -17,6 +18,10 @@ const routes = [
   { pattern: /^\/places$/, render: renderPlaces, nav: "/places" },
   { pattern: /^\/place\/(?<id>[^/]+)$/, render: renderPlace, nav: "/places" },
   { pattern: /^\/place\/(?<id>[^/]+)\/taxi$/, render: renderPlaceTaxi, nav: "/places", fullscreen: true },
+  // Еда (режим #/places?mode=food, ITERATION-8-CONTENT-ARCHITECTURE.md Batch
+  // D) — вложенный экран «Показать таксисту» под тем же разделом, без нового
+  // основного маршрута и без пятой вкладки (D-07).
+  { pattern: /^\/places\/food\/(?<id>[^/]+)\/taxi$/, render: renderFoodTaxi, nav: "/places", fullscreen: true },
   { pattern: /^\/prepare$/, render: renderPrepare, nav: "/prepare" },
   // Настройки — вложенный экран Главной, поэтому подсвечена «Сейчас» ([I3-8]).
   { pattern: /^\/settings$/, render: renderSettings, nav: "/" },

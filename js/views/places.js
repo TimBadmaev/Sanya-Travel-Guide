@@ -22,6 +22,7 @@ import {
 import { haversineKm, formatDistance } from "../logic/distance.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
 import { formatDayMonth, isIsoDate } from "../logic/plan.js";
+import { renderFoodSection, renderModeSwitcher, MODE } from "./food.js";
 
 // Ключ иконки категории (config.categories[].icon) → эмодзи. Деталь
 // отображения, как ICONS в info.js (PLACES-IMPLEMENTATION.md [PI-7], [OQ-14]).
@@ -243,6 +244,14 @@ export async function renderPlaces(container, ctx) {
     }
   }
 
+  // Режим «Еда» (ITERATION-8-CONTENT-ARCHITECTURE.md, Batch D): второй режим
+  // того же #/places, не отдельный маршрут (D-07 — пятой вкладки нет).
+  // Недоступен в режиме выбора места для дня (addTo) — в «Мой план»
+  // добавляются только places.json-места, еда туда не ведёт.
+  if (addTo === null && ctx.query.get("mode") === "food") {
+    return renderFoodSection(container, ctx);
+  }
+
   container.innerHTML = '<p class="loading">Загрузка мест…</p>';
 
   let places;
@@ -301,6 +310,10 @@ export async function renderPlaces(container, ctx) {
   heading.className = "view-title";
   heading.textContent = "Места";
   container.appendChild(heading);
+
+  if (!addTo) {
+    container.appendChild(renderModeSwitcher(MODE.PLACES));
+  }
 
   if (addTo) {
     container.appendChild(renderAddToNotice(addTo, () => ctx.back(`#/plan/${addTo}`)));
