@@ -298,6 +298,12 @@ export async function renderHome(container, ctx) {
       appendActionLink(container, label, "#/places?f=saved", "home-link");
     }
 
+    // «Поесть рядом» — единственная точка входа в Food Nearby с Главной
+    // (PRODUCT.md 8.3, 8.1): near=1 переиспользует тот же токен, что уже
+    // включает «Рядом со мной» у Places (см. scenarioHref выше, places.js) —
+    // второй механизм для Food Nearby не заводится (food.js).
+    appendActionLink(container, "🍜 Поесть рядом", "#/places?mode=food&near=1", "btn btn--secondary home-action");
+
     appendLine(container, "home-subtitle", "Под рукой");
     const help = document.createElement("div");
     help.className = "home-help";

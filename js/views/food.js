@@ -407,6 +407,14 @@ export async function renderFoodSection(container, ctx) {
   container.append(allBody, nearbyBody);
 
   renderAllBody();
+
+  // Точка входа «Поесть рядом» с Главной (PRODUCT.md 8.3): near=1 в URL —
+  // тот же токен, что уже открывает «Рядом со мной» у Places (places.js,
+  // home.js). Просто переключает тот же scope, что и клик по чипу «Рядом со
+  // мной» ниже, — второго способа управления Food Nearby не создаётся.
+  if (ctx.query.get("near") === "1") {
+    switchScope(FOOD_SCOPE.NEARBY);
+  }
 }
 
 // «Показать таксисту» для food-записи (#/places/food/<id>/taxi). Тот же
