@@ -76,11 +76,12 @@
     "kind": "foodcourt",
     "location": { "lat": 18.233167, "lng": 109.639240 },
     "priceLevel": "unknown",
-    "note": "Тематическая улица в центре Ялунваня, напротив отеля Тяньюй: несколько десятков ресторанов разных кухонь (сычуаньская, кантонская, хунаньская, морепродукты) и международные сети (Starbucks, Pizza Hut, Häagen-Dazs). В отзывах отмечают очереди в праздники — стоит бронировать столик заранее.",
+    "note": "Торговая улица в центре Ялунваня, напротив отеля Тяньюй: несколько десятков ресторанов разных кухонь (сычуаньская, кантонская, хунаньская, морепродукты), международные сети (Starbucks, Pizza Hut, Häagen-Dazs) и магазины. Visit Sanya описывает её как место ужина, покупок и вечерней жизни бухты — вечером сюда можно дойти пешком, не выезжая из Ялунваня.",
     "sources": [
       { "title": "360地图 — «百花谷美食街» (координаты объекта)", "url": "https://m.map.360.cn/m/search/detail/pid=b1070ab848cff68f" },
       { "title": "360地图 — «百花谷商业中心» (независимое подтверждение координаты — торговый комплекс на той же площадке, с арендаторами внутри)", "url": "https://m.map.360.cn/m/search/detail/pid=8a1105bf3095356f" },
-      { "title": "什么值得买 / travel.qunar.com — описание состава ресторанов и брендов «百花谷商业街»", "url": "https://you.ctrip.com/food/sanya61/24993251.html" }
+      { "title": "什么值得买 / travel.qunar.com — описание состава ресторанов и брендов «百花谷商业街»", "url": "https://you.ctrip.com/food/sanya61/24993251.html" },
+      { "title": "Sanya Tourism Board — «Yalong Bay» (Hundred Flowers Valley Commercial Street: еда, покупки, вечерняя жизнь)", "url": "https://www.visitsanya.com/destination/yalong-bay" }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -287,6 +288,25 @@
       { "title": "Яндекс Карты — «Qionghaha Coconut Chicken», улица Хайшэнлу (координаты объекта, WGS-84; отзывы 2025–2026)", "url": "https://yandex.com/maps/org/qionghaha_coconut_chicken/35223533213/" },
       { "title": "360地图 — «琼哈哈椰子鸡(椰梦长廊店)», 海声路162号 (независимое подтверждение координаты: 11 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=29d05b833dfdbe75" },
       { "title": "携程美食 — «琼哈哈椰子鸡·糟粕醋(椰梦长廊店)» (адрес указан как 三亚湾路161号 — угол с 海声路)", "url": "https://you.ctrip.com/food/sanya61/143232478.html" }
+    ],
+    "verifiedAt": "2026-09-17"
+  },
+  {
+    "id": "haitang-68-food-street",
+    "status": "verified",
+    "name": { "ru": "Гастроулица «Хайтан 68» (Хайтан)", "zh": "海棠68环球美食街" },
+    "addressZh": "海南省三亚市海棠区海棠北路海棠68环球美食街（君悦酒店旁）",
+    "area": "haitang",
+    "kind": "foodcourt",
+    "location": { "lat": 18.3458424, "lng": 109.7334576 },
+    "priceLevel": "unknown",
+    "note": "Гастроулица рядом с отелем Grand Hyatt в полосе отелей бухты Хайтан: больше десятка ресторанов и кафе — хайнаньская кухня (в том числе кокосовая курица), юго-восточноазиатская, гонконгские закуски, площадка приготовления морепродуктов. Около 1,5 км от аквариума Atlantis.",
+    "sources": [
+      { "title": "OpenStreetMap — полигон «海棠68环球美食街» / «Arena 68» (координаты объекта — центр полигона, WGS-84; контур 2020 года, название обновлено в 2026)", "url": "https://www.openstreetmap.org/way/840460636" },
+      { "title": "360地图 — «海棠68环球美食街(海棠68店)», 海棠北路 (независимое подтверждение координаты: 11 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=baa97c913bb7bc61" },
+      { "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (椰小鸡·椰子鸡: 海棠区海棠北路海棠68环球美食街1层 — работает в 2026 году)", "url": "https://m.sohu.com/a/1043892361_121106994" },
+      { "title": "Keyestone Group (девелопер) — «Haitang Bay Arena 68 Gourmet Street» (рядом с Grand Hyatt, больше десятка кухонь)", "url": "https://www.keyestonegroup.com/project/haitang-bay-arena-68-gourmet-street/" },
+      { "title": "携程美食 — «海棠68环球美食街» (адрес 海棠北路三亚海棠湾君悦酒店旁, состав кухонь)", "url": "https://you.ctrip.com/food/61/63377786.html" }
     ],
     "verifiedAt": "2026-09-17"
   }
