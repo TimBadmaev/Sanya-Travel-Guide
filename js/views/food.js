@@ -1,7 +1,16 @@
 import { loadFood, loadConfig, loadErrorMessage } from "../data.js";
 import { renderShowScreen } from "./taxi.js";
 import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
-import { userDistanceText, primeCurrentPosition } from "../logic/geo.js";
+import {
+  userDistanceText,
+  primeCurrentPosition,
+  getKnownPosition,
+  setKnownPosition,
+  requestCurrentPosition,
+  describeGeoError,
+  GEO_ERROR,
+} from "../logic/geo.js";
+import { filterWithinRadius, sortByDistance, NEAR_RADIUS_KM } from "../logic/filters.js";
 
 // Еда (ITERATION-8-CONTENT-ARCHITECTURE.md, Batch D): отдельный, короткий
 // экран по образцу views/handy.js — не карточка места, у food-записей нет
@@ -164,6 +173,20 @@ function renderFoodCard(item, area) {
   return card;
 }
 
+// «Все» / «Рядом со мной» (Итерация 10): локальное состояние рендера, как и
+// nearbyStatus «Рядом со мной» в местах (places.js) — не URL-параметр, сброс
+// при каждом входе на экран. По умолчанию — «Все».
+const FOOD_SCOPE = { ALL: "all", NEARBY: "nearby" };
+
+const FOOD_NEARBY_STATUS = {
+  IDLE: "idle",
+  LOADING: "loading",
+  SUCCESS: "success",
+  EMPTY: "empty",
+  DENIED: "denied",
+  ERROR: "error",
+};
+
 // Режим «Еда» внутри #/places (?mode=food). Свои фильтры Places (время,
 // интерес, effort, «Рядом со мной») сюда не попадают — экран не читает f=/
 // near= и не трогает places.json.
@@ -200,9 +223,9 @@ export async function renderFoodSection(container, ctx) {
   container.appendChild(renderModeSwitcher(MODE.FOOD));
 
   if (!food.length) {
-    // Черновики (сейчас все 4 записи food.json) не доходят до этого массива
-    // (loadFood(), D-18) — пустое состояние честно объясняет, почему список
-    // пуст, без технических деталей и без фиктивных мест.
+    // Черновики не доходят до этого массива (loadFood(), D-18) — пустое
+    // состояние честно объясняет, почему список пуст, без технических
+    // деталей и без фиктивных мест.
     const empty = document.createElement("p");
     empty.className = "empty-state";
     empty.textContent =
@@ -212,10 +235,178 @@ export async function renderFoodSection(container, ctx) {
   }
 
   const areasById = new Map(config.areas.map((a) => [a.id, a]));
-  const list = document.createElement("div");
-  list.className = "food-list";
-  food.forEach((item) => list.appendChild(renderFoodCard(item, areasById.get(item.area))));
-  container.appendChild(list);
+
+  // === «Рядом со мной» для Food (Итерация 10) =============================
+  // Тот же радиус, что у сценариев «Сейчас» и «Рядом со мной» в местах
+  // (NEAR_RADIUS_KM, Q-21, js/logic/filters.js) — второй радиус не заводим.
+  // filterWithinRadius()/sortByDistance() — уже существующие чистые функции
+  // над `.location`, общие для мест и еды; собственной логики
+  // расстояния/сортировки здесь нет. Состояние — только в замыкании этого
+  // рендера, как nearbyStatus в places.js: своя точка, не resolveOrigin() и
+  // не stg:trip.stay; координаты нигде не сохраняются (geo.js) и никуда не
+  // отправляются.
+  let scope = FOOD_SCOPE.ALL;
+  let nearbyStatus = FOOD_NEARBY_STATUS.IDLE;
+  let nearbyOrigin = null;
+  let nearbyResults = [];
+  let nearbyErrorText = "";
+
+  function computeNearbyResults() {
+    // isValidLocation() исключает и отсутствующую точку, и заглушку {0,0}
+    // (amap.js) — черновиков здесь и так уже нет (loadFood(), D-18).
+    const usable = food.filter((item) => isValidLocation(item.location));
+    nearbyResults = sortByDistance(filterWithinRadius(usable, nearbyOrigin, NEAR_RADIUS_KM), nearbyOrigin);
+    nearbyStatus = nearbyResults.length ? FOOD_NEARBY_STATUS.SUCCESS : FOOD_NEARBY_STATUS.EMPTY;
+  }
+
+  // Настоящий запрос геолокации — только по нажатию CTA/«Повторить», никогда
+  // автоматически: выбор вкладки «Рядом со мной» сам по себе не должен
+  // неожиданно показывать диалог разрешения браузера.
+  function requestNearby() {
+    if (!ctx.isCurrent()) return;
+    nearbyStatus = FOOD_NEARBY_STATUS.LOADING;
+    renderNearbyBody();
+    requestCurrentPosition()
+      .then((point) => {
+        // Тот же грант разрешения — карточки («X км от вас») и «Рядом со
+        // мной» в местах получают эту же позицию без повторного запроса.
+        setKnownPosition(point);
+        if (!ctx.isCurrent()) return;
+        nearbyOrigin = point;
+        computeNearbyResults();
+        renderNearbyBody();
+      })
+      .catch((error) => {
+        if (!ctx.isCurrent()) return;
+        nearbyStatus =
+          error && error.code === GEO_ERROR.PERMISSION_DENIED ? FOOD_NEARBY_STATUS.DENIED : FOOD_NEARBY_STATUS.ERROR;
+        nearbyErrorText = describeGeoError(error);
+        renderNearbyBody();
+      });
+  }
+
+  function renderNearbyBody() {
+    nearbyBody.innerHTML = "";
+
+    if (nearbyStatus === FOOD_NEARBY_STATUS.LOADING) {
+      const p = document.createElement("p");
+      p.className = "loading";
+      p.textContent = "Определяем ваше местоположение…";
+      nearbyBody.appendChild(p);
+      return;
+    }
+
+    if (nearbyStatus === FOOD_NEARBY_STATUS.SUCCESS) {
+      const list = document.createElement("div");
+      list.className = "food-list";
+      nearbyResults.forEach((item) => list.appendChild(renderFoodCard(item, areasById.get(item.area))));
+      nearbyBody.appendChild(list);
+      return;
+    }
+
+    if (nearbyStatus === FOOD_NEARBY_STATUS.EMPTY) {
+      // Не «нет ресторанов в городе» — только то, что рядом нет проверенных
+      // мест в уже известном радиусе (D-18: черновики сюда не попадают).
+      const empty = document.createElement("p");
+      empty.className = "empty-state";
+      empty.textContent = `Рядом нет проверенных мест еды в радиусе ${NEAR_RADIUS_KM} км.`;
+      nearbyBody.appendChild(empty);
+      return;
+    }
+
+    if (nearbyStatus === FOOD_NEARBY_STATUS.DENIED) {
+      const wrap = document.createElement("div");
+      wrap.className = "empty-state";
+      const p = document.createElement("p");
+      p.textContent =
+        "Чтобы показать еду рядом с вами, нужен доступ к геолокации браузера — без него нельзя определить, где вы сейчас. Можно пользоваться списком «Все» выше.";
+      wrap.appendChild(p);
+      nearbyBody.appendChild(wrap);
+      return;
+    }
+
+    if (nearbyStatus === FOOD_NEARBY_STATUS.ERROR) {
+      const wrap = document.createElement("div");
+      wrap.className = "empty-state";
+      const p = document.createElement("p");
+      p.textContent = nearbyErrorText;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn btn--primary";
+      btn.textContent = "Повторить";
+      btn.addEventListener("click", requestNearby);
+      wrap.append(p, btn);
+      nearbyBody.appendChild(wrap);
+      return;
+    }
+
+    // IDLE — до первого запроса геолокации в этом сеансе экрана.
+    const cta = document.createElement("button");
+    cta.type = "button";
+    cta.className = "btn btn--secondary nearby__cta";
+    cta.textContent = "📍 Показать еду рядом со мной";
+    cta.addEventListener("click", requestNearby);
+    nearbyBody.appendChild(cta);
+  }
+
+  function renderAllBody() {
+    allBody.innerHTML = "";
+    const list = document.createElement("div");
+    list.className = "food-list";
+    food.forEach((item) => list.appendChild(renderFoodCard(item, areasById.get(item.area))));
+    allBody.appendChild(list);
+  }
+
+  function switchScope(next) {
+    if (!ctx.isCurrent() || next === scope) return;
+    scope = next;
+    scopeChips.forEach((chip) => chip.setAttribute("aria-pressed", String(chip.dataset.scope === scope)));
+    allBody.hidden = scope !== FOOD_SCOPE.ALL;
+    nearbyBody.hidden = scope !== FOOD_SCOPE.NEARBY;
+    if (scope === FOOD_SCOPE.NEARBY) {
+      // Позиция уже известна (прайминг при старте приложения или прошлый
+      // запрос в этом сеансе, geo.js) — используем её без нового запроса.
+      const known = getKnownPosition();
+      if (known) {
+        nearbyOrigin = known;
+        computeNearbyResults();
+      } else if (nearbyStatus !== FOOD_NEARBY_STATUS.DENIED && nearbyStatus !== FOOD_NEARBY_STATUS.ERROR) {
+        nearbyStatus = FOOD_NEARBY_STATUS.IDLE;
+      }
+      renderNearbyBody();
+    }
+  }
+
+  // Переключатель — те же chip/chips, что уже использует ряд фильтров Places
+  // (places.js): переиспользуем стиль и зону нажатия ≥44px без новой CSS.
+  const scopeRow = document.createElement("div");
+  scopeRow.className = "chips";
+  scopeRow.setAttribute("role", "group");
+  scopeRow.setAttribute("aria-label", "Еда рядом");
+  const scopeChips = [
+    { value: FOOD_SCOPE.ALL, label: "Все" },
+    { value: FOOD_SCOPE.NEARBY, label: "Рядом со мной" },
+  ].map(({ value, label }) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "chip";
+    chip.dataset.scope = value;
+    chip.setAttribute("aria-pressed", String(value === scope));
+    chip.textContent = label;
+    chip.addEventListener("click", () => switchScope(value));
+    scopeRow.appendChild(chip);
+    return chip;
+  });
+  container.appendChild(scopeRow);
+
+  const allBody = document.createElement("div");
+  allBody.className = "food-scope-body food-scope-body--all";
+  const nearbyBody = document.createElement("div");
+  nearbyBody.className = "food-scope-body food-scope-body--nearby";
+  nearbyBody.hidden = true;
+  container.append(allBody, nearbyBody);
+
+  renderAllBody();
 }
 
 // «Показать таксисту» для food-записи (#/places/food/<id>/taxi). Тот же

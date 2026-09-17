@@ -29,6 +29,52 @@ export function setKnownPosition(point) {
   currentPosition = point;
 }
 
+// Стандартные коды GeolocationPositionError (MDN): 1 — пользователь отказал,
+// 2 — координаты недоступны, 3 — истекло время ожидания. Те же коды и то же
+// время ожидания, что уже использует «Рядом со мной» в местах (places.js) —
+// вынесены сюда, а не импортированы из places.js, чтобы Food Nearby
+// (food.js) не создавал циклическую зависимость food.js↔places.js
+// (places.js уже импортирует renderFoodSection из food.js).
+export const GEO_ERROR = { PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 };
+const GEO_REQUEST_TIMEOUT_MS = 10000;
+
+// Явный запрос текущей позиции — с диалогом разрешения браузера, если оно ещё
+// не выдано. В отличие от primeCurrentPosition() (ниже), может показать
+// popup: вызывать только по явному действию пользователя (кнопка «Рядом со
+// мной»/«Показать еду рядом», как уже делает places.js). Успешный результат
+// стоит сразу передать в setKnownPosition() — тот же грант разрешения тогда
+// работает и на карточках («X км от вас»), и в другом Nearby-сценарии без
+// повторного запроса.
+export function requestCurrentPosition() {
+  return new Promise((resolve, reject) => {
+    if (!("geolocation" in navigator)) {
+      reject({ code: "unsupported" });
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => resolve({ lat: position.coords.latitude, lng: position.coords.longitude }),
+      (error) => reject(error),
+      { enableHighAccuracy: false, timeout: GEO_REQUEST_TIMEOUT_MS, maximumAge: 60000 }
+    );
+  });
+}
+
+// Пользовательский текст ошибки без технических деталей — тот же текст, что
+// уже показывает places.js для «Рядом со мной».
+export function describeGeoError(error) {
+  const code = error && error.code;
+  if (code === GEO_ERROR.POSITION_UNAVAILABLE) {
+    return "Не удалось определить координаты. Проверьте, включена ли геолокация на телефоне, и попробуйте ещё раз.";
+  }
+  if (code === GEO_ERROR.TIMEOUT) {
+    return "Определение местоположения заняло слишком много времени. Попробуйте ещё раз.";
+  }
+  if (code === "unsupported") {
+    return "Этот браузер не поддерживает определение местоположения.";
+  }
+  return "Не удалось определить местоположение. Попробуйте ещё раз.";
+}
+
 // Тихая попытка получить позицию БЕЗ показа диалога разрешения — только если
 // разрешение уже выдано браузером раньше. Если разрешения ещё нет — ничего не
 // запрашиваем и не показываем: отдельный popup ради карточки запускать
