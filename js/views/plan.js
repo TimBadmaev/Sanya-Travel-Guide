@@ -1,6 +1,6 @@
-import { loadPlan, loadPlaces, loadConfig, loadErrorMessage } from "../data.js";
+import { loadPlan, loadPlaces, loadConfig, loadExcursions, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
-import { EFFORT_LABELS, formatDuration } from "../logic/filters.js";
+import { EFFORT_LABELS, EXCURSION_FORMAT_LABELS, formatDuration } from "../logic/filters.js";
 import { getTodayIso, pluralizeRu } from "../logic/trip.js";
 import {
   findRecommendedDay,
@@ -8,6 +8,8 @@ import {
   formatLongDate,
   formatPeriod,
   formatShortDate,
+  countDayItems,
+  getDayExcursions,
   getDayNumber,
   getDayPlaces,
   getPeriodDates,
@@ -19,14 +21,15 @@ import {
 } from "../logic/plan.js";
 import {
   ADD_PLACE_STATUS,
+  ITEM_KIND,
   MAX_PLACES_PER_DAY,
   acceptDay,
-  addPlace,
+  addItem,
   clearDay,
   countPlannedDays,
-  getAddPlaceStatus,
+  getAddItemStatus,
   moveDay,
-  replaceDayWithPlace,
+  replaceDayWithItem,
   swapDays,
 } from "../logic/myplan.js";
 
@@ -146,7 +149,7 @@ export function saveMyPlan(next, status) {
 
 // Содержимое дня (§13.3.1): отсутствующие поля не выводятся вовсе — ни
 // пустых заголовков, ни прочерков. Заголовок и дату рисует экран.
-export function renderDayBody(container, day, { places, typesById }) {
+export function renderDayBody(container, day, { places, excursions, typesById }) {
   const chip = createTypeChip(day.type, typesById);
   if (chip) {
     const row = document.createElement("p");
@@ -169,6 +172,32 @@ export function renderDayBody(container, day, { places, typesById }) {
       appendText(li, "span", "plan-rhythm__label", label);
       appendText(li, "span", "plan-rhythm__text", text);
       list.appendChild(li);
+    });
+    container.appendChild(list);
+  }
+
+  // Экскурсии дня — отдельным блоком перед местами, с иконкой и подписью
+  // «Экскурсия»: тип пункта виден сразу. Экскурсия — один пункт дня, её
+  // места внутри дня не раскрываются (они на карточке экскурсии).
+  const { excursions: dayExcursions, missing: missingExcursions } = getDayExcursions(day, excursions);
+  if (missingExcursions.length) {
+    console.warn("Экскурсии дня не найдены среди опубликованных и пропущены:", missingExcursions.join(", "));
+  }
+  if (dayExcursions.length) {
+    appendText(container, "h3", "place-detail__subtitle", "Экскурсии этого дня");
+    const list = document.createElement("div");
+    list.className = "info-list plan-places plan-excursions";
+    dayExcursions.forEach((excursion) => {
+      const card = document.createElement("a");
+      card.href = `#/excursion/${excursion.id}`;
+      card.className = "info-card";
+      appendText(card, "span", "info-card__icon", EXCURSION_ICON).setAttribute("aria-hidden", "true");
+      const body = document.createElement("span");
+      body.className = "info-card__body";
+      appendText(body, "span", "info-card__title", excursion.title.ru);
+      appendText(body, "span", "info-card__summary", excursionSummary(excursion, "Экскурсия"));
+      card.appendChild(body);
+      list.appendChild(card);
     });
     container.appendChild(list);
   }
@@ -210,9 +239,19 @@ export function renderDayBody(container, day, { places, typesById }) {
   }
 }
 
+// Иконка и строка параметров экскурсии — общие для дня плана и списка
+// «Экскурсий» (views/excursions.js).
+export const EXCURSION_ICON = "🧭";
+
+export function excursionSummary(excursion, prefix) {
+  return [prefix, EXCURSION_FORMAT_LABELS[excursion.format], formatDuration(excursion.durationHours), EFFORT_LABELS[excursion.effort]]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 // Строка даты в списках: «чт, 19 ноября · День 7», заголовок или «Пока
 // ничего не запланировано», чип типа. tag — "a" (переход) или "button".
-function createDayRow(tag, date, day, { plan, places, typesById, today, note }) {
+function createDayRow(tag, date, day, { plan, places, excursions, typesById, today, note }) {
   const row = document.createElement(tag);
   row.className = "plan-row";
   if (tag === "button") row.type = "button";
@@ -225,7 +264,7 @@ function createDayRow(tag, date, day, { plan, places, typesById, today, note }) 
   appendText(row, "span", "plan-row__date", head);
 
   const empty = isDayEmpty(day);
-  const title = empty ? "" : resolveDayTitle(day, places);
+  const title = empty ? "" : resolveDayTitle(day, places, excursions);
   const titleEl = appendText(row, "span", "plan-row__title", title || EMPTY_DAY_TEXT);
   if (!title) titleEl.classList.add("plan-row__title--empty");
 
@@ -242,8 +281,9 @@ function createDayRow(tag, date, day, { plan, places, typesById, today, note }) 
 
 async function loadAll(requirePlan) {
   let planError = null;
-  const [places, config, plan] = await Promise.all([
+  const [places, excursions, config, plan] = await Promise.all([
     loadPlaces(),
+    loadExcursions(),
     loadConfig(),
     requirePlan
       ? loadPlan()
@@ -252,7 +292,7 @@ async function loadAll(requirePlan) {
           return null;
         }),
   ]);
-  return { places, config, plan, planError };
+  return { places, excursions, config, plan, planError };
 }
 
 function areaName(config, plan) {
@@ -281,7 +321,7 @@ export async function renderMyPlan(container, ctx) {
   }
   if (!ctx.isCurrent()) return;
 
-  const { places, config, plan, planError } = data;
+  const { places, excursions, config, plan, planError } = data;
   const typesById = typesMap(config);
   const myPlan = storage.getMyPlan();
   // Без рекомендации (§9.10) — сохранённые дни без нумерации «День N».
@@ -314,7 +354,7 @@ export async function renderMyPlan(container, ctx) {
   const list = document.createElement("div");
   list.className = "plan-list";
   dates.forEach((date) => {
-    const row = createDayRow("a", date, myPlan.days[date], { plan, places, typesById, today });
+    const row = createDayRow("a", date, myPlan.days[date], { plan, places, excursions, typesById, today });
     row.href = `#/plan/${date}`;
     list.appendChild(row);
   });
@@ -345,7 +385,7 @@ export async function renderMyPlanDay(container, ctx) {
   }
   if (!ctx.isCurrent()) return;
 
-  const { places, config, plan } = data;
+  const { places, excursions, config, plan } = data;
   // Внепериодная дата → к списку (§8.2). Без рекомендации период не
   // проверить — открывается только сохранённый день.
   if (plan ? !isInPeriod(plan.meta, date) : isDayEmpty(storage.getMyPlan().days[date])) {
@@ -367,9 +407,9 @@ export async function renderMyPlanDay(container, ctx) {
     container.innerHTML = "";
     appendBackLink(container, "← К моему плану", "#/plan", ctx);
     appendText(container, "p", "plan-day__date", number ? `День ${number} из ${total} · ${formatLongDate(date)}` : formatLongDate(date));
-    const title = empty ? "" : resolveDayTitle(day, places);
+    const title = empty ? "" : resolveDayTitle(day, places, excursions);
     appendText(container, "h2", `view-title${title ? "" : " plan-day__title--empty"}`, title || EMPTY_DAY_TEXT);
-    if (!empty) renderDayBody(container, day, { places, typesById });
+    if (!empty) renderDayBody(container, day, { places, excursions, typesById });
 
     const status = createStatus();
 
@@ -402,9 +442,8 @@ export async function renderMyPlanDay(container, ctx) {
     appendText(container, "h3", "place-detail__subtitle plan-edit__title", "Изменить день");
     const edit = document.createElement("div");
     edit.className = "plan-edit";
-    const count = day && Array.isArray(day.placeIds) ? day.placeIds.length : 0;
-    if (count >= MAX_PLACES_PER_DAY) {
-      appendText(edit, "p", "plan-edit__note", `В дне уже ${MAX_PLACES_PER_DAY} места — чтобы добавить другое, очистите или перенесите день.`);
+    if (countDayItems(day) >= MAX_PLACES_PER_DAY) {
+      appendText(edit, "p", "plan-edit__note", `В дне уже ${MAX_PLACES_PER_DAY} пункта — чтобы добавить другое, очистите или перенесите день.`);
     } else {
       const add = appendText(edit, "a", "btn btn--secondary plan-button", "Добавить место");
       add.href = `#/places?addTo=${date}`;
@@ -441,7 +480,7 @@ export async function renderMyPlanDay(container, ctx) {
 
 // Список дат с текущим содержимым (§9.6, §9.7). onPick(date, row) решает,
 // что делать; подтверждение раскрывается под строкой, одно за раз.
-function renderDatePicker(container, { dates, plan, places, typesById, rowNote, onPick }) {
+function renderDatePicker(container, { dates, plan, places, excursions, typesById, rowNote, onPick }) {
   const list = document.createElement("div");
   list.className = "plan-list";
   let openBox = null;
@@ -454,7 +493,7 @@ function renderDatePicker(container, { dates, plan, places, typesById, rowNote, 
     const item = document.createElement("div");
     item.className = "plan-pick";
     const note = rowNote ? rowNote(date) : null;
-    const row = createDayRow("button", date, myPlan.days[date], { plan, places, typesById, today: null, note });
+    const row = createDayRow("button", date, myPlan.days[date], { plan, places, excursions, typesById, today: null, note });
     if (note) {
       row.disabled = true;
       row.classList.add("is-disabled");
@@ -489,7 +528,7 @@ export async function renderMoveDay(container, ctx) {
   }
   if (!ctx.isCurrent()) return;
 
-  const { places, config, plan } = data;
+  const { places, excursions, config, plan } = data;
   if (!isInPeriod(plan.meta, date)) {
     window.location.replace("#/plan");
     return;
@@ -503,7 +542,7 @@ export async function renderMoveDay(container, ctx) {
 
   container.innerHTML = "";
   appendBackLink(container, "← Назад", `#/plan/${date}`, ctx);
-  const title = resolveDayTitle(source, places) || EMPTY_DAY_TEXT;
+  const title = resolveDayTitle(source, places, excursions) || EMPTY_DAY_TEXT;
   appendText(container, "h2", "view-title", `Перенести «${title}»`);
   appendText(container, "p", "plan-subtitle", `Сейчас — ${formatLongDate(date)}. На свободную дату день переедет сразу, с занятой можно поменяться местами.`);
   const status = createStatus();
@@ -519,6 +558,7 @@ export async function renderMoveDay(container, ctx) {
     dates: getPeriodDates(plan.meta).filter((d) => d !== date),
     plan,
     places,
+    excursions,
     typesById: typesMap(config),
     onPick: (target, close) => {
       const current = storage.getMyPlan();
@@ -528,7 +568,7 @@ export async function renderMoveDay(container, ctx) {
         return null;
       }
       return createConfirm(
-        `На ${formatDayMonth(target)} уже есть «${resolveDayTitle(targetDay, places) || EMPTY_DAY_TEXT}».`,
+        `На ${formatDayMonth(target)} уже есть «${resolveDayTitle(targetDay, places, excursions) || EMPTY_DAY_TEXT}».`,
         [
           { label: "Поменять местами", primary: true, onClick: () => finish(swapDays(storage.getMyPlan(), date, target), target) },
           { label: "Заменить содержимое", primary: false, onClick: () => finish(moveDay(storage.getMyPlan(), date, target), target) },
@@ -539,22 +579,23 @@ export async function renderMoveDay(container, ctx) {
   });
 }
 
-// ---------------------------------------------------------------- добавление места
+// ---------------------------------------------------------------- добавление места / экскурсии
 
-// Добавить место в день; для занятого дня обязателен выбор «Добавить» /
-// «Заменить» (§9.7). Возвращает подтверждение или null, если выбор не нужен.
-function pickAddMode(place, date, places, { onDone, onCancel }) {
+// Добавить пункт (kind — ITEM_KIND: место или экскурсия) в день; для занятого
+// дня обязателен выбор «Добавить» / «Заменить» (§9.7). Возвращает
+// подтверждение или null, если выбор не нужен.
+function pickAddMode(kind, id, date, { places, excursions }, { onDone, onCancel }) {
   const current = storage.getMyPlan();
   const day = current.days[date];
   if (isDayEmpty(day)) {
-    onDone(addPlace(current, date, place.id));
+    onDone(addItem(current, date, kind, id));
     return null;
   }
   return createConfirm(
-    `На ${formatDayMonth(date)} уже есть «${resolveDayTitle(day, places) || EMPTY_DAY_TEXT}».`,
+    `На ${formatDayMonth(date)} уже есть «${resolveDayTitle(day, places, excursions) || EMPTY_DAY_TEXT}».`,
     [
-      { label: "Добавить к текущему плану", primary: true, onClick: () => onDone(addPlace(storage.getMyPlan(), date, place.id)) },
-      { label: "Заменить текущий план", primary: false, onClick: () => onDone(replaceDayWithPlace(storage.getMyPlan(), date, place.id)) },
+      { label: "Добавить к текущему плану", primary: true, onClick: () => onDone(addItem(storage.getMyPlan(), date, kind, id)) },
+      { label: "Заменить текущий план", primary: false, onClick: () => onDone(replaceDayWithItem(storage.getMyPlan(), date, kind, id)) },
     ],
     onCancel
   );
@@ -562,39 +603,41 @@ function pickAddMode(place, date, places, { onDone, onCancel }) {
 
 function addNote(status) {
   if (status === ADD_PLACE_STATUS.DUPLICATE) return "уже в плане";
-  if (status === ADD_PLACE_STATUS.FULL) return `в дне уже ${MAX_PLACES_PER_DAY} места`;
+  if (status === ADD_PLACE_STATUS.FULL) return `в дне уже ${MAX_PLACES_PER_DAY} пункта`;
   return null;
 }
 
-// #/place/<id>/plan
-export async function renderPlacePlan(container, ctx) {
+// Выбор дня для пункта: #/place/<id>/plan и #/excursion/<id>/plan — один
+// экран, отличаются только типом пункта, заголовком и родителем.
+async function renderItemPlan(container, ctx, { kind, find, listHash, itemHash, backLabel, titleOf }) {
   const { id } = ctx.params;
+  const retry = () => renderItemPlan(container, ctx, { kind, find, listHash, itemHash, backLabel, titleOf });
   container.innerHTML = '<p class="loading">Загрузка плана…</p>';
   let data;
   try {
     data = await loadAll(true);
   } catch (e) {
     console.error(e);
-    if (ctx.isCurrent()) renderPlanError(container, "Мой план", loadErrorMessage(e), () => renderPlacePlan(container, ctx));
+    if (ctx.isCurrent()) renderPlanError(container, "Мой план", loadErrorMessage(e), retry);
     return;
   }
   if (!ctx.isCurrent()) return;
 
-  const { places, config, plan } = data;
-  const place = places.find((p) => p.id === id);
-  if (!place) {
-    window.location.replace("#/places");
+  const { places, excursions, config, plan } = data;
+  const item = find(data, id);
+  if (!item) {
+    window.location.replace(listHash);
     return;
   }
 
   container.innerHTML = "";
-  appendBackLink(container, "← К месту", `#/place/${place.id}`, ctx);
-  appendText(container, "h2", "view-title", `Добавить «${place.name.ru}» в план`);
+  appendBackLink(container, backLabel, itemHash(id), ctx);
+  appendText(container, "h2", "view-title", `Добавить «${titleOf(item)}» в план`);
   appendText(container, "p", "plan-subtitle", "Выберите день.");
   const status = createStatus();
   container.appendChild(status);
 
-  // replace на день: «Назад» с него ведёт на карточку места (§9.7).
+  // replace на день: «Назад» с него ведёт на карточку (§9.7).
   const onDone = (date) => (next) => {
     if (saveMyPlan(next, status)) window.location.replace(`#/plan/${date}`);
   };
@@ -603,9 +646,34 @@ export async function renderPlacePlan(container, ctx) {
     dates: getPeriodDates(plan.meta),
     plan,
     places,
+    excursions,
     typesById: typesMap(config),
-    rowNote: (date) => addNote(getAddPlaceStatus(storage.getMyPlan(), date, place.id)),
-    onPick: (date, close) => pickAddMode(place, date, places, { onDone: onDone(date), onCancel: close }),
+    rowNote: (date) => addNote(getAddItemStatus(storage.getMyPlan(), date, kind, id)),
+    onPick: (date, close) => pickAddMode(kind, id, date, { places, excursions }, { onDone: onDone(date), onCancel: close }),
+  });
+}
+
+// #/place/<id>/plan
+export function renderPlacePlan(container, ctx) {
+  return renderItemPlan(container, ctx, {
+    kind: ITEM_KIND.PLACE,
+    find: ({ places }, id) => places.find((p) => p.id === id),
+    listHash: "#/places",
+    itemHash: (id) => `#/place/${id}`,
+    backLabel: "← К месту",
+    titleOf: (place) => place.name.ru,
+  });
+}
+
+// #/excursion/<id>/plan
+export function renderExcursionPlan(container, ctx) {
+  return renderItemPlan(container, ctx, {
+    kind: ITEM_KIND.EXCURSION,
+    find: ({ excursions }, id) => excursions.find((e) => e.id === id),
+    listHash: "#/excursions",
+    itemHash: (id) => `#/excursion/${id}`,
+    backLabel: "← К экскурсии",
+    titleOf: (excursion) => excursion.title.ru,
   });
 }
 
@@ -614,7 +682,7 @@ export async function renderPlacePlan(container, ctx) {
 // поверх дня (places.js) — поэтому после добавления на две записи назад
 // лежит сам день: history.go(-2) возвращает в него без лишних записей и без
 // экрана выбора в истории. Иначе (карточка открыта не со списка) — replace.
-export function renderAddToDayBlock(container, ctx, { place, places, date }) {
+export function renderAddToDayBlock(container, ctx, { place, places, excursions, date }) {
   const block = document.createElement("div");
   block.className = "place-plan";
   const status = createStatus();
@@ -631,7 +699,7 @@ export function renderAddToDayBlock(container, ctx, { place, places, date }) {
     }
   };
 
-  const note = addNote(getAddPlaceStatus(storage.getMyPlan(), date, place.id));
+  const note = addNote(getAddItemStatus(storage.getMyPlan(), date, ITEM_KIND.PLACE, place.id));
   if (note) {
     appendText(block, "p", "place-plan__note", `${label}: ${note}.`);
   } else {
@@ -639,7 +707,7 @@ export function renderAddToDayBlock(container, ctx, { place, places, date }) {
     button.type = "button";
     button.addEventListener("click", () => {
       button.hidden = true;
-      const box = pickAddMode(place, date, places, {
+      const box = pickAddMode(ITEM_KIND.PLACE, place.id, date, { places, excursions }, {
         onDone: finish,
         onCancel: () => {
           box.remove();

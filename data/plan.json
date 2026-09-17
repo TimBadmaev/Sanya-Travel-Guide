@@ -28,7 +28,7 @@
       { "title": "Climates to Travel — Хайнань", "url": "https://www.climatestotravel.com/climate/china/hainan" },
       { "title": "Sanya Tourism Board — официальный туристический портал", "url": "https://www.visitsanya.com/" }
     ],
-    "verifiedAt": "2026-09-13"
+    "verifiedAt": "2026-09-17"
   },
   "days": [
     {
@@ -78,7 +78,7 @@
       "morning": "Пляж с утра.",
       "afternoon": "Лесной парк: смотровые площадки и вид на бухту сверху.",
       "evening": "Ужин в бухте.",
-      "placeIds": ["yalong-tropical-forest-park"],
+      "excursionIds": ["yalong-forest-park-trip"],
       "tips": ["Цену билета и лучшее время посещения смотрите в карточке места."]
     },
     {
@@ -99,7 +99,7 @@
       "morning": "Ранний выезд к причалу и паром на остров.",
       "afternoon": "Пляжи и снорклинг на острове.",
       "evening": "Возвращение, ужин рядом с отелем.",
-      "placeIds": ["wuzhizhou-island"],
+      "excursionIds": ["wuzhizhou-island-trip"],
       "tips": [
         "Билеты лучше купить онлайн заранее, а не у перекупщиков у дороги.",
         "При штормовом предупреждении переправу на остров останавливают — уточните до выезда."
@@ -169,7 +169,7 @@
       "morning": "Выезд с утра, Наньшань.",
       "afternoon": "Обед и Тяньяхайцзяо ближе к закату.",
       "evening": "Возвращение в бухту.",
-      "placeIds": ["nanshan-cultural-zone", "tianya-haijiao"],
+      "excursionIds": ["nanshan-tianya-day"],
       "tips": [
         "Это самая длинная дорога поездки, а территория Наньшаня большая — заложите целый день.",
         "Условия входа в Тяньяхайцзяо смотрите в карточке места и уточните перед выездом."

@@ -5,7 +5,7 @@
 
 // ЕДИНСТВЕННАЯ версия кэша. При каждой публикации обновления меняйте это
 // значение (README.md, «Как выпустить новую версию»).
-const CACHE_VERSION = "v8-7";
+const CACHE_VERSION = "v10-1";
 
 // Префикс нужен, чтобы activate удалял только кэши этого приложения: у всех
 // репозиториев на <аккаунт>.github.io общий origin и общее хранилище кэшей.
@@ -30,6 +30,7 @@ const PRECACHE = [
   "./js/logic/myplan.js",
   "./js/logic/plan.js",
   "./js/logic/trip.js",
+  "./js/views/excursions.js",
   "./js/views/food.js",
   "./js/views/handy.js",
   "./js/views/home.js",
@@ -45,6 +46,7 @@ const PRECACHE = [
   "./data/checklist.json",
   "./data/config.json",
   "./data/contacts.json",
+  "./data/excursions.json",
   "./data/food.json",
   "./data/info.json",
   "./data/phrases.json",

@@ -1,4 +1,4 @@
-import { loadInfo, loadChecklist, loadPlaces, loadContacts, loadPhrases, loadErrorMessage } from "../data.js";
+import { loadInfo, loadChecklist, loadPlaces, loadExcursions, loadContacts, loadPhrases, loadErrorMessage } from "../data.js";
 import { formatVerifiedDate } from "../logic/checklist.js";
 import { getAppVersion } from "../pwa.js";
 
@@ -92,6 +92,7 @@ function appendAbout(container, ctx, infoItems) {
     getAppVersion(),
     soft(loadChecklist()),
     soft(loadPlaces()),
+    soft(loadExcursions()),
     soft(loadContacts()),
     soft(loadPhrases()),
   ]).then(([appVersion, ...lists]) => {

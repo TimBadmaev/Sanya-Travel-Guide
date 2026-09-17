@@ -6,10 +6,14 @@
 // План: { planId, days: { "<ГГГГ-ММ-ДД>": день } }. Нет ключа даты — пустой
 // день. День — полная копия (§6.2), а не отличие от рекомендации.
 
-import { DAY_FIELDS, isDayEmpty } from "./plan.js";
+import { DAY_FIELDS, countDayItems, isDayEmpty } from "./plan.js";
 
-// Больше трёх мест в дне не добавляется (§7).
+// Больше трёх пунктов в дне не добавляется (§7): места и экскурсии считаются
+// вместе, экскурсия — один пункт, сколько бы мест она ни включала.
 export const MAX_PLACES_PER_DAY = 3;
+
+// Тип пункта дня → поле дня, в котором хранится его id.
+export const ITEM_KIND = { PLACE: "placeIds", EXCURSION: "excursionIds" };
 
 export const ORIGIN = { RECOMMENDED: "recommended", USER: "user" };
 
@@ -99,30 +103,42 @@ export function swapDays(myPlan, a, b) {
   return next;
 }
 
-// Можно ли добавить место в день: ok / duplicate / full.
-export function getAddPlaceStatus(myPlan, date, placeId) {
+// Можно ли добавить пункт (место или экскурсию) в день: ok / duplicate / full.
+export function getAddItemStatus(myPlan, date, kind, id) {
   const day = myPlan && myPlan.days ? myPlan.days[date] : null;
-  const ids = day && Array.isArray(day.placeIds) ? day.placeIds : [];
-  if (ids.includes(placeId)) return ADD_PLACE_STATUS.DUPLICATE;
-  if (ids.length >= MAX_PLACES_PER_DAY) return ADD_PLACE_STATUS.FULL;
+  const ids = day && Array.isArray(day[kind]) ? day[kind] : [];
+  if (ids.includes(id)) return ADD_PLACE_STATUS.DUPLICATE;
+  if (countDayItems(day) >= MAX_PLACES_PER_DAY) return ADD_PLACE_STATUS.FULL;
   return ADD_PLACE_STATUS.OK;
 }
 
-// Добавить место, сохраняя остальное содержимое дня; день создаётся, если
-// его не было. Повтор и четвёртое место — план не меняется.
-export function addPlace(myPlan, date, placeId) {
+// Добавить пункт, сохраняя остальное содержимое дня; день создаётся, если
+// его не было. Повтор и четвёртый пункт — план не меняется.
+export function addItem(myPlan, date, kind, id) {
   const next = copyPlan(myPlan);
-  if (getAddPlaceStatus(next, date, placeId) !== ADD_PLACE_STATUS.OK) return next;
+  if (getAddItemStatus(next, date, kind, id) !== ADD_PLACE_STATUS.OK) return next;
   const day = next.days[date] || {};
-  day.placeIds = [...(Array.isArray(day.placeIds) ? day.placeIds : []), placeId];
+  day[kind] = [...(Array.isArray(day[kind]) ? day[kind] : []), id];
   day.origin = ORIGIN.USER;
   next.days[date] = day;
   return next;
 }
 
-// Прежнее содержимое дня уходит целиком, остаётся одно место (§13.4).
-export function replaceDayWithPlace(myPlan, date, placeId) {
+// Прежнее содержимое дня уходит целиком, остаётся один пункт (§13.4).
+export function replaceDayWithItem(myPlan, date, kind, id) {
   const next = copyPlan(myPlan);
-  next.days[date] = { placeIds: [placeId], origin: ORIGIN.USER };
+  next.days[date] = { [kind]: [id], origin: ORIGIN.USER };
   return next;
+}
+
+export function getAddPlaceStatus(myPlan, date, placeId) {
+  return getAddItemStatus(myPlan, date, ITEM_KIND.PLACE, placeId);
+}
+
+export function addPlace(myPlan, date, placeId) {
+  return addItem(myPlan, date, ITEM_KIND.PLACE, placeId);
+}
+
+export function replaceDayWithPlace(myPlan, date, placeId) {
+  return replaceDayWithItem(myPlan, date, ITEM_KIND.PLACE, placeId);
 }

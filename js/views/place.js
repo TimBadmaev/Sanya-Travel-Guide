@@ -1,4 +1,4 @@
-import { loadPlaces, loadConfig, loadErrorMessage } from "../data.js";
+import { loadPlaces, loadConfig, loadExcursions, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 import { EFFORT_LABELS, SETTING_LABELS, PRICE_LABELS, formatDuration } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
@@ -91,11 +91,18 @@ export async function renderPlace(container, ctx) {
   // запросов это не добавляет — config.json уже в Promise-кэше data.js.
   let places;
   let config;
+  // Экскурсии — только для заголовка занятого дня в режиме addTo.
+  let excursions = [];
   try {
     // primeCurrentPosition() — тот же единственный за сессию, кэшированный
     // промис, что и в app.js при старте (geo.js): ждём его здесь наравне с
     // данными, а не запускаем ещё один запрос геолокации.
-    [places, config] = await Promise.all([loadPlaces(), loadConfig(), primeCurrentPosition()]);
+    [places, config, , excursions] = await Promise.all([
+      loadPlaces(),
+      loadConfig(),
+      primeCurrentPosition(),
+      addTo ? loadExcursions().catch(() => []) : [],
+    ]);
   } catch (e) {
     console.error(e);
     if (ctx.isCurrent()) {
@@ -123,7 +130,8 @@ export async function renderPlace(container, ctx) {
   // 0. «← К местам» — вверху: низ экрана занят sticky-блоком ([PI-5]).
   // Итерация 6: из дня «Моего плана» или рекомендации возврат — в этот день;
   // в режиме addTo — в список выбора с тем же addTo.
-  const fromDay = /^\/(plan|recommended)\/[^/]+$/.test(fromPath);
+  // С карточки экскурсии (её «Связанные места») — тоже «← Назад» в неё.
+  const fromDay = /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath);
   const parentHash = fromDay ? fromHash : addTo ? `#/places?addTo=${addTo}` : "#/places";
   const backLink = document.createElement("a");
   backLink.href = parentHash;
@@ -256,7 +264,7 @@ export async function renderPlace(container, ctx) {
   // описанием (порядок блоков MVP-UX-SPEC §5), и не в закреплённом блоке:
   // «Показать таксисту» остаётся главной sticky-кнопкой (R6-4).
   if (addTo) {
-    renderAddToDayBlock(container, ctx, { place, places, date: addTo });
+    renderAddToDayBlock(container, ctx, { place, places, excursions, date: addTo });
   } else {
     const planLink = document.createElement("a");
     planLink.href = `#/place/${place.id}/plan`;

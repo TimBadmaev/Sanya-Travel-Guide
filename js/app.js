@@ -6,7 +6,8 @@ import { renderPrepare } from "./views/prepare.js";
 import { renderSettings } from "./views/settings.js";
 import { renderInfo, renderInfoDetail } from "./views/info.js";
 import { renderHandy, renderHandyPhrase, renderHandyTaxi } from "./views/handy.js";
-import { renderMyPlan, renderMyPlanDay, renderMoveDay, renderPlacePlan } from "./views/plan.js";
+import { renderMyPlan, renderMyPlanDay, renderMoveDay, renderPlacePlan, renderExcursionPlan } from "./views/plan.js";
+import { renderExcursions, renderExcursion } from "./views/excursions.js";
 import { renderRecommended, renderRecommendedDay } from "./views/recommended.js";
 import { initPwa } from "./pwa.js";
 import { primeCurrentPosition } from "./logic/geo.js";
@@ -21,8 +22,13 @@ const routes = [
   { pattern: /^\/place\/(?<id>[^/]+)\/taxi$/, render: renderPlaceTaxi, nav: "/places", fullscreen: true },
   // Еда (режим #/places?mode=food, ITERATION-8-CONTENT-ARCHITECTURE.md Batch
   // D) — вложенный экран «Показать таксисту» под тем же разделом, без нового
-  // основного маршрута и без пятой вкладки (D-07).
+  // основного маршрута и без отдельной вкладки (D-06, D-07).
   { pattern: /^\/places\/food\/(?<id>[^/]+)\/taxi$/, render: renderFoodTaxi, nav: "/places", fullscreen: true },
+  // «Экскурсии» (пятая вкладка, D-07): список, карточка и выбор дня для
+  // экскурсии — продолжение карточки, подсвечены «Экскурсии».
+  { pattern: /^\/excursions$/, render: renderExcursions, nav: "/excursions" },
+  { pattern: /^\/excursion\/(?<id>[^/]+)$/, render: renderExcursion, nav: "/excursions" },
+  { pattern: /^\/excursion\/(?<id>[^/]+)\/plan$/, render: renderExcursionPlan, nav: "/excursions" },
   { pattern: /^\/prepare$/, render: renderPrepare, nav: "/prepare" },
   // Настройки — вложенный экран Главной, поэтому подсвечена «Сейчас» ([I3-8]).
   { pattern: /^\/settings$/, render: renderSettings, nav: "/" },
@@ -34,7 +40,7 @@ const routes = [
   { pattern: /^\/handy\/phrase\/(?<id>[^/]+)$/, render: renderHandyPhrase, nav: "/info", fullscreen: true },
   { pattern: /^\/handy\/taxi$/, render: renderHandyTaxi, nav: "/info", fullscreen: true },
   // «Мой план» и рекомендованный план (Итерация 6): вложенные экраны
-  // Главной, пятой вкладки нет (D-07) — подсвечена «Сейчас», как у #/settings.
+  // Главной — подсвечена «Сейчас», как у #/settings.
   { pattern: /^\/plan$/, render: renderMyPlan, nav: "/" },
   { pattern: /^\/plan\/(?<date>[^/]+)$/, render: renderMyPlanDay, nav: "/" },
   { pattern: /^\/plan\/(?<date>[^/]+)\/move$/, render: renderMoveDay, nav: "/" },

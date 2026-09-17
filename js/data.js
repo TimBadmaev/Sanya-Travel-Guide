@@ -76,6 +76,15 @@ export async function loadFood() {
   return items.filter((item) => item.status === "verified");
 }
 
+// Экскурсии (PRODUCT.md 9.6.5): готовые сценарии выезда из Саньи
+// ({ id, status, title, summary, format, durationHours, effort, setting,
+// placeIds, whatToSee, goodFor, tips, bestTime, sources, verifiedAt }).
+// Возвращает только status "verified" (D-18).
+export async function loadExcursions() {
+  const items = await loadJSON("data/excursions.json");
+  return items.filter((item) => item.status === "verified");
+}
+
 // Контакты «Под рукой» (CONTENT-ITERATION-4.md §2): { id, group, label,
 // number, tel, note, sources, verifiedAt }. Поля status у записей нет —
 // раздел перенесён целиком как проверенный. Возвращается новый массив.

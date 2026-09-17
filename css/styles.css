@@ -1912,3 +1912,29 @@ textarea.settings-field__input {
   flex: 1 1 auto;
   text-decoration: none;
 }
+
+/* Экскурсии (пятая вкладка, PRODUCT.md 8.11): короткое описание в строке
+   списка — основной текст, не мелкая подпись, чтобы сразу было понятно
+   «куда и зачем». Пять вкладок нижней панели на 320 px: подписи не
+   переносятся и не расталкивают соседей. */
+.info-card__text {
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+.bottom-nav__item {
+  min-width: 0;
+}
+
+.bottom-nav__label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 359px) {
+  .bottom-nav__item {
+    font-size: 11px;
+  }
+}

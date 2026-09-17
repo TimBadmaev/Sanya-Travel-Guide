@@ -186,6 +186,8 @@ export function nearbyPlaces(places, origin, radiusKm = NEAR_RADIUS_KM) {
 // второй независимый пайплайн фильтрации не заводится.
 export const PLACE_SEARCH_FIELDS = ["ru", "en", "zh"];
 export const FOOD_SEARCH_FIELDS = ["ru", "zh"];
+// У экскурсий название — title.ru/title.zh (key "title").
+export const EXCURSION_SEARCH_FIELDS = ["ru", "zh"];
 
 // trim обязателен (задание): пробелы по краям не должны ни требовать точного
 // совпадения, ни превращать "  " в непустой запрос.
@@ -195,14 +197,36 @@ export function normalizeSearchQuery(raw) {
 
 // Пустой (после trim) запрос — поиск не применяется, возвращается тот же
 // список (новый массив, как и у остальных чистых функций этого модуля).
-export function applySearch(items, query, fields) {
+export function applySearch(items, query, fields, key = "name") {
   const trimmed = normalizeSearchQuery(query).toLowerCase();
   if (!trimmed) return items.slice();
   return items.filter((item) =>
     fields.some((field) => {
-      const value = item.name && item.name[field];
+      const value = item[key] && item[key][field];
       return typeof value === "string" && value.toLowerCase().includes(trimmed);
     })
+  );
+}
+
+// Экскурсии (PRODUCT.md 8.11): формат выезда и фильтр-чипы списка.
+// Форматы — одна группа через ИЛИ, "easy" — отдельное условие через И,
+// как у чипов «Мест» (8.4).
+export const EXCURSION_FORMAT_LABELS = { "half-day": "Полдня", "full-day": "Целый день", evening: "Вечер" };
+export const EXCURSION_FILTERS = ["half-day", "full-day", "evening", "easy"];
+
+export function parseExcursionFilters(raw) {
+  const tokens = [];
+  (raw || "").split(",").forEach((token) => {
+    if (EXCURSION_FILTERS.includes(token) && !tokens.includes(token)) tokens.push(token);
+  });
+  return tokens;
+}
+
+export function applyExcursionFilters(excursions, tokens) {
+  const formats = tokens.filter((t) => t in EXCURSION_FORMAT_LABELS);
+  const easy = tokens.includes("easy");
+  return excursions.filter(
+    (excursion) => (!formats.length || formats.includes(excursion.format)) && (!easy || excursion.effort === "low")
   );
 }
 

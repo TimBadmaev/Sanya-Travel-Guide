@@ -1,4 +1,4 @@
-import { loadPlan, loadPlaces, loadConfig, loadErrorMessage } from "../data.js";
+import { loadPlan, loadPlaces, loadConfig, loadExcursions, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 import { formatVerifiedDate } from "../logic/checklist.js";
 import { pluralizeRu } from "../logic/trip.js";
@@ -45,8 +45,8 @@ function appendText(parent, tag, className, text) {
 }
 
 async function loadAll() {
-  const [plan, places, config] = await Promise.all([loadPlan(), loadPlaces(), loadConfig()]);
-  return { plan, places, config };
+  const [plan, places, excursions, config] = await Promise.all([loadPlan(), loadPlaces(), loadExcursions(), loadConfig()]);
+  return { plan, places, excursions, config };
 }
 
 function appendList(container, title, items) {
@@ -91,7 +91,7 @@ export async function renderRecommended(container, ctx) {
   }
   if (!ctx.isCurrent()) return;
 
-  const { plan, places, config } = data;
+  const { plan, places, excursions, config } = data;
   const typesById = typesMap(config);
   const dates = getPeriodDates(plan.meta);
   const myPlan = storage.getMyPlan();
@@ -157,7 +157,7 @@ export async function renderRecommended(container, ctx) {
     row.href = `#/recommended/${date}`;
     row.className = "plan-row";
     appendText(row, "span", "plan-row__date", `${formatShortDate(date)} · День ${getDayNumber(plan.meta, date)}`);
-    appendText(row, "span", "plan-row__title", (day && resolveDayTitle(day, places)) || EMPTY_DAY_TEXT);
+    appendText(row, "span", "plan-row__title", (day && resolveDayTitle(day, places, excursions)) || EMPTY_DAY_TEXT);
     const meta = document.createElement("span");
     meta.className = "plan-row__meta";
     const chip = day ? createTypeChip(day.type, typesById) : null;
@@ -188,7 +188,7 @@ export async function renderRecommendedDay(container, ctx) {
   }
   if (!ctx.isCurrent()) return;
 
-  const { plan, places, config } = data;
+  const { plan, places, excursions, config } = data;
   const recDay = findRecommendedDay(plan, date);
   if (!isInPeriod(plan.meta, date) || !recDay) {
     window.location.replace("#/recommended");
@@ -204,8 +204,8 @@ export async function renderRecommendedDay(container, ctx) {
     container.innerHTML = "";
     appendBackLink(container, "← К рекомендации", "#/recommended", ctx);
     appendText(container, "p", "plan-day__date", `День ${getDayNumber(plan.meta, date)} из ${total} · ${formatLongDate(date)}`);
-    appendText(container, "h2", "view-title", resolveDayTitle(recDay, places) || EMPTY_DAY_TEXT);
-    renderDayBody(container, recDay, { places, typesById });
+    appendText(container, "h2", "view-title", resolveDayTitle(recDay, places, excursions) || EMPTY_DAY_TEXT);
+    renderDayBody(container, recDay, { places, excursions, typesById });
 
     const actions = document.createElement("div");
     actions.className = "plan-actions";
@@ -227,7 +227,7 @@ export async function renderRecommendedDay(container, ctx) {
         }
         button.hidden = true;
         const box = createConfirm(
-          `На ${formatDayMonth(date)} уже есть «${resolveDayTitle(myDay, places) || EMPTY_DAY_TEXT}». Заменить?`,
+          `На ${formatDayMonth(date)} уже есть «${resolveDayTitle(myDay, places, excursions) || EMPTY_DAY_TEXT}». Заменить?`,
           [{ label: "Заменить", primary: true, onClick: apply }],
           () => {
             box.remove();

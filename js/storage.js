@@ -272,8 +272,9 @@ function setInstallHintDismissed() {
 // «Мой план» (Итерация 6, ITERATION-6-RESEARCH.md §13.3): { planId, days },
 // days — объект «ГГГГ-ММ-ДД → день». Белый список полей дня — как у
 // normalizeHome(): всё неизвестное отбрасывается. Минимальный валидный день —
-// одни placeIds (§13.3.1). Мест в дне не больше MY_PLAN_MAX_PLACES — то же
-// ограничение, что у операций в logic/myplan.js.
+// одни placeIds или одни excursionIds (§13.3.1). Пунктов (мест и экскурсий
+// вместе) в дне не больше MY_PLAN_MAX_PLACES — то же ограничение, что у
+// операций в logic/myplan.js.
 const MY_PLAN_MAX_PLACES = 3;
 const MY_PLAN_TEXT_FIELDS = ["type", "title", "summary", "morning", "afternoon", "evening", "alt"];
 const MY_PLAN_ORIGINS = ["recommended", "user"];
@@ -291,6 +292,11 @@ function normalizeMyPlanDay(value) {
   });
   const placeIds = [...new Set(normalizeStringList(value.placeIds))].slice(0, MY_PLAN_MAX_PLACES);
   if (placeIds.length) day.placeIds = placeIds;
+  // Экскурсии (excursionIds) — тот же общий лимит пунктов дня: места и
+  // экскурсии вместе не больше MY_PLAN_MAX_PLACES. Старое значение без поля
+  // читается как день без экскурсий.
+  const excursionIds = [...new Set(normalizeStringList(value.excursionIds))].slice(0, MY_PLAN_MAX_PLACES - placeIds.length);
+  if (excursionIds.length) day.excursionIds = excursionIds;
   const tips = normalizeStringList(value.tips);
   if (tips.length) day.tips = tips;
   if (!Object.keys(day).length) return null;

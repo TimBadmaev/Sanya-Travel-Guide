@@ -14,7 +14,9 @@ const MONTHS = [
 
 // Поля дня — одинаковые у рекомендации и у «Моего плана» (§6.3). У дня
 // рекомендации ещё есть date, у дня «Моего плана» — origin.
-export const DAY_FIELDS = ["type", "title", "summary", "morning", "afternoon", "evening", "placeIds", "tips", "alt"];
+// excursionIds (экскурсии, data/excursions.json) — необязательное поле рядом
+// с placeIds: старый день без него остаётся валидным, миграции нет.
+export const DAY_FIELDS = ["type", "title", "summary", "morning", "afternoon", "evening", "placeIds", "excursionIds", "tips", "alt"];
 
 export const TODAY_STATE = {
   BEFORE: "before",
@@ -93,30 +95,50 @@ export function isDayEmpty(day) {
   });
 }
 
-// Места дня, которые есть в базе (verified). Отсутствующие и черновики
-// пропускаются молча (§11.2); id пропущенных возвращаются отдельно.
-export function getDayPlaces(day, places) {
-  const ids = day && Array.isArray(day.placeIds) ? day.placeIds : [];
-  const list = Array.isArray(places) ? places : [];
+function findByIds(ids, items) {
+  const list = Array.isArray(items) ? items : [];
   const found = [];
   const missing = [];
-  ids.forEach((id) => {
-    const place = list.find((p) => p.id === id);
-    if (place) {
-      found.push(place);
+  (Array.isArray(ids) ? ids : []).forEach((id) => {
+    const item = list.find((p) => p.id === id);
+    if (item) {
+      found.push(item);
     } else {
       missing.push(id);
     }
   });
+  return { found, missing };
+}
+
+// Места дня, которые есть в базе (verified). Отсутствующие и черновики
+// пропускаются молча (§11.2); id пропущенных возвращаются отдельно.
+export function getDayPlaces(day, places) {
+  const { found, missing } = findByIds(day && day.placeIds, places);
   return { places: found, missing };
 }
 
-// Заголовок дня (§13.3.1): title → названия мест через запятую → "".
-// Текст пустого дня подставляет экран.
-export function resolveDayTitle(day, places) {
+// Экскурсии дня — по тому же правилу, что и места.
+export function getDayExcursions(day, excursions) {
+  const { found, missing } = findByIds(day && day.excursionIds, excursions);
+  return { excursions: found, missing };
+}
+
+// Сколько пунктов (мест и экскурсий) в дне — для общего лимита 3.
+export function countDayItems(day) {
+  if (!day) return 0;
+  const count = (value) => (Array.isArray(value) ? value.length : 0);
+  return count(day.placeIds) + count(day.excursionIds);
+}
+
+// Заголовок дня (§13.3.1): title → названия экскурсий и мест через запятую
+// → "". Текст пустого дня подставляет экран.
+export function resolveDayTitle(day, places, excursions) {
   if (!day) return "";
   if (typeof day.title === "string" && day.title) return day.title;
-  return getDayPlaces(day, places).places.map((place) => place.name.ru).join(", ");
+  return [
+    ...getDayExcursions(day, excursions).excursions.map((excursion) => excursion.title.ru),
+    ...getDayPlaces(day, places).places.map((place) => place.name.ru),
+  ].join(", ");
 }
 
 // Содержимое дня «Моего плана» совпадает с днём рекомендации (для отметки
