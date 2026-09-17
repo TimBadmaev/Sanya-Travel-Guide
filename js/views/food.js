@@ -10,7 +10,7 @@ import {
   describeGeoError,
   GEO_ERROR,
 } from "../logic/geo.js";
-import { filterWithinRadius, sortByDistance, NEAR_RADIUS_KM } from "../logic/filters.js";
+import { filterWithinRadius, sortByDistance, NEAR_RADIUS_KM, applySearch, FOOD_SEARCH_FIELDS } from "../logic/filters.js";
 
 // Еда (ITERATION-8-CONTENT-ARCHITECTURE.md, Batch D): отдельный, короткий
 // экран по образцу views/handy.js — не карточка места, у food-записей нет
@@ -80,6 +80,26 @@ function renderErrorState(container, message, onRetry) {
   btn.addEventListener("click", onRetry);
   wrap.append(p, btn);
   container.appendChild(wrap);
+}
+
+// Пустое состояние с подсказкой сбросить поиск (§7) — тот же вид, что уже
+// вручную собирают DENIED/ERROR-состояния «Рядом со мной» ниже, только с
+// кнопкой действия, как renderEmptyState() в views/places.js.
+function renderEmptyState(message, buttonText, onClick) {
+  const wrap = document.createElement("div");
+  wrap.className = "empty-state";
+  const p = document.createElement("p");
+  p.textContent = message;
+  wrap.appendChild(p);
+  if (buttonText) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn--primary";
+    btn.textContent = buttonText;
+    btn.addEventListener("click", onClick);
+    wrap.appendChild(btn);
+  }
+  return wrap;
 }
 
 // Карточка food-записи — только поля, которые реально есть в схеме
@@ -251,10 +271,20 @@ export async function renderFoodSection(container, ctx) {
   let nearbyResults = [];
   let nearbyErrorText = "";
 
+  // Поиск по названию (Should, PRODUCT.md §7) — только name.ru/zh для еды
+  // (нет name.en в схеме food.json, D-06/9.6.4). Тот же принцип «И» с уже
+  // активным режимом «Все»/«Рядом со мной», не отдельный маршрут и не URL
+  // (как и остальное локальное состояние этого экрана — near/scope выше).
+  let searchQuery = "";
+
   function computeNearbyResults() {
     // isValidLocation() исключает и отсутствующую точку, и заглушку {0,0}
     // (amap.js) — черновиков здесь и так уже нет (loadFood(), D-18).
-    const usable = food.filter((item) => isValidLocation(item.location));
+    const usable = applySearch(
+      food.filter((item) => isValidLocation(item.location)),
+      searchQuery,
+      FOOD_SEARCH_FIELDS
+    );
     nearbyResults = sortByDistance(filterWithinRadius(usable, nearbyOrigin, NEAR_RADIUS_KM), nearbyOrigin);
     nearbyStatus = nearbyResults.length ? FOOD_NEARBY_STATUS.SUCCESS : FOOD_NEARBY_STATUS.EMPTY;
   }
@@ -307,6 +337,19 @@ export async function renderFoodSection(container, ctx) {
     if (nearbyStatus === FOOD_NEARBY_STATUS.EMPTY) {
       // Не «нет ресторанов в городе» — только то, что рядом нет проверенных
       // мест в уже известном радиусе (D-18: черновики сюда не попадают).
+      // Активный поиск без результатов рядом — отдельная подсказка со сбросом
+      // именно поиска, а не общий текст про радиус (§7).
+      const trimmedQuery = searchQuery.trim();
+      if (trimmedQuery) {
+        nearbyBody.appendChild(
+          renderEmptyState(
+            `Рядом не нашлось «${trimmedQuery}» в радиусе ${NEAR_RADIUS_KM} км.`,
+            "Очистить поиск",
+            clearSearch
+          )
+        );
+        return;
+      }
       const empty = document.createElement("p");
       empty.className = "empty-state";
       empty.textContent = `Рядом нет проверенных мест еды в радиусе ${NEAR_RADIUS_KM} км.`;
@@ -351,9 +394,18 @@ export async function renderFoodSection(container, ctx) {
 
   function renderAllBody() {
     allBody.innerHTML = "";
+    const filtered = applySearch(food, searchQuery, FOOD_SEARCH_FIELDS);
+
+    if (!filtered.length) {
+      allBody.appendChild(
+        renderEmptyState(`Ничего не найдено по запросу «${searchQuery.trim()}».`, "Очистить поиск", clearSearch)
+      );
+      return;
+    }
+
     const list = document.createElement("div");
     list.className = "food-list";
-    food.forEach((item) => list.appendChild(renderFoodCard(item, areasById.get(item.area))));
+    filtered.forEach((item) => list.appendChild(renderFoodCard(item, areasById.get(item.area))));
     allBody.appendChild(list);
   }
 
@@ -376,6 +428,66 @@ export async function renderFoodSection(container, ctx) {
       renderNearbyBody();
     }
   }
+
+  // Поиск — та же .search-bar, что у Places (css/styles.css), перед
+  // переключателем «Все»/«Рядом со мной»: вторичный инструмент над ним, не
+  // заменяет его (§7 UX). Меняет то, что показывает уже выбранный scope, не
+  // сам scope.
+  const searchBar = document.createElement("div");
+  searchBar.className = "search-bar";
+
+  const searchInput = document.createElement("input");
+  searchInput.type = "search";
+  searchInput.className = "search-bar__input";
+  searchInput.placeholder = "Поиск по названию еды";
+  searchInput.setAttribute("aria-label", "Поиск по названию еды");
+  searchInput.autocomplete = "off";
+  searchBar.appendChild(searchInput);
+
+  const searchClear = document.createElement("button");
+  searchClear.type = "button";
+  searchClear.className = "search-bar__clear";
+  searchClear.textContent = "✕";
+  searchClear.setAttribute("aria-label", "Очистить поиск");
+  searchClear.hidden = true;
+  searchBar.appendChild(searchClear);
+
+  container.appendChild(searchBar);
+
+  function updateSearchClear() {
+    searchClear.hidden = !searchQuery;
+  }
+
+  function refreshVisibleBody() {
+    if (scope === FOOD_SCOPE.ALL) {
+      renderAllBody();
+      return;
+    }
+    // «Рядом со мной» пересчитывается только если позиция уже известна —
+    // ввод в поиске не должен сам по себе запрашивать геолокацию.
+    if (nearbyOrigin) {
+      computeNearbyResults();
+    }
+    renderNearbyBody();
+  }
+
+  searchInput.addEventListener("input", () => {
+    if (!ctx.isCurrent()) return;
+    searchQuery = searchInput.value;
+    updateSearchClear();
+    refreshVisibleBody();
+  });
+
+  function clearSearch() {
+    if (!ctx.isCurrent()) return;
+    searchQuery = "";
+    searchInput.value = "";
+    updateSearchClear();
+    refreshVisibleBody();
+    searchInput.focus();
+  }
+
+  searchClear.addEventListener("click", clearSearch);
 
   // Переключатель — те же chip/chips, что уже использует ряд фильтров Places
   // (places.js): переиспользуем стиль и зону нажатия ≥44px без новой CSS.

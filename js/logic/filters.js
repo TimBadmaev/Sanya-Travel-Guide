@@ -176,6 +176,36 @@ export function nearbyPlaces(places, origin, radiusKm = NEAR_RADIUS_KM) {
   return sortByDistance(filterWithinRadius(usable, origin, radiusKm), origin);
 }
 
+// Поиск по названию (Should, PRODUCT.md §7 «Поиск по названию (русскому,
+// английскому, китайскому)»): подстрока без учёта регистра по перечисленным
+// полям `name.*`. Поля задаёт вызывающий экран — у мест есть ru/en/zh
+// (en — не у всех записей), у еды из PRODUCT.md 6.3/9.6.4 только ru/zh.
+// Работает через тот же принцип «И» с остальными фильтрами (8.4): вызывающий
+// код применяет applySearch() к тому же базовому списку, что и applyFilters()
+// (как near-радиус уже сужает базу через basePlaces() в places.js), поэтому
+// второй независимый пайплайн фильтрации не заводится.
+export const PLACE_SEARCH_FIELDS = ["ru", "en", "zh"];
+export const FOOD_SEARCH_FIELDS = ["ru", "zh"];
+
+// trim обязателен (задание): пробелы по краям не должны ни требовать точного
+// совпадения, ни превращать "  " в непустой запрос.
+export function normalizeSearchQuery(raw) {
+  return (raw || "").trim();
+}
+
+// Пустой (после trim) запрос — поиск не применяется, возвращается тот же
+// список (новый массив, как и у остальных чистых функций этого модуля).
+export function applySearch(items, query, fields) {
+  const trimmed = normalizeSearchQuery(query).toLowerCase();
+  if (!trimmed) return items.slice();
+  return items.filter((item) =>
+    fields.some((field) => {
+      const value = item.name && item.name[field];
+      return typeof value === "string" && value.toLowerCase().includes(trimmed);
+    })
+  );
+}
+
 // [1, 3] → "1–3 ч"; [2, 2] → "2 ч"; дробные — с запятой: "0,5–1 ч".
 export function formatDuration(durationHours) {
   const [min, max] = durationHours;

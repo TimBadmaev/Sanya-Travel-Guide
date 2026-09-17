@@ -18,6 +18,8 @@ import {
   EFFORT_BUDGETS,
   PICKER_TIME_TOKEN_3H,
   PICKER_EFFORT_TOKEN_MODERATE,
+  applySearch,
+  PLACE_SEARCH_FIELDS,
 } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
@@ -450,6 +452,59 @@ export async function renderPlaces(container, ctx) {
   pickerPanel.className = "picker";
   container.appendChild(pickerPanel);
 
+  // === Поиск по названию (Should, PRODUCT.md §7) ===========================
+  // Вторичный инструмент над чипами (не заменяет их, D-10): фильтрует по
+  // подстроке name.ru/en/zh без учёта регистра, работает через «И» с
+  // остальными активными фильтрами — тем же basePlaces()/applyFilters(), что
+  // и near-радиус, второго пайплайна фильтрации нет (logic/filters.js).
+  // Состояние — только в замыкании рендера, как near/pickerOpen: экран не
+  // переносит поиск в URL (это не одна из уже существующих f=/near=/addTo=
+  // схем, задание прямо запрещает заводить новую).
+  let searchQuery = "";
+
+  const searchBar = document.createElement("div");
+  searchBar.className = "search-bar";
+
+  const searchInput = document.createElement("input");
+  searchInput.type = "search";
+  searchInput.className = "search-bar__input";
+  searchInput.placeholder = "Поиск по названию места";
+  searchInput.setAttribute("aria-label", "Поиск по названию места");
+  searchInput.autocomplete = "off";
+  searchBar.appendChild(searchInput);
+
+  const searchClear = document.createElement("button");
+  searchClear.type = "button";
+  searchClear.className = "search-bar__clear";
+  searchClear.textContent = "✕";
+  searchClear.setAttribute("aria-label", "Очистить поиск");
+  searchClear.hidden = true;
+  searchBar.appendChild(searchClear);
+
+  container.appendChild(searchBar);
+
+  function updateSearchClear() {
+    searchClear.hidden = !searchQuery;
+  }
+
+  searchInput.addEventListener("input", () => {
+    if (!ctx.isCurrent()) return;
+    searchQuery = searchInput.value;
+    updateSearchClear();
+    renderResults();
+  });
+
+  function clearSearch() {
+    if (!ctx.isCurrent()) return;
+    searchQuery = "";
+    searchInput.value = "";
+    updateSearchClear();
+    renderResults();
+    searchInput.focus();
+  }
+
+  searchClear.addEventListener("click", clearSearch);
+
   const chipsRow = document.createElement("div");
   chipsRow.className = "chips";
   chipsRow.setAttribute("role", "group");
@@ -482,11 +537,17 @@ export async function renderPlaces(container, ctx) {
   results.className = "places-results";
   container.appendChild(results);
 
+  // Поиск сужает базу так же, как near-радиус (basePlaces()) — дальше по
+  // цепочке применяются те же applyFilters()/sortByDistance(), что и раньше.
+  function searchedPlaces() {
+    return applySearch(basePlaces(), searchQuery, PLACE_SEARCH_FIELDS);
+  }
+
   function renderResults() {
     results.innerHTML = "";
-    // Сначала радиус и фильтрация, потом сортировка ([I3-13]). При origin ===
-    // null sortByDistance возвращает копию — порядок places.json.
-    const found = sortByDistance(applyFilters(basePlaces(), tokens, { savedIds }), origin);
+    // Сначала радиус и поиск, потом фильтры чипов, потом сортировка ([I3-13]).
+    // При origin === null sortByDistance возвращает копию — порядок places.json.
+    const found = sortByDistance(applyFilters(searchedPlaces(), tokens, { savedIds }), origin);
 
     const count = document.createElement("p");
     count.className = "places-count";
@@ -517,14 +578,25 @@ export async function renderPlaces(container, ctx) {
       return;
     }
 
-    // Пусто без единого фильтра — значит, пуст сам радиус: снимать нечего,
-    // кроме ограничения по расстоянию.
+    // Активный поиск без результатов — предлагаем сбросить именно его в
+    // первую очередь: это самое узкое и самое недавнее из добавленных
+    // пользователем условий, даже если рядом ещё активны чипы или радиус.
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery) {
+      results.appendChild(
+        renderEmptyState(`Ничего не найдено по запросу «${trimmedQuery}».`, "Очистить поиск", clearSearch)
+      );
+      return;
+    }
+
+    // Пусто без единого фильтра и без поиска — значит, пуст сам радиус:
+    // снимать нечего, кроме ограничения по расстоянию.
     if (!tokens.length) {
       results.appendChild(renderEmptyState(`В радиусе ${NEAR_RADIUS_KM} км мест не найдено.`, "Показать все", showAll));
       return;
     }
 
-    const suggestion = suggestFilterToRemove(basePlaces(), tokens, { savedIds });
+    const suggestion = suggestFilterToRemove(searchedPlaces(), tokens, { savedIds });
     results.appendChild(
       renderEmptyState("Ничего не найдено.", `Снять «${labelFor(suggestion)}»`, () => removeAndFocus(suggestion))
     );
