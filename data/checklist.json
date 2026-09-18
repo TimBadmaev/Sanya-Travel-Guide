@@ -276,5 +276,78 @@
       { "title": "AMAP Global: многоязычная версия карт", "url": "https://www.malaymail.com/news/money/mediaoutreach/2025/07/11/alibabas-amap-launches-chinas-first-multilingual-map-with-14-new-languages-for-overseas-users/394781" }
     ],
     "verifiedAt": "2026-09-10"
+  },
+  {
+    "id": "learn-duty-free-limits",
+    "status": "verified",
+    "phase": "week",
+    "topic": "money",
+    "title": "Разберитесь в правилах беспошлинных покупок",
+    "details": "Если планируете покупки в duty-free Хайнаня, заранее посмотрите условия: покупать можно с 18 лет, лимит — 100 000 ¥ на человека за календарный год, а товар выдают в аэропорту при вылете с острова, поэтому нужны время и место в багаже. Правила менялись в ноябре 2025 года — проверьте актуальные перед поездкой.",
+    "critical": false,
+    "volatile": true,
+    "sources": [
+      { "title": "Госсовет КНР (gov.cn) — «关于调整海南离岛旅客免税购物政策的公告»", "url": "https://www.gov.cn/zhengce/zhengceku/202510/content_7044760.htm" }
+    ],
+    "verifiedAt": "2026-09-17"
+  },
+  {
+    "id": "plan-airport-transfer",
+    "status": "verified",
+    "phase": "days",
+    "topic": "other",
+    "title": "Решите, как поедете из аэропорта",
+    "details": "До бухт из аэропорта Феникс идут два маршрута аэропортовского автобуса (линия 1 — Санья Бэй, Дадунхай, Ялунвань; линия 2 — Хайтан и CDF), по 25 ¥; посадка — напротив выхода 5 зала внутренних прилётов. Многие отели дают бесплатный трансфер, но об этом нужно договориться заранее, а не по прилёте. Проверьте расписание последнего рейса, если летите вечером.",
+    "critical": false,
+    "volatile": true,
+    "sources": [
+      { "title": "Аэропорт Санья Феникс — «Airport Bus»", "url": "https://en.sanyaairport.com/enjcbs" },
+      { "title": "Sanya Tourism Board — «Public Transportation»", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/public-transportation" }
+    ],
+    "verifiedAt": "2026-09-17"
+  },
+  {
+    "id": "book-attraction-tickets-online",
+    "status": "verified",
+    "phase": "days",
+    "topic": "documents",
+    "title": "Оформите предварительную запись, где она нужна",
+    "details": "Вход в Тяньяхайцзяо бесплатный, но по предварительной онлайн-записи, и на входе просят документ, удостоверяющий личность. Музей раковин «Шаньхайбэй» по обзору музеев Саньи работает по записи — туда лучше позвонить. Проверьте условия у объектов, которые запланировали, и держите паспорт при себе в каждый выезд.",
+    "critical": false,
+    "volatile": true,
+    "sources": [
+      { "title": "Синьхуа — «三亚天涯海角游览区6月1日起免费开放» (бесплатный вход по записи, документ на входе)", "url": "http://www.news.cn/2023-05/26/c_1129647888.htm" },
+      { "title": "Sanya Tourism Board — обзор музеев Саньи, 13.11.2025", "url": "https://www.visitsanya.com/24777.html" }
+    ],
+    "verifiedAt": "2026-09-17"
+  },
+  {
+    "id": "pack-mosquito-repellent",
+    "status": "verified",
+    "phase": "packing",
+    "topic": "health",
+    "title": "Возьмите репеллент от комаров",
+    "details": "В тропиках главная мера профилактики — не давать себя кусать: комары активнее рано утром и вечером, особенно в парках и у воды. Берите средство с действующим веществом DEET, пикаридином или IR3535 и лёгкую светлую одежду с длинным рукавом для вечерних прогулок.",
+    "critical": false,
+    "volatile": false,
+    "sources": [
+      { "title": "Sanya Tourism Board — «Mosquito Prevention and Health Precautions»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/mosquito-prevention-and-health-precautions" }
+    ],
+    "verifiedAt": "2026-09-17"
+  },
+  {
+    "id": "check-weather-and-sea-before-outing",
+    "status": "verified",
+    "phase": "arrival",
+    "topic": "other",
+    "title": "Проверяйте прогноз и предупреждения перед выходом",
+    "details": "При штормовом предупреждении пляжи Саньи закрывают, купание запрещают, а морские переправы и программы отменяют — это касается острова Учжичжоу и Западного острова. В грозу нужно сразу уйти от моря и прекратить занятия на воде. Если планируете прогулку по обнажившемуся дну, заранее посмотрите прогноз приливов для своей бухты.",
+    "critical": false,
+    "volatile": true,
+    "sources": [
+      { "title": "Sanya Tourism Board — «Extreme Weather»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/extreme-weather" },
+      { "title": "Sanya Tourism Board — «Tide and Beachcombing Guide»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/tide-and-beachcombing-guide" }
+    ],
+    "verifiedAt": "2026-09-17"
   }
 ]

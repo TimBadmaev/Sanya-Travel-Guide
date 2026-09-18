@@ -5,7 +5,7 @@
 
 // ЕДИНСТВЕННАЯ версия кэша. При каждой публикации обновления меняйте это
 // значение (README.md, «Как выпустить новую версию»).
-const CACHE_VERSION = "v10-3";
+const CACHE_VERSION = "v11";
 
 // Префикс нужен, чтобы activate удалял только кэши этого приложения: у всех
 // репозиториев на <аккаунт>.github.io общий origin и общее хранилище кэшей.
@@ -66,6 +66,9 @@ const PRECACHE = [
   // Итерация 8, Content Batch 1.
   "./assets/photos/luhuitou-park-1.webp",
   "./assets/photos/dadonghai-beach-1.webp",
+  // Контентный проход 2026-09 (CONTENT-EXPANSION-2026-09.md).
+  "./assets/photos/sanya-bay-beach-1.webp",
+  "./assets/photos/daxiaodongtian-1.webp",
 ];
 
 const INDEX_URL = "./index.html";
