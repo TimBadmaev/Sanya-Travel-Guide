@@ -2,7 +2,7 @@
   {
     "id": "dadonghai-beach",
     "status": "verified",
-    "name": { "ru": "Пляж Дадунхай", "zh": "大东海" },
+    "name": { "ru": "Пляж Дадунхай", "zh": "大东海", "en": "Dadonghai" },
     "addressZh": "海南省三亚市吉阳区大东海旅游区",
     "area": "dadonghai",
     "category": "beach",
@@ -44,7 +44,7 @@
   {
     "id": "yalong-bay-beach",
     "status": "verified",
-    "name": { "ru": "Пляж Ялонг Бэй", "zh": "亚龙湾" },
+    "name": { "ru": "Пляж Ялонг Бэй", "zh": "亚龙湾", "en": "Yalong Bay" },
     "addressZh": "海南省三亚市吉阳区亚龙湾国家旅游度假区",
     "area": "yalong",
     "category": "beach",
@@ -84,7 +84,7 @@
   {
     "id": "yalong-tropical-forest-park",
     "status": "verified",
-    "name": { "ru": "Лесной парк «Тропический рай» Ялонг Бэй", "zh": "亚龙湾热带天堂森林公园" },
+    "name": { "ru": "Лесной парк «Тропический рай» Ялонг Бэй", "zh": "亚龙湾热带天堂森林公园", "en": "Yalong Bay Tropical Paradise Forest Park" },
     "addressZh": "海南省三亚市吉阳区亚龙湾国家旅游度假区",
     "area": "yalong",
     "category": "nature",
@@ -125,7 +125,7 @@
   {
     "id": "sanya-bay-beach",
     "status": "verified",
-    "name": { "ru": "Пляж Санья Бэй", "zh": "三亚湾" },
+    "name": { "ru": "Пляж Санья Бэй", "zh": "三亚湾", "en": "Sanya Bay" },
     "addressZh": "海南省三亚市天涯区三亚湾路",
     "area": "sanya-bay",
     "category": "beach",
@@ -166,7 +166,7 @@
   {
     "id": "tianya-haijiao",
     "status": "verified",
-    "name": { "ru": "Тяньяхайцзяо", "zh": "天涯海角" },
+    "name": { "ru": "Тяньяхайцзяо", "zh": "天涯海角", "en": "Tianya Haijiao" },
     "addressZh": "海南省三亚市天涯区马岭山麓",
     "area": "sanya-bay",
     "category": "culture",
@@ -220,7 +220,7 @@
   {
     "id": "luhuitou-park",
     "status": "verified",
-    "name": { "ru": "Парк Лухуйтоу", "zh": "鹿回头风景区" },
+    "name": { "ru": "Парк Лухуйтоу", "zh": "鹿回头风景区", "en": "Luhuitou Scenic Area" },
     "addressZh": "海南省三亚市吉阳区小东海路与鹿岭路交叉口东北150米",
     "area": "dadonghai",
     "category": "nature",
@@ -263,7 +263,7 @@
   {
     "id": "wuzhizhou-island",
     "status": "verified",
-    "name": { "ru": "Остров Улучжичжоу", "zh": "蜈支洲岛" },
+    "name": { "ru": "Остров Улучжичжоу", "zh": "蜈支洲岛", "en": "Wuzhizhou Island" },
     "addressZh": "海南省三亚市海棠区林旺镇后海村蜈支洲岛码头游客中心",
     "area": "haitang",
     "category": "nature",
@@ -307,7 +307,7 @@
   {
     "id": "nanshan-cultural-zone",
     "status": "verified",
-    "name": { "ru": "Наньшань", "zh": "南山文化旅游区" },
+    "name": { "ru": "Наньшань", "zh": "南山文化旅游区", "en": "Sanya Nanshan Cultural Tourism Zone" },
     "addressZh": "海南省三亚市崖州区南山村",
     "area": "other",
     "category": "culture",
@@ -351,7 +351,7 @@
   {
     "id": "sanya-first-market",
     "status": "verified",
-    "name": { "ru": "Первый рынок", "zh": "第一市场" },
+    "name": { "ru": "Первый рынок", "zh": "第一市场", "en": "First Market Night Market" },
     "addressZh": "海南省三亚市天涯区新建街155号",
     "area": "city",
     "category": "market",
@@ -382,7 +382,7 @@
   {
     "id": "sanya-song-cheng",
     "status": "verified",
-    "name": { "ru": "«Тысячелетняя любовь»", "zh": "三亚千古情景区" },
+    "name": { "ru": "«Тысячелетняя любовь»", "zh": "三亚千古情景区", "en": "Sanya Songcheng Show Park" },
     "addressZh": "海南省三亚市吉阳区迎宾路333号",
     "area": "city",
     "category": "entertainment",

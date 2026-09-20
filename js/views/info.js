@@ -196,6 +196,21 @@ export async function renderInfoDetail(container, ctx) {
 
   container.innerHTML = "";
 
+  // Выход вверху карточки (D-11 REAL-DEVICE-QA-2026-09.md): карточка справки
+  // длинная, а в установленном iOS-приложении нет кнопки «Назад» браузера —
+  // искать единственную ссылку под текстом приходилось прокруткой. Тот же
+  // элемент и то же поведение, что у «← К местам» (place.js); ссылка внизу
+  // остаётся — она удобна как раз после прочтения.
+  const topBack = document.createElement("a");
+  topBack.href = "#/info";
+  topBack.className = "place-detail__back";
+  topBack.textContent = "← К справке";
+  topBack.addEventListener("click", (event) => {
+    event.preventDefault();
+    ctx.back("#/info");
+  });
+  container.appendChild(topBack);
+
   const heading = document.createElement("h2");
   heading.className = "view-title";
   heading.textContent = item.title;

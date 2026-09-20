@@ -297,6 +297,25 @@ export async function renderHome(container, ctx) {
     // на первом экране (ITERATION-6-RESEARCH.md §16.8, проверка 62).
     renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
 
+    // «Если планы меняются» (2026-09-20): ситуации, на которые чипы «Мест» не
+    // отвечают, и единственный вход в «Экскурсии» с Главной. Готовые сценарии
+    // выезда (data/excursions.json) в базе уже были, но находил их только тот,
+    // кто сам открывал вкладку «Экскурсии», — в дождь или вечером туда никто
+    // не идёт. Это обычные ссылки с готовыми фильтрами, как и сценарии выше
+    // ([I3-22]): собственного состояния и кода им не нужно. Блок стоит ПОСЛЕ
+    // блока плана, чтобы не сдвигать его за пределы первого экрана на 320×568.
+    // Компактные .home-link (а не кнопки сценариев) — по той же причине.
+    appendLine(container, "home-subtitle", "Если планы меняются");
+    const situations = document.createElement("div");
+    situations.className = "home-help";
+    appendActionLink(situations, "🌧 Дождь или жара", "#/excursions?f=rain", "home-link");
+    appendActionLink(situations, "🌇 Куда сходить вечером", "#/excursions?f=evening", "home-link");
+    // Сценарий «с детьми» был только в состояниях «без дат» и «после поездки»
+    // — в самой поездке он пропадал; ведёт в «Места» с тем же радиусом, что и
+    // остальные сценарии этого состояния.
+    appendActionLink(situations, "👶 Куда сходить с детьми", scenarioHref("kids"), "home-link");
+    container.appendChild(situations);
+
     if (savedCount > 0) {
       const label = `Сохранено: ${savedCount} ${pluralizeRu(savedCount, ["место", "места", "мест"])}`;
       appendActionLink(container, label, "#/places?f=saved", "home-link");

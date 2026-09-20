@@ -198,6 +198,11 @@ function renderFoodCard(item, area) {
 // при каждом входе на экран. По умолчанию — «Все».
 const FOOD_SCOPE = { ALL: "all", NEARBY: "nearby" };
 
+// Вкладка «Рядом со мной» после возврата с экрана таксиста (D-03): помним
+// только факт выбора в этом сеансе страницы, точка — общая позиция geo.js.
+// Та же механика, что у «Рядом со мной» в местах (views/places.js).
+let nearbyScopeActivated = false;
+
 const FOOD_NEARBY_STATUS = {
   IDLE: "idle",
   LOADING: "loading",
@@ -216,10 +221,11 @@ export async function renderFoodSection(container, ctx) {
   let food;
   let config;
   try {
-    // primeCurrentPosition() — тот же единственный за сессию, кэшированный
-    // промис, что и в app.js при старте (geo.js): ждём его здесь наравне с
-    // данными, а не запускаем ещё один запрос геолокации.
-    [food, config] = await Promise.all([loadFood(), loadConfig(), primeCurrentPosition()]);
+    // Геолокацию здесь НЕ ждём (D-02 REAL-DEVICE-QA-2026-09.md): при выданном
+    // разрешении и медленном GPS ожидание primeCurrentPosition() держало экран
+    // на «Загрузка…» до 10 с. Список рисуется сразу, «N км от вас» на карточках
+    // появляется позже — см. конец renderFoodSection().
+    [food, config] = await Promise.all([loadFood(), loadConfig()]);
   } catch (e) {
     console.error(e);
     if (ctx.isCurrent()) {
@@ -276,6 +282,16 @@ export async function renderFoodSection(container, ctx) {
   // активным режимом «Все»/«Рядом со мной», не отдельный маршрут и не URL
   // (как и остальное локальное состояние этого экрана — near/scope выше).
   let searchQuery = "";
+
+  // Позиция уже известна (прайминг при старте приложения или прошлый запрос в
+  // этом сеансе, geo.js) — используем её без нового запроса геолокации.
+  function adoptKnownPosition() {
+    const known = getKnownPosition();
+    if (!known) return false;
+    nearbyOrigin = known;
+    computeNearbyResults();
+    return true;
+  }
 
   function computeNearbyResults() {
     // isValidLocation() исключает и отсутствующую точку, и заглушку {0,0}
@@ -412,17 +428,12 @@ export async function renderFoodSection(container, ctx) {
   function switchScope(next) {
     if (!ctx.isCurrent() || next === scope) return;
     scope = next;
+    nearbyScopeActivated = scope === FOOD_SCOPE.NEARBY;
     scopeChips.forEach((chip) => chip.setAttribute("aria-pressed", String(chip.dataset.scope === scope)));
     allBody.hidden = scope !== FOOD_SCOPE.ALL;
     nearbyBody.hidden = scope !== FOOD_SCOPE.NEARBY;
     if (scope === FOOD_SCOPE.NEARBY) {
-      // Позиция уже известна (прайминг при старте приложения или прошлый
-      // запрос в этом сеансе, geo.js) — используем её без нового запроса.
-      const known = getKnownPosition();
-      if (known) {
-        nearbyOrigin = known;
-        computeNearbyResults();
-      } else if (nearbyStatus !== FOOD_NEARBY_STATUS.DENIED && nearbyStatus !== FOOD_NEARBY_STATUS.ERROR) {
+      if (!adoptKnownPosition() && nearbyStatus !== FOOD_NEARBY_STATUS.DENIED && nearbyStatus !== FOOD_NEARBY_STATUS.ERROR) {
         nearbyStatus = FOOD_NEARBY_STATUS.IDLE;
       }
       renderNearbyBody();
@@ -523,9 +534,22 @@ export async function renderFoodSection(container, ctx) {
   // Точка входа «Поесть рядом» с Главной (PRODUCT.md 8.3): near=1 в URL —
   // тот же токен, что уже открывает «Рядом со мной» у Places (places.js,
   // home.js). Просто переключает тот же scope, что и клик по чипу «Рядом со
-  // мной» ниже, — второго способа управления Food Nearby не создаётся.
-  if (ctx.query.get("near") === "1") {
+  // мной» выше, — второго способа управления Food Nearby не создаётся.
+  // Второе условие — возврат в уже выбранный режим «Рядом со мной» после
+  // экрана таксиста, если позиция всё ещё известна (D-03).
+  if (ctx.query.get("near") === "1" || (nearbyScopeActivated && getKnownPosition())) {
     switchScope(FOOD_SCOPE.NEARBY);
+  }
+
+  // «N км от вас» на карточках — после отрисовки, а не до неё (D-02): когда
+  // позиция станет известна, видимый список перерисовывается на месте. Если
+  // разрешения нет, промис завершается молча и ничего не меняется.
+  if (!getKnownPosition()) {
+    primeCurrentPosition().then(() => {
+      if (!ctx.isCurrent() || !allBody.isConnected || !getKnownPosition()) return;
+      if (scope === FOOD_SCOPE.NEARBY && nearbyStatus === FOOD_NEARBY_STATUS.IDLE) adoptKnownPosition();
+      refreshVisibleBody();
+    });
   }
 }
 

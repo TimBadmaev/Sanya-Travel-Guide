@@ -5,7 +5,7 @@ import { haversineKm, formatDistance } from "../logic/distance.js";
 import { formatVerifiedDate } from "../logic/checklist.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
 import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
-import { userDistanceText, primeCurrentPosition } from "../logic/geo.js";
+import { userDistanceText, primeCurrentPosition, getKnownPosition } from "../logic/geo.js";
 import { bindCopyButton, renderShowScreen } from "./taxi.js";
 import { renderAddToDayBlock } from "./plan.js";
 
@@ -94,13 +94,13 @@ export async function renderPlace(container, ctx) {
   // Экскурсии — только для заголовка занятого дня в режиме addTo.
   let excursions = [];
   try {
-    // primeCurrentPosition() — тот же единственный за сессию, кэшированный
-    // промис, что и в app.js при старте (geo.js): ждём его здесь наравне с
-    // данными, а не запускаем ещё один запрос геолокации.
-    [places, config, , excursions] = await Promise.all([
+    // Геолокацию здесь НЕ ждём (D-02 REAL-DEVICE-QA-2026-09.md): при выданном
+    // разрешении и медленном GPS ожидание primeCurrentPosition() держало
+    // карточку на «Загрузка места…» до 10 с. Контент рисуется сразу, строка
+    // «N км от вас» дорисовывается позже — см. блок 3a.
+    [places, config, excursions] = await Promise.all([
       loadPlaces(),
       loadConfig(),
-      primeCurrentPosition(),
       addTo ? loadExcursions().catch(() => []) : [],
     ]);
   } catch (e) {
@@ -215,8 +215,28 @@ export async function renderPlace(container, ctx) {
   // блока выше: не resolveOrigin(), не точка проживания, не участвует в
   // сортировке/фильтрах («Рядом со мной» не трогаем). Вторичный, немаркий
   // текст; без известной позиции или валидной location блока просто нет.
-  const userDistance = userDistanceText(place.location);
-  if (userDistance) appendParagraph(container, "place-detail__user-distance", userDistance);
+  // Карточка не ждёт геолокацию (D-02): пока позиция неизвестна, блока просто
+  // нет, а когда она появится — текст дорисовывается на месте, без повторного
+  // рендера экрана. primeCurrentPosition() — тот же единственный за сессию
+  // кэшированный промис, что и в app.js при старте (geo.js): нового запроса
+  // геолокации здесь не возникает.
+  const userDistance = document.createElement("p");
+  userDistance.className = "place-detail__user-distance";
+  userDistance.hidden = true;
+  container.appendChild(userDistance);
+  const fillUserDistance = () => {
+    const text = userDistanceText(place.location);
+    userDistance.textContent = text;
+    userDistance.hidden = !text;
+  };
+  fillUserDistance();
+  if (!getKnownPosition()) {
+    primeCurrentPosition().then(() => {
+      // isConnected — карточка могла быть перерисована («Повторить») или
+      // покинута; ctx.isCurrent() ловит только смену маршрута.
+      if (ctx.isCurrent() && userDistance.isConnected) fillUserDistance();
+    });
+  }
 
   // 3b. Фото и «Больше фото и подробнее» (Итерация 7): после расстояния,
   // перед описанием. Файлы лежат в assets/photos/ и есть в PRECACHE; без
@@ -231,6 +251,13 @@ export async function renderPlace(container, ctx) {
       img.className = "place-photo__img";
       img.src = `assets/photos/${photo.file}`;
       img.alt = photo.alt;
+      // Файла нет или он повреждён (D-05): убираем всю фигуру вместе с
+      // подписью — значок битой картинки и «висящий» копирайт хуже, чем
+      // карточка без фото. Плейсхолдер не рисуем (D-14).
+      img.addEventListener("error", () => {
+        figure.remove();
+        if (!photos.children.length) photos.remove();
+      });
       const credit = document.createElement("figcaption");
       credit.className = "place-photo__credit";
       credit.append(`Фото: ${photo.author} · `);

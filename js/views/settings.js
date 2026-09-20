@@ -7,6 +7,9 @@ import { storage } from "../storage.js";
 // без настройки (D-08).
 
 const SAVE_FAILED_TEXT = "Не удалось сохранить: хранилище браузера недоступно.";
+// storage.getTrip() читает перевёрнутый период как «дат нет» ([I3-5]): без
+// этого сообщения форма молча закрывалась, а даты исчезали (D-09).
+const DATE_ORDER_TEXT = "Окончание поездки раньше начала — проверьте даты.";
 
 // Значение radio «Пока не выбрано» — пустая строка (id района быть не может).
 const AREA_NONE = "";
@@ -339,6 +342,16 @@ export async function renderSettings(container, ctx) {
   status.className = "settings__status";
   status.setAttribute("role", "status");
 
+  // Сообщение о перевёрнутом периоде снимается, как только даты правят:
+  // ошибка не «залипает» на исправленной форме.
+  const clearDateError = () => {
+    if (status.textContent === DATE_ORDER_TEXT) status.textContent = "";
+  };
+  [start.input, end.input].forEach((input) => {
+    input.addEventListener("change", clearDateError);
+    input.addEventListener("input", clearDateError);
+  });
+
   function save(value) {
     if (!ctx.isCurrent()) return;
     if (!storage.setTrip(value)) {
@@ -367,6 +380,13 @@ export async function renderSettings(container, ctx) {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const selected = form.querySelector('input[name="trip-area"]:checked');
+    // Обе даты заданы и перевёрнуты — не сохраняем и говорим об этом (D-09).
+    // Одна из дат пустая — это нормальное «пока не знаю», проверять нечего.
+    if (start.input.value && end.input.value && start.input.value > end.input.value) {
+      status.textContent = DATE_ORDER_TEXT;
+      end.input.focus();
+      return;
+    }
     save({
       start: start.input.value || null,
       end: end.input.value || null,

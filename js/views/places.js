@@ -23,7 +23,7 @@ import {
 } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
-import { setKnownPosition } from "../logic/geo.js";
+import { getKnownPosition, setKnownPosition } from "../logic/geo.js";
 import { formatDayMonth, isIsoDate } from "../logic/plan.js";
 import { renderFoodSection, renderModeSwitcher, MODE } from "./food.js";
 
@@ -164,6 +164,17 @@ function renderAreaNotice(precision, selectedArea) {
   return notice;
 }
 
+// Активный чип может оказаться за правым краем горизонтального ряда (.chips —
+// скроллер): при переходе с Главной по готовой ссылке ?f=… было видно только
+// суженный список, но не то, чем он сужен. Подкручиваем ряд к первому
+// нажатому чипу — двигается только сам ряд, страница остаётся на месте.
+function revealActiveChip(chipsRow, chips, tokens) {
+  const active = chips.find((chip) => tokens.includes(chip.dataset.token));
+  if (!active) return;
+  const delta = active.getBoundingClientRect().left - chipsRow.getBoundingClientRect().left;
+  if (delta > 0) chipsRow.scrollLeft += delta;
+}
+
 function renderEmptyState(message, buttonText, onClick) {
   const wrap = document.createElement("div");
   wrap.className = "empty-state";
@@ -199,6 +210,15 @@ const NEARBY_STATUS = {
 // 2 — координаты недоступны, 3 — истекло время ожидания.
 const GEO_ERROR = { PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 };
 const GEO_TIMEOUT_MS = 10000;
+
+// Возврат с карточки перерисовывает экран с нуля, и результат «Рядом со мной»
+// приходилось запрашивать заново (D-03 REAL-DEVICE-QA-2026-09.md). Здесь
+// хранится только факт «пользователь включал режим в этом сеансе страницы»:
+// сама точка берётся из общей позиции geo.js — той же, по которой карточки
+// печатают «N км от вас», поэтому нового источника устаревших координат не
+// появляется. «Свернуть» снимает флаг — свёрнутая панель не возвращается.
+// Прецедент модульного UI-состояния экрана — openPhases в views/prepare.js.
+let nearbyActivated = false;
 
 function getCurrentPosition() {
   return new Promise((resolve, reject) => {
@@ -337,12 +357,22 @@ export async function renderPlaces(container, ctx) {
   let nearbyResults = [];
   let nearbyErrorText = "";
 
+  // Режим уже включали, и позиция ещё известна — показываем результат сразу,
+  // без повторного запроса геолокации (D-03).
+  const restoredOrigin = nearbyActivated ? getKnownPosition() : null;
+  if (restoredOrigin) {
+    nearbyOrigin = restoredOrigin;
+    nearbyResults = nearbyPlaces(places, restoredOrigin);
+    nearbyStatus = nearbyResults.length ? NEARBY_STATUS.SUCCESS : NEARBY_STATUS.EMPTY;
+  }
+
   const nearbyPanel = document.createElement("div");
   nearbyPanel.className = "nearby";
   container.appendChild(nearbyPanel);
 
   function resetNearby() {
     if (!ctx.isCurrent()) return;
+    nearbyActivated = false;
     nearbyStatus = NEARBY_STATUS.IDLE;
     nearbyOrigin = null;
     nearbyResults = [];
@@ -358,6 +388,7 @@ export async function renderPlaces(container, ctx) {
         // Один и тот же грант разрешения — карточки Place/Food (geo.js)
         // получают ту же позицию, не запрашивая её ещё раз.
         setKnownPosition(point);
+        nearbyActivated = true;
         if (!ctx.isCurrent()) return;
         nearbyOrigin = point;
         nearbyResults = nearbyPlaces(places, point);
@@ -523,6 +554,7 @@ export async function renderPlaces(container, ctx) {
     return chip;
   });
   container.appendChild(chipsRow);
+  revealActiveChip(chipsRow, chips, tokens);
 
   const notice = renderAreaNotice(precision, selectedArea);
   if (notice) container.appendChild(notice);

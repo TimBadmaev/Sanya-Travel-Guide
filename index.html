@@ -22,7 +22,13 @@
       <h1 class="app-header__title">Sanya Travel Guide</h1>
     </header>
 
-    <main id="view" class="app-main" aria-live="polite"></main>
+    <!-- Без aria-live (D-10 REAL-DEVICE-QA-2026-09.md): содержимое #view
+         перерисовывается целиком на каждой навигации и на каждом изменении
+         результатов поиска, и «вежливая» live-область заставляла скринридер
+         зачитывать весь экран заново. Короткие изменения, которые нужно
+         озвучивать, объявляются точечно — role="status" у копирования,
+         сохранения плана и настроек. -->
+    <main id="view" class="app-main"></main>
 
     <nav class="bottom-nav" aria-label="Основная навигация">
       <a href="#/" class="bottom-nav__item" data-route="/">

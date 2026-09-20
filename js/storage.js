@@ -39,16 +39,27 @@ function ensureSchema() {
   // первое реальное изменение структуры (см. MVP-UX-SPEC.md, раздел 10).
 }
 
+// Объект «id пункта → true» в порядке отметок. Всё, что не объект (null,
+// массив, число, строка), читается как «ничего не отмечено»: повреждённое
+// значение не ломает экран и не перезаписывается — то же правило, что у
+// getSavedIds()/getTrip()/getMyPlan() ([I3-4]).
 function getChecklistState() {
   if (!storageAvailable) return {};
   ensureSchema();
+  let parsed;
   try {
     const raw = window.localStorage.getItem(KEYS.checklist);
-    return raw ? JSON.parse(raw) : {};
+    if (raw === null) return {};
+    parsed = JSON.parse(raw);
   } catch (e) {
     console.error("Не удалось прочитать stg:checklist", e);
     return {};
   }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    console.error("Значение stg:checklist не является объектом — игнорируется");
+    return {};
+  }
+  return parsed;
 }
 
 function setChecklistItemDone(itemId, done) {

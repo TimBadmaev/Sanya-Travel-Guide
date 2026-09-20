@@ -283,7 +283,14 @@ async function loadAll(requirePlan) {
   let planError = null;
   const [places, excursions, config, plan] = await Promise.all([
     loadPlaces(),
-    loadExcursions(),
+    // Экскурсии необязательны (D-06): день из одних мест должен открываться и
+    // тогда, когда excursions.json недоступен. Пустой список читается так же,
+    // как удалённая экскурсия, — getDayExcursions() вернёт её id в missing, и
+    // пункт молча пропускается (§11.2), экран остаётся рабочим.
+    loadExcursions().catch((error) => {
+      console.warn("Экскурсии недоступны — день показывается без них", error);
+      return [];
+    }),
     loadConfig(),
     requirePlan
       ? loadPlan()

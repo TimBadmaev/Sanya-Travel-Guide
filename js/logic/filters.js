@@ -212,7 +212,15 @@ export function applySearch(items, query, fields, key = "name") {
 // Форматы — одна группа через ИЛИ, "easy" — отдельное условие через И,
 // как у чипов «Мест» (8.4).
 export const EXCURSION_FORMAT_LABELS = { "half-day": "Полдня", "full-day": "Целый день", evening: "Вечер" };
-export const EXCURSION_FILTERS = ["half-day", "full-day", "evening", "easy"];
+
+// Ситуационные теги экскурсий (excursions.json, поле `tags` — необязательное).
+// Отвечают на вопросы, на которые формат и нагрузка не отвечают: «идёт дождь
+// или слишком жарко» и «мы с детьми». Значения выведены из уже проверенного
+// текста самих записей (9.6.5) — второй базы фактов не появляется. Каждый тег
+// — отдельное условие через И, как флаговые чипы «Мест» (8.4).
+export const EXCURSION_TAG_LABELS = { rain: "Если дождь", kids: "С детьми" };
+
+export const EXCURSION_FILTERS = ["half-day", "full-day", "evening", "easy", "rain", "kids"];
 
 export function parseExcursionFilters(raw) {
   const tokens = [];
@@ -225,8 +233,12 @@ export function parseExcursionFilters(raw) {
 export function applyExcursionFilters(excursions, tokens) {
   const formats = tokens.filter((t) => t in EXCURSION_FORMAT_LABELS);
   const easy = tokens.includes("easy");
+  const tags = tokens.filter((t) => t in EXCURSION_TAG_LABELS);
   return excursions.filter(
-    (excursion) => (!formats.length || formats.includes(excursion.format)) && (!easy || excursion.effort === "low")
+    (excursion) =>
+      (!formats.length || formats.includes(excursion.format)) &&
+      (!easy || excursion.effort === "low") &&
+      tags.every((tag) => Array.isArray(excursion.tags) && excursion.tags.includes(tag))
   );
 }
 

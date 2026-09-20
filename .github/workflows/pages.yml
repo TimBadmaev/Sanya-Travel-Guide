@@ -1,0 +1,57 @@
+# Публикация только самого приложения на GitHub Pages (D-12).
+#
+# Зачем: при обычной публикации «Deploy from a branch → /(root)» GitHub Pages
+# отдаёт ВЕСЬ репозиторий — включая внутренние *.md, личный план владельца
+# `yalongwan-plan.html`, `tools/` и файлы редактора. Этот workflow собирает
+# артефакт вручную и кладёт в него только те файлы, которые нужны приложению.
+#
+# Workflow НИЧЕГО не делает сам по себе: запуск только вручную
+# (workflow_dispatch). Чтобы он стал способом публикации:
+#   1. Settings → Pages → Source: **GitHub Actions**;
+#   2. Actions → «Publish app to GitHub Pages» → Run workflow;
+#   3. при желании добавить автоматический запуск — раскомментировать `push`.
+# Если оставить Source: «Deploy from a branch», workflow просто не запускается
+# и ничего не меняет: публикация идёт как раньше, из всего репозитория.
+name: Publish app to GitHub Pages
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Список = index.html + всё, что перечислено в PRECACHE (sw.js), плюс
+      # .nojekyll. Новый каталог приложения нужно добавить сюда вручную —
+      # сборки в проекте нет (D-23), как и у PRECACHE.
+      - name: Собрать каталог публикации
+        run: |
+          set -eu
+          mkdir -p _site
+          cp index.html manifest.webmanifest sw.js .nojekyll _site/
+          cp -R css js data assets _site/
+          echo "--- опубликовано будет:"
+          find _site -type f | sort
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -4,6 +4,7 @@ import {
   EFFORT_LABELS,
   SETTING_LABELS,
   EXCURSION_FORMAT_LABELS,
+  EXCURSION_TAG_LABELS,
   EXCURSION_FILTERS,
   EXCURSION_SEARCH_FIELDS,
   FLAG_LABELS,
@@ -57,8 +58,19 @@ function renderEmptyState(message, buttonText, onClick) {
   return wrap;
 }
 
+// Активный чип может оказаться за правым краем горизонтального ряда (.chips —
+// скроллер): при переходе с Главной по готовой ссылке ?f=… было видно только
+// суженный список, но не то, чем он сужен. Подкручиваем ряд к первому
+// нажатому чипу — двигается только сам ряд, страница остаётся на месте.
+function revealActiveChip(chipsRow, chips, tokens) {
+  const active = chips.find((chip) => tokens.includes(chip.dataset.token));
+  if (!active) return;
+  const delta = active.getBoundingClientRect().left - chipsRow.getBoundingClientRect().left;
+  if (delta > 0) chipsRow.scrollLeft += delta;
+}
+
 function filterLabel(token) {
-  return EXCURSION_FORMAT_LABELS[token] || FLAG_LABELS[token];
+  return EXCURSION_FORMAT_LABELS[token] || EXCURSION_TAG_LABELS[token] || FLAG_LABELS[token];
 }
 
 // Фильтры — в URL, как у «Мест» (f=), чтобы «Назад» с карточки вернул их.
@@ -135,6 +147,7 @@ export async function renderExcursions(container, ctx) {
     return chip;
   });
   container.appendChild(chipsRow);
+  revealActiveChip(chipsRow, chips, tokens);
 
   const results = document.createElement("div");
   results.className = "places-results";

@@ -8,6 +8,7 @@
     "durationHours": [6, 10],
     "effort": "low",
     "setting": "outdoor",
+    "tags": ["kids"],
     "placeIds": ["nanshan-cultural-zone", "tianya-haijiao"],
     "whatToSee": [
       "Статуя Гуаньинь высотой 108 м, которая стоит прямо в море, — к ней ведёт дорожка над водой.",
@@ -236,6 +237,7 @@
     "durationHours": [3, 6],
     "effort": "low",
     "setting": "indoor",
+    "tags": ["rain", "kids"],
     "placeIds": ["atlantis-sanya-aquarium", "cdf-duty-free-city"],
     "whatToSee": [
       "Аквариум «Затерянные покои» в комплексе Atlantis: сотни морских обитателей, большой аквариум с акулами, подводный тоннель и экспозиция кораллового рифа.",
@@ -269,6 +271,7 @@
     "durationHours": [3, 5],
     "effort": "medium",
     "setting": "outdoor",
+    "tags": ["kids"],
     "placeIds": [],
     "whatToSee": [
       "Долина тропического леса (雨林谷): тропа из деревянных настилов, каменных ступеней и подвесных мостов длиной 3,5 км — есть большой, средний и малый круговые маршруты.",
@@ -305,6 +308,7 @@
     "durationHours": [2, 4],
     "effort": "low",
     "setting": "mixed",
+    "tags": ["kids"],
     "placeIds": [],
     "whatToSee": [
       "Традиционные жилища народа Ли: дома в форме лодки и бамбуковые дома.",
@@ -338,6 +342,7 @@
     "durationHours": [2, 4],
     "effort": "medium",
     "setting": "outdoor",
+    "tags": ["kids"],
     "placeIds": [],
     "whatToSee": [
       "Канатная дорога над морем длиной более 2 км — одна из самых длинных в Китае.",
@@ -478,6 +483,7 @@
     "durationHours": [2, 4],
     "effort": "medium",
     "setting": "outdoor",
+    "tags": ["kids"],
     "placeIds": ["fenghuangling-scenic-area"],
     "whatToSee": [
       "Подъём на канатной дороге, около 10 минут в одну сторону, над тропическим лесом.",
@@ -586,6 +592,7 @@
     "durationHours": [2, 4],
     "effort": "low",
     "setting": "outdoor",
+    "tags": ["kids"],
     "placeIds": ["haitang-river-eco-park", "linwang-night-market"],
     "whatToSee": [
       "Экотропы вдоль реки Хайтан через водно-болотные участки; по официальному описанию здесь живут больше 20 видов птиц.",
@@ -621,6 +628,7 @@
     "durationHours": [4, 6],
     "effort": "low",
     "setting": "mixed",
+    "tags": ["kids"],
     "placeIds": ["haitang-river-eco-park", "haichang-fantasy-town"],
     "whatToSee": [
       "Горки в виде рисовых колосьев, лазалки по мотивам лийской парчи и туннель из вулканического камня в экопарке.",
@@ -655,6 +663,7 @@
     "durationHours": [3, 5],
     "effort": "low",
     "setting": "indoor",
+    "tags": ["rain"],
     "placeIds": ["htdf-hainan-tourism-duty-free", "sanya-joy-city"],
     "whatToSee": [
       "«Хайлюй» — беспошлинный комплекс около 95 000 м² с примерно тысячей брендов, второй в городе после CDF в Хайтане.",
@@ -690,6 +699,7 @@
     "durationHours": [3, 5],
     "effort": "low",
     "setting": "indoor",
+    "tags": ["rain", "kids"],
     "placeIds": ["no1-harbour-city-dadonghai", "sanya-summer-mall-dadonghai"],
     "whatToSee": [
       "«Большой ананас»: кинотеатр IMAX, большой супермаркет, рестораны и детские развивающие зоны.",
@@ -761,6 +771,7 @@
     "durationHours": [3, 5],
     "effort": "low",
     "setting": "mixed",
+    "tags": ["rain"],
     "placeIds": ["yalong-bay-underwater-world", "yalong-bay-no1-town-outlets"],
     "whatToSee": [
       "«Подводный мир» Ялунваня: морская программа у самого пляжа бухты — подробности и часы в карточке места.",
