@@ -19,6 +19,7 @@ import {
   PICKER_TIME_TOKEN_3H,
   PICKER_EFFORT_TOKEN_MODERATE,
   applySearch,
+  placeSearchText,
   PLACE_SEARCH_FIELDS,
 } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
@@ -499,8 +500,8 @@ export async function renderPlaces(container, ctx) {
   const searchInput = document.createElement("input");
   searchInput.type = "search";
   searchInput.className = "search-bar__input";
-  searchInput.placeholder = "Поиск по названию места";
-  searchInput.setAttribute("aria-label", "Поиск по названию места");
+  searchInput.placeholder = "Название, район или тип места";
+  searchInput.setAttribute("aria-label", "Поиск мест: название, район или тип");
   searchInput.autocomplete = "off";
   searchBar.appendChild(searchInput);
 
@@ -571,8 +572,10 @@ export async function renderPlaces(container, ctx) {
 
   // Поиск сужает базу так же, как near-радиус (basePlaces()) — дальше по
   // цепочке применяются те же applyFilters()/sortByDistance(), что и раньше.
+  // Текст «по смыслу» (категория, теги, район, описание) — один раз на экран.
+  const searchTexts = new Map(places.map((place) => [place.id, placeSearchText(place, config)]));
   function searchedPlaces() {
-    return applySearch(basePlaces(), searchQuery, PLACE_SEARCH_FIELDS);
+    return applySearch(basePlaces(), searchQuery, PLACE_SEARCH_FIELDS, "name", (place) => searchTexts.get(place.id));
   }
 
   function renderResults() {

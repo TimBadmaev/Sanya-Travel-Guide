@@ -195,17 +195,49 @@ export function normalizeSearchQuery(raw) {
   return (raw || "").trim();
 }
 
+// Регистр и «ё» не важны: «Ёлка» находится по «елка».
+function foldText(text) {
+  return text.toLowerCase().replace(/ё/g, "е");
+}
+
 // Пустой (после trim) запрос — поиск не применяется, возвращается тот же
 // список (новый массив, как и у остальных чистых функций этого модуля).
-export function applySearch(items, query, fields, key = "name") {
-  const trimmed = normalizeSearchQuery(query).toLowerCase();
-  if (!trimmed) return items.slice();
-  return items.filter((item) =>
-    fields.some((field) => {
-      const value = item[key] && item[key][field];
-      return typeof value === "string" && value.toLowerCase().includes(trimmed);
-    })
+// extraText(item) — необязательный дополнительный текст записи (Iteration 8,
+// P0-4): категория, теги, район, описание. Совпадение в нём — такое же
+// совпадение, как в названии.
+export function applySearch(items, query, fields, key = "name", extraText = null) {
+  const folded = foldText(normalizeSearchQuery(query));
+  if (!folded) return items.slice();
+  return items.filter(
+    (item) =>
+      fields.some((field) => {
+        const value = item[key] && item[key][field];
+        return typeof value === "string" && foldText(value).includes(folded);
+      }) || (extraText !== null && foldText(String(extraText(item) || "")).includes(folded))
   );
+}
+
+// Поиск «по смыслу» для мест (Iteration 8, P0-4): «пляж», «duty free»,
+// «Хайтан», «рынок» — не названия, а тип, район или то, что есть в описании.
+// Всё берётся из уже существующих данных: имя категории и её searchAliases
+// (config.categories), имена тегов, имя района, summary. Считается один раз
+// на экран, а не на каждое нажатие клавиши.
+export function placeSearchText(place, config) {
+  const category = (config.categories || []).find((c) => c.id === place.category);
+  const area = (config.areas || []).find((a) => a.id === place.area);
+  const tags = (config.tags || []).filter((t) => Array.isArray(place.tags) && place.tags.includes(t.id));
+  return [
+    category ? category.name : "",
+    ...(category && Array.isArray(category.searchAliases) ? category.searchAliases : []),
+    ...tags.map((t) => t.name),
+    area ? area.name : "",
+    place.summary || "",
+  ].join(" \n ");
+}
+
+// У экскурсий дополнительный текст — summary.
+export function excursionSearchText(excursion) {
+  return excursion.summary || "";
 }
 
 // Экскурсии (PRODUCT.md 8.11): формат выезда и фильтр-чипы списка.

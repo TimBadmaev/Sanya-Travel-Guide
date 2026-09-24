@@ -14,6 +14,7 @@ import {
 } from "../logic/trip.js";
 import { groupByPhase } from "../logic/checklist.js";
 import { renderTask } from "./task.js";
+import { renderHomeExpenses } from "./expenses.js";
 
 // Экран «Сейчас» (PRODUCT.md 8.3, MVP-UX-SPEC §3): четыре состояния по датам
 // поездки. Район на выбор состояния не влияет — только на содержимое строк
@@ -267,6 +268,8 @@ export async function renderHome(container, ctx) {
 
     appendActionLink(container, "Весь чек-лист", "#/prepare", "btn btn--primary home-action");
     renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
+    // Расходы до поездки (виза, страховка, eSIM) — категория «Подготовка».
+    appendActionLink(container, "Расходы поездки", "#/expenses", "home-link");
     return;
   }
 
@@ -296,6 +299,10 @@ export async function renderHome(container, ctx) {
     // Блок плана — сразу под сценариями: на 320×568 сценарии остаются целиком
     // на первом экране (ITERATION-6-RESEARCH.md §16.8, проверка 62).
     renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
+
+    // Расходы сегодня + «+ Расход» (Iteration 8) — после карточки плана, чтобы
+    // сценарии и план оставались на первом экране 320×568.
+    renderHomeExpenses(container, getTodayIso());
 
     // «Если планы меняются» (2026-09-20): ситуации, на которые чипы «Мест» не
     // отвечают, и единственный вход в «Экскурсии» с Главной. Готовые сценарии
@@ -354,6 +361,8 @@ export async function renderHome(container, ctx) {
     "btn btn--primary home-action"
   );
   renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
+  // Итоги расходов нужны и после поездки — ссылка, только если есть записи.
+  if (storage.getExpenses().items.length) appendActionLink(container, "Расходы поездки", "#/expenses", "home-link");
 
   // Прогресс подготовки — только если что-то уже отмечено (MVP-UX-SPEC §3).
   if (doneCount > 0) {

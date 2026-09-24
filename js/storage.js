@@ -1,6 +1,8 @@
 // Работа с состоянием пользователя в localStorage.
 // Контент (JSON) и состояние пользователя хранятся раздельно (D-17 PRODUCT.md).
 
+import { normalizeBudgetState, normalizeExpensesState } from "./logic/expenses.js";
+
 const SCHEMA_VERSION = 1;
 
 export const KEYS = {
@@ -14,6 +16,13 @@ export const KEYS = {
   // Итерация 6: «Мой план» — полная копия пользовательских дней. Отдельный
   // ключ, stg:schema остаётся 1 (ITERATION-6-RESEARCH.md §12.2).
   myplan: "stg:myplan",
+  // Iteration 8 (ITERATION-8-PRODUCT-AUDIT-2026-09.md §5): расходы поездки и
+  // курс/бюджет — отдельные ключи со своей версией внутри значения ({ v: 1 }),
+  // stg:schema остаётся 1 (прецедент stg:myplan). backup — сырая копия
+  // неразбираемого stg:expenses, снятая перед первой записью поверх него.
+  expenses: "stg:expenses",
+  expensesBackup: "stg:expenses:backup",
+  budget: "stg:budget",
 };
 
 function checkStorageAvailable() {
@@ -363,6 +372,79 @@ function setMyPlan(myPlan) {
   }
 }
 
+// Общее чтение JSON-ключа: { ok, value }. ok = false — значение есть, но не
+// разбирается или не является объектом; вызывающий читает его как «пусто».
+function readObject(key) {
+  let raw;
+  try {
+    raw = window.localStorage.getItem(key);
+  } catch (e) {
+    console.error(`Не удалось прочитать ${key}`, e);
+    return { ok: true, value: null };
+  }
+  if (raw === null) return { ok: true, value: null };
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return { ok: true, value: parsed };
+  } catch (e) {
+    // ниже — общее сообщение
+  }
+  console.error(`Значение ${key} повреждено — читается как пустое`);
+  return { ok: false, value: null, raw };
+}
+
+// Расходы (Iteration 8): { v, items, lastCurrency? }. Невалидные записи при
+// чтении отбрасываются (logic/expenses.js → normalizeExpensesState). Не
+// бросает исключение ([I3-4]).
+function getExpenses() {
+  const empty = normalizeExpensesState(null);
+  if (!storageAvailable) return empty;
+  ensureSchema();
+  const { value } = readObject(KEYS.expenses);
+  return value ? normalizeExpensesState(value) : empty;
+}
+
+// Полная перезапись через белый список. Расходы — единственные данные
+// пользователя, которые нельзя восстановить из контента, поэтому
+// неразбираемое прежнее значение не затирается молча: его сырая копия
+// один раз уходит в stg:expenses:backup.
+function setExpenses(state) {
+  if (!storageAvailable) return false;
+  ensureSchema();
+  const current = readObject(KEYS.expenses);
+  try {
+    if (!current.ok && window.localStorage.getItem(KEYS.expensesBackup) === null) {
+      window.localStorage.setItem(KEYS.expensesBackup, current.raw);
+    }
+    window.localStorage.setItem(KEYS.expenses, JSON.stringify(normalizeExpensesState(state)));
+    return true;
+  } catch (e) {
+    console.error("Не удалось сохранить stg:expenses", e);
+    return false;
+  }
+}
+
+// Курс поездки и бюджет: { v, base: "RUB", rates: { CNY: 11.8 }, budget? }.
+function getBudget() {
+  const empty = normalizeBudgetState(null);
+  if (!storageAvailable) return empty;
+  ensureSchema();
+  const { value } = readObject(KEYS.budget);
+  return value ? normalizeBudgetState(value) : empty;
+}
+
+function setBudget(state) {
+  if (!storageAvailable) return false;
+  ensureSchema();
+  try {
+    window.localStorage.setItem(KEYS.budget, JSON.stringify(normalizeBudgetState(state)));
+    return true;
+  } catch (e) {
+    console.error("Не удалось сохранить stg:budget", e);
+    return false;
+  }
+}
+
 export const storage = {
   isAvailable: () => storageAvailable,
   getMyPlan,
@@ -375,4 +457,8 @@ export const storage = {
   setPlaceSaved,
   getTrip,
   setTrip,
+  getExpenses,
+  setExpenses,
+  getBudget,
+  setBudget,
 };

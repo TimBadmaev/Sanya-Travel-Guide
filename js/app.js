@@ -9,6 +9,7 @@ import { renderHandy, renderHandyPhrase, renderHandyTaxi } from "./views/handy.j
 import { renderMyPlan, renderMyPlanDay, renderMoveDay, renderPlacePlan, renderExcursionPlan } from "./views/plan.js";
 import { renderExcursions, renderExcursion } from "./views/excursions.js";
 import { renderRecommended, renderRecommendedDay } from "./views/recommended.js";
+import { renderExpenses, renderExpenseForm, renderExpenseSettings } from "./views/expenses.js";
 import { initPwa } from "./pwa.js";
 import { primeCurrentPosition } from "./logic/geo.js";
 
@@ -46,6 +47,12 @@ const routes = [
   { pattern: /^\/plan\/(?<date>[^/]+)\/move$/, render: renderMoveDay, nav: "/" },
   { pattern: /^\/recommended$/, render: renderRecommended, nav: "/" },
   { pattern: /^\/recommended\/(?<date>[^/]+)$/, render: renderRecommendedDay, nav: "/" },
+  // Расходы поездки (Iteration 8): вложенные экраны Главной, как «Мой план».
+  // add и settings — раньше шаблона с id, иначе совпали бы с ним.
+  { pattern: /^\/expenses$/, render: renderExpenses, nav: "/" },
+  { pattern: /^\/expenses\/add$/, render: renderExpenseForm, nav: "/" },
+  { pattern: /^\/expenses\/settings$/, render: renderExpenseSettings, nav: "/" },
+  { pattern: /^\/expenses\/(?<id>exp-[^/]+)$/, render: renderExpenseForm, nav: "/" },
   // Выбор дня для места — продолжение карточки места.
   { pattern: /^\/place\/(?<id>[^/]+)\/plan$/, render: renderPlacePlan, nav: "/places" },
 ];

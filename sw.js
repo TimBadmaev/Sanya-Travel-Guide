@@ -5,7 +5,7 @@
 
 // ЕДИНСТВЕННАЯ версия кэша. При каждой публикации обновления меняйте это
 // значение (README.md, «Как выпустить новую версию»).
-const CACHE_VERSION = "v12";
+const CACHE_VERSION = "v14";
 
 // Префикс нужен, чтобы activate удалял только кэши этого приложения: у всех
 // репозиториев на <аккаунт>.github.io общий origin и общее хранилище кэшей.
@@ -25,12 +25,14 @@ const PRECACHE = [
   "./js/logic/amap.js",
   "./js/logic/checklist.js",
   "./js/logic/distance.js",
+  "./js/logic/expenses.js",
   "./js/logic/filters.js",
   "./js/logic/geo.js",
   "./js/logic/myplan.js",
   "./js/logic/plan.js",
   "./js/logic/trip.js",
   "./js/views/excursions.js",
+  "./js/views/expenses.js",
   "./js/views/food.js",
   "./js/views/handy.js",
   "./js/views/home.js",
@@ -69,6 +71,9 @@ const PRECACHE = [
   // Контентный проход 2026-09 (CONTENT-EXPANSION-2026-09.md).
   "./assets/photos/sanya-bay-beach-1.webp",
   "./assets/photos/daxiaodongtian-1.webp",
+  // Контентный проход Batch 2 (CONTENT-EXPANSION-BATCH-2-2026-09.md).
+  "./assets/photos/atlantis-aquaventure-1.webp",
+  "./assets/photos/sanya-city-library-1.webp",
 ];
 
 const INDEX_URL = "./index.html";

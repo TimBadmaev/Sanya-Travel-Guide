@@ -32,6 +32,7 @@ import {
   replaceDayWithItem,
   swapDays,
 } from "../logic/myplan.js";
+import { filterByDate, formatBaseLine, formatByCurrency, summarize } from "../logic/expenses.js";
 
 // «Мой план» (Итерация 6, ITERATION-6-RESEARCH.md §9): #/plan, #/plan/<date>,
 // #/plan/<date>/move, #/place/<id>/plan. Рекомендация (data/plan.json) здесь
@@ -420,6 +421,10 @@ export async function renderMyPlanDay(container, ctx) {
 
     const status = createStatus();
 
+    // «Если планы меняются» (Iteration 8, P0-5) — только сегодня и дальше:
+    // прошедший день уже не заменить.
+    if (!today || date >= today) renderPlanChanges(container, date, day);
+
     if (recDay && !isSameAsRecommended(day, recDay)) {
       const rec = document.createElement("div");
       rec.className = "plan-rec";
@@ -478,9 +483,70 @@ export async function renderMyPlanDay(container, ctx) {
     }
     edit.appendChild(status);
     container.appendChild(edit);
+
+    renderDayExpenses(container, date, today);
   }
 
+  const today = getTodayIso();
   draw();
+}
+
+// «Если планы меняются» на экране дня (Iteration 8, ITERATION-8-PRODUCT-AUDIT
+// §4 P0-5). Новой логики планировщика нет: ссылки открывают уже существующий
+// режим выбора места для этого дня (#/places?addTo=<дата>, S1) с готовыми
+// фильтрами — там же «Добавить к текущему плану» / «Заменить текущий план».
+// Правила прозрачные: дождь или жара → только в помещении; устали → лёгкая
+// нагрузка и до 2 часов, ближе к жилью (near=1 действует, если точка
+// проживания известна, иначе список просто без радиуса).
+function renderPlanChanges(container, date, day) {
+  const block = document.createElement("div");
+  block.className = "plan-changes";
+  appendText(block, "h3", "place-detail__subtitle", "Если планы меняются");
+  if (countDayItems(day) >= MAX_PLACES_PER_DAY) {
+    appendText(block, "p", "plan-edit__note", `В дне уже ${MAX_PLACES_PER_DAY} пункта — чтобы заменить его, сначала очистите день.`);
+  } else {
+    const links = document.createElement("div");
+    links.className = "home-help";
+    [
+      ["🌧 Дождь или жара — места в помещении", `#/places?f=indoor&addTo=${date}`],
+      ["😮‍💨 Устали — лёгкие места до 2 часов", `#/places?f=easy,short&near=1&addTo=${date}`],
+    ].forEach(([label, href]) => {
+      appendText(links, "a", "home-link", label).href = href;
+    });
+    block.appendChild(links);
+  }
+  const scenarios = appendText(block, "a", "home-link", "🧭 Готовые сценарии на дождь");
+  scenarios.href = "#/excursions?f=rain";
+  container.appendChild(block);
+}
+
+// Факт дня (Iteration 8): расходы, записанные на эту дату. Будущий день без
+// расходов — блока нет, записывать ещё нечего.
+function renderDayExpenses(container, date, today) {
+  const { items } = storage.getExpenses();
+  const own = filterByDate(items, date);
+  if (!own.length && today && date > today) return;
+  const summary = summarize(own, storage.getBudget().rates);
+
+  const block = document.createElement("div");
+  block.className = "plan-expenses";
+  appendText(block, "h3", "place-detail__subtitle", "Расходы за день");
+  if (own.length) {
+    const stat = document.createElement("p");
+    stat.className = "expense-stat";
+    appendText(stat, "span", "expense-stat__value", formatByCurrency(summary));
+    const baseLine = formatBaseLine(summary);
+    if (baseLine) appendText(stat, "span", "expense-stat__base", baseLine);
+    block.appendChild(stat);
+  } else {
+    appendText(block, "p", "plan-hint", "Пока ничего не записано.");
+  }
+  const actions = document.createElement("div");
+  actions.className = "plan-edit";
+  appendText(actions, "a", "btn btn--secondary plan-button", "Добавить расход за этот день").href = `#/expenses/add?date=${date}`;
+  if (own.length) appendText(actions, "a", "home-link", "Все расходы поездки").href = "#/expenses";
+  block.appendChild(actions);
+  container.appendChild(block);
 }
 
 // ---------------------------------------------------------------- выбор даты

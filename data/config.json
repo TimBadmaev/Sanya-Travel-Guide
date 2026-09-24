@@ -26,12 +26,12 @@
     { "id": "other", "name": "Другое / за пределами центральных районов", "center": null, "status": "verified" }
   ],
   "categories": [
-    { "id": "beach", "name": "Пляжи", "icon": "beach" },
-    { "id": "nature", "name": "Природа", "icon": "nature" },
-    { "id": "culture", "name": "Культура", "icon": "culture" },
-    { "id": "entertainment", "name": "Развлечения", "icon": "entertainment" },
-    { "id": "market", "name": "Рынки", "icon": "market" },
-    { "id": "shopping", "name": "Покупки", "icon": "shopping" }
+    { "id": "beach", "name": "Пляжи", "icon": "beach", "searchAliases": ["пляж", "море", "купаться", "beach"] },
+    { "id": "nature", "name": "Природа", "icon": "nature", "searchAliases": ["парк", "лес", "прогулка", "park", "nature"] },
+    { "id": "culture", "name": "Культура", "icon": "culture", "searchAliases": ["музей", "храм", "история", "museum", "culture"] },
+    { "id": "entertainment", "name": "Развлечения", "icon": "entertainment", "searchAliases": ["шоу", "аквапарк", "аквариум", "show", "entertainment"] },
+    { "id": "market", "name": "Рынки", "icon": "market", "searchAliases": ["рынок", "ночной рынок", "market"] },
+    { "id": "shopping", "name": "Покупки", "icon": "shopping", "searchAliases": ["шопинг", "магазин", "торговый центр", "ТЦ", "аутлет", "дьюти фри", "mall", "shopping", "outlet", "duty free"] }
   ],
   "tags": [
     { "id": "view", "name": "Виды" },

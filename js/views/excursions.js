@@ -10,6 +10,7 @@ import {
   FLAG_LABELS,
   applyExcursionFilters,
   applySearch,
+  excursionSearchText,
   parseExcursionFilters,
   serializeFilters,
   toggleFilter,
@@ -124,8 +125,8 @@ export async function renderExcursions(container, ctx) {
   const searchInput = document.createElement("input");
   searchInput.type = "search";
   searchInput.className = "search-bar__input";
-  searchInput.placeholder = "Поиск по названию экскурсии";
-  searchInput.setAttribute("aria-label", "Поиск по названию экскурсии");
+  searchInput.placeholder = "Название или что посмотреть";
+  searchInput.setAttribute("aria-label", "Поиск экскурсий: название или описание");
   searchInput.autocomplete = "off";
   const searchClear = appendText(searchBar, "button", "search-bar__clear", "✕");
   searchClear.type = "button";
@@ -155,7 +156,7 @@ export async function renderExcursions(container, ctx) {
 
   function renderResults() {
     results.innerHTML = "";
-    const searched = applySearch(excursions, searchQuery, EXCURSION_SEARCH_FIELDS, "title");
+    const searched = applySearch(excursions, searchQuery, EXCURSION_SEARCH_FIELDS, "title", excursionSearchText);
     const found = applyExcursionFilters(searched, tokens);
     appendText(results, "p", "places-count", `Найдено ${found.length}`);
     if (found.length) {

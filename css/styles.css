@@ -1966,3 +1966,280 @@ textarea.settings-field__input {
     min-width: 0;
   }
 }
+
+/* ===== Iteration 8 — расходы, курс и бюджет, «Если планы меняются» в дне
+   (ITERATION-8-PRODUCT-AUDIT-2026-09.md) — только новые правила ===== */
+
+/* «Сейчас»: итог дня и «+ Расход» рядом — две отдельные зоны нажатия. */
+.home-expenses {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+
+.home-expenses__card {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+
+.home-expenses__base {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.home-expenses__add {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.expense-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+  text-decoration: none;
+}
+
+.expense-empty {
+  margin: 0 0 var(--space-4);
+}
+
+.expense-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.expense-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  min-width: 0;
+}
+
+.expense-stats .expense-stat {
+  margin: 0;
+}
+
+.expense-stat__label {
+  color: var(--color-text-muted);
+}
+
+.expense-stat__value {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.expense-stat__base,
+.expense-category__base,
+.expense-day__base {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.expense-rates {
+  margin-bottom: var(--space-4);
+}
+
+.expense-budget {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.expense-budget__title {
+  margin: 0 0 var(--space-2);
+  font-weight: 700;
+}
+
+.expense-budget__line {
+  margin: var(--space-1) 0 0;
+}
+
+.expense-budget__warn {
+  margin: var(--space-2) 0 0;
+  color: var(--color-critical);
+  font-size: var(--font-size-sm);
+}
+
+.progress--over .progress__fill {
+  background: var(--color-critical);
+}
+
+.expense-categories {
+  margin: 0 0 var(--space-4);
+  padding: 0 var(--space-4);
+  list-style: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.expense-category {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.expense-category:first-child {
+  border-top: none;
+}
+
+.expense-category__name {
+  flex: 0 0 auto;
+}
+
+.expense-category__value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 0;
+  text-align: right;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.expense-category__base {
+  font-weight: 400;
+}
+
+.expense-day {
+  margin-bottom: var(--space-4);
+}
+
+.expense-day__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  font-weight: 700;
+}
+
+.expense-day__total {
+  overflow-wrap: anywhere;
+}
+
+.expense-day__base {
+  margin: 0;
+}
+
+.expense-day .info-list {
+  margin-top: var(--space-2);
+}
+
+.expense-row__amount {
+  margin-left: auto;
+  padding-left: var(--space-2);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.expense-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+/* Форма расхода: сумма крупно, выбор валюты и категории — радиокнопки в
+   виде чипов с переносом (без горизонтальной прокрутки), зона ≥44 px. */
+.expense-form__amount {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+.expense-choices {
+  margin-bottom: var(--space-4);
+}
+
+.expense-choices__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.expense-choice {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.expense-choice__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+
+.expense-choice__label {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.expense-choice__input:checked + .expense-choice__label {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.expense-choice__input:focus-visible + .expense-choice__label {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+.expense-form select.settings-field__input {
+  appearance: auto;
+}
+
+.expense-remove {
+  width: 100%;
+  margin-top: var(--space-4);
+}
+
+.expense-remove[hidden] {
+  display: none;
+}
+
+.settings-field[hidden] {
+  display: none;
+}
+
+/* Экран дня плана: «Если планы меняются» и «Расходы за день». */
+.plan-changes,
+.plan-expenses {
+  margin-top: var(--space-5);
+}
+
+.plan-expenses .expense-stat {
+  margin-bottom: var(--space-2);
+}
