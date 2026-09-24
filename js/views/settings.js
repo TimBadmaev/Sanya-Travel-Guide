@@ -399,4 +399,12 @@ export async function renderSettings(container, ctx) {
   });
 
   container.appendChild(form);
+
+  // Iteration 9: копия всех данных пользователя — отдельный экран #/data.
+  // В первом запуске копировать ещё нечего, но восстановить — можно.
+  const dataLink = document.createElement("a");
+  dataLink.href = "#/data";
+  dataLink.className = "home-link settings__data-link";
+  dataLink.textContent = isFirstRun ? "Восстановить данные из копии" : "Мои данные: копия и восстановление";
+  container.appendChild(dataLink);
 }

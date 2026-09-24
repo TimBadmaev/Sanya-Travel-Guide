@@ -33,6 +33,10 @@ import {
   swapDays,
 } from "../logic/myplan.js";
 import { filterByDate, formatBaseLine, formatByCurrency, summarize } from "../logic/expenses.js";
+import { localMoment } from "../logic/hours.js";
+import { dayItems, nextItem } from "../logic/today.js";
+import { renderExpenseRow } from "./expenses.js";
+import { renderItemRow } from "./today.js";
 
 // «Мой план» (Итерация 6, ITERATION-6-RESEARCH.md §9): #/plan, #/plan/<date>,
 // #/plan/<date>/move, #/place/<id>/plan. Рекомендация (data/plan.json) здесь
@@ -150,7 +154,21 @@ export function saveMyPlan(next, status) {
 
 // Содержимое дня (§13.3.1): отсутствующие поля не выводятся вовсе — ни
 // пустых заголовков, ни прочерков. Заголовок и дату рисует экран.
-export function renderDayBody(container, day, { places, excursions, typesById }) {
+// done — { date, moment } (Iteration 9): день «Моего плана» сегодня или в
+// прошлом — пункты рисуются строками с кнопкой «сделано» (renderItemRow из
+// today.js), а не простыми карточками. Рекомендация done не передаёт.
+export function renderDayBody(container, day, { places, excursions, typesById, done = null, onDoneChange = null }) {
+  const doneItems = done ? dayItems(day, { places, excursions, doneKeys: storage.getPlanDone().days[done.date] }) : [];
+  const upcoming = done ? nextItem(doneItems) : null;
+  const doneRow = (kind, id) =>
+    renderItemRow(doneItems.find((item) => item.kind === kind && item.id === id), {
+      upcoming,
+      moment: done.moment,
+      date: done.date,
+      onChange: onDoneChange,
+      details: true,
+    });
+
   const chip = createTypeChip(day.type, typesById);
   if (chip) {
     const row = document.createElement("p");
@@ -184,7 +202,13 @@ export function renderDayBody(container, day, { places, excursions, typesById })
   if (missingExcursions.length) {
     console.warn("Экскурсии дня не найдены среди опубликованных и пропущены:", missingExcursions.join(", "));
   }
-  if (dayExcursions.length) {
+  if (dayExcursions.length && done) {
+    appendText(container, "h3", "place-detail__subtitle", "Экскурсии этого дня");
+    const list = document.createElement("ul");
+    list.className = "today__items";
+    dayExcursions.forEach((excursion) => list.appendChild(doneRow("excursion", excursion.id)));
+    container.appendChild(list);
+  } else if (dayExcursions.length) {
     appendText(container, "h3", "place-detail__subtitle", "Экскурсии этого дня");
     const list = document.createElement("div");
     list.className = "info-list plan-places plan-excursions";
@@ -208,7 +232,13 @@ export function renderDayBody(container, day, { places, excursions, typesById })
     // Удалённые и черновые места пропускаются молча (§11.2).
     console.warn("Места дня не найдены среди опубликованных и пропущены:", missing.join(", "));
   }
-  if (dayPlaces.length) {
+  if (dayPlaces.length && done) {
+    appendText(container, "h3", "place-detail__subtitle", "Места этого дня");
+    const list = document.createElement("ul");
+    list.className = "today__items";
+    dayPlaces.forEach((place) => list.appendChild(doneRow("place", place.id)));
+    container.appendChild(list);
+  } else if (dayPlaces.length) {
     appendText(container, "h3", "place-detail__subtitle", "Места этого дня");
     const list = document.createElement("div");
     list.className = "info-list plan-places";
@@ -417,13 +447,15 @@ export async function renderMyPlanDay(container, ctx) {
     appendText(container, "p", "plan-day__date", number ? `День ${number} из ${total} · ${formatLongDate(date)}` : formatLongDate(date));
     const title = empty ? "" : resolveDayTitle(day, places, excursions);
     appendText(container, "h2", `view-title${title ? "" : " plan-day__title--empty"}`, title || EMPTY_DAY_TEXT);
-    if (!empty) renderDayBody(container, day, { places, excursions, typesById });
+    // Отметки «сделано» — сегодня и в прошедших днях: будущее ещё не сделано.
+    const doneMode = today && date <= today ? { date, moment: date === today ? localMoment() : null } : null;
+    if (!empty) renderDayBody(container, day, { places, excursions, typesById, done: doneMode, onDoneChange: draw });
 
     const status = createStatus();
 
     // «Если планы меняются» (Iteration 8, P0-5) — только сегодня и дальше:
     // прошедший день уже не заменить.
-    if (!today || date >= today) renderPlanChanges(container, date, day);
+    if (!today || date >= today) renderPlanChanges(container, date, day, date === today);
 
     if (recDay && !isSameAsRecommended(day, recDay)) {
       const rec = document.createElement("div");
@@ -484,7 +516,7 @@ export async function renderMyPlanDay(container, ctx) {
     edit.appendChild(status);
     container.appendChild(edit);
 
-    renderDayExpenses(container, date, today);
+    renderDayExpenses(container, date, today, { places, excursions });
   }
 
   const today = getTodayIso();
@@ -498,7 +530,7 @@ export async function renderMyPlanDay(container, ctx) {
 // Правила прозрачные: дождь или жара → только в помещении; устали → лёгкая
 // нагрузка и до 2 часов, ближе к жилью (near=1 действует, если точка
 // проживания известна, иначе список просто без радиуса).
-function renderPlanChanges(container, date, day) {
+function renderPlanChanges(container, date, day, isToday) {
   const block = document.createElement("div");
   block.className = "plan-changes";
   appendText(block, "h3", "place-detail__subtitle", "Если планы меняются");
@@ -517,16 +549,21 @@ function renderPlanChanges(container, date, day) {
   }
   const scenarios = appendText(block, "a", "home-link", "🧭 Готовые сценарии на дождь");
   scenarios.href = "#/excursions?f=rain";
+  // Iteration 9: сегодня — ещё и «что открыто прямо сейчас» по часам.
+  if (isToday) appendText(block, "a", "home-link", "🕒 Что открыто сейчас рядом").href = "#/now";
   container.appendChild(block);
 }
 
 // Факт дня (Iteration 8): расходы, записанные на эту дату. Будущий день без
-// расходов — блока нет, записывать ещё нечего.
-function renderDayExpenses(container, date, today) {
+// расходов — блока нет, записывать ещё нечего. Iteration 9: под итогом —
+// суммы по пунктам плана (расход с привязкой к месту или экскурсии) и сами
+// записи дня; нажатие открывает правку.
+function renderDayExpenses(container, date, today, names) {
   const { items } = storage.getExpenses();
   const own = filterByDate(items, date);
   if (!own.length && today && date > today) return;
-  const summary = summarize(own, storage.getBudget().rates);
+  const { rates } = storage.getBudget();
+  const summary = summarize(own, rates);
 
   const block = document.createElement("div");
   block.className = "plan-expenses";
@@ -538,6 +575,24 @@ function renderDayExpenses(container, date, today) {
     const baseLine = formatBaseLine(summary);
     if (baseLine) appendText(stat, "span", "expense-stat__base", baseLine);
     block.appendChild(stat);
+
+    const groups = groupByLink(own, names);
+    if (groups.some((group) => group.link)) {
+      const list = document.createElement("ul");
+      list.className = "expense-categories";
+      groups.forEach((group) => {
+        const li = document.createElement("li");
+        li.className = "expense-category";
+        appendText(li, "span", "expense-category__name", group.title);
+        appendText(li, "span", "expense-category__value", formatByCurrency(summarize(group.items, rates)));
+        list.appendChild(li);
+      });
+      block.appendChild(list);
+    }
+    const rows = document.createElement("div");
+    rows.className = "info-list";
+    own.forEach((item) => rows.appendChild(renderExpenseRow(item, names)));
+    block.appendChild(rows);
   } else {
     appendText(block, "p", "plan-hint", "Пока ничего не записано.");
   }
@@ -547,6 +602,28 @@ function renderDayExpenses(container, date, today) {
   if (own.length) appendText(actions, "a", "home-link", "Все расходы поездки").href = "#/expenses";
   block.appendChild(actions);
   container.appendChild(block);
+}
+
+// Расходы дня по пунктам плана: [{ link, title, items }] — сначала пункты
+// (в порядке первой записи), последней — группа без привязки.
+function groupByLink(items, { places, excursions }) {
+  const groups = [];
+  const rest = [];
+  items.forEach((item) => {
+    if (!item.link) {
+      rest.push(item);
+      return;
+    }
+    let group = groups.find((g) => g.link.kind === item.link.kind && g.link.id === item.link.id);
+    if (!group) {
+      const found = item.link.kind === "place" ? places.find((p) => p.id === item.link.id) : excursions.find((e) => e.id === item.link.id);
+      group = { link: item.link, title: found ? (found.name ? found.name.ru : found.title.ru) : "Пункт плана", items: [] };
+      groups.push(group);
+    }
+    group.items.push(item);
+  });
+  if (rest.length) groups.push({ link: null, title: "Без привязки к плану", items: rest });
+  return groups;
 }
 
 // ---------------------------------------------------------------- выбор даты

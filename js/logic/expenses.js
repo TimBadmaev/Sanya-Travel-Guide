@@ -302,6 +302,28 @@ export function budgetStatus(budget, summary) {
   };
 }
 
+// Сколько дней бюджета осталось, включая сегодня (Iteration 9): до поездки —
+// вся поездка, в поездке — от сегодня до конца, после или без дат — null.
+export function budgetDaysLeft(trip, today) {
+  const start = trip && trip.start;
+  const end = trip && trip.end;
+  if (!isIsoDate(start) || !isIsoDate(end) || !isIsoDate(today) || start > end || today > end) return null;
+  const from = today < start ? start : today;
+  const ms = (iso) => {
+    const [y, m, d] = iso.split("-").map(Number);
+    return Date.UTC(y, m - 1, d);
+  };
+  return Math.round((ms(end) - ms(from)) / 86400000) + 1;
+}
+
+// «Остаток на день» — фактический остаток бюджета, делённый на оставшиеся
+// дни. Не прогноз: будущие траты не угадываются. null — считать нечего
+// (нет бюджета, дат или остаток уже исчерпан).
+export function dailyAllowance(status, daysLeft) {
+  if (!status || status.over || status.left <= 0 || !Number.isInteger(daysLeft) || daysLeft < 1) return null;
+  return round2(status.left / daysLeft);
+}
+
 // ------------------------------------------------------------ форматирование
 
 const NBSP = " ";

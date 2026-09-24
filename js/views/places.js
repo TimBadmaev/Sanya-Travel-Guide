@@ -30,7 +30,7 @@ import { renderFoodSection, renderModeSwitcher, MODE } from "./food.js";
 
 // Ключ иконки категории (config.categories[].icon) → эмодзи. Деталь
 // отображения, как ICONS в info.js (PLACES-IMPLEMENTATION.md [PI-7], [OQ-14]).
-const CATEGORY_ICONS = {
+export const CATEGORY_ICONS = {
   beach: "🏖️",
   nature: "🌿",
   culture: "🏛️",
@@ -39,7 +39,7 @@ const CATEGORY_ICONS = {
   shopping: "🛍️",
 };
 
-const DEFAULT_ICON = "📍";
+export const DEFAULT_ICON = "📍";
 
 function renderErrorState(container, message, onRetry) {
   container.innerHTML = "";

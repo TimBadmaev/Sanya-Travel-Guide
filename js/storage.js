@@ -23,7 +23,18 @@ export const KEYS = {
   expenses: "stg:expenses",
   expensesBackup: "stg:expenses:backup",
   budget: "stg:budget",
+  // Iteration 9: отметки «сделано» у пунктов дня «Моего плана» — отдельный
+  // слой поверх stg:myplan ({ v: 1, days: { "<дата>": ["place:<id>", …] } }),
+  // сам план не меняется. importBackup — снимок данных перед импортом из
+  // файла (формат файла копии), для «Вернуть как было».
+  planDone: "stg:plandone",
+  importBackup: "stg:import:backup",
 };
+
+// Данные пользователя, которые переносит копия (Iteration 9, экспорт/импорт):
+// только то, что нельзя восстановить из контента. Служебные флаги
+// (stg:schema, подсказка установки) и аварийные копии (…:backup) не входят.
+export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget];
 
 function checkStorageAvailable() {
   try {
@@ -445,8 +456,176 @@ function setBudget(state) {
   }
 }
 
+// ------------------------------------------------------------ отметки «сделано»
+
+// Ключ пункта дня — тот же вид, что у ссылки расхода на план: "place:<id>" /
+// "excursion:<id>".
+const DONE_ITEM = /^(place|excursion):[^:\s]+$/;
+
+function normalizePlanDone(value) {
+  const days = {};
+  const source = value && value.days && typeof value.days === "object" && !Array.isArray(value.days) ? value.days : {};
+  Object.keys(source).forEach((date) => {
+    if (!isValidDateString(date)) return;
+    const items = [...new Set(normalizeStringList(source[date]).filter((key) => DONE_ITEM.test(key)))];
+    if (items.length) days[date] = items;
+  });
+  return { v: 1, days };
+}
+
+// Не бросает исключение; повреждённое значение — «ничего не отмечено» без
+// перезаписи ([I3-4]).
+function getPlanDone() {
+  const empty = normalizePlanDone(null);
+  if (!storageAvailable) return empty;
+  ensureSchema();
+  const { value } = readObject(KEYS.planDone);
+  return value ? normalizePlanDone(value) : empty;
+}
+
+function setPlanItemDone(date, itemKey, done) {
+  if (!storageAvailable || !isValidDateString(date) || !DONE_ITEM.test(itemKey)) return false;
+  const state = getPlanDone();
+  const items = (state.days[date] || []).filter((key) => key !== itemKey);
+  if (done) items.push(itemKey);
+  if (items.length) {
+    state.days[date] = items;
+  } else {
+    delete state.days[date];
+  }
+  try {
+    window.localStorage.setItem(KEYS.planDone, JSON.stringify(state));
+    return true;
+  } catch (e) {
+    console.error("Не удалось сохранить stg:plandone", e);
+    return false;
+  }
+}
+
+// ------------------------------------------------------------ копия данных
+
+// Нормализация раздела копии тем же белым списком, что и при обычной записи.
+// null — раздел не разбирается (не тот тип). Ничего не пишет.
+function normalizeSection(key, value) {
+  switch (key) {
+    case KEYS.trip: {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+      let start = isValidDateString(value.start) ? value.start : null;
+      let end = isValidDateString(value.end) ? value.end : null;
+      if (start && end && start > end) {
+        start = null;
+        end = null;
+      }
+      return { start, end, area: normalizeArea(value.area), stay: normalizeStay(value.stay), home: normalizeHome(value.home) };
+    }
+    case KEYS.checklist: {
+      if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+      const state = {};
+      Object.keys(value).forEach((id) => {
+        if (value[id] === true) state[id] = true;
+      });
+      return state;
+    }
+    case KEYS.saved:
+      return Array.isArray(value) ? [...new Set(normalizeStringList(value))] : null;
+    case KEYS.myplan:
+      return value && typeof value === "object" && !Array.isArray(value) ? normalizeMyPlan(value) : null;
+    case KEYS.planDone:
+      return value && typeof value === "object" && !Array.isArray(value) ? normalizePlanDone(value) : null;
+    case KEYS.expenses:
+      return value && typeof value === "object" && !Array.isArray(value) ? normalizeExpensesState(value) : null;
+    case KEYS.budget:
+      return value && typeof value === "object" && !Array.isArray(value) ? normalizeBudgetState(value) : null;
+    default:
+      return null;
+  }
+}
+
+// Текущие данные пользователя: { "<ключ>": значение } только для ключей,
+// которые есть в хранилище. Значение — как оно хранится (сырой JSON), чтобы
+// копия ничего не теряла молча; неразбираемое значение пропускается.
+function readUserData() {
+  const data = {};
+  if (!storageAvailable) return data;
+  USER_DATA_KEYS.forEach((key) => {
+    try {
+      const raw = window.localStorage.getItem(key);
+      if (raw !== null) data[key] = JSON.parse(raw);
+    } catch (e) {
+      console.error(`Не удалось прочитать ${key} для копии`, e);
+    }
+  });
+  return data;
+}
+
+// Запись разделов копии «всё или ничего»: сначала снимок текущего состояния
+// в stg:import:backup (snapshotText — уже готовый текст копии), потом разделы
+// по одному; ошибка на любом шаге возвращает все затронутые ключи как было.
+// sections — { "<ключ>": уже нормализованное значение }. replaceAll — откат
+// к снимку: ключи, которых в снимке нет, удаляются (их создал импорт).
+function applyUserData(sections, snapshotText, replaceAll = false) {
+  if (!storageAvailable) return false;
+  ensureSchema();
+  const keys = replaceAll ? USER_DATA_KEYS.slice() : Object.keys(sections).filter((key) => USER_DATA_KEYS.includes(key));
+  const previous = {};
+  keys.forEach((key) => {
+    previous[key] = window.localStorage.getItem(key);
+  });
+  try {
+    if (snapshotText) window.localStorage.setItem(KEYS.importBackup, snapshotText);
+    keys.forEach((key) => {
+      if (key in sections) {
+        window.localStorage.setItem(key, JSON.stringify(sections[key]));
+      } else {
+        window.localStorage.removeItem(key);
+      }
+    });
+    return true;
+  } catch (e) {
+    console.error("Не удалось записать данные из копии — возвращаю прежние", e);
+    keys.forEach((key) => {
+      try {
+        if (previous[key] === null) {
+          window.localStorage.removeItem(key);
+        } else {
+          window.localStorage.setItem(key, previous[key]);
+        }
+      } catch (restoreError) {
+        console.error(`Не удалось вернуть ${key}`, restoreError);
+      }
+    });
+    return false;
+  }
+}
+
+function getImportBackup() {
+  if (!storageAvailable) return null;
+  try {
+    return window.localStorage.getItem(KEYS.importBackup);
+  } catch (e) {
+    return null;
+  }
+}
+
+function clearImportBackup() {
+  if (!storageAvailable) return false;
+  try {
+    window.localStorage.removeItem(KEYS.importBackup);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export const storage = {
   isAvailable: () => storageAvailable,
+  getPlanDone,
+  setPlanItemDone,
+  normalizeSection,
+  readUserData,
+  applyUserData,
+  getImportBackup,
+  clearImportBackup,
   getMyPlan,
   setMyPlan,
   isInstallHintDismissed,

@@ -15,6 +15,7 @@ import {
 import { groupByPhase } from "../logic/checklist.js";
 import { renderTask } from "./task.js";
 import { renderHomeExpenses } from "./expenses.js";
+import { renderDepartureBlock, renderNowPreview, renderTodayCard } from "./today.js";
 
 // Экран «Сейчас» (PRODUCT.md 8.3, MVP-UX-SPEC §3): четыре состояния по датам
 // поездки. Район на выбор состояния не влияет — только на содержимое строк
@@ -277,6 +278,17 @@ export async function renderHome(container, ctx) {
     const dayLine = `День ${day} из ${total}`;
     appendLine(container, "home-status", area ? `${dayLine} · ${area.name}` : dayLine);
 
+    // Iteration 9: первым — ответ «что делать сегодня и сейчас» (карточка
+    // «Сегодня»: часть дня, пункты с отметкой «сделано», завтра), затем
+    // расходы и «Подходит сейчас». Сценарии поиска — ниже: они для
+    // исследования, а не для действия. Нет дня в плане — прежний блок плана.
+    if (!renderTodayCard(container, { plan, places, excursions, config, trip })) {
+      renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
+      if (trip.end === getTodayIso()) renderDepartureBlock(container);
+    }
+    renderHomeExpenses(container, getTodayIso());
+    renderNowPreview(container, { places, config, trip, plan });
+
     // В поездке сценарии ищут места рядом (Q-21): near=1 ограничивает список
     // радиусом NEAR_RADIUS_KM от точки отсчёта (logic/filters.js). Без точки
     // ограничивать не от чего — ссылки остаются прежними.
@@ -285,6 +297,7 @@ export async function renderHome(container, ctx) {
       const params = [filter ? `f=${filter}` : "", hasOrigin ? "near=1" : ""].filter(Boolean);
       return params.length ? `#/places?${params.join("&")}` : "#/places";
     };
+    appendLine(container, "home-subtitle", "Куда сходить");
     renderScenarios(container, [
       // Сценарий требует точки отсчёта, а не района: без неё список нечем
       // сортировать, поэтому сначала ведём к выбору ([I3-18], ревью §9).
@@ -295,14 +308,6 @@ export async function renderHome(container, ctx) {
       ["Хочу природу", scenarioHref("nature")],
       ["В помещении", scenarioHref("indoor")],
     ]);
-
-    // Блок плана — сразу под сценариями: на 320×568 сценарии остаются целиком
-    // на первом экране (ITERATION-6-RESEARCH.md §16.8, проверка 62).
-    renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
-
-    // Расходы сегодня + «+ Расход» (Iteration 8) — после карточки плана, чтобы
-    // сценарии и план оставались на первом экране 320×568.
-    renderHomeExpenses(container, getTodayIso());
 
     // «Если планы меняются» (2026-09-20): ситуации, на которые чипы «Мест» не
     // отвечают, и единственный вход в «Экскурсии» с Главной. Готовые сценарии

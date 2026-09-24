@@ -8,6 +8,7 @@ import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
 import { userDistanceText, primeCurrentPosition, getKnownPosition } from "../logic/geo.js";
 import { bindCopyButton, renderShowScreen } from "./taxi.js";
 import { renderAddToDayBlock } from "./plan.js";
+import { OPEN_STATE, formatOpenStatus, getOpenStatus, localMoment } from "../logic/hours.js";
 
 // Карточка места (#/place/<id>) и «Показать таксисту» (#/place/<id>/taxi).
 // Список — в places.js (PRODUCT.md 10.2, PLACES-IMPLEMENTATION.md [PI-3]).
@@ -309,6 +310,14 @@ export async function renderPlace(container, ctx) {
   ].filter(([, value]) => value);
   if (practical.length) {
     practical.forEach(([label, value]) => appendParagraph(container, "", `${label}: ${value}`));
+    // Iteration 9: «сейчас открыто / закрыто» — только по подтверждённым
+    // структурированным часам (openingHours) и часам телефона. Без них строки
+    // нет: текст часов выше остаётся единственным источником.
+    const status = getOpenStatus(place.openingHours, localMoment());
+    if (status.state !== OPEN_STATE.UNKNOWN) {
+      const line = appendParagraph(container, "place-open-status", `Сейчас: ${formatOpenStatus(status)}`);
+      if (status.state === OPEN_STATE.OPEN || status.state === OPEN_STATE.ALWAYS) line.classList.add("place-open-status--open");
+    }
     appendParagraph(
       container,
       "task__meta task__meta--volatile",

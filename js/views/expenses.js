@@ -7,7 +7,9 @@ import {
   EXPENSE_CATEGORIES,
   NOTE_MAX_LENGTH,
   addExpense,
+  budgetDaysLeft,
   budgetStatus,
+  dailyAllowance,
   categoryOf,
   createExpense,
   currenciesWithoutRate,
@@ -29,7 +31,7 @@ import {
   updateExpense,
 } from "../logic/expenses.js";
 import { formatShortDate, getDayExcursions, getDayPlaces, isIsoDate } from "../logic/plan.js";
-import { getTodayIso } from "../logic/trip.js";
+import { getTodayIso, pluralizeRu } from "../logic/trip.js";
 import { appendBackLink, createConfirm } from "./plan.js";
 import { bindCopyButton } from "./taxi.js";
 
@@ -160,6 +162,11 @@ function renderBudget(container, budgetState, total) {
     "expense-budget__line",
     status.over ? `Перерасход ${formatApproxBase(-status.left)}` : `Осталось ${formatApproxBase(status.left)}`
   );
+  const daysLeft = budgetDaysLeft(storage.getTrip(), getTodayIso());
+  const perDay = dailyAllowance(status, daysLeft);
+  if (perDay !== null) {
+    appendText(block, "p", "expense-budget__line", `Остаток на день: ${formatApproxBase(perDay)} — осталось ${daysLeft} ${pluralizeRu(daysLeft, ["день", "дня", "дней"])} поездки`);
+  }
   if (!status.complete) {
     const missing = total.missing.map(({ currency, amount }) => formatMoney(amount, currency)).join(" + ");
     appendText(block, "p", "expense-budget__warn", `Без учёта ${missing}: не задан курс.`);
@@ -188,7 +195,7 @@ function renderRatesNotice(container, items, budgetState) {
   container.appendChild(notice);
 }
 
-function renderExpenseRow(item, names) {
+export function renderExpenseRow(item, names) {
   const category = categoryOf(item.category);
   const row = document.createElement("a");
   row.href = `#/expenses/${item.id}`;
@@ -298,7 +305,8 @@ export async function renderExpenses(container, ctx) {
   const copyStatus = appendText(copyWrap, "p", "place-actions__status", "");
   copyStatus.setAttribute("role", "status");
   bindCopyButton(copy, copyStatus, () => formatReport(storage.getExpenses().items, storage.getBudget(), formatShortDate));
-  appendText(copyWrap, "p", "plan-hint", "Расходы хранятся только на этом телефоне. Отчёт — текстом, его можно отправить себе как копию.");
+  appendText(copyWrap, "p", "plan-hint", "Отчёт — текст для себя или попутчиков. Расходы хранятся только на этом телефоне — чтобы не потерять их и перенести на другой телефон, сохраните копию данных файлом.");
+  appendText(copyWrap, "a", "home-link", "Сохранить копию всех данных ›").href = "#/data";
   container.appendChild(copyWrap);
 }
 
@@ -359,7 +367,9 @@ export async function renderExpenseForm(container, ctx) {
   const names = await loadNames();
   if (!ctx.isCurrent()) return;
 
-  const parent = existing ? "#/expenses" : parentOf(ctx, ["/", "/expenses", PLAN_DAY_PATH], "#/expenses");
+  // Правка открывается и из списка расходов, и из «Расходов за день» в дне
+  // плана (Iteration 9) — возврат туда, откуда пришли.
+  const parent = existing ? parentOf(ctx, ["/expenses", PLAN_DAY_PATH], "#/expenses") : parentOf(ctx, ["/", "/expenses", PLAN_DAY_PATH], "#/expenses");
   const queryDate = ctx.query.get("date");
   const initial = existing || {
     date: isIsoDate(queryDate) ? queryDate : getTodayIso(),
@@ -505,7 +515,7 @@ export async function renderExpenseForm(container, ctx) {
             primary: true,
             onClick: () => {
               if (storage.setExpenses(removeExpense(storage.getExpenses(), existing.id))) {
-                ctx.back("#/expenses");
+                ctx.back(parent);
               } else {
                 status.textContent = SAVE_FAILED_TEXT;
               }

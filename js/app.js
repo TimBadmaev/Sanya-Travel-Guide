@@ -10,6 +10,8 @@ import { renderMyPlan, renderMyPlanDay, renderMoveDay, renderPlacePlan, renderEx
 import { renderExcursions, renderExcursion } from "./views/excursions.js";
 import { renderRecommended, renderRecommendedDay } from "./views/recommended.js";
 import { renderExpenses, renderExpenseForm, renderExpenseSettings } from "./views/expenses.js";
+import { renderNow } from "./views/today.js";
+import { renderBackup } from "./views/backup.js";
 import { initPwa } from "./pwa.js";
 import { primeCurrentPosition } from "./logic/geo.js";
 
@@ -53,6 +55,10 @@ const routes = [
   { pattern: /^\/expenses\/add$/, render: renderExpenseForm, nav: "/" },
   { pattern: /^\/expenses\/settings$/, render: renderExpenseSettings, nav: "/" },
   { pattern: /^\/expenses\/(?<id>exp-[^/]+)$/, render: renderExpenseForm, nav: "/" },
+  // Iteration 9: «Что делать сейчас» и «Мои данные» (копия и восстановление)
+  // — тоже вложенные экраны Главной.
+  { pattern: /^\/now$/, render: renderNow, nav: "/" },
+  { pattern: /^\/data$/, render: renderBackup, nav: "/" },
   // Выбор дня для места — продолжение карточки места.
   { pattern: /^\/place\/(?<id>[^/]+)\/plan$/, render: renderPlacePlan, nav: "/places" },
 ];
