@@ -2,6 +2,7 @@
 // Контент (JSON) и состояние пользователя хранятся раздельно (D-17 PRODUCT.md).
 
 import { normalizeBudgetState, normalizeExpensesState } from "./logic/expenses.js";
+import { normalizePassportState, withNote, withRestoredVisit, withVisit, withoutVisit } from "./logic/passport.js";
 
 const SCHEMA_VERSION = 1;
 
@@ -29,12 +30,22 @@ export const KEYS = {
   // файла (формат файла копии), для «Вернуть как было».
   planDone: "stg:plandone",
   importBackup: "stg:import:backup",
+  // Passport v1 (EXPLORER-PASSPORT-SPEC.md 8.1): отметки посещений и заметки
+  // — отдельный ключ со своей версией внутри ({ v: 1, visits, seen }),
+  // stg:schema остаётся 1. backup — сырая копия неразбираемого значения,
+  // снятая перед первой записью поверх него (как у stg:expenses).
+  passport: "stg:passport",
+  passportBackup: "stg:passport:backup",
 };
 
 // Данные пользователя, которые переносит копия (Iteration 9, экспорт/импорт):
 // только то, что нельзя восстановить из контента. Служебные флаги
 // (stg:schema, подсказка установки) и аварийные копии (…:backup) не входят.
-export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget];
+export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget, KEYS.passport];
+
+// Сырые копии повреждённых значений: перед записью поверх неразбираемого
+// значения (в том числе при импорте) оно один раз сохраняется сюда.
+const RAW_BACKUP_KEYS = { [KEYS.passport]: KEYS.passportBackup };
 
 function checkStorageAvailable() {
   try {
@@ -502,6 +513,63 @@ function setPlanItemDone(date, itemKey, done) {
   }
 }
 
+// ------------------------------------------------------------ паспорт
+
+// Не бросает исключение: нет ключа — пустой паспорт; повреждённое значение —
+// пустой паспорт и одна ошибка в консоли, сырое значение не перезаписывается
+// ([I3-4]).
+function getPassport() {
+  const empty = normalizePassportState(null);
+  if (!storageAvailable) return empty;
+  ensureSchema();
+  const { value } = readObject(KEYS.passport);
+  return value ? normalizePassportState(value) : empty;
+}
+
+// Если текущее значение не разбирается, его сырая копия один раз уходит в
+// аварийный ключ, прежде чем поверх него что-то запишется: заметки нельзя
+// восстановить из контента (прецедент setExpenses).
+function keepRawCopy(key) {
+  const backupKey = RAW_BACKUP_KEYS[key];
+  if (!backupKey) return;
+  const current = readObject(key);
+  if (!current.ok && window.localStorage.getItem(backupKey) === null) {
+    window.localStorage.setItem(backupKey, current.raw);
+  }
+}
+
+function writePassport(update) {
+  if (!storageAvailable) return false;
+  ensureSchema();
+  try {
+    const next = update(getPassport());
+    keepRawCopy(KEYS.passport);
+    window.localStorage.setItem(KEYS.passport, JSON.stringify(normalizePassportState(next)));
+    return true;
+  } catch (e) {
+    console.error("Не удалось сохранить stg:passport", e);
+    return false;
+  }
+}
+
+// Отметка посещения: date — ГГГГ-ММ-ДД (день отметки по часам телефона), at
+// — момент отметки. Повторная отметка не создаёт второй записи.
+function markPassportVisit(placeId, date, at) {
+  return writePassport((state) => withVisit(state, placeId, { date, at }));
+}
+
+function removePassportVisit(placeId) {
+  return writePassport((state) => withoutVisit(state, placeId));
+}
+
+function restorePassportVisit(placeId, visit) {
+  return writePassport((state) => withRestoredVisit(state, placeId, visit));
+}
+
+function setPassportNote(placeId, note) {
+  return writePassport((state) => withNote(state, placeId, note));
+}
+
 // ------------------------------------------------------------ копия данных
 
 // Нормализация раздела копии тем же белым списком, что и при обычной записи.
@@ -536,6 +604,8 @@ function normalizeSection(key, value) {
       return value && typeof value === "object" && !Array.isArray(value) ? normalizeExpensesState(value) : null;
     case KEYS.budget:
       return value && typeof value === "object" && !Array.isArray(value) ? normalizeBudgetState(value) : null;
+    case KEYS.passport:
+      return value && typeof value === "object" && !Array.isArray(value) ? normalizePassportState(value) : null;
     default:
       return null;
   }
@@ -561,12 +631,17 @@ function readUserData() {
 // Запись разделов копии «всё или ничего»: сначала снимок текущего состояния
 // в stg:import:backup (snapshotText — уже готовый текст копии), потом разделы
 // по одному; ошибка на любом шаге возвращает все затронутые ключи как было.
-// sections — { "<ключ>": уже нормализованное значение }. replaceAll — откат
-// к снимку: ключи, которых в снимке нет, удаляются (их создал импорт).
-function applyUserData(sections, snapshotText, replaceAll = false) {
+// sections — { "<ключ>": уже нормализованное значение }. replaceKeys — откат
+// к снимку: эти ключи, если их нет в sections, удаляются (их создал импорт).
+// Передаются только разделы, о которых знала версия, снявшая снимок
+// (logic/backup.js → snapshotReplaceKeys): иначе откат к снимку старой версии
+// стёр бы раздел, появившийся позже.
+function applyUserData(sections, snapshotText, replaceKeys = null) {
   if (!storageAvailable) return false;
   ensureSchema();
-  const keys = replaceAll ? USER_DATA_KEYS.slice() : Object.keys(sections).filter((key) => USER_DATA_KEYS.includes(key));
+  const keys = Array.isArray(replaceKeys)
+    ? USER_DATA_KEYS.filter((key) => replaceKeys.includes(key) || key in sections)
+    : Object.keys(sections).filter((key) => USER_DATA_KEYS.includes(key));
   const previous = {};
   keys.forEach((key) => {
     previous[key] = window.localStorage.getItem(key);
@@ -574,6 +649,7 @@ function applyUserData(sections, snapshotText, replaceAll = false) {
   try {
     if (snapshotText) window.localStorage.setItem(KEYS.importBackup, snapshotText);
     keys.forEach((key) => {
+      keepRawCopy(key);
       if (key in sections) {
         window.localStorage.setItem(key, JSON.stringify(sections[key]));
       } else {
@@ -640,4 +716,9 @@ export const storage = {
   setExpenses,
   getBudget,
   setBudget,
+  getPassport,
+  markPassportVisit,
+  removePassportVisit,
+  restorePassportVisit,
+  setPassportNote,
 };

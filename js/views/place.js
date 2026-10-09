@@ -1,4 +1,4 @@
-import { loadPlaces, loadConfig, loadExcursions, loadErrorMessage } from "../data.js";
+import { loadPlaces, loadConfig, loadExcursions, loadPassport, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 import { EFFORT_LABELS, SETTING_LABELS, PRICE_LABELS, formatDuration } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
@@ -8,6 +8,7 @@ import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
 import { userDistanceText, primeCurrentPosition, getKnownPosition } from "../logic/geo.js";
 import { bindCopyButton, renderShowScreen } from "./taxi.js";
 import { renderAddToDayBlock } from "./plan.js";
+import { renderPassportBlock } from "./passport.js";
 import { OPEN_STATE, formatOpenStatus, getOpenStatus, localMoment } from "../logic/hours.js";
 
 // Карточка места (#/place/<id>) и «Показать таксисту» (#/place/<id>/taxi).
@@ -94,15 +95,19 @@ export async function renderPlace(container, ctx) {
   let config;
   // Экскурсии — только для заголовка занятого дня в режиме addTo.
   let excursions = [];
+  // Контент паспорта — только для сообщения «Новая наклейка» в блоке
+  // «Паспорт»; без него карточка и отметка работают как обычно.
+  let passportContent = null;
   try {
     // Геолокацию здесь НЕ ждём (D-02 REAL-DEVICE-QA-2026-09.md): при выданном
     // разрешении и медленном GPS ожидание primeCurrentPosition() держало
     // карточку на «Загрузка места…» до 10 с. Контент рисуется сразу, строка
     // «N км от вас» дорисовывается позже — см. блок 3a.
-    [places, config, excursions] = await Promise.all([
+    [places, config, excursions, passportContent] = await Promise.all([
       loadPlaces(),
       loadConfig(),
       addTo ? loadExcursions().catch(() => []) : [],
+      addTo ? null : loadPassport().catch(() => null),
     ]);
   } catch (e) {
     console.error(e);
@@ -132,7 +137,8 @@ export async function renderPlace(container, ctx) {
   // Итерация 6: из дня «Моего плана» или рекомендации возврат — в этот день;
   // в режиме addTo — в список выбора с тем же addTo.
   // С карточки экскурсии (её «Связанные места») — тоже «← Назад» в неё.
-  const fromDay = /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath);
+  // Из паспорта (#/passport) — «← Назад» в паспорт.
+  const fromDay = /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath) || fromPath === "/passport";
   const parentHash = fromDay ? fromHash : addTo ? `#/places?addTo=${addTo}` : "#/places";
   const backLink = document.createElement("a");
   backLink.href = parentHash;
@@ -299,6 +305,10 @@ export async function renderPlace(container, ctx) {
     planLink.className = "btn btn--secondary place-plan-link";
     planLink.textContent = "Добавить в мой план";
     container.appendChild(planLink);
+    // 4b. «Паспорт исследователя» (Passport v1): компактный блок сразу после
+    // «Добавить в мой план». Порядок D-12 и закреплённая «Показать таксисту»
+    // не меняются; в режиме выбора места для дня блока нет.
+    renderPassportBlock(container, { place, places, config, content: passportContent });
   }
 
   // 5. Лучшее время, часы, цена — только непустые; у мест нет поля volatile,

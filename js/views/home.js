@@ -21,6 +21,11 @@ import { renderDepartureBlock, renderNowPreview, renderTodayCard } from "./today
 // поездки. Район на выбор состояния не влияет — только на содержимое строк
 // и на сценарий «Рядом с отелем».
 
+// «Паспорт исследователя» (Passport v1) — вложенный экран «Сейчас». Вход
+// всегда ниже основного сценария состояния: первый экран 320×568 не
+// сдвигается.
+const PASSPORT_LINK_TEXT = "🛂 Паспорт исследователя";
+
 // Сколько ближайших дел показываем в состоянии «До поездки».
 const NEAR_TASKS_LIMIT = 3;
 
@@ -271,6 +276,7 @@ export async function renderHome(container, ctx) {
     renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
     // Расходы до поездки (виза, страховка, eSIM) — категория «Подготовка».
     appendActionLink(container, "Расходы поездки", "#/expenses", "home-link");
+    appendActionLink(container, PASSPORT_LINK_TEXT, "#/passport", "home-link");
     return;
   }
 
@@ -332,6 +338,7 @@ export async function renderHome(container, ctx) {
       const label = `Сохранено: ${savedCount} ${pluralizeRu(savedCount, ["место", "места", "мест"])}`;
       appendActionLink(container, label, "#/places?f=saved", "home-link");
     }
+    appendActionLink(container, PASSPORT_LINK_TEXT, "#/passport", "home-link");
 
     // «Поесть рядом» — единственная точка входа в Food Nearby с Главной
     // (PRODUCT.md 8.3, 8.1): near=1 переиспользует тот же токен, что уже
@@ -381,4 +388,5 @@ export async function renderHome(container, ctx) {
     ["Хочу природу", "#/places?f=nature"],
     ["Куда сходить с детьми", "#/places?f=kids"],
   ]);
+  appendActionLink(container, PASSPORT_LINK_TEXT, "#/passport", "home-link home-passport-link");
 }

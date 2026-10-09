@@ -10,6 +10,7 @@ import {
   parseBackup,
   sectionUnit,
   serializeBackup,
+  snapshotReplaceKeys,
 } from "../logic/backup.js";
 import { pluralizeRu } from "../logic/trip.js";
 import { getAppVersion } from "../pwa.js";
@@ -77,7 +78,7 @@ function downloadText(text, fileName) {
 }
 
 export function renderBackup(container, ctx) {
-  const parent = parentFrom(ctx, ["/settings", "/expenses", "/"], "#/settings");
+  const parent = parentFrom(ctx, ["/settings", "/expenses", "/passport", "/"], "#/settings");
 
   function draw(message) {
     if (!ctx.isCurrent()) return;
@@ -88,7 +89,7 @@ export function renderBackup(container, ctx) {
       container,
       "p",
       "settings__intro",
-      "Расходы, план, избранное и отметки хранятся только в этом браузере на этом телефоне. Сохраните копию файлом — из неё можно восстановить данные здесь же или на другом телефоне. Всё работает без интернета."
+      "Расходы, план, избранное, отметки и паспорт исследователя хранятся только в этом браузере на этом телефоне. Сохраните копию файлом — из неё можно восстановить данные здесь же или на другом телефоне. Всё работает без интернета."
     );
     if (!storage.isAvailable()) {
       appendText(container, "p", "area-notice", "Хранилище браузера недоступно — сохранять и восстанавливать нечего.");
@@ -167,7 +168,7 @@ function renderExport(container) {
     section,
     "p",
     "settings__hint",
-    "В копию входят только ваши данные: расходы, курс и бюджет, мой план, отметки, избранное, даты и адрес проживания. Места, экскурсии и справка — часть приложения, их копировать не нужно."
+    "В копию входят только ваши данные: расходы, курс и бюджет, мой план, отметки, избранное, паспорт исследователя с заметками, даты и адрес проживания. Места, экскурсии и справка — часть приложения, их копировать не нужно."
   );
   container.appendChild(section);
 }
@@ -207,7 +208,7 @@ function renderUndo(container, draw) {
                 const value = storage.normalizeSection(key, parsed.sections[key]);
                 if (value !== null) sections[key] = value;
               });
-              if (!storage.applyUserData(sections, null, true)) {
+              if (!storage.applyUserData(sections, null, snapshotReplaceKeys(parsed.backup.appVersion))) {
                 status.textContent = SAVE_FAILED_TEXT;
                 return;
               }

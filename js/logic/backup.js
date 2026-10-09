@@ -25,10 +25,35 @@ export const SECTION_LABELS = {
   "stg:budget": "Курс и бюджет",
   "stg:myplan": "Мой план",
   "stg:plandone": "Отметки «сделано» в плане",
+  "stg:passport": "Паспорт исследователя",
   "stg:saved": "Избранные места",
   "stg:checklist": "Отметки подготовки",
   "stg:trip": "Даты, район и адрес проживания",
 };
+
+// С какой версии приложения (CACHE_VERSION) раздел входит в копию. Разделы
+// без строки здесь были в копии с самого начала (v15, Iteration 9).
+const SECTION_SINCE = {
+  "stg:passport": 16,
+};
+
+function versionNumber(appVersion) {
+  const match = typeof appVersion === "string" ? appVersion.match(/^v(\d+)/) : null;
+  return match ? Number(match[1]) : null;
+}
+
+// Какие разделы откат к снимку («Вернуть как было до импорта») может
+// удалить, если их нет в снимке: только те, о которых знала версия,
+// снявшая снимок. Раздел, появившийся позже, снимок старой версии не
+// трогает. Версия неизвестна — новые разделы тоже не трогаем: лишние
+// данные лучше потерянных.
+export function snapshotReplaceKeys(appVersion) {
+  const version = versionNumber(appVersion);
+  return Object.keys(SECTION_LABELS).filter((key) => {
+    const since = SECTION_SINCE[key];
+    return !since || (version !== null && version >= since);
+  });
+}
 
 export const IMPORT_ERROR = {
   NOT_JSON: "not-json",
@@ -134,6 +159,8 @@ export function countSection(key, value) {
       return (value.rates ? Object.keys(value.rates).length : 0) + (value.budget ? 1 : 0);
     case "stg:trip":
       return ["start", "end", "area", "stay", "home"].filter((field) => value[field]).length;
+    case "stg:passport":
+      return value.visits && typeof value.visits === "object" ? Object.keys(value.visits).length : 0;
     default:
       return 0;
   }
@@ -153,6 +180,8 @@ export function countRaw(key, value) {
       return Array.isArray(value) ? value.length : 0;
     case "stg:checklist":
       return Array.isArray(value) ? 0 : Object.keys(value).length;
+    case "stg:passport":
+      return value.visits && typeof value.visits === "object" && !Array.isArray(value.visits) ? Object.keys(value.visits).length : 0;
     default:
       return null;
   }
@@ -170,6 +199,8 @@ export function sectionUnit(key) {
       return ["место", "места", "мест"];
     case "stg:checklist":
       return ["отметка", "отметки", "отметок"];
+    case "stg:passport":
+      return ["посещение", "посещения", "посещений"];
     default:
       return null;
   }

@@ -1,0 +1,99 @@
+{
+  "updatedAt": "2026-10-10",
+  "coastParts": [
+    { "id": "coast-west", "name": "Ячжоу и Наньшань", "bounds": { "lngMax": 109.25 } },
+    { "id": "coast-tianya", "name": "Тянья и Сидао", "bounds": { "lngMin": 109.25, "lngMax": 109.42 } },
+    { "id": "coast-centre", "name": "Центр и Санья Бэй", "bounds": { "lngMin": 109.42, "lngMax": 109.545, "latMin": 18.232, "latMax": 18.27 } },
+    { "id": "coast-dadonghai", "name": "Дадунхай и Лухуйтоу", "bounds": { "lngMin": 109.42, "lngMax": 109.545, "latMax": 18.232 } },
+    { "id": "coast-north", "name": "Север Саньи", "bounds": { "lngMin": 109.42, "lngMax": 109.545, "latMin": 18.27 } },
+    { "id": "coast-yalong", "name": "Ялонг Бэй", "bounds": { "lngMin": 109.545, "lngMax": 109.67 } },
+    { "id": "coast-haitang", "name": "Хайтанг Бэй", "bounds": { "lngMin": 109.67 } }
+  ],
+  "stickers": [
+    {
+      "id": "first-stamp",
+      "status": "verified",
+      "title": "Первый штамп",
+      "description": "Начало паспорта — первое отмеченное место.",
+      "rule": { "type": "count", "min": 1 }
+    },
+    {
+      "id": "sea-explorer",
+      "status": "verified",
+      "title": "Морской исследователь",
+      "description": "Отметьте два разных пляжа из каталога.",
+      "rule": { "type": "count", "min": 2, "where": { "category": "beach" } }
+    },
+    {
+      "id": "island-horizon",
+      "status": "verified",
+      "optional": true,
+      "title": "Остров на горизонте",
+      "description": "Место с тегом «Остров» из каталога. Паспорт полноценен и без этой наклейки.",
+      "rule": { "type": "count", "min": 1, "where": { "tag": "island" } }
+    },
+    {
+      "id": "taste-of-hainan",
+      "status": "verified",
+      "title": "Рыночный день",
+      "description": "Отметьте два рынка из каталога.",
+      "rule": { "type": "count", "min": 2, "where": { "category": "market" } }
+    },
+    {
+      "id": "sunset-catcher",
+      "status": "verified",
+      "title": "Ловец закатов",
+      "description": "Два места, которые в каталоге отмечены тегом «Закат».",
+      "rule": { "type": "count", "min": 2, "where": { "tag": "sunset" } }
+    },
+    {
+      "id": "above-the-bay",
+      "status": "verified",
+      "title": "Охотник за видами",
+      "description": "Два места, которые в каталоге отмечены тегом «Виды».",
+      "rule": { "type": "count", "min": 2, "where": { "tag": "view" } }
+    },
+    {
+      "id": "story-keeper",
+      "status": "verified",
+      "title": "Хранитель легенд",
+      "description": "Три места, у которых в карточке есть «Что здесь интересного».",
+      "rule": { "type": "count", "min": 3, "where": { "hasStory": true } }
+    },
+    {
+      "id": "green-island",
+      "status": "verified",
+      "title": "Зелёная Санья",
+      "description": "Три места из категории «Природа».",
+      "rule": { "type": "count", "min": 3, "where": { "category": "nature" } }
+    },
+    {
+      "id": "local-life",
+      "status": "verified",
+      "title": "Местная жизнь",
+      "description": "Три места, которые в каталоге отмечены тегом «Местная жизнь».",
+      "rule": { "type": "count", "min": 3, "where": { "tag": "local" } }
+    },
+    {
+      "id": "island-pathfinder",
+      "status": "verified",
+      "title": "Разные стороны Саньи",
+      "description": "Места четырёх разных категорий каталога.",
+      "rule": { "type": "distinctCategories", "min": 4 }
+    },
+    {
+      "id": "west-to-east",
+      "status": "verified",
+      "title": "Четыре части побережья",
+      "description": "Отметки в четырёх частях побережья. Деление на части условное и нужно только паспорту.",
+      "rule": { "type": "distinctCoastParts", "min": 4 }
+    },
+    {
+      "id": "seasoned-explorer",
+      "status": "verified",
+      "title": "Бывалый исследователь",
+      "description": "Десять разных мест — паспорт уже не пустой.",
+      "rule": { "type": "count", "min": 10 }
+    }
+  ]
+}

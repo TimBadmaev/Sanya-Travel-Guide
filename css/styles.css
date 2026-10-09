@@ -2485,3 +2485,314 @@ textarea.settings-field__input {
 .settings__data-link {
   margin-top: var(--space-4);
 }
+
+/* ===== Паспорт исследователя (Passport v1, EXPLORER-PASSPORT-SPEC.md) — только новые правила ===== */
+
+.home-passport-link {
+  margin-top: var(--space-3);
+}
+
+.passport__period {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+  color: var(--color-text-muted);
+}
+
+/* Три счётчика в ряд; на 320 px подписи переносятся внутри своей колонки. */
+.passport-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.passport-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-3) var(--space-1);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-primary);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.passport-stat__value {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-primary-dark);
+}
+
+.passport-stat__label {
+  font-size: var(--font-size-sm);
+  line-height: 1.3;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.passport__note {
+  margin: 0 0 var(--space-5);
+}
+
+.passport-empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.passport-empty p {
+  margin: 0;
+}
+
+.passport-empty__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.passport-visits,
+.passport-stickers,
+.passport-parts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.passport-visit,
+.passport-sticker {
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+
+.passport-visit__link {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--color-primary-dark);
+  font-weight: 700;
+}
+
+.passport-visit__date,
+.passport-visit__note,
+.passport-visit__keepsake {
+  margin: 0;
+}
+
+.passport-visit__date,
+.passport-visit__keepsake,
+.passport-visit__note--empty {
+  color: var(--color-text-muted);
+}
+
+.passport-sticker {
+  display: flex;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+}
+
+.passport-sticker__glyph {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px dashed var(--color-border);
+  border-radius: 50%;
+  font-size: 24px;
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+.passport-sticker--earned .passport-sticker__glyph {
+  border: 3px solid var(--color-surface);
+  background: var(--color-surface-alt);
+  box-shadow: 0 0 0 2px var(--color-primary), 0 2px 0 rgba(0, 0, 0, 0.12);
+  filter: none;
+  opacity: 1;
+}
+
+.passport-sticker__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.passport-sticker__title {
+  margin: 0;
+  font-size: var(--font-size-base);
+}
+
+.passport-sticker__text,
+.passport-sticker__state,
+.passport-sticker__hints-title {
+  margin: 0 0 var(--space-1);
+}
+
+.passport-sticker__optional {
+  display: inline-block;
+  margin: 0 0 var(--space-1);
+  padding: 0 var(--space-2);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.passport-sticker__state {
+  font-weight: 600;
+}
+
+.passport-sticker__state--earned {
+  color: var(--color-primary-dark);
+}
+
+.passport-sticker .progress {
+  margin-bottom: var(--space-2);
+}
+
+.passport-sticker__hints {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.passport-sticker__hint {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.passport-part {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.passport-part__count {
+  flex: 0 0 auto;
+  font-weight: 600;
+}
+
+/* Блок «Паспорт» в карточке места: в потоке, после «Добавить в мой план». */
+.passport-block {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-primary);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+
+.passport-block__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-base);
+}
+
+.passport-block__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.passport-block__state,
+.passport-block__note,
+.passport-block__muted,
+.passport-block__status {
+  margin: 0;
+}
+
+.passport-block__state--done {
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.passport-block__muted {
+  color: var(--color-text-muted);
+}
+
+.passport-block__status {
+  margin-top: var(--space-2);
+  font-weight: 600;
+}
+
+.passport-block__status:empty {
+  display: none;
+}
+
+.passport-block__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.passport-block__actions[hidden] {
+  display: none;
+}
+
+.passport-block__button {
+  width: 100%;
+}
+
+.passport-block__unmark,
+.passport-block__undo {
+  align-self: flex-start;
+  padding-left: 0;
+  font-size: var(--font-size-base);
+}
+
+.passport-block__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.passport-note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.passport-note .settings-field__label {
+  flex: none;
+}
+
+.passport-note__input {
+  width: 100%;
+  font: inherit;
+  font-size: var(--font-size-base);
+  resize: vertical;
+}
+
+.passport-note__counter {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+.passport-note__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.passport-note__buttons .btn {
+  width: 100%;
+}

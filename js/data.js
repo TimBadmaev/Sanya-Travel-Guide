@@ -114,6 +114,18 @@ export async function loadConfig() {
   };
 }
 
+// «Паспорт исследователя» (EXPLORER-PASSPORT-SPEC.md 9.4): части побережья и
+// наклейки — только презентационные настройки, фактов о местах в файле нет.
+// Проверку по справочникам и статусу (только verified, D-18) делает
+// logic/passport.js → prepareContent(). Возвращается новый объект.
+export async function loadPassport() {
+  const content = await loadJSON("data/passport.json");
+  return {
+    coastParts: Array.isArray(content.coastParts) ? content.coastParts.slice() : [],
+    stickers: Array.isArray(content.stickers) ? content.stickers.slice() : [],
+  };
+}
+
 // Рекомендованный план (Итерация 6, ITERATION-6-RESEARCH.md §13.1): один
 // объект { meta, days }, а не массив. Только чтение — «Мой план» живёт в
 // stg:myplan (storage.js). Возвращается новый объект с новым массивом дней.
