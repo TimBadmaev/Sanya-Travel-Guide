@@ -184,7 +184,9 @@ export function prepareContent(content, config) {
       return;
     }
     partIds.add(id);
-    coastParts.push({ id, name: part.name, bounds: { ...part.bounds } });
+    // short — подпись на схеме (необязательно); без неё — полное название.
+    const short = typeof part.short === "string" && part.short ? part.short : part.name;
+    coastParts.push({ id, name: part.name, short, bounds: { ...part.bounds } });
   });
 
   const stickers = [];

@@ -137,8 +137,8 @@ export async function renderPlace(container, ctx) {
   // Итерация 6: из дня «Моего плана» или рекомендации возврат — в этот день;
   // в режиме addTo — в список выбора с тем же addTo.
   // С карточки экскурсии (её «Связанные места») — тоже «← Назад» в неё.
-  // Из паспорта (#/passport) — «← Назад» в паспорт.
-  const fromDay = /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath) || fromPath === "/passport";
+  // Из паспорта (#/passport, часть побережья, альбом) — «← Назад» туда же.
+  const fromDay = /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath) || /^\/passport(\/zone\/[^/]+|\/album)?$/.test(fromPath);
   const parentHash = fromDay ? fromHash : addTo ? `#/places?addTo=${addTo}` : "#/places";
   const backLink = document.createElement("a");
   backLink.href = parentHash;

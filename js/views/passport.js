@@ -8,37 +8,27 @@ import {
   isRewardPlace,
   prepareContent,
 } from "../logic/passport.js";
+import { layoutMarkers, orderForMap, projectPoint } from "../logic/passport-map.js";
 import { formatDayMonth, formatPeriod } from "../logic/plan.js";
 import { getTodayIso, pluralizeRu, resolveOrigin } from "../logic/trip.js";
 import { CATEGORY_ICONS, DEFAULT_ICON } from "./places.js";
 import { appendBackLink, createConfirm, renderPlanError } from "./plan.js";
+import { CATEGORY_INK, PART_BADGES, createMapSvg, createStickerArt, el, tiltOf } from "./passport-art.js";
 
-// «Паспорт исследователя», Passport v1 (EXPLORER-PASSPORT-SPEC.md): экран
-// #/passport и блок «Паспорт» в карточке места. Отметка ставится вручную,
-// без геолокации; награды и прогресс считает logic/passport.js по отметкам
-// и актуальному каталогу. Декоративная схема побережья и альбом — следующий
-// этап: здесь их нет и заглушек под них тоже нет.
+// «Паспорт исследователя» (EXPLORER-PASSPORT-SPEC.md): экран #/passport со
+// схемой побережья, экраны частей побережья #/passport/zone/<id>, альбом
+// наклеек #/passport/album и блок «Паспорт» в карточке места. Отметка
+// ставится вручную, без геолокации; награды и прогресс считает
+// logic/passport.js по отметкам и актуальному каталогу — карта, части и
+// альбом читают один и тот же расчёт, своего состояния у них нет.
 
 const SAVE_FAILED_TEXT = "Не удалось сохранить: хранилище браузера недоступно или переполнено.";
 const NO_STORAGE_TEXT = "Отметки не сохраняются: память браузера недоступна.";
 const NEAREST_STICKERS = 2;
 const KEEPSAKE_TEXT = "Покупки можно отмечать на память, но в прогресс и наклейки паспорта они не входят.";
-
-// Оформление наклеек — по id (контент в data/passport.json, глиф — здесь).
-const STICKER_GLYPHS = {
-  "first-stamp": "🧭",
-  "sea-explorer": "🌊",
-  "island-horizon": "🏝️",
-  "taste-of-hainan": "🏮",
-  "sunset-catcher": "🌅",
-  "above-the-bay": "🔭",
-  "story-keeper": "📜",
-  "green-island": "🌿",
-  "local-life": "🚲",
-  "island-pathfinder": "🧩",
-  "west-to-east": "⛵",
-  "seasoned-explorer": "🛂",
-};
+// Постоянная подпись схемы (спецификация 4.4): схема — не навигация.
+export const MAP_CAPTION = "Схема для отметок. Форма берега и расстояния условны. Дорога — в карточке места.";
+const OVERVIEW_BOX = { x: 0, y: 150, w: 1000, h: 850 };
 
 function appendText(parent, tag, className, text) {
   const el = document.createElement(tag);
@@ -66,11 +56,26 @@ function placeLink(place, className) {
   return link;
 }
 
-// ------------------------------------------------------------ #/passport
+function progressBar(parent, value, max, label) {
+  const bar = document.createElement("div");
+  bar.className = "progress";
+  bar.setAttribute("role", "progressbar");
+  bar.setAttribute("aria-label", label);
+  bar.setAttribute("aria-valuemin", "0");
+  bar.setAttribute("aria-valuemax", String(max));
+  bar.setAttribute("aria-valuenow", String(value));
+  const fill = document.createElement("div");
+  fill.className = "progress__fill";
+  fill.style.width = max ? `${(value / max) * 100}%` : "0%";
+  bar.appendChild(fill);
+  parent.appendChild(bar);
+  return bar;
+}
 
-export async function renderPassport(container, ctx) {
+// Общая загрузка трёх экранов паспорта: места, справочники, контент паспорта
+// и расчёт по текущим отметкам. null — экран уже показал ошибку или устарел.
+async function loadPassportData(container, ctx, title, retry) {
   container.innerHTML = '<p class="loading">Загрузка паспорта…</p>';
-
   let places;
   let config;
   let raw;
@@ -78,25 +83,29 @@ export async function renderPassport(container, ctx) {
     [places, config, raw] = await Promise.all([loadPlaces(), loadConfig(), loadPassport()]);
   } catch (e) {
     console.error(e);
-    if (ctx.isCurrent()) {
-      renderPlanError(container, "Паспорт исследователя", loadErrorMessage(e), () => {
-        renderPassport(container, ctx);
-      });
-    }
-    return;
+    if (ctx.isCurrent()) renderPlanError(container, title, loadErrorMessage(e), retry);
+    return null;
   }
-  if (!ctx.isCurrent()) return;
-
+  if (!ctx.isCurrent()) return null;
   const content = prepareContent(raw, config);
   if (content.problems.length) console.error(`data/passport.json: ${content.problems.join("; ")}`);
   const trip = storage.getTrip();
   const { point } = resolveOrigin(trip, config);
-  const result = evaluatePassport({ state: storage.getPassport(), places, content, origin: point });
-
+  const state = storage.getPassport();
+  const result = evaluatePassport({ state, places, content, origin: point });
   container.innerHTML = "";
   const page = document.createElement("div");
   page.className = "passport";
   container.appendChild(page);
+  return { places, config, content, trip, state, result, page };
+}
+
+// ------------------------------------------------------------ #/passport
+
+export async function renderPassport(container, ctx) {
+  const data = await loadPassportData(container, ctx, "Паспорт исследователя", () => renderPassport(container, ctx));
+  if (!data) return;
+  const { page, trip, result, content, places, state, config } = data;
 
   // Паспорт открывается с Главной и из карточки места: «← Назад» ведёт туда,
   // откуда пришли (ctx.back, история не растёт).
@@ -115,9 +124,10 @@ export async function renderPassport(container, ctx) {
   if (!storage.isAvailable()) appendText(page, "p", "area-notice", NO_STORAGE_TEXT);
 
   renderStats(page, result);
+  renderOverview(page, { result, content, places, state });
+  renderStickerPreview(page, result, config);
   renderVisits(page, result);
-  renderStickers(page, result, config);
-  renderCoastParts(page, result);
+  renderOtherPlaces(page, { places, result });
 
   const footer = document.createElement("section");
   footer.className = "settings-section";
@@ -152,6 +162,136 @@ function renderStats(page, result) {
   appendText(page, "p", "settings__hint passport__note", notes.join(" "));
 }
 
+function mapFigure(parent, svg, legendExtra) {
+  const figure = document.createElement("figure");
+  figure.className = "passport-map";
+  figure.appendChild(svg);
+  const caption = appendText(figure, "figcaption", "passport-map__caption", MAP_CAPTION);
+  caption.setAttribute("lang", "ru");
+  parent.appendChild(figure);
+  const legend = document.createElement("p");
+  legend.className = "passport-map__legend";
+  appendText(legend, "span", "passport-map__key passport-map__key--visited", "отмечено");
+  appendText(legend, "span", "passport-map__key", "ещё не отмечено");
+  if (legendExtra) appendText(legend, "span", "passport-map__note", legendExtra);
+  parent.appendChild(legend);
+  return figure;
+}
+
+// Обзорная схема: все места точками (без нажатия — на обзоре они слишком
+// плотные), семь значков частей побережья — ссылки на их экраны. Под схемой
+// — тот же переход списком (доступная альтернатива).
+function renderOverview(page, { result, content, places, state }) {
+  const section = document.createElement("section");
+  section.className = "settings-section";
+  appendText(section, "h3", "settings-section__title", "Схема побережья");
+  const svg = createMapSvg({
+    viewBox: OVERVIEW_BOX,
+    parts: content.coastParts,
+    label: "Декоративная схема побережья Саньи: части побережья и отмеченные места",
+  });
+  const dots = el("g", { class: "pp-dots", "aria-hidden": "true" }, svg);
+  places.forEach((place) => {
+    const point = projectPoint(place.location);
+    if (!point || !result.partOf(place)) return;
+    const visited = Boolean(getVisit(state, place.id));
+    el("circle", {
+      cx: point.x,
+      cy: point.y,
+      r: visited ? 16 : 9,
+      class: `pp-dot${visited ? " pp-dot--visited" : ""}`,
+      style: `--ink: ${CATEGORY_INK[place.category] || "#0b6e6e"}`,
+      "data-place": place.id,
+    }, dots);
+  });
+
+  const badges = el("g", { class: "pp-badges" }, svg);
+  const shown = result.coastParts;
+  shown.forEach((part) => {
+    const number = content.coastParts.findIndex((p) => p.id === part.id) + 1;
+    const conf = PART_BADGES[part.id] || centroidBadge(part.id, places, result);
+    if (!conf) return;
+    const link = el("a", {
+      href: `#/passport/zone/${part.id}`,
+      class: `pp-badge${part.visited ? " pp-badge--visited" : ""}`,
+      "aria-label": `${number}. ${part.name}: отмечено ${part.visited} из ${part.total}`,
+      "data-part": part.id,
+    }, badges);
+    const g = el("g", { transform: `translate(${conf.x},${conf.y})` }, link);
+    el("circle", { r: 80, class: "pp-badge__hit" }, g);
+    el("circle", { r: 40, class: "pp-badge__disc" }, g);
+    const length = 2 * Math.PI * 40;
+    el("circle", {
+      r: 40,
+      class: "pp-badge__ring",
+      "stroke-dasharray": `${((part.visited / part.total) * length).toFixed(1)} ${length.toFixed(1)}`,
+      transform: "rotate(-90)",
+    }, g);
+    const num = el("text", { y: 1, class: "pp-badge__num" }, g);
+    num.textContent = String(number);
+    const short = (content.coastParts.find((p) => p.id === part.id) || {}).short || part.name;
+    const pos = { below: [0, 84, "middle"], above: [0, -56, "middle"], right: [52, 12, "start"] }[conf.label || "below"];
+    const label = el("text", { x: pos[0], y: pos[1], "text-anchor": pos[2], class: "pp-badge__label" }, g);
+    label.textContent = short;
+  });
+  mapFigure(section, svg);
+
+  const list = document.createElement("ol");
+  list.className = "passport-parts";
+  shown.forEach((part) => {
+    const number = content.coastParts.findIndex((p) => p.id === part.id) + 1;
+    const li = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = `#/passport/zone/${part.id}`;
+    link.className = "passport-part";
+    appendText(link, "span", `passport-part__num${part.visited ? " passport-part__num--visited" : ""}`, String(number)).setAttribute("aria-hidden", "true");
+    appendText(link, "span", "passport-part__name", part.name);
+    appendText(link, "span", "passport-part__count", `${part.visited} из ${part.total} ›`);
+    li.appendChild(link);
+    list.appendChild(li);
+  });
+  section.appendChild(list);
+  appendText(
+    section,
+    "p",
+    "settings__hint passport-parts__hint",
+    "Части побережья — условное деление только для паспорта, не районы из настроек поездки. Считаются места без покупок."
+  );
+  page.appendChild(section);
+}
+
+// Значок части без строки в PART_BADGES — в центре её мест.
+function centroidBadge(partId, places, result) {
+  const points = places.filter((p) => result.partOf(p) === partId).map((p) => projectPoint(p.location)).filter(Boolean);
+  if (!points.length) return null;
+  return {
+    x: points.reduce((s, p) => s + p.x, 0) / points.length,
+    y: points.reduce((s, p) => s + p.y, 0) / points.length,
+    label: "below",
+  };
+}
+
+// Verified-места без части побережья (нет координат или вне границ частей):
+// показываются отдельным списком, позиция не придумывается.
+function renderOtherPlaces(page, { places, result }) {
+  const others = places.filter((place) => !result.partOf(place));
+  if (!others.length) return;
+  const section = document.createElement("section");
+  section.className = "settings-section";
+  appendText(section, "h3", "settings-section__title", "Другие места");
+  appendText(section, "p", "settings__hint", "Эти места не попали ни в одну часть побережья — на схеме их нет.");
+  const list = document.createElement("ul");
+  list.className = "passport-visits";
+  others.forEach((place) => {
+    const li = document.createElement("li");
+    li.className = "passport-visit";
+    li.appendChild(placeLink(place, "passport-visit__link"));
+    list.appendChild(li);
+  });
+  section.appendChild(list);
+  page.appendChild(section);
+}
+
 function renderVisits(page, result) {
   const section = document.createElement("section");
   section.className = "settings-section";
@@ -175,8 +315,9 @@ function renderVisits(page, result) {
     item.className = "passport-visit";
     const link = placeLink(place, "passport-visit__link");
     const icon = document.createElement("span");
+    icon.className = "passport-icon";
     icon.setAttribute("aria-hidden", "true");
-    icon.textContent = `${placeIcon(place)} `;
+    icon.textContent = placeIcon(place);
     link.prepend(icon);
     item.appendChild(link);
     appendText(item, "p", "passport-visit__date", markedLine(visit));
@@ -208,87 +349,198 @@ function collectedNames(sticker, config, result) {
   return [];
 }
 
-function renderStickers(page, result, config) {
-  const section = document.createElement("section");
-  section.className = "settings-section";
-  const { earned, total } = result.stickerCounts;
-  appendText(section, "h3", "settings-section__title", `Наклейки · ${earned} из ${total}`);
-  appendText(section, "p", "settings__hint", "Наклейки открываются сами, когда отмеченные места подходят под условие. Если снять отметку, наклейка снова закроется.");
-  // Подсказки «Подойдут» — только у двух закрытых наклеек, ближайших к
-  // получению (спецификация 3.2): у всех двенадцати экран стал бы списком дел.
-  const nearest = result.stickers
+// Две закрытые наклейки, ближайшие к получению (спецификация 3.2).
+function nearestStickers(result) {
+  return result.stickers
     .filter((sticker) => !sticker.earned && sticker.hints.length)
     .map((sticker, index) => ({ sticker, index, left: sticker.target - sticker.progress }))
     .sort((a, b) => a.left - b.left || a.index - b.index)
     .slice(0, NEAREST_STICKERS)
-    .map(({ sticker }) => sticker.id);
-  const list = document.createElement("ul");
-  list.className = "passport-stickers";
-  result.stickers.forEach((sticker) => {
-    const item = document.createElement("li");
-    item.className = `passport-sticker${sticker.earned ? " passport-sticker--earned" : ""}`;
-    const glyph = appendText(item, "span", "passport-sticker__glyph", STICKER_GLYPHS[sticker.id] || "🏷️");
-    glyph.setAttribute("aria-hidden", "true");
-    const body = document.createElement("div");
-    body.className = "passport-sticker__body";
-    appendText(body, "h4", "passport-sticker__title", sticker.title);
-    if (sticker.optional) appendText(body, "p", "passport-sticker__optional", "Необязательная");
-    appendText(body, "p", "passport-sticker__text", sticker.description);
-    if (sticker.earned) {
-      appendText(body, "p", "passport-sticker__state passport-sticker__state--earned", "✓ Получена");
+    .map(({ sticker }) => sticker);
+}
+
+// Карточка наклейки — одна для альбома и для «Ближайших наклеек».
+// hints: "list" — подсказки списком, "details" — свёрнуты, false — нет.
+function stickerCard(sticker, { config, result, hints }) {
+  const item = document.createElement("li");
+  item.className = `passport-sticker${sticker.earned ? " passport-sticker--earned" : ""}`;
+  item.dataset.sticker = sticker.id;
+  const art = document.createElement("span");
+  art.className = "passport-sticker__art";
+  if (sticker.earned) art.style.transform = `rotate(${tiltOf(sticker.id)}deg)`;
+  art.appendChild(createStickerArt(sticker.id, sticker.earned));
+  item.appendChild(art);
+  const body = document.createElement("div");
+  body.className = "passport-sticker__body";
+  appendText(body, "h4", "passport-sticker__title", sticker.title);
+  if (sticker.optional) appendText(body, "p", "passport-sticker__optional", "Необязательная");
+  if (sticker.earned) {
+    appendText(body, "p", "passport-sticker__state passport-sticker__state--earned", "✓ Получена");
+  } else {
+    appendText(body, "p", "passport-sticker__state", `Ещё впереди · ${sticker.progress} из ${sticker.target}`);
+    progressBar(body, sticker.progress, sticker.target, sticker.title);
+  }
+  appendText(body, "p", "passport-sticker__text", sticker.description);
+  const names = collectedNames(sticker, config, result);
+  if (names.length) appendText(body, "p", "passport-sticker__text", `Уже есть: ${names.join(", ")}.`);
+  if (!sticker.earned && sticker.hints.length && hints) {
+    const links = document.createElement("ul");
+    links.className = "passport-sticker__hints";
+    sticker.hints.forEach((place) => {
+      const li = document.createElement("li");
+      li.appendChild(placeLink(place, "passport-sticker__hint"));
+      links.appendChild(li);
+    });
+    if (hints === "details") {
+      const details = document.createElement("details");
+      details.className = "passport-sticker__more";
+      appendText(details, "summary", "passport-sticker__summary", "Какие места подойдут");
+      details.appendChild(links);
+      body.appendChild(details);
     } else {
-      appendText(body, "p", "passport-sticker__state", `${sticker.progress} из ${sticker.target}`);
-      const bar = document.createElement("div");
-      bar.className = "progress";
-      bar.setAttribute("role", "progressbar");
-      bar.setAttribute("aria-label", sticker.title);
-      bar.setAttribute("aria-valuemin", "0");
-      bar.setAttribute("aria-valuemax", String(sticker.target));
-      bar.setAttribute("aria-valuenow", String(sticker.progress));
-      const fill = document.createElement("div");
-      fill.className = "progress__fill";
-      fill.style.width = `${(sticker.progress / sticker.target) * 100}%`;
-      bar.appendChild(fill);
-      body.appendChild(bar);
-    }
-    const names = collectedNames(sticker, config, result);
-    if (names.length) appendText(body, "p", "passport-sticker__text", `Уже есть: ${names.join(", ")}.`);
-    if (nearest.includes(sticker.id)) {
       appendText(body, "p", "passport-sticker__hints-title", "Подойдут, например:");
-      const hints = document.createElement("ul");
-      hints.className = "passport-sticker__hints";
-      sticker.hints.forEach((place) => {
-        const li = document.createElement("li");
-        li.appendChild(placeLink(place, "passport-sticker__hint"));
-        hints.appendChild(li);
-      });
-      body.appendChild(hints);
+      body.appendChild(links);
     }
-    item.appendChild(body);
-    list.appendChild(item);
+  }
+  item.appendChild(body);
+  return item;
+}
+
+// На главном экране паспорта — лента всех наклеек, вход в альбом и две
+// ближайшие наклейки с подсказками.
+function renderStickerPreview(page, result, config) {
+  const section = document.createElement("section");
+  section.className = "settings-section";
+  const { earned, total } = result.stickerCounts;
+  appendText(section, "h3", "settings-section__title", `Наклейки · ${earned} из ${total}`);
+  const strip = document.createElement("div");
+  strip.className = "passport-strip";
+  strip.setAttribute("aria-hidden", "true");
+  result.stickers.forEach((sticker) => {
+    const art = document.createElement("span");
+    art.className = "passport-strip__item";
+    art.appendChild(createStickerArt(sticker.id, sticker.earned));
+    strip.appendChild(art);
   });
-  section.appendChild(list);
+  section.appendChild(strip);
+  const album = appendText(section, "a", "btn btn--secondary passport-album-link", "Открыть альбом наклеек");
+  album.href = "#/passport/album";
+  const nearest = nearestStickers(result);
+  if (nearest.length) {
+    appendText(section, "p", "passport-subtitle", "Ближайшие наклейки");
+    const list = document.createElement("ul");
+    list.className = "passport-stickers";
+    nearest.forEach((sticker) => list.appendChild(stickerCard(sticker, { config, result, hints: "list" })));
+    section.appendChild(list);
+  }
   page.appendChild(section);
 }
 
-function renderCoastParts(page, result) {
-  if (!result.coastParts.length) return;
-  const section = document.createElement("section");
-  section.className = "settings-section";
-  appendText(section, "h3", "settings-section__title", "Части побережья");
+// ------------------------------------------------------------ #/passport/album
+
+export async function renderPassportAlbum(container, ctx) {
+  const data = await loadPassportData(container, ctx, "Альбом наклеек", () => renderPassportAlbum(container, ctx));
+  if (!data) return;
+  const { page, result, config } = data;
+  appendBackLink(page, "← К паспорту", "#/passport", ctx);
+  appendText(page, "h2", "view-title", "Альбом наклеек");
+  const { earned, total, optionalEarned } = result.stickerCounts;
+  const summary = `Получено ${earned} из ${total}${optionalEarned ? ` и ${optionalEarned} необязательная` : ""}.`;
+  appendText(page, "p", "passport-album__summary", summary);
   appendText(
-    section,
+    page,
     "p",
-    "settings__hint",
-    "Условное деление только для паспорта — не районы из настроек поездки. Считаются места без покупок."
+    "settings__intro",
+    "Наклейки открываются сами, когда отмеченные места подходят под условие, и закрываются, если отметку снять. Покупки в наклейки не входят."
   );
   const list = document.createElement("ul");
-  list.className = "passport-parts";
-  result.coastParts.forEach((part) => {
+  list.className = "passport-stickers passport-album";
+  result.stickers.forEach((sticker) => list.appendChild(stickerCard(sticker, { config, result, hints: "details" })));
+  page.appendChild(list);
+}
+
+// ------------------------------------------------------------ #/passport/zone/<id>
+
+export async function renderPassportZone(container, ctx) {
+  const data = await loadPassportData(container, ctx, "Паспорт исследователя", () => renderPassportZone(container, ctx));
+  if (!data) return;
+  const { page, result, content, places, state } = data;
+  const part = content.coastParts.find((p) => p.id === ctx.params.zone);
+  if (!part) {
+    // Неизвестная часть — к паспорту, без записи в истории.
+    window.location.replace("#/passport");
+    return;
+  }
+  const number = content.coastParts.indexOf(part) + 1;
+  const progress = result.coastParts.find((p) => p.id === part.id) || { visited: 0, total: 0 };
+  const ordered = orderForMap(places.filter((place) => result.partOf(place) === part.id));
+
+  appendBackLink(page, "← К паспорту", "#/passport", ctx);
+  appendText(page, "p", "passport-zone__kicker", `Часть побережья · ${number}`);
+  appendText(page, "h2", "view-title", part.name);
+  appendText(page, "p", "passport-zone__progress", progress.total ? `Отмечено ${progress.visited} из ${progress.total}` : "Мест для прогресса здесь нет");
+  if (progress.total) progressBar(page, progress.visited, progress.total, `Отмечено в части «${part.name}»`);
+
+  const points = ordered.filter((o) => o.point).map((o) => ({ id: o.place.id, x: o.point.x, y: o.point.y }));
+  if (points.length) {
+    const layout = layoutMarkers(points);
+    const svg = createMapSvg({ viewBox: layout.viewBox, parts: content.coastParts, currentPart: part.id, label: `Декоративная схема: ${part.name}` });
+    const layer = el("g", { class: "pp-markers" }, svg);
+    const r = layout.hitR;
+    layout.markers.forEach((marker) => {
+      const index = ordered.findIndex((o) => o.place.id === marker.id);
+      const place = ordered[index].place;
+      const visited = Boolean(getVisit(state, place.id));
+      const link = el("a", {
+        href: `#/place/${place.id}`,
+        class: `pp-marker${visited ? " pp-marker--visited" : ""}`,
+        "aria-label": `${index + 1}. ${place.name.ru} — ${visited ? "отмечено" : "ещё не отмечено"}`,
+        "data-place": place.id,
+        style: `--ink: ${CATEGORY_INK[place.category] || "#0b6e6e"}`,
+      }, layer);
+      if (marker.moved) {
+        el("line", { x1: marker.tx, y1: marker.ty, x2: marker.x, y2: marker.y, class: "pp-marker__leader", "stroke-width": r * 0.08 }, link);
+        el("circle", { cx: marker.tx, cy: marker.ty, r: r * 0.16, class: "pp-marker__true" }, link);
+      }
+      el("circle", { cx: marker.x, cy: marker.y, r, class: "pp-marker__hit" }, link);
+      el("circle", { cx: marker.x, cy: marker.y, r: r * 0.62, class: "pp-marker__disc", "stroke-width": r * 0.12 }, link);
+      const num = el("text", { x: marker.x, y: marker.y + r * 0.02, class: "pp-marker__num", "font-size": r * 0.62 }, link);
+      num.textContent = String(index + 1);
+      if (visited) {
+        el("circle", { cx: marker.x + r * 0.5, cy: marker.y - r * 0.5, r: r * 0.3, class: "pp-marker__check-bg" }, link);
+        const check = el("text", { x: marker.x + r * 0.5, y: marker.y - r * 0.48, class: "pp-marker__check", "font-size": r * 0.4 }, link);
+        check.textContent = "✓";
+      }
+    });
+    const moved = layout.markers.some((m) => m.moved);
+    mapFigure(page, svg, moved ? "Близкие места раздвинуты: тонкая линия ведёт к точке из карточки места." : "");
+  }
+
+  const section = document.createElement("section");
+  section.className = "settings-section";
+  appendText(section, "h3", "settings-section__title", `Места этой части · ${ordered.length}`);
+  const list = document.createElement("ol");
+  list.className = "passport-zone-list";
+  ordered.forEach(({ place, point }, index) => {
+    const visit = getVisit(state, place.id);
     const li = document.createElement("li");
-    li.className = "passport-part";
-    appendText(li, "span", "passport-part__name", part.name);
-    appendText(li, "span", "passport-part__count", `${part.visited} из ${part.total}`);
+    li.className = `passport-zone-item${visit ? " passport-zone-item--visited" : ""}`;
+    li.dataset.place = place.id;
+    appendText(li, "span", "passport-zone-item__num", String(index + 1)).setAttribute("aria-hidden", "true");
+    const body = document.createElement("div");
+    body.className = "passport-zone-item__body";
+    const link = placeLink(place, "passport-visit__link");
+    const icon = document.createElement("span");
+    icon.className = "passport-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = placeIcon(place);
+    link.prepend(icon);
+    body.appendChild(link);
+    appendText(body, "p", `passport-zone-item__state${visit ? " passport-zone-item__state--visited" : ""}`, visit ? `✓ ${markedLine(visit)}` : "Ещё не отмечено");
+    if (visit && visit.note) appendText(body, "p", "passport-visit__note", `«${visit.note}»`);
+    if (!isRewardPlace(place)) appendText(body, "p", "passport-visit__keepsake", "Покупки — только на память, без наград.");
+    if (!point) appendText(body, "p", "passport-visit__keepsake", "Нет на схеме: координаты места вне охвата схемы.");
+    li.appendChild(body);
     list.appendChild(li);
   });
   section.appendChild(list);

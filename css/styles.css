@@ -2599,26 +2599,16 @@ textarea.settings-field__input {
   padding-top: var(--space-3);
 }
 
-.passport-sticker__glyph {
+.passport-sticker__art {
   flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border: 2px dashed var(--color-border);
-  border-radius: 50%;
-  font-size: 24px;
-  filter: grayscale(1);
-  opacity: 0.6;
+  display: block;
+  width: 72px;
+  height: 72px;
 }
 
-.passport-sticker--earned .passport-sticker__glyph {
-  border: 3px solid var(--color-surface);
-  background: var(--color-surface-alt);
-  box-shadow: 0 0 0 2px var(--color-primary), 0 2px 0 rgba(0, 0, 0, 0.12);
-  filter: none;
-  opacity: 1;
+.passport-sticker__art .pp-sticker-art {
+  width: 100%;
+  height: 100%;
 }
 
 .passport-sticker__body {
@@ -2795,4 +2785,303 @@ textarea.settings-field__input {
 
 .passport-note__buttons .btn {
   width: 100%;
+}
+
+/* ----- Паспорт: схема побережья, части побережья, альбом (EXPLORER-PASSPORT-SPEC.md 4, 7, 10) ----- */
+
+.passport {
+  --pp-paper: #fbf6ea;
+  --pp-sand: #efdcb3;
+  --pp-sea: #9fd8d3;
+  --pp-sea-deep: #2f8f9a;
+  --pp-shallow: #c9ebe6;
+  --pp-land-a: #f4ead2;
+  --pp-land-b: #ece2c4;
+  --pp-hill: #b7cf98;
+  --pp-jungle: #4f8f57;
+  --pp-ink: #0b6e6e;
+  --pp-ink-muted: #7d8a88;
+}
+
+.passport-map {
+  margin: 0 0 var(--space-2);
+  overflow: hidden;
+  background: var(--pp-sea);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.pp-map__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: inherit;
+}
+
+.passport-map__caption {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--pp-paper);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.passport-map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.passport-map__key::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: -1px;
+  border: 2px solid var(--pp-ink);
+  border-radius: 50%;
+  background: var(--color-surface);
+}
+
+.passport-map__key--visited::before {
+  background: var(--pp-ink);
+}
+
+.passport-map__note {
+  flex-basis: 100%;
+}
+
+/* SVG: море, суша, декор. */
+.pp-sea { fill: var(--pp-sea); }
+.pp-wave { fill: none; stroke: var(--pp-sea-deep); stroke-width: 3; stroke-linecap: round; opacity: 0.25; }
+.pp-shallow { fill: none; stroke: var(--pp-shallow); stroke-width: 40; stroke-linejoin: round; }
+.pp-land { fill: var(--pp-paper); }
+.pp-grain { fill: #b9a57a; opacity: 0.35; }
+.pp-surf { fill: none; stroke: var(--pp-sand); stroke-width: 9; stroke-linejoin: round; stroke-linecap: round; }
+.pp-part--a { fill: var(--pp-land-a); }
+.pp-part--b { fill: var(--pp-land-b); }
+.pp-part--current { fill: var(--pp-land-a); }
+.pp-part--dim { fill: #fffdf8; opacity: 0.75; }
+.pp-hill { fill: var(--pp-hill); opacity: 0.75; }
+.pp-hill__line { fill: none; stroke: var(--pp-jungle); stroke-width: 3; stroke-linecap: round; opacity: 0.45; }
+.pp-palm__trunk { fill: none; stroke: #8a6a3d; stroke-width: 4; stroke-linecap: round; }
+.pp-palm__leaf { fill: none; stroke: var(--pp-jungle); stroke-width: 5; stroke-linecap: round; }
+.pp-compass__ring { fill: var(--pp-paper); stroke: var(--pp-ink); stroke-width: 3; opacity: 0.9; }
+.pp-compass__ns { fill: var(--pp-ink); }
+.pp-compass__ew { fill: var(--pp-ink-muted); }
+.pp-compass__n { font-size: 30px; font-weight: 700; fill: var(--pp-ink); text-anchor: middle; }
+.pp-boat__hull { fill: #9a4a2f; }
+.pp-boat__sail { fill: #fffdf8; stroke: var(--pp-ink); stroke-width: 2; }
+.pp-cartouche__box { fill: var(--pp-paper); stroke: var(--pp-ink); stroke-width: 3; }
+.pp-cartouche__text { font-size: 34px; font-weight: 700; fill: var(--pp-ink); text-anchor: middle; letter-spacing: 2px; }
+
+/* Обзор: точки мест и значки частей побережья. */
+.pp-dot { fill: var(--color-surface); stroke: var(--ink); stroke-width: 4; }
+.pp-dot--visited { fill: var(--ink); stroke: #ffffff; stroke-width: 3; }
+.pp-badge__hit { fill: transparent; }
+.pp-badge__disc { fill: var(--pp-paper); stroke: var(--pp-ink-muted); stroke-width: 6; }
+.pp-badge__ring { fill: none; stroke: var(--pp-ink); stroke-width: 8; stroke-linecap: round; }
+.pp-badge__num { font-size: 38px; font-weight: 700; fill: var(--pp-ink); text-anchor: middle; dominant-baseline: central; }
+.pp-badge--visited .pp-badge__disc { fill: #e3f2ef; }
+.pp-badge__label {
+  font-size: 40px;
+  font-weight: 700;
+  fill: #1e2a28;
+  paint-order: stroke;
+  stroke: var(--pp-paper);
+  stroke-width: 10px;
+  stroke-linejoin: round;
+}
+.pp-badge:focus-visible .pp-badge__disc,
+.pp-badge:hover .pp-badge__disc { stroke: var(--color-primary-dark); stroke-width: 10; }
+.pp-badge:focus { outline: none; }
+
+/* Экран части побережья: значки мест. */
+.pp-marker__hit { fill: transparent; }
+.pp-marker__leader { stroke: var(--pp-ink); stroke-dasharray: 2 3; opacity: 0.7; }
+.pp-marker__true { fill: var(--ink); }
+.pp-marker__disc { fill: var(--color-surface); stroke: var(--ink); }
+.pp-marker__num { fill: var(--ink); font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+.pp-marker--visited .pp-marker__disc { fill: var(--ink); stroke: #ffffff; }
+.pp-marker--visited .pp-marker__num { fill: #ffffff; }
+.pp-marker__check-bg { fill: #ffffff; stroke: var(--ink); stroke-width: 1.5; }
+.pp-marker__check { fill: var(--ink); font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+.pp-marker:focus { outline: none; }
+.pp-marker:focus-visible .pp-marker__hit,
+.pp-marker:hover .pp-marker__hit { fill: rgba(11, 110, 110, 0.14); stroke: var(--color-primary-dark); stroke-width: 2; }
+
+/* Список частей побережья под схемой. */
+.passport-parts .passport-part {
+  align-items: center;
+  min-height: var(--tap-min);
+  color: inherit;
+  text-decoration: none;
+}
+
+.passport-part__num,
+.passport-zone-item__num {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--pp-ink-muted);
+  border-radius: 50%;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--pp-ink);
+  background: var(--pp-paper);
+}
+
+.passport-part__num--visited,
+.passport-zone-item--visited .passport-zone-item__num {
+  border-color: var(--pp-ink);
+  background: var(--pp-ink);
+  color: #ffffff;
+}
+
+.passport-parts .passport-part__name {
+  flex: 1 1 auto;
+  font-weight: 600;
+}
+
+.passport-parts .passport-part__count {
+  color: var(--color-primary-dark);
+}
+
+.passport-parts__hint {
+  margin-top: var(--space-2);
+}
+
+/* Лента наклеек и вход в альбом. */
+.passport-strip {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+}
+
+.passport-strip__item .pp-sticker-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.passport-album-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+  text-decoration: none;
+}
+
+.passport-subtitle {
+  margin: var(--space-3) 0 var(--space-2);
+  font-weight: 700;
+}
+
+.passport-album__summary {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-2);
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.passport-album {
+  margin-bottom: var(--space-5);
+}
+
+.passport-sticker__more {
+  margin-top: var(--space-1);
+}
+
+.passport-sticker__summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Наклейка: белая высечка и тень, если получена; контур — если впереди. */
+.pp-sticker-art { overflow: visible; }
+.pp-sticker-art__cut { stroke: #ffffff; stroke-width: 6; }
+.pp-sticker-art--earned { filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.18)); }
+.pp-sticker-art__ring { fill: none; stroke: rgba(255, 255, 255, 0.55); stroke-width: 2.5; stroke-dasharray: 4 4; }
+.pp-sticker-art__outline { fill: var(--pp-paper); stroke: var(--pp-ink-muted); stroke-width: 3; stroke-dasharray: 6 5; }
+.pp-sticker-art__glyph { font-size: 40px; text-anchor: middle; dominant-baseline: central; }
+.pp-sticker-art:not(.pp-sticker-art--earned) .pp-sticker-art__glyph { filter: grayscale(1); opacity: 0.45; }
+
+/* Экран части побережья. */
+.passport-zone__kicker {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.passport-zone__progress {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-2);
+  font-weight: 600;
+}
+
+.passport .view-title + .passport-zone__progress + .progress {
+  margin-bottom: var(--space-4);
+}
+
+.passport-zone-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.passport-zone-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+
+.passport-zone-item__num {
+  margin-top: 8px;
+}
+
+.passport-zone-item__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.passport-zone-item__state {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.passport-zone-item__state--visited {
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .passport-sticker__art {
+    transition: transform 0.2s ease;
+  }
+}
+
+.passport-icon {
+  flex: 0 0 auto;
+  margin-right: 6px;
 }

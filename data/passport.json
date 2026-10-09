@@ -1,13 +1,13 @@
 {
   "updatedAt": "2026-10-10",
   "coastParts": [
-    { "id": "coast-west", "name": "Ячжоу и Наньшань", "bounds": { "lngMax": 109.25 } },
-    { "id": "coast-tianya", "name": "Тянья и Сидао", "bounds": { "lngMin": 109.25, "lngMax": 109.42 } },
-    { "id": "coast-centre", "name": "Центр и Санья Бэй", "bounds": { "lngMin": 109.42, "lngMax": 109.545, "latMin": 18.232, "latMax": 18.27 } },
-    { "id": "coast-dadonghai", "name": "Дадунхай и Лухуйтоу", "bounds": { "lngMin": 109.42, "lngMax": 109.545, "latMax": 18.232 } },
-    { "id": "coast-north", "name": "Север Саньи", "bounds": { "lngMin": 109.42, "lngMax": 109.545, "latMin": 18.27 } },
-    { "id": "coast-yalong", "name": "Ялонг Бэй", "bounds": { "lngMin": 109.545, "lngMax": 109.67 } },
-    { "id": "coast-haitang", "name": "Хайтанг Бэй", "bounds": { "lngMin": 109.67 } }
+    { "id": "coast-west", "name": "Ячжоу и Наньшань", "short": "Ячжоу", "bounds": { "lngMax": 109.25 } },
+    { "id": "coast-tianya", "name": "Тянья и Сидао", "short": "Тянья", "bounds": { "lngMin": 109.25, "lngMax": 109.42 } },
+    { "id": "coast-centre", "name": "Центр и Санья Бэй", "short": "Центр", "bounds": { "lngMin": 109.42, "lngMax": 109.545, "latMin": 18.232, "latMax": 18.27 } },
+    { "id": "coast-dadonghai", "name": "Дадунхай и Лухуйтоу", "short": "Дадунхай", "bounds": { "lngMin": 109.42, "lngMax": 109.545, "latMax": 18.232 } },
+    { "id": "coast-north", "name": "Север Саньи", "short": "Север", "bounds": { "lngMin": 109.42, "lngMax": 109.545, "latMin": 18.27 } },
+    { "id": "coast-yalong", "name": "Ялонг Бэй", "short": "Ялонг", "bounds": { "lngMin": 109.545, "lngMax": 109.67 } },
+    { "id": "coast-haitang", "name": "Хайтанг Бэй", "short": "Хайтанг", "bounds": { "lngMin": 109.67 } }
   ],
   "stickers": [
     {

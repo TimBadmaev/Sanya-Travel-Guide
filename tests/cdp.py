@@ -40,6 +40,12 @@ class _Server(socketserver.ThreadingTCPServer):
     daemon_threads = True
     request_queue_size = 128
 
+    def handle_error(self, request, client_address):
+        # Браузер обрывает запросы при холодной навигации — это не ошибка.
+        import sys as _sys
+        if not isinstance(_sys.exc_info()[1], (BrokenPipeError, ConnectionResetError)):
+            super().handle_error(request, client_address)
+
 
 def serve(root, port):
     """Запускает сервер в фоне; возвращает объект с .shutdown()."""

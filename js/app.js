@@ -12,7 +12,7 @@ import { renderRecommended, renderRecommendedDay } from "./views/recommended.js"
 import { renderExpenses, renderExpenseForm, renderExpenseSettings } from "./views/expenses.js";
 import { renderNow } from "./views/today.js";
 import { renderBackup } from "./views/backup.js";
-import { renderPassport } from "./views/passport.js";
+import { renderPassport, renderPassportAlbum, renderPassportZone } from "./views/passport.js";
 import { initPwa } from "./pwa.js";
 import { primeCurrentPosition } from "./logic/geo.js";
 
@@ -63,6 +63,9 @@ const routes = [
   // «Паспорт исследователя» (Passport v1) — вложенный экран Главной, без
   // шестой вкладки (D-07).
   { pattern: /^\/passport$/, render: renderPassport, nav: "/" },
+  // Схема части побережья и альбом наклеек — продолжение паспорта.
+  { pattern: /^\/passport\/zone\/(?<zone>[a-z0-9-]+)$/, render: renderPassportZone, nav: "/" },
+  { pattern: /^\/passport\/album$/, render: renderPassportAlbum, nav: "/" },
   // Выбор дня для места — продолжение карточки места.
   { pattern: /^\/place\/(?<id>[^/]+)\/plan$/, render: renderPlacePlan, nav: "/places" },
 ];

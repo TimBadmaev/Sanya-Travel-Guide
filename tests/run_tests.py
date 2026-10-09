@@ -3,12 +3,13 @@
 регрессия существующих экранов, офлайн и обновление Service Worker.
 
 Запуск из корня проекта:  python3 -u tests/run_tests.py [раздел …]
-Разделы: static unit passport regression offline upgrade (по умолчанию — все).
+Разделы: static unit passport map layout regression offline upgrade (по умолчанию — все).
 Нужен Google Chrome (путь — переменная CHROME). Node и сторонние пакеты не
 нужны. В приложение и в публикацию каталог tests/ не входит.
 """
 
 import json
+import math
 import os
 import re
 import shutil
@@ -39,6 +40,7 @@ def load(path):
 PLACES = [p for p in load("data/places.json") if p["status"] == "verified"]
 CONFIG = load("data/config.json")
 PASSPORT = load("data/passport.json")
+CACHE = re.search(r'const CACHE_VERSION = "(v\d+)"', open(os.path.join(ROOT, "sw.js"), encoding="utf-8").read()).group(1)
 SHOPPING = [p for p in PLACES if p["category"] == "shopping"]
 REWARD = [p for p in PLACES if p["category"] != "shopping"]
 
@@ -103,8 +105,8 @@ def run_static():
           [f for f in data_files if f not in precache])
     photos = ["assets/photos/" + ph["file"] for p in PLACES for ph in p.get("photos", [])]
     check("все фото verified-мест в PRECACHE", all(f in precache for f in photos))
-    for f in ("js/logic/passport.js", "js/views/passport.js", "data/passport.json"):
-        check(f"новый файл паспорта {f} в PRECACHE", f in precache)
+    for f in ("js/logic/passport.js", "js/views/passport.js", "data/passport.json", "js/logic/passport-map.js", "js/views/passport-art.js"):
+        check(f"файл паспорта {f} в PRECACHE", f in precache)
 
     version = re.search(r'const CACHE_VERSION = "v(\d+)"', sw)
     try:
@@ -203,7 +205,7 @@ class App:
 
     def small_targets(self, scope):
         return self.b.js(f"""[...document.querySelectorAll({json.dumps(scope)})].flatMap((root) =>
-            [...root.querySelectorAll('a, button, textarea, input')]).filter((el) => el.offsetParent !== null)
+            [...root.querySelectorAll('a, button, textarea, input, summary')]).filter((el) => el.getClientRects().length && !(el instanceof SVGElement))
             .map((el) => {{ const r = el.getBoundingClientRect(); return [el.textContent.trim().slice(0, 40), Math.round(r.width), Math.round(r.height)]; }})
             .filter(([, w, h]) => w < 44 || h < 44)""")
 
@@ -567,17 +569,25 @@ def run_passport(port):
         check("покупки помечены «На память»", any("CDF" in v and "На память" in v for v in visits))
         check("дата подписана как дата отметки", all("Отмечено · " in v for v in visits))
         earned = b.js("[...document.querySelectorAll('.passport-sticker--earned .passport-sticker__title')].map((h) => h.textContent)")
-        check("«Первый штамп» получен", "Первый штамп" in earned, earned)
-        check("наклеек показано 12 (11 + необязательная)", b.js("document.querySelectorAll('.passport-sticker').length") == 12)
-        check("необязательная наклейка помечена", b.js("[...document.querySelectorAll('.passport-sticker')].some((li) => li.textContent.includes('Остров на горизонте') && li.textContent.includes('Необязательная'))"))
+        check("на #/passport лента из 12 наклеек, 1 цветная", b.js("document.querySelectorAll('.passport-strip .pp-sticker-art').length") == 12
+              and b.js("document.querySelectorAll('.passport-strip .pp-sticker-art--earned').length") == 1)
+        check("на #/passport есть вход в альбом", b.js("!!document.querySelector('a[href=\"#/passport/album\"]')"))
         hint_ids = b.js("[...document.querySelectorAll('.passport-sticker__hint')].map((a) => a.getAttribute('href').replace('#/place/', ''))")
         shop_ids = {p["id"] for p in SHOPPING}
         check("в подсказках нет покупок", hint_ids and not (set(hint_ids) & shop_ids), hint_ids)
         check("в подсказках нет уже отмеченных мест", not ({"yalong-bay-beach", "luhuitou-park"} & set(hint_ids)))
         check("подсказки — только у двух наклеек, ближайших к получению",
               b.js("[...document.querySelectorAll('.passport-sticker')].filter((li) => li.querySelector('.passport-sticker__hints')).length") == 2)
-        parts = b.js("[...document.querySelectorAll('.passport-part')].map((li) => li.textContent)")
-        check("части побережья: 7 строк, Ялонг Бэй — 1 из 6", len(parts) == 7 and "Ялонг Бэй1 из 6" in parts, parts)
+        parts = b.js("[...document.querySelectorAll('.passport-part')].map((a) => a.querySelector('.passport-part__name').textContent + ' ' + a.querySelector('.passport-part__count').textContent)")
+        check("части побережья: 7 строк, Ялонг Бэй — 1 из 6", len(parts) == 7 and "Ялонг Бэй 1 из 6 ›" in parts, parts)
+        app.go("#/passport/album")
+        earned = b.js("[...document.querySelectorAll('.passport-sticker--earned .passport-sticker__title')].map((h) => h.textContent)")
+        check("альбом: «Первый штамп» получен", earned == ["Первый штамп"], earned)
+        check("альбом: 12 наклеек (11 + необязательная)", b.js("document.querySelectorAll('.passport-sticker').length") == 12)
+        check("альбом: необязательная наклейка помечена", b.js("[...document.querySelectorAll('.passport-sticker')].some((li) => li.textContent.includes('Остров на горизонте') && li.textContent.includes('Необязательная'))"))
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("«← К паспорту» из альбома — назад на #/passport", b.js("location.hash") == "#/passport")
         check("ссылка «Сохранить копию ›» ведёт в #/data", b.js("!!document.querySelector('.passport a[href=\"#/data\"]')"))
         check("подсвечена вкладка «Сейчас»", b.js("document.querySelector('.bottom-nav__item.is-active').dataset.route") == "/")
         check("ошибок в консоли нет", not app.errors())
@@ -637,7 +647,7 @@ def run_passport(port):
         check("экспорт содержит stg:passport с заметкой",
               data.get("stg:passport", {}).get("visits", {}).get(place, {}).get("note") == "Вода тёплая, закат в 17:40")
         check("экспорт сохраняет все прежние разделы", all(k in data for k in list(other_keys) + ["stg:trip"]), list(data))
-        check("appVersion копии — v16 (SW активен)", exported.get("appVersion") == "v16", exported.get("appVersion"))
+        check(f"appVersion копии — {CACHE} (SW активен)", exported.get("appVersion") == CACHE, exported.get("appVersion"))
         exported_text = json.dumps(exported)
 
         # Импорт восстанавливает паспорт.
@@ -756,6 +766,302 @@ def run_layout(port):
         finally:
             app.close()
 
+# -*- coding: utf-8 -*-
+
+
+# ------------------------------------------------------------------ map
+
+LNG_STOPS = [(109.10, 20), (109.25, 170), (109.42, 300), (109.475, 330), (109.545, 700), (109.67, 850), (109.77, 980)]
+
+
+def py_project(loc):
+    lat, lng = loc["lat"], loc["lng"]
+    if not (18.2 <= lat <= 18.39 and LNG_STOPS[0][0] <= lng <= LNG_STOPS[-1][0]):
+        return None
+    for (a, xa), (b, xb) in zip(LNG_STOPS, LNG_STOPS[1:]):
+        if lng <= b:
+            x = xa + (lng - a) / (b - a) * (xb - xa)
+            break
+    y = 910 - (lat - 18.2) / 0.19 * 760
+    return (round(x, 1), round(y, 1))
+
+
+def py_part_of(place):
+    loc = place.get("location") or {}
+    for part in PASSPORT["coastParts"]:
+        b = part["bounds"]
+        if "lngMin" in b and not loc.get("lng", -1) >= b["lngMin"]:
+            continue
+        if "lngMax" in b and not loc.get("lng", 1e9) < b["lngMax"]:
+            continue
+        if "latMin" in b and not loc.get("lat", -1) >= b["latMin"]:
+            continue
+        if "latMax" in b and not loc.get("lat", 1e9) < b["latMax"]:
+            continue
+        return part["id"]
+    return None
+
+
+def run_map(port):
+    SECTION[0] = "map"
+    print("\n[map] схема побережья, части побережья, альбом")
+    app = App(port)
+    b = app.b
+    try:
+        app.setup()
+        app.go("#/places", cold=True)
+        # Логика проекции и раскладки — import() в браузере.
+        unit = b.js(r"""(async () => {
+          const M = await import('./js/logic/passport-map.js');
+          const D = await import('./js/data.js');
+          const P = await import('./js/logic/passport.js');
+          const places = await D.loadPlaces();
+          const content = P.prepareContent(await D.loadPassport(), await D.loadConfig());
+          const pts = places.map((p) => ({ id: p.id, loc: p.location, pt: M.projectPoint(p.location) }));
+          let orderOk = true;
+          for (const a of pts) for (const b of pts) {
+            if (a.loc.lng < b.loc.lng && !(a.pt.x <= b.pt.x)) orderOk = false;
+            if (a.loc.lat > b.loc.lat && !(a.pt.y <= b.pt.y)) orderOk = false;
+          }
+          const layouts = {};
+          content.coastParts.forEach((part) => {
+            const inPart = M.orderForMap(places.filter((p) => P.coastPartOf(p, content.coastParts) === part.id)).filter((o) => o.point);
+            const points = inPart.map((o) => ({ id: o.place.id, x: o.point.x, y: o.point.y }));
+            const l1 = M.layoutMarkers(points);
+            const l2 = M.layoutMarkers(points);
+            let minGap = Infinity;
+            l1.markers.forEach((a, i) => l1.markers.forEach((b, j) => { if (i < j) minGap = Math.min(minGap, Math.hypot(a.x - b.x, a.y - b.y)); }));
+            const hitPx = (l1.hitR * 280) / l1.viewBox.w;
+            const inside = l1.markers.every((m) => m.x - l1.hitR >= l1.viewBox.x - 0.5 && m.x + l1.hitR <= l1.viewBox.x + l1.viewBox.w + 0.5 && m.y - l1.hitR >= l1.viewBox.y - 0.5 && m.y + l1.hitR <= l1.viewBox.y + l1.viewBox.h + 0.5);
+            layouts[part.id] = { same: JSON.stringify(l1) === JSON.stringify(l2), n: points.length, noOverlap: l1.markers.length < 2 || minGap >= 2 * l1.hitR - 0.2, hitPx, inside };
+          });
+          return {
+            all: pts.map((p) => [p.id, p.pt && p.pt.x, p.pt && p.pt.y]),
+            orderOk,
+            corner: JSON.stringify(M.projectPoint({ lat: 18.2, lng: 109.1 })) === JSON.stringify({ x: 20, y: 910 }),
+            outside: M.projectPoint({ lat: 18.5, lng: 109.5 }) === null && M.projectPoint({ lat: 18.25, lng: 110.2 }) === null && M.projectPoint(null) === null && M.projectPoint({ lat: NaN, lng: 109.5 }) === null,
+            rect: JSON.stringify(M.partRect({ lngMin: 109.42, lngMax: 109.545, latMin: 18.232, latMax: 18.27 })),
+            layouts,
+          }; })()""")
+        expected = {p["id"]: py_project(p["location"]) for p in PLACES}
+        mismatch = [i for i, x, y in unit["all"] if expected[i] is None or abs(expected[i][0] - x) > 0.11 or abs(expected[i][1] - y) > 0.11]
+        check(f"проекция всех {len(PLACES)} мест совпадает с независимым расчётом", not mismatch, mismatch)
+        check("проекция сохраняет порядок: западнее — левее, севернее — выше", unit["orderOk"])
+        check("проекция: опорная точка (18.20, 109.10) → (20, 910)", unit["corner"])
+        check("место вне охвата схемы или без координат — без точки (null)", unit["outside"])
+        rect = json.loads(unit["rect"])
+        check("прямоугольник части «Центр» по её границам", abs(rect["x"] - 300) < 0.01 and abs(rect["x"] + rect["w"] - 700) < 0.01 and abs(rect["y"] - 630) < 0.01 and abs(rect["y"] + rect["h"] - 782) < 0.01, rect)
+        for pid, r in unit["layouts"].items():
+            check(f"раскладка {pid}: детерминирована, без пересечений, зона нажатия ≥ 22 px радиус на 280 px, значки в рамке",
+                  r["same"] and r["noOverlap"] and r["hitPx"] >= 21.9 and r["inside"], r)
+
+        # Обзорная схема.
+        visits = {"yalong-bay-beach": {"date": "2026-11-14", "note": "Вода тёплая"}, "cdf-duty-free-city": {"date": "2026-11-15"},
+                  "luhuitou-park": {"date": "2026-11-16"}}
+        app.setup(extra={"stg:passport": json.dumps({"v": 1, "visits": visits, "seen": {}})})
+        app.go("#/passport", cold=True)
+        ov = b.js(r"""(() => {
+          const svg = document.querySelector('.passport-map .pp-map__svg');
+          const land = document.getElementById('pp-land');
+          const coast = document.getElementById('pp-coast');
+          const dots = [...svg.querySelectorAll('.pp-dot')].map((c) => ({ id: c.dataset.place, x: +c.getAttribute('cx'), y: +c.getAttribute('cy'), visited: c.classList.contains('pp-dot--visited') }));
+          const len = coast.getTotalLength();
+          const samples = []; for (let s = 0; s <= len; s += 2) { const p = coast.getPointAtLength(s); samples.push([p.x, p.y]); }
+          const coastDist = (x, y) => Math.min(...samples.map(([a, b]) => Math.hypot(a - x, b - y)));
+          return {
+            badges: [...svg.querySelectorAll('.pp-badge')].map((a) => a.dataset.part),
+            badgeHrefs: [...svg.querySelectorAll('.pp-badge')].map((a) => a.getAttribute('href')),
+            dots,
+            onLand: dots.filter((d) => !land.isPointInFill(new DOMPoint(d.x, d.y))).map((d) => d.id),
+            coastDist: Object.fromEntries(dots.map((d) => [d.id, Math.round(coastDist(d.x, d.y))])),
+            islands: svg.querySelectorAll('.pp-island').length,
+            caption: document.querySelector('.passport-map__caption').textContent,
+            external: performance.getEntriesByType('resource').map((e) => e.name).filter((n) => !n.startsWith(location.origin)),
+            images: svg.querySelectorAll('image, use[href^="http"]').length,
+            role: svg.getAttribute('role'), label: svg.getAttribute('aria-label'),
+            badgeLabels: [...svg.querySelectorAll('.pp-badge')].map((a) => a.getAttribute('aria-label')),
+          }; })()""")
+        part_ids = [p["id"] for p in PASSPORT["coastParts"]]
+        check("на схеме 7 значков частей побережья в порядке data/passport.json", ov["badges"] == part_ids, ov["badges"])
+        check("значки ведут на экраны частей", ov["badgeHrefs"] == [f"#/passport/zone/{i}" for i in part_ids])
+        check("значки с доступными названиями частей и счётом", all(lbl and "отмечено" in lbl for lbl in ov["badgeLabels"]) and "2. Тянья и Сидао: отмечено 0 из 3" in ov["badgeLabels"], ov["badgeLabels"])
+        dot_ids = [d["id"] for d in ov["dots"]]
+        catalog_ids = {p["id"] for p in PLACES}
+        check(f"все {len(PLACES)} verified-мест — точками, ни одной лишней", sorted(dot_ids) == sorted(catalog_ids) and len(dot_ids) == len(set(dot_ids)))
+        drafts = [p["id"] for p in load("data/places.json") if p["status"] != "verified"]
+        check("черновиков на схеме нет", not (set(drafts) & set(dot_ids)))
+        bad_pos = [d["id"] for d in ov["dots"] if expected[d["id"]] and (abs(d["x"] - expected[d["id"]][0]) > 0.11 or abs(d["y"] - expected[d["id"]][1]) > 0.11)]
+        check("точки стоят по проекции координат карточек", not bad_pos, bad_pos)
+        check("отмеченные места выделены, остальные — нет (по stg:passport)",
+              sorted(d["id"] for d in ov["dots"] if d["visited"]) == sorted(visits), [d["id"] for d in ov["dots"] if d["visited"]])
+        check("каждое место на суше рисунка (isPointInFill)", not ov["onLand"], ov["onLand"])
+        beaches = {p["id"]: ov["coastDist"][p["id"]] for p in PLACES if p["category"] == "beach"}
+        check("пляжи у кромки берега (≤ 25 единиц)", all(v <= 25 for v in beaches.values()), beaches)
+        check("островов не нарисовано (координат островов в данных нет)", ov["islands"] == 0)
+        check("постоянная подпись «Схема для отметок…»", ov["caption"] == "Схема для отметок. Форма берега и расстояния условны. Дорога — в карточке места.", ov["caption"])
+        check("нет запросов за пределы приложения и внешних изображений", not ov["external"] and ov["images"] == 0, ov["external"])
+        check("схема — группа с доступным названием (не картинка со ссылками)", ov["role"] == "group" and "схема" in (ov["label"] or "").lower())
+        check("на схеме нет GPS, отеля, линейки и маршрутов",
+              b.js("!document.querySelector('.passport-map [class*=\"route\"], .passport-map [class*=\"hotel\"], .passport-map [class*=\"scale\"], .passport-map [class*=\"gps\"], .passport-map polyline')"))
+        check("список частей под схемой — 7 ссылок", b.js("[...document.querySelectorAll('.passport-parts a.passport-part')].map((a) => a.getAttribute('href')).join()") == ",".join(f"#/passport/zone/{i}" for i in part_ids))
+        check("ошибок в консоли нет", not app.errors())
+
+        # Переход: значок → часть → место → назад.
+        b.js("document.querySelector('.pp-badge[data-part=\"coast-yalong\"]').dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })); true")
+        b.wait_ready()
+        check("значок «Ялонг» открывает #/passport/zone/coast-yalong", b.js("location.hash") == "#/passport/zone/coast-yalong", b.js("location.hash"))
+        check("экран части: название и «← К паспорту»", app.text(".view-title") == "Ялонг Бэй" and app.text(".place-detail__back") == "← К паспорту")
+        b.js("document.querySelector('.pp-marker[data-place=\"yalong-bay-beach\"]').dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })); true")
+        b.wait_ready()
+        check("значок места открывает карточку места", b.js("location.hash") == "#/place/yalong-bay-beach")
+        check("карточка из части побережья — «← Назад»", app.text(".place-detail__back") == "← Назад")
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("«← Назад» из карточки — в часть побережья", b.js("location.hash") == "#/passport/zone/coast-yalong")
+        b.js("document.querySelector('.passport-zone-list a[href=\"#/place/bohou-village\"]').click(); true")
+        b.wait_ready()
+        check("название места в списке части ведёт в карточку", b.js("location.hash") == "#/place/bohou-village")
+        app.click(".place-detail__back")
+        b.wait_ready()
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("«← К паспорту» возвращает на #/passport", b.js("location.hash") == "#/passport")
+
+        # Каждая часть побережья.
+        for part in PASSPORT["coastParts"]:
+            app.go(f"#/passport/zone/{part['id']}", cold=True)
+            want = [p["id"] for p in PLACES if py_part_of(p) == part["id"]]
+            reward_total = sum(1 for p in PLACES if py_part_of(p) == part["id"] and p["category"] != "shopping")
+            reward_visited = sum(1 for p in PLACES if py_part_of(p) == part["id"] and p["category"] != "shopping" and p["id"] in visits)
+            z = b.js("""(() => ({
+              items: [...document.querySelectorAll('.passport-zone-item')].map((li) => li.dataset.place),
+              markers: [...document.querySelectorAll('.pp-marker')].map((a) => a.dataset.place),
+              visitedMarkers: [...document.querySelectorAll('.pp-marker--visited')].map((a) => a.dataset.place),
+              labels: [...document.querySelectorAll('.pp-marker')].map((a) => a.getAttribute('aria-label')),
+              progress: document.querySelector('.passport-zone__progress').textContent,
+              title: document.querySelector('.view-title').textContent,
+              hits: [...document.querySelectorAll('.pp-marker__hit')].map((c) => { const r = c.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2, r.width]; }),
+              svgRect: (() => { const r = document.querySelector('.pp-map__svg').getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; })(),
+              highlighted: document.querySelector('.pp-part--current').dataset.part,
+              caption: !!document.querySelector('.passport-map__caption'),
+            }))()""")
+            check(f"{part['id']}: список — ровно места этой части ({len(want)})", sorted(z["items"]) == sorted(want) and len(z["items"]) == len(set(z["items"])), z["items"])
+            check(f"{part['id']}: на схеме значок у каждого места части", sorted(z["markers"]) == sorted(want))
+            check(f"{part['id']}: отмеченные значки — по stg:passport", sorted(z["visitedMarkers"]) == sorted(i for i in want if i in visits))
+            check(f"{part['id']}: прогресс без покупок «Отмечено {reward_visited} из {reward_total}»", z["progress"] == f"Отмечено {reward_visited} из {reward_total}", z["progress"])
+            check(f"{part['id']}: заголовок, выделение части и подпись схемы", z["title"] == part["name"] and z["highlighted"] == part["id"] and z["caption"])
+            check(f"{part['id']}: у значков доступные названия с номером и состоянием", all(re.match(r"^\d+\. .+ — (отмечено|ещё не отмечено)$", l) for l in z["labels"]))
+            hits = z["hits"]
+            small = [h for h in hits if h[2] < 44]
+            overlap = [(i, j) for i in range(len(hits)) for j in range(i + 1, len(hits)) if math.hypot(hits[i][0] - hits[j][0], hits[i][1] - hits[j][1]) < (hits[i][2] + hits[j][2]) / 2 - 1]
+            l, t, r, bt = z["svgRect"]
+            cut = [h for h in hits if h[0] - h[2] / 2 < l - 1 or h[0] + h[2] / 2 > r + 1 or h[1] - h[2] / 2 < t - 1 or h[1] + h[2] / 2 > bt + 1]
+            check(f"{part['id']}: зоны нажатия ≥ 44 px, не пересекаются и не обрезаны (375 px)", not small and not overlap and not cut, {"small": small, "overlap": overlap, "cut": cut})
+            check(f"{part['id']}: нет переполнения и ошибок", app.overflow() <= 0 and not app.errors())
+        app.go("#/passport/zone/coast-nowhere", cold=True)
+        check("неизвестная часть побережья — replace на #/passport", b.js("location.hash") == "#/passport")
+        app.go("#/passport/zone/dadonghai", cold=True)
+        check("ID района config.areas — не часть побережья (replace на #/passport)", b.js("location.hash") == "#/passport")
+
+        # Клавиатура: значки мест в порядке Tab и с видимым фокусом.
+        app.go("#/passport/zone/coast-west", cold=True)
+        focus = b.js("""(() => { const a = document.querySelector('.pp-marker'); a.focus(); return document.activeElement === a && a.tabIndex >= 0; })()""")
+        check("значок места получает фокус клавиатуры", focus)
+
+        # Альбом.
+        app.go("#/passport/album", cold=True)
+        album = b.js("""(() => [...document.querySelectorAll('.passport-album .passport-sticker')].map((li) => ({
+            id: li.dataset.sticker, title: li.querySelector('.passport-sticker__title').textContent,
+            earned: li.classList.contains('passport-sticker--earned'), state: li.querySelector('.passport-sticker__state').textContent,
+            art: !!li.querySelector('svg.pp-sticker-art'), text: li.querySelector('.passport-sticker__text').textContent,
+            hints: [...li.querySelectorAll('.passport-sticker__hint')].map((a) => a.getAttribute('href').replace('#/place/', '')) })))()""")
+        check("альбом: все 12 наклеек в порядке data/passport.json", [s["id"] for s in album] == [s["id"] for s in PASSPORT["stickers"]], [s["id"] for s in album])
+        titles = {s["id"]: s["title"] for s in album}
+        check("альбом: принятые названия", titles.get("taste-of-hainan") == "Рыночный день" and titles.get("green-island") == "Зелёная Санья"
+              and titles.get("island-pathfinder") == "Разные стороны Саньи" and titles.get("west-to-east") == "Четыре части побережья", titles)
+        above = next(s for s in album if s["id"] == "above-the-bay")
+        check("альбом: «above-the-bay» без утверждения о виде сверху", "сверху" not in (above["title"] + above["text"]).lower() and "«Виды»" in above["text"])
+        check("альбом: у каждой наклейки иллюстрация, название и описание", all(s["art"] and s["title"] and s["text"] for s in album))
+        check("альбом: состояния «✓ Получена» / «Ещё впереди · x из y»", all(s["state"] == "✓ Получена" if s["earned"] else re.match(r"^Ещё впереди · \d+ из \d+$", s["state"]) for s in album))
+        check("альбом: получены «Первый штамп» и только он (покупки не считаются)", [s["id"] for s in album if s["earned"]] == ["first-stamp"])
+        shop_ids = {p["id"] for p in SHOPPING}
+        all_hints = [h for s in album for h in s["hints"]]
+        check("альбом: подсказки — без покупок и без отмеченных мест", all_hints and not (set(all_hints) & (shop_ids | set(visits))))
+        check("альбом: у необязательной наклейки нет подсказок", not next(s for s in album if s["id"] == "island-horizon")["hints"])
+        check("альбом: подсказки свёрнуты, «Какие места подойдут» ≥ 44 px", b.js("[...document.querySelectorAll('.passport-sticker__summary')].every((s) => s.getBoundingClientRect().height >= 44)"))
+
+        # Получение наклейки обновляется по отметкам.
+        app.go("#/place/dadonghai-beach", cold=True)
+        app.click(".passport-block button", "Отметить посещение")
+        check("вторая отметка пляжа: «Новая наклейка: «Морской исследователь»»", "Морской исследователь" in (app.text(".passport-block__status") or ""))
+        app.go("#/passport/album")
+        check("альбом: «Морской исследователь» получен после отметки", b.js("document.querySelector('[data-sticker=\"sea-explorer\"]').classList.contains('passport-sticker--earned')"))
+        app.go("#/place/dadonghai-beach")
+        app.click(".passport-block button", "Снять отметку")
+        app.go("#/passport/album")
+        check("альбом: после снятия отметки наклейка снова «Ещё впереди · 1 из 2»",
+              app.text("[data-sticker=\"sea-explorer\"] .passport-sticker__state") == "Ещё впереди · 1 из 2")
+        # Все покупки отмечены — наград не прибавилось.
+        all_shop = dict(visits, **{p["id"]: {"date": "2026-11-18"} for p in SHOPPING})
+        b.js(f"localStorage.setItem('stg:passport', {json.dumps(json.dumps({'v': 1, 'visits': all_shop, 'seen': {}}))}); true")
+        app.go("#/passport/album", cold=True)
+        check("альбом: все 14 покупок отмечены — получен по-прежнему только «Первый штамп»",
+              b.js("[...document.querySelectorAll('.passport-sticker--earned')].map((li) => li.dataset.sticker).join()") == "first-stamp")
+        app.go("#/passport", cold=True)
+        check("схема: покупки отмечены на схеме, но счёт частей без покупок",
+              b.js("document.querySelectorAll('.pp-dot--visited').length") == len(all_shop)
+              and b.js("document.querySelector('.pp-badge[data-part=\"coast-haitang\"]').getAttribute('aria-label')") == "7. Хайтанг Бэй: отмечено 0 из 7")
+
+        # Отметки и заметки после перезагрузки.
+        b.js("location.reload(); true")
+        time.sleep(0.5)
+        b.wait_ready()
+        app.go("#/passport/zone/coast-yalong")
+        check("после перезагрузки отметка и заметка на экране части", "Вода тёплая" in (app.text(".passport-zone-list") or "")
+              and b.js("!!document.querySelector('.pp-marker--visited[data-place=\"yalong-bay-beach\"]')"))
+        check("ошибок в консоли нет", not app.errors())
+    finally:
+        app.close()
+
+    # 320 px: обзор и значки без переполнения, зоны нажатия значков ≥ 44 px.
+    for width, height in ((320, 568), (414, 896)):
+        app = App(port, width, height)
+        b = app.b
+        try:
+            app.setup()
+            app.go("#/passport", cold=True)
+            badges = b.js("""[...document.querySelectorAll('.pp-badge__hit')].map((c) => { const r = c.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2, r.width]; })""")
+            small = [h for h in badges if h[2] < 44]
+            overlap = [(i, j) for i in range(len(badges)) for j in range(i + 1, len(badges)) if math.hypot(badges[i][0] - badges[j][0], badges[i][1] - badges[j][1]) < (badges[i][2] + badges[j][2]) / 2 - 1]
+            check(f"{width}px обзор: зоны значков ≥ 44 px и не пересекаются", not small and not overlap, {"small": small, "overlap": overlap})
+            check(f"{width}px обзор: нет переполнения", app.overflow() <= 0)
+            for part in PASSPORT["coastParts"]:
+                app.go(f"#/passport/zone/{part['id']}")
+                hits = b.js("""[...document.querySelectorAll('.pp-marker__hit')].map((c) => { const r = c.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2, r.width]; })""")
+                small = [h for h in hits if h[2] < 44]
+                overlap = [(i, j) for i in range(len(hits)) for j in range(i + 1, len(hits)) if math.hypot(hits[i][0] - hits[j][0], hits[i][1] - hits[j][1]) < (hits[i][2] + hits[j][2]) / 2 - 1]
+                check(f"{width}px {part['id']}: зоны нажатия ≥ 44 px, без пересечений, без переполнения", not small and not overlap and app.overflow() <= 0, {"small": small, "overlap": overlap})
+            app.go("#/passport/album")
+            check(f"{width}px альбом: нет переполнения, зоны нажатия ≥ 44 px", app.overflow() <= 0 and not app.small_targets(".passport"), app.small_targets(".passport"))
+            check(f"{width}px ошибок в консоли нет", not app.errors())
+        finally:
+            app.close()
+
+    # Дата отметки — по настоящим часам устройства, без подмены даты.
+    b = Browser()
+    try:
+        b.navigate(f"http://127.0.0.1:{port}/index.html#/places")
+        b.js(f"localStorage.clear(); localStorage.setItem('stg:trip', {json.dumps(json.dumps(TRIP))}); localStorage.setItem('stg:installHintDismissed', '1'); true")
+        b.navigate(f"http://127.0.0.1:{port}/index.html#/place/egret-park")
+        b.js("[...document.querySelectorAll('.passport-block button')].find((e) => e.textContent === 'Отметить посещение').click(); true")
+        real = b.js("""(() => { const v = JSON.parse(localStorage.getItem('stg:passport')).visits['egret-park']; const d = new Date();
+            const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            return { date: v.date, today, atAge: Date.now() - Date.parse(v.at) }; })()""")
+        check("дата новой отметки — сегодняшняя дата устройства (не даты поездки)", real["date"] == real["today"], real)
+        check("момент отметки — текущее время (не старше минуты)", 0 <= real["atAge"] < 60000, real)
+    finally:
+        b.close()
+
 
 # ------------------------------------------------------------------ regression
 
@@ -769,7 +1075,7 @@ def run_regression(port):
         f"#/place/{PLACES[0]['id']}/plan", "#/excursions", f"#/excursion/{excursions[0]['id']}", "#/prepare", "#/info",
         f"#/info/{info[0]['id']}", "#/handy", "#/handy/taxi", "#/plan", "#/plan/2026-11-19", "#/recommended",
         "#/recommended/2026-11-19", "#/expenses", "#/expenses/add", "#/expenses/settings", "#/now", "#/data", "#/settings",
-        "#/passport",
+        "#/passport", "#/passport/album", *[f"#/passport/zone/{p['id']}" for p in PASSPORT["coastParts"]],
     ]
     for width, height in ((375, 667), (320, 568)):
         app = App(port, width, height)
@@ -835,7 +1141,7 @@ def run_regression(port):
 
 def run_offline(port):
     SECTION[0] = "offline"
-    print("\n[offline] Service Worker v16, паспорт без сети")
+    print(f"\n[offline] Service Worker {CACHE}, паспорт без сети")
     server = serve(ROOT, port)
     app = App(port)
     b = app.b
@@ -844,11 +1150,11 @@ def run_offline(port):
         app.go("#/places", cold=True)
         ready = b.wait_for("navigator.serviceWorker && navigator.serviceWorker.controller !== null", 20)
         check("Service Worker взял страницу под контроль", ready)
-        cached = b.js("""(async () => { const keys = await caches.keys(); const c = await caches.open('sanya-guide-v16');
+        cached = b.js("""(async () => { const keys = await caches.keys(); const c = await caches.open('sanya-guide-""" + CACHE + """');
             const urls = (await c.keys()).map((r) => new URL(r.url).pathname.replace(/^\\//, ''));
             return { keys, urls }; })()""")
-        check("кэш называется sanya-guide-v16", "sanya-guide-v16" in cached["keys"], cached["keys"])
-        for f in ("js/logic/passport.js", "js/views/passport.js", "data/passport.json"):
+        check(f"кэш называется sanya-guide-{CACHE}", f"sanya-guide-{CACHE}" in cached["keys"], cached["keys"])
+        for f in ("js/logic/passport.js", "js/views/passport.js", "data/passport.json", "js/logic/passport-map.js", "js/views/passport-art.js"):
             check(f"в кэше есть {f}", f in cached["urls"])
         server.shutdown()
         server.server_close()
@@ -859,6 +1165,13 @@ def run_offline(port):
         app.click(".passport-block button", "Отметить посещение")
         check("без сети отметка ставится и сохраняется", "yalong-bay-beach" in (app.storage("stg:passport") or {}).get("visits", {}))
         check("без сети сообщение о наклейке (контент паспорта из кэша)", "Первый штамп" in (app.text(".passport-block__status") or ""))
+        app.go("#/passport", cold=True)
+        check("без сети схема побережья рисуется", b.js("document.querySelectorAll('.passport .pp-badge').length") == 7)
+        app.go("#/passport/zone/coast-yalong", cold=True)
+        check("без сети экран части побережья открывается, место отмечено",
+              b.js("!!document.querySelector('.pp-marker--visited[data-place=\"yalong-bay-beach\"]')"))
+        app.go("#/passport/album", cold=True)
+        check("без сети альбом открывается", b.js("document.querySelectorAll('.passport-album .passport-sticker').length") == 12)
     finally:
         app.close()
         try:
@@ -893,23 +1206,31 @@ def run_upgrade(port):
             "stg:checklist": json.dumps({"visa-check": True}), "stg:saved": json.dumps(["luhuitou-park"]),
             "stg:myplan": json.dumps({"planId": None, "days": {"2026-11-19": {"placeIds": ["yalong-bay-beach"], "origin": "user"}}}),
             "stg:expenses": json.dumps({"v": 1, "items": [{"id": "exp-1", "date": "2026-11-19", "amount": 50, "currency": "CNY", "category": "food"}]}),
+            "stg:passport": json.dumps({"v": 1, "visits": {"luhuitou-park": {"date": "2026-11-16", "at": "2026-11-16T02:00:00.000Z", "note": "Закат с горы"}}, "seen": {}}),
         }
         b.js(f"localStorage.clear(); sessionStorage.setItem('__fakeNow', '2026,11,19,10,0'); Object.entries({json.dumps(user)}).forEach(([k, v]) => localStorage.setItem(k, v)); true")
         b.navigate(base + "index.html#/places")
         check(f"старая версия ({head_version}) взяла страницу под контроль", b.wait_for("navigator.serviceWorker.controller !== null", 20))
 
-        # Копия новой версии с паспортом в старом приложении: раздел пропускается.
+        # Копия новой версии с неизвестным старой версии разделом: раздел
+        # пропускается, известные импортируются.
+        head_knows_passport = "stg:passport" in open(os.path.join(head_dir, "js/storage.js"), encoding="utf-8").read()
         new_copy = {"app": "sanya-travel-guide", "kind": "user-data-backup", "schemaVersion": 1, "exportedAt": "2026-11-19T10:00:00.000Z",
-                    "appVersion": "v16", "data": {"stg:saved": ["luhuitou-park", "egret-park"], "stg:passport": {"v": 1, "visits": {"egret-park": {"date": "2026-11-19"}}, "seen": {}}}}
+                    "appVersion": CACHE, "data": {"stg:saved": ["luhuitou-park", "egret-park"], "stg:future-section": {"x": 1}}}
         b.go(base, "#/data", cold=True)
         b.js(f"document.querySelector('#backup-text').value = {json.dumps(json.dumps(new_copy))}; true")
         b.js("window.__click('.backup-actions button', 'Проверить текст копии')")
         preview = b.js("document.querySelector('.backup-preview').textContent")
-        check(f"{head_version}: копия с паспортом — «неизвестных разделов пропущено: 1»", "неизвестных разделов пропущено: 1" in preview, preview)
+        check(f"{head_version}: неизвестный раздел копии — «неизвестных разделов пропущено: 1»", "неизвестных разделов пропущено: 1" in preview, preview)
         b.js("window.__click('.backup-preview button', 'Заменить мои данные')")
         b.wait_for("!!document.querySelector('.backup-message')")
         check(f"{head_version}: известные разделы импортированы", json.loads(b.js("localStorage.getItem('stg:saved')")) == ["luhuitou-park", "egret-park"])
+        check(f"{head_version}: импорт без раздела паспорта не тронул паспорт",
+              json.loads(b.js("localStorage.getItem('stg:passport')") or "{}").get("visits", {}).get("luhuitou-park", {}).get("note") == "Закат с горы")
         b.js("localStorage.removeItem('stg:import:backup'); localStorage.setItem('stg:saved', JSON.stringify(['luhuitou-park'])); true")
+        if head_knows_passport:
+            b.go(base, "#/place/luhuitou-park", cold=True)
+            check(f"{head_version}: отметка с заметкой видна до обновления", "Закат с горы" in (b.js("(document.querySelector('.passport-block') || {}).textContent") or ""))
 
         before = b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map((k) => [k, localStorage.getItem(k)])))")
         os.unlink(link)
@@ -922,15 +1243,21 @@ def run_upgrade(port):
         b.wait_ready()
         version = b.js("""new Promise((resolve) => { const ch = new MessageChannel(); ch.port1.onmessage = (e) => resolve(e.data);
             navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' }, [ch.port2]); setTimeout(() => resolve(null), 3000); })""")
-        check(f"после «Обновить» работает v16 (было {head_version})", version == "v16", version)
+        check(f"после «Обновить» работает {CACHE} (было {head_version})", version == CACHE, version)
         after = b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map((k) => [k, localStorage.getItem(k)])))")
         check("обновление не изменило localStorage", after == before)
+        b.go(base, "#/passport/zone/coast-dadonghai", cold=True)
+        check("после обновления прежняя отметка видна на схеме части побережья",
+              b.js("!!document.querySelector('.pp-marker--visited[data-place=\"luhuitou-park\"]')"))
+        check("после обновления прежняя заметка видна в списке части", "Закат с горы" in (b.js("document.querySelector('.passport-zone-list').textContent") or ""))
         b.go(base, "#/place/yalong-bay-beach", cold=True)
         b.js("window.__click('.passport-block button', 'Отметить посещение')")
         passport = json.loads(b.js("localStorage.getItem('stg:passport')") or "{}")
         check("после обновления паспорт работает", "yalong-bay-beach" in passport.get("visits", {}))
+        check("после обновления прежняя отметка и заметка на месте", passport.get("visits", {}).get("luhuitou-park", {}).get("note") == "Закат с горы")
         rest = json.loads(b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().filter((k) => k !== 'stg:passport').map((k) => [k, localStorage.getItem(k)])))"))
-        check("отметка в паспорте не тронула другие ключи", rest == json.loads(before))
+        before_rest = {k: v for k, v in json.loads(before).items() if k != "stg:passport"}
+        check("отметка в паспорте не тронула другие ключи", rest == before_rest)
     finally:
         b.close()
         server.shutdown()
@@ -941,10 +1268,10 @@ def run_upgrade(port):
 # ------------------------------------------------------------------ main
 
 def main():
-    sections = sys.argv[1:] or ["static", "unit", "passport", "layout", "regression", "offline", "upgrade"]
+    sections = sys.argv[1:] or ["static", "unit", "passport", "map", "layout", "regression", "offline", "upgrade"]
     port = 8650
     server = None
-    if any(s in sections for s in ("unit", "passport", "layout", "regression")):
+    if any(s in sections for s in ("unit", "passport", "map", "layout", "regression")):
         server = serve(ROOT, port)
     started = time.time()
     try:
@@ -955,6 +1282,8 @@ def main():
                 run_unit(port)
             elif name == "passport":
                 run_passport(port)
+            elif name == "map":
+                run_map(port)
             elif name == "layout":
                 run_layout(port)
             elif name == "regression":
