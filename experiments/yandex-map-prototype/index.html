@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="color-scheme" content="light" />
+  <title>Прототип: карта Яндекса для «Паспорта исследователя»</title>
+  <link rel="stylesheet" href="prototype.css" />
+</head>
+<body>
+  <!-- Изолированный эксперимент. Не входит в приложение: его нет в index.html,
+       в PRECACHE и в публикации (.github/workflows/pages.yml копирует только
+       css, js, data, assets). API-ключ в файлах не хранится — см. README.md. -->
+  <header class="top">
+    <p class="top__eyebrow">Эксперимент · не часть приложения</p>
+    <h1 class="top__title">Карта Яндекса для «Паспорта исследователя»</h1>
+  </header>
+
+  <main class="page">
+    <section class="key" id="key-panel" aria-labelledby="key-title">
+      <h2 class="section-title" id="key-title">Ключ JavaScript API</h2>
+      <p class="hint">
+        Ключ нужен только чтобы загрузить карту на этой странице. Он остаётся в памяти вкладки:
+        не сохраняется, не попадает в адрес страницы и в файлы.
+      </p>
+      <div class="key__row">
+        <label class="visually-hidden" for="api-key">API-ключ Яндекс Карт</label>
+        <input class="key__input" id="api-key" type="password" autocomplete="off" autocapitalize="off"
+               spellcheck="false" placeholder="API-ключ" />
+        <button class="btn btn--primary" id="load-map" type="button">Загрузить карту</button>
+      </div>
+    </section>
+
+    <p class="status" id="status" role="status" data-state="idle"></p>
+
+    <section aria-labelledby="map-title">
+      <h2 class="section-title" id="map-title">Карта</h2>
+      <p class="counter" id="counter"></p>
+      <div class="views" id="views" role="group" aria-label="Показать на карте"></div>
+      <div class="map" id="map" data-state="idle">
+        <p class="map__placeholder" id="map-placeholder">
+          Карта появится здесь после загрузки API. Список мест ниже работает и без карты.
+        </p>
+      </div>
+      <div class="zoom" role="group" aria-label="Масштаб">
+        <button class="btn" id="zoom-out" type="button" aria-label="Уменьшить масштаб" disabled>−</button>
+        <button class="btn" id="zoom-in" type="button" aria-label="Увеличить масштаб" disabled>+</button>
+        <p class="legend">
+          <span class="legend__item"><span class="pin pin--demo pin--visited" aria-hidden="true">✓</span> отмечено</span>
+          <span class="legend__item"><span class="pin pin--demo" aria-hidden="true"></span> не отмечено</span>
+          <span class="legend__item"><span class="cluster cluster--demo" aria-hidden="true">3</span> несколько мест</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="selected" id="selected" aria-labelledby="selected-title" aria-live="polite">
+      <h2 class="section-title" id="selected-title">Выбранное место</h2>
+      <div id="selected-body"><p class="hint">Нажмите на маркер или на строку списка.</p></div>
+    </section>
+
+    <section aria-labelledby="marks-title">
+      <h2 class="section-title" id="marks-title">Отметки для демонстрации</h2>
+      <div id="marks"></div>
+    </section>
+
+    <section aria-labelledby="list-title">
+      <h2 class="section-title" id="list-title">Места списком</h2>
+      <label class="visually-hidden" for="list-filter">Фильтр по названию</label>
+      <input class="key__input list-filter" id="list-filter" type="search" autocomplete="off"
+             placeholder="Название места" />
+      <div id="list"></div>
+    </section>
+
+    <footer class="foot">
+      <p>
+        Подложка, логотип, копирайты и ссылка на Яндекс Карты принадлежат Яндексу и показываются как есть.
+        Прототип не сохраняет тайлы и снимки карты и не работает без сети — это ограничение
+        <a href="https://yandex.ru/legal/maps_api/ru/" target="_blank" rel="noopener noreferrer">условий использования</a>,
+        а не недоработка.
+      </p>
+    </footer>
+  </main>
+
+  <script type="module" src="prototype.js"></script>
+</body>
+</html>

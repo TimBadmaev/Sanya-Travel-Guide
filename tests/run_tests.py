@@ -1191,6 +1191,15 @@ def run_regression(port):
                   pos.get("links") == 1 and pos.get("inHead") and pos.get("name") == "Паспорт исследователя" and pos.get("settings")
                   and pos["top"] < 160 and pos["h"] >= 44 and pos["w"] >= 44, pos)
             check(f"Главная {label}: основной сценарий на месте, шапка экрана не выросла", pos.get("main") is True and pos.get("titleTop") == 101, pos)
+            # Поведение, а не только разметка: вход открывает паспорт, «← Назад» возвращает на «Сейчас».
+            h0 = b.js("history.length")
+            b.js("document.querySelector('.home-head a[href=\"#/passport\"]').click(); true")
+            b.wait_ready()
+            opened = [b.js("location.hash"), app.text(".view-title")]
+            app.click(".place-detail__back")
+            b.wait_ready()
+            check(f"Главная {label}: вход из шапки открывает паспорт, «← Назад» возвращает на «Сейчас» без роста истории",
+                  opened == ["#/passport", "Паспорт исследователя"] and b.js("location.hash") == "#/" and b.js("history.length") <= h0 + 1, opened)
             check(f"Главная {label}: нет переполнения и ошибок", app.overflow() <= 0 and not app.errors())
     finally:
         app.close()
@@ -1220,6 +1229,16 @@ def run_travel(port):
             check(f"{width}px вечер прилёта: блок один, без переполнения и ошибок",
                   b.js("document.querySelectorAll('.today-arrival').length") == 1 and app.overflow() <= 0 and not app.errors())
             check(f"{width}px вечер прилёта: ссылки блока не меньше 44 px", not app.small_targets(".today-arrival"), app.small_targets(".today-arrival"))
+            # Поведение ссылки без адреса: настройки открываются на блоке адреса, «← Назад» возвращает на «Сейчас».
+            b.js("document.querySelector('.today-arrival a[href=\"#/settings?section=home\"]').click(); true")
+            b.wait_ready()
+            time.sleep(0.3)
+            field = b.js("(() => { const f = document.querySelector('#trip-home-address'); if (!f) return null; const r = f.getBoundingClientRect(); return [Math.round(r.top), Math.round(r.bottom), innerHeight, f.value]; })()")
+            check(f"{width}px вечер прилёта: «Указать адрес отеля» открывает настройки на блоке адреса, поле на экране и пустое",
+                  bool(field) and 0 <= field[0] and field[1] <= field[2] and field[3] == "", field)
+            app.click(".place-detail__back")
+            b.wait_ready()
+            check(f"{width}px вечер прилёта: из настроек «← Назад» возвращает на «Сейчас»", b.js("location.hash") == "#/", b.js("location.hash"))
 
             # Адрес указан: с Главной — сразу на экран для таксиста и обратно.
             app.setup(now="2026,11,13,20,30", trip=dict(TRIP, home=HOME))
