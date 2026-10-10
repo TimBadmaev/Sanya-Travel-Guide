@@ -3,7 +3,7 @@
 регрессия существующих экранов, офлайн и обновление Service Worker.
 
 Запуск из корня проекта:  python3 -u tests/run_tests.py [раздел …]
-Разделы: static unit passport map layout regression travel offline upgrade (по умолчанию — все).
+Разделы: static unit passport map layout regression travel ux offline upgrade (по умолчанию — все).
 Нужен Google Chrome (путь — переменная CHROME). Node и сторонние пакеты не
 нужны. В приложение и в публикацию каталог tests/ не входит.
 """
@@ -562,14 +562,14 @@ def run_passport(port):
               b.js("(() => { const t = document.querySelector('#passport-note-text'); return !!t && t.maxLength === 200 && getComputedStyle(t).fontSize === '16px' && document.activeElement === t; })()"))
         b.js("(() => { const t = document.querySelector('#passport-note-text'); t.value = 'Вода тёплая. ' + 'ж'.repeat(240); t.dispatchEvent(new Event('input')); return true; })()")
         check("счётчик символов обновляется", app.text(".passport-note__counter").endswith("/ 200"))
-        app.click(".passport-note button", "Сохранить заметку")
+        app.click(".passport-note button", "Сохранить")
         note = app.storage("stg:passport")["visits"][place].get("note", "")
         check("заметка сохранена и обрезана до 200 символов", len(note) == 200 and note.startswith("Вода тёплая."), len(note))
         check("заметка видна в блоке", (app.text(".passport-block__note") or "").startswith("Заметка: «Вода тёплая."))
         check("статус «Заметка сохранена.»", app.text(".passport-block__status") == "Заметка сохранена.")
         app.click(".passport-block button", "Изменить заметку")
         b.js("(() => { const t = document.querySelector('#passport-note-text'); t.value = 'Вода тёплая, закат в 17:40'; return true; })()")
-        app.click(".passport-note button", "Сохранить заметку")
+        app.click(".passport-note button", "Сохранить")
         check("заметку можно изменить", app.storage("stg:passport")["visits"][place].get("note") == "Вода тёплая, закат в 17:40")
         app.click(".passport-block button", "Изменить заметку")
         app.click(".passport-note button", "Отмена")
@@ -658,7 +658,7 @@ def run_passport(port):
 
         # Вход с Главной и «Назад».
         app.go("#/", cold=True)
-        check("на Главной есть вход в паспорт", b.js("!!document.querySelector('a.home-link[href=\"#/passport\"]')"))
+        check("на Главной есть вход в паспорт", b.js("!!document.querySelector('.home-head a[href=\"#/passport\"]')"))
         b.js("document.querySelector('a[href=\"#/passport\"]').click(); true")
         b.wait_ready()
         app.click(".place-detail__back")
@@ -1170,7 +1170,9 @@ def run_regression(port):
         check("карточка места → «← К местам» возвращает в список", b.js("location.hash") == "#/places")
         check("история после «← К местам» не растёт", b.js("history.length") <= h0 + 1)
 
-        # Главная во всех состояниях: вход в паспорт ниже основного сценария.
+        # Главная во всех состояниях: вход в паспорт — один, в шапке экрана
+        # (UX-итерация 2026-10: раньше — строка под основным сценарием, на
+        # втором-третьем экране). Основной сценарий остаётся на месте.
         for label, now, trip, after_sel in (
             ("до поездки", "2026-11-01,10,0", TRIP, ".home-action"),
             ("в поездке", "2026-11-19,10,0", TRIP, ".home-scenarios"),
@@ -1180,9 +1182,15 @@ def run_regression(port):
             now = now.replace("-", ",")
             app.setup(now=now, trip=trip)
             app.go("#/", cold=True)
-            pos = b.js(f"""(() => {{ const link = document.querySelector('a[href="#/passport"]'); const main = document.querySelector({json.dumps(after_sel)});
-                if (!link || !main) return null; return !!(main.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING); }})()""")
-            check(f"Главная {label}: вход в паспорт есть и стоит ниже основного сценария", pos is True, pos)
+            pos = b.js(f"""(() => {{ const links = [...document.querySelectorAll('#view a[href="#/passport"]')]; const main = document.querySelector({json.dumps(after_sel)});
+                if (links.length !== 1 || !main) return {{ links: links.length, main: !!main }};
+                const r = links[0].getBoundingClientRect(); const title = document.querySelector('.home-head .view-title').getBoundingClientRect();
+                return {{ links: 1, main: true, inHead: !!links[0].closest('.home-head'), name: links[0].getAttribute('aria-label'), top: Math.round(r.top), h: Math.round(r.height),
+                         w: Math.round(r.width), titleTop: Math.round(title.top), settings: !!document.querySelector('.home-head a[href="#/settings"]') }}; }})()""")
+            check(f"Главная {label}: вход в паспорт один, в шапке экрана рядом с настройками, на первом экране",
+                  pos.get("links") == 1 and pos.get("inHead") and pos.get("name") == "Паспорт исследователя" and pos.get("settings")
+                  and pos["top"] < 160 and pos["h"] >= 44 and pos["w"] >= 44, pos)
+            check(f"Главная {label}: основной сценарий на месте, шапка экрана не выросла", pos.get("main") is True and pos.get("titleTop") == 101, pos)
             check(f"Главная {label}: нет переполнения и ошибок", app.overflow() <= 0 and not app.errors())
     finally:
         app.close()
@@ -1208,7 +1216,7 @@ def run_travel(port):
             app.setup(now="2026,11,13,20,30")
             app.go("#/", cold=True)
             check(f"{width}px вечер прилёта: блок «Прилёт и первый вечер» на «Сейчас»",
-                  b.js(arrival_links) == ["#/info/first-evening", "#/settings", "#/info/airport-arrival"], b.js(arrival_links))
+                  b.js(arrival_links) == ["#/info/first-evening", "#/settings?section=home", "#/info/airport-arrival"], b.js(arrival_links))
             check(f"{width}px вечер прилёта: блок один, без переполнения и ошибок",
                   b.js("document.querySelectorAll('.today-arrival').length") == 1 and app.overflow() <= 0 and not app.errors())
             check(f"{width}px вечер прилёта: ссылки блока не меньше 44 px", not app.small_targets(".today-arrival"), app.small_targets(".today-arrival"))
@@ -1326,6 +1334,14 @@ def run_offline(port):
         check(f"кэш называется sanya-guide-{CACHE}", f"sanya-guide-{CACHE}" in cached["keys"], cached["keys"])
         for f in ("js/logic/passport.js", "js/views/passport.js", "data/passport.json", "js/logic/passport-map.js", "js/views/passport-art.js"):
             check(f"в кэше есть {f}", f in cached["urls"])
+        # «Подготовка»: проверяемый статус офлайн-копии (число файлов называет воркер).
+        precache = re.findall(r'"\./([^"]+)"', open(os.path.join(ROOT, "sw.js"), encoding="utf-8").read().split("const PRECACHE")[1].split("];")[0])
+        offline_state = "(() => { const s = document.querySelector('.offline-check'); return s ? [s.dataset.state, s.querySelector('.offline-check__state').textContent] : null; })()"
+        app.go("#/prepare", cold=True)
+        b.wait_for("document.querySelector('.offline-check') && document.querySelector('.offline-check').dataset.state !== 'checking'", 10)
+        state = b.js(offline_state)
+        check(f"«Подготовка»: офлайн-копия готова — все {len(precache)} файлов версии {CACHE}",
+              bool(state) and state[0] == "ready" and f"все {len(precache)} файлов версии {CACHE}" in state[1] and state[1].startswith("✓"), state)
         server.shutdown()
         server.server_close()
         time.sleep(0.3)
@@ -1355,7 +1371,25 @@ def run_offline(port):
         check("без сети «Под рукой» показывает фразы и телефоны",
               b.js("document.querySelectorAll('a.phrase').length") == len(load("data/phrases.json"))
               and b.js("document.querySelectorAll('a.contact').length") == len(load("data/contacts.json")))
+        app.go("#/prepare", cold=True)
+        b.wait_for("document.querySelector('.offline-check') && document.querySelector('.offline-check').dataset.state !== 'checking'", 10)
+        check("без сети «Подготовка» открывается, статус офлайн-копии по-прежнему «готово»", (b.js(offline_state) or [None])[0] == "ready", b.js(offline_state))
+        app.go(f"#/place/{PLACES[0]['id']}", cold=True)
+        app.click(".route-toggle")
+        check("без сети карточка места с выбором маршрута открывается, ссылки Amap остаются внешними",
+              b.js("document.querySelectorAll('.route-choice a[target=\"_blank\"]').length") == 2 and "интернет" in (app.text(".route-choice__hint") or ""))
+        app.go("#/info", cold=True)
+        check("без сети справка открывается по группам", b.js("document.querySelectorAll('.info-group__title').length") >= 3)
         check("без сети ошибок в консоли нет", not app.errors())
+        # Неполный кэш не выдаётся за готовность: убираем один файл и проверяем снова.
+        app.go("#/prepare", cold=True)
+        b.wait_for("document.querySelector('.offline-check') && document.querySelector('.offline-check').dataset.state === 'ready'", 10)
+        b.js(f"caches.open('sanya-guide-{CACHE}').then((c) => c.delete('./assets/icons/icon-512.png')).then(() => true)")
+        app.click(".offline-check__again")
+        b.wait_for("document.querySelector('.offline-check').dataset.state !== 'checking' && document.querySelector('.offline-check').dataset.state !== 'ready'", 10)
+        state = b.js(offline_state)
+        check("неполный кэш: статус «неполная», а не «готово»",
+              state[0] == "partial" and f"{len(precache) - 1} из {len(precache)}" in state[1] and "✓" not in state[1], state)
     finally:
         app.close()
         try:
@@ -1449,13 +1483,456 @@ def run_upgrade(port):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+# ------------------------------------------------------------------ ux
+
+VISIBLE_ROWS = """(() => { const nav = document.querySelector('.bottom-nav').getBoundingClientRect().top;
+    const rows = [...document.querySelectorAll('.places-results .info-card')].map((c) => c.getBoundingClientRect());
+    return rows.filter((r) => r.top >= 0 && r.bottom <= nav).length; })()"""
+TYPE_SEARCH = "((q) => { const i = document.querySelector('.search-bar__input'); i.value = q; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })"
+EDITOR_GEOMETRY = """(() => { const nav = document.querySelector('.bottom-nav').getBoundingClientRect().top;
+    const t = document.querySelector('#passport-note-text').getBoundingClientRect();
+    const btns = [...document.querySelectorAll('.passport-note__buttons button')];
+    const hit = btns.map((b) => { const r = b.getBoundingClientRect(); const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return el === b || b.contains(el); });
+    return { nav: Math.round(nav), top: Math.round(t.top), bottoms: btns.map((b) => Math.round(b.getBoundingClientRect().bottom)), hit,
+             labels: btns.map((b) => b.textContent), actions: getComputedStyle(document.querySelector('.place-actions')).position }; })()"""
+
+
+def run_ux(port):
+    SECTION[0] = "ux"
+    print("\n[ux] каталог, редактор заметки, возврат в контекст, маршрут Amap, паспорт и каталог, справка, адрес проживания")
+    categories = CONFIG["categories"]
+    beaches = [p for p in PLACES if p["category"] == "beach"]
+    excursions = [e for e in load("data/excursions.json") if e["status"] == "verified"]
+    info = [i for i in load("data/info.json") if i["status"] == "verified"]
+    food = [f for f in load("data/food.json") if f["status"] == "verified" and f.get("addressZh") and f.get("location")]
+    visit = {"date": "2026-11-18", "at": "2026-11-18T02:00:00.000Z"}
+
+    # --- A1. Каталог: первые результаты на первом экране, фильтры на месте.
+    for width, height, need in ((320, 568, 1), (375, 667, 2), (414, 896, 2)):
+        app = App(port, width, height)
+        b = app.b
+        try:
+            app.setup()
+            for route, label in (("#/places", "каталог"), ("#/places?near=1", "каталог из сценария «Сейчас» (near=1)")):
+                app.go(route, cold=True)
+                rows = b.js(VISIBLE_ROWS)
+                check(f"{width}×{height} {label}: на первом экране целиком видно строк результата ≥ {need}", rows >= need, rows)
+                check(f"{width}px {label}: без переполнения, ошибок и мелких зон нажатия",
+                      app.overflow() <= 0 and not app.errors() and not app.small_targets("#view"), app.small_targets("#view"))
+            app.go("#/places", cold=True)
+            tools = b.js("""(() => { const n = document.querySelector('.nearby__cta'), p = document.querySelector('.picker__cta');
+                return n && p ? { sameRow: Math.abs(n.getBoundingClientRect().top - p.getBoundingClientRect().top) < 2,
+                    names: [n.getAttribute('aria-label'), p.getAttribute('aria-label')], texts: [n.textContent, p.textContent] } : null; })()""")
+            check(f"{width}px «Рядом со мной» и «Подобрать» стоят в одну строку, полные названия — в aria-label",
+                  bool(tools) and tools["sameRow"] and tools["names"] == ["Показать места рядом со мной", "Подобрать по времени и интересу"]
+                  and all(t.split(" ", 1)[1].lower() in n.lower() for t, n in zip(tools["texts"], tools["names"])), tools)
+        finally:
+            app.close()
+
+    app = App(port)
+    b = app.b
+    try:
+        app.setup()
+        app.go("#/places", cold=True)
+        check("каталог: заголовок «Места» остался в разметке, переключатель «Места» / «Еда» — две вкладки",
+              app.text(".view-title") == "Места" and b.js("[...document.querySelectorAll('.mode-switch__tab')].map((t) => t.textContent)") == ["Места", "Еда"])
+        chips = b.js("[...document.querySelectorAll('.chips .chip')].map((c) => c.textContent)")
+        check("каталог: чипы всех категорий и флаговые фильтры на месте",
+              all(c["name"] in chips for c in categories) and len(chips) > len(categories) and b.js("!!document.querySelector('.search-bar__input')"), chips)
+        check("каталог: «Найдено N» по всем проверенным местам", app.text(".places-count") == f"Найдено {len(PLACES)}", app.text(".places-count"))
+        check("каталог: расстояния от центра района названы приблизительными, есть ссылка «Уточнить» в настройки",
+              "приблизительно" in (app.text(".places-scope") or "") and b.js("(document.querySelector('.places-meta__action') || {}).getAttribute && document.querySelector('.places-meta__action').getAttribute('href')") == "#/settings")
+        b.js("document.querySelector('.chip[data-token=\"beach\"]').click(); true")
+        check("каталог: чип «Пляжи» сужает список и пишет фильтр в адрес",
+              app.text(".places-count") == f"Найдено {len(beaches)}" and b.js("location.hash") == "#/places?f=beach", [app.text(".places-count"), b.js("location.hash")])
+        b.js("document.querySelector('.chip[data-token=\"beach\"]').click(); true")
+        target = PLACES[7]
+        b.js(f"{TYPE_SEARCH}({json.dumps(target['name']['ru'])})")
+        check("каталог: поиск по названию находит место",
+              b.js(f"!!document.querySelector('.places-results a[href=\"#/place/{target['id']}\"]')"))
+        b.js(f"{TYPE_SEARCH}('zzzqqq-нет-такого')")
+        check("каталог: поиск без результатов — понятное пустое состояние с «Очистить поиск»",
+              "Ничего не найдено по запросу" in (app.text(".places-results .empty-state") or "") and b.js("!!window.__byText('.places-results button', 'Очистить поиск')"))
+        app.click(".places-results button", "Очистить поиск")
+        check("каталог: «Очистить поиск» возвращает весь список", app.text(".places-count") == f"Найдено {len(PLACES)}")
+        app.click(".picker__cta")
+        check("каталог: подборщик раскрывается формой, «Рядом со мной» остаётся доступной",
+              b.js("!!document.querySelector('.picker__form') && !!document.querySelector('.nearby__cta')") and app.overflow() <= 0)
+        app.click(".picker__cancel")
+
+        app.go("#/places?near=1", cold=True)
+        near_count = app.text(".places-count")
+        check("near=1: строка результатов говорит о радиусе и предлагает «Показать все»",
+              (app.text(".places-scope") or "").startswith("В радиусе") and app.text(".places-meta__action") == "Показать все" and near_count != f"Найдено {len(PLACES)}", [app.text(".places-scope"), near_count])
+        h0 = b.js("history.length")
+        app.click(".places-meta__action")
+        check("«Показать все» снимает радиус без навигации",
+              app.text(".places-count") == f"Найдено {len(PLACES)}" and b.js("location.hash") == "#/places" and b.js("history.length") == h0, [app.text(".places-count"), b.js("location.hash")])
+        app.setup(trip=dict(TRIP, stay={"source": "spot", "spotId": "yalong-beach-front"}))
+        app.go("#/places", cold=True)
+        check("точка проживания известна: пояснения про центр района нет", b.js("!document.querySelector('.places-scope') && !document.querySelector('.places-meta__action')"))
+        app.setup(trip={"start": "2026-11-13", "end": "2026-11-26", "area": None, "stay": None, "home": None})
+        app.go("#/places", cold=True)
+        check("район не выбран: приглашение выбрать район ведёт в настройки",
+              app.text(".places-meta__action") == "Выберите район, чтобы видеть расстояние" and b.js("document.querySelector('.places-meta__action').getAttribute('href')") == "#/settings")
+
+        # --- A3. Возврат туда, откуда пришли.
+        exc = excursions[0]
+        app.setup(extra={"stg:myplan": json.dumps({"planId": None, "days": {"2026-11-19": {"excursionIds": [exc["id"]], "origin": "user"}}})})
+        app.go("#/", cold=True)
+        h0 = b.js("history.length")
+        b.js("document.querySelector('.today__link').click(); true")
+        b.wait_ready()
+        check("экскурсия с «Сейчас»: открылась карточка, выход подписан «← Назад»",
+              b.js("location.hash") == f"#/excursion/{exc['id']}" and app.text(".place-detail__back") == "← Назад", [b.js("location.hash"), app.text(".place-detail__back")])
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("экскурсия с «Сейчас»: «← Назад» возвращает на «Сейчас», история не растёт",
+              b.js("location.hash") == "#/" and b.js("history.length") <= h0 + 1, [b.js("location.hash"), h0, b.js("history.length")])
+        app.go("#/excursions?f=rain", cold=True)
+        b.js("document.querySelector('.info-list a.info-card').click(); true")
+        b.wait_ready()
+        check("экскурсия из списка: выход подписан «← К экскурсиям»", app.text(".place-detail__back") == "← К экскурсиям")
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("экскурсия из списка: возврат в список с его фильтром", b.js("location.hash") == "#/excursions?f=rain", b.js("location.hash"))
+        app.go(f"#/excursion/{exc['id']}", cold=True)
+        h0 = b.js("history.length")
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("экскурсия по прямой ссылке: выход ведёт к списку без новой записи истории",
+              b.js("location.hash") == "#/excursions" and b.js("history.length") == h0, [b.js("location.hash"), h0, b.js("history.length")])
+
+        app.setup()
+        app.go("#/", cold=True)
+        first = b.js("(document.querySelector('.now-preview a.info-card') || { getAttribute: () => null }).getAttribute('href')")
+        if first:
+            b.js("document.querySelector('.now-preview a.info-card').click(); true")
+            b.wait_ready()
+            check("место из «Подходит сейчас»: выход «← Назад»", app.text(".place-detail__back") == "← Назад")
+            app.click(".place-detail__back")
+            b.wait_ready()
+            check("место из «Подходит сейчас»: возврат на «Сейчас»", b.js("location.hash") == "#/", b.js("location.hash"))
+        else:
+            check("место из «Подходит сейчас»: в 10:00 есть хотя бы одно подходящее место", False, "блок пуст")
+        app.go("#/now?f=easy", cold=True)
+        b.js("document.querySelector('#view a.info-card').click(); true")
+        b.wait_ready()
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("место из «Что делать сейчас»: возврат на тот же экран с фильтром", b.js("location.hash") == "#/now?f=easy", b.js("location.hash"))
+        app.go("#/places", cold=True)
+        b.js(f"document.querySelector('a[href=\"#/place/{PLACES[3]['id']}\"]').click(); true")
+        b.wait_ready()
+        check("место из каталога: выход по-прежнему «← К местам»", app.text(".place-detail__back") == "← К местам")
+
+        app.setup(now="2026,11,13,20,30")
+        app.go("#/", cold=True)
+        b.js("document.querySelector('.today-arrival a[href=\"#/info/first-evening\"]').click(); true")
+        b.wait_ready()
+        check("«Первый вечер» с «Сейчас»: выход «← Назад»", app.text(".place-detail__back") == "← Назад" and app.text(".info-detail__back") == "← Назад")
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("«Первый вечер» с «Сейчас»: возврат на «Сейчас», а не в список справки", b.js("location.hash") == "#/", b.js("location.hash"))
+        app.go("#/info", cold=True)
+        b.js("document.querySelector('a[href=\"#/info/first-evening\"]').click(); true")
+        b.wait_ready()
+        check("«Первый вечер» из справки: выход «← К справке»", app.text(".place-detail__back") == "← К справке")
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("«Первый вечер» из справки: возврат в справку", b.js("location.hash") == "#/info")
+        app.go("#/info/first-evening", cold=True)
+        app.click(".info-detail__back")
+        b.wait_ready()
+        check("карточка справки по прямой ссылке: выход ведёт к списку", b.js("location.hash") == "#/info")
+
+        # --- D. «Как добраться»: режим маршрута выбирает пользователь.
+        app.setup()
+        app.go("#/places", cold=True)
+        b.js("(async () => { window.A = await import('./js/logic/amap.js'); return true; })()")
+        tricky = "Рынок №1, «第一市场» & Co / тест?"
+        urls = b.js(f"""(() => {{ const loc = {{ lat: 18.240184, lng: 109.504561 }}; const name = {json.dumps(tricky)};
+            return {{ modes: A.ROUTE_MODES.map((m) => m.id), car: A.buildAmapRouteUrl(loc, name, 'car'), walk: A.buildAmapRouteUrl(loc, name, 'walk'),
+                     bad: A.buildAmapRouteUrl(loc, name, 'fly&x=1'), none: A.buildAmapRouteUrl(loc, name) }}; }})()""")
+
+        def parsed(url):
+            from urllib.parse import urlsplit, parse_qs
+            parts = urlsplit(url)
+            return parts.scheme + "://" + parts.netloc + parts.path, parse_qs(parts.query, keep_blank_values=True)
+
+        check("Amap: поддерживаются два режима — на машине и пешком, в этом порядке", urls["modes"] == ["car", "walk"], urls["modes"])
+        for mode in ("car", "walk"):
+            base, query = parsed(urls[mode])
+            check(f"Amap {mode}: документированный адрес, координаты «долгота,широта» и название целиком, mode={mode}, callnative=1",
+                  base == "https://uri.amap.com/navigation" and query == {"to": [f"109.504561,18.240184,{tricky}"], "mode": [mode], "callnative": ["1"]}, urls[mode])
+        check("Amap: неизвестный или пропущенный режим не попадает в адрес — берётся режим по умолчанию",
+              parsed(urls["bad"])[1]["mode"] == ["car"] and parsed(urls["none"])[1]["mode"] == ["car"] and "fly" not in urls["bad"], [urls["bad"], urls["none"]])
+        check("Amap: в адресе нет неэкранированных пробелов, иероглифов и «&» из названия",
+              all(ord(ch) < 128 and ch != " " for ch in urls["car"]) and urls["car"].count("&") == 2, urls["car"])
+
+        place = PLACES[0]
+        app.go(f"#/place/{place['id']}", cold=True)
+        before = b.js("""(() => { const t = document.querySelector('.route-toggle'); const p = document.querySelector('.route-choice');
+            return { toggle: !!t, tag: t && t.tagName, expanded: t && t.getAttribute('aria-expanded'), hidden: p && p.hidden,
+                     visibleLinks: [...document.querySelectorAll('.place-actions a[href*="uri.amap.com"]')].filter((a) => a.getClientRects().length).length,
+                     first: document.querySelector('.place-actions .btn').textContent }; })()""")
+        check("карточка места: «Как добраться» — кнопка выбора, прямого перехода в пеший маршрут больше нет",
+              before == {"toggle": True, "tag": "BUTTON", "expanded": "false", "hidden": True, "visibleLinks": 0, "first": "Показать таксисту"}, before)
+        app.click(".route-toggle")
+        links = b.js("""[...document.querySelectorAll('.route-choice a')].map((a) => ({ text: a.textContent, href: a.getAttribute('href'), target: a.target, rel: a.rel,
+            mode: a.dataset.mode, shown: a.getClientRects().length > 0, h: Math.round(a.getBoundingClientRect().height) }))""")
+        # Ожидаемый адрес собран независимо от кода приложения (encodeURIComponent
+        # оставляет без изменений только A–Z a–z 0–9 - _ . ! ~ * ' ( )).
+        from urllib.parse import quote
+
+        def js_num(x):
+            return str(int(x)) if float(x).is_integer() else repr(float(x))
+
+        expected = [f"https://uri.amap.com/navigation?to={js_num(place['location']['lng'])},{js_num(place['location']['lat'])},"
+                    f"{quote(place['name']['ru'], safe=chr(45) + '_.!~*' + chr(39) + '()')}&mode={mode}&callnative=1" for mode in ("car", "walk")]
+        check("карточка места: выбор режима — «На машине» и «Пешком», обе ссылки ведут в Amap со своим режимом",
+              [l["href"] for l in links] == expected and [l["mode"] for l in links] == ["car", "walk"]
+              and "машине" in links[0]["text"] and "Пешком" in links[1]["text"], links)
+        check("карточка места: ссылки режима внешние (новая вкладка, noopener), видимые и не меньше 44 px",
+              all(l["target"] == "_blank" and "noopener" in l["rel"] and l["shown"] and l["h"] >= 44 for l in links), links)
+        check("карточка места: подпись честно говорит, что маршрут — в Amap и нужен интернет",
+              "Amap" in (app.text(".route-choice__hint") or "") and "интернет" in (app.text(".route-choice__hint") or "")
+              and b.js("document.querySelector('.route-toggle').getAttribute('aria-expanded')") == "true")
+        for width, height in ((320, 568), (414, 896)):
+            b.set_viewport(width, height)
+            time.sleep(0.2)
+            check(f"{width}px карточка с раскрытым выбором маршрута: без переполнения и мелких зон",
+                  app.overflow() <= 0 and not app.small_targets(".place-actions"), app.small_targets(".place-actions"))
+        b.set_viewport(375, 667)
+        app.click(".route-toggle")
+        check("карточка места: повторное нажатие сворачивает выбор", b.js("document.querySelector('.route-choice').hidden") is True)
+        if food:
+            item = food[0]
+            app.go("#/places?mode=food", cold=True)
+            toggle = b.js("(() => { const t = document.querySelector('.food-card__actions .route-toggle'); if (!t) return false; t.click(); return true; })()")
+            hrefs = b.js("[...document.querySelectorAll('.food-card__actions .route-choice:not([hidden]) a')].map((a) => a.getAttribute('href'))")
+            check("карточка еды: тот же выбор режима маршрута",
+                  toggle and len(hrefs) == 2 and "mode=car" in hrefs[0] and "mode=walk" in hrefs[1] and app.overflow() <= 0 and not app.errors(), hrefs)
+
+        # --- B. Паспорт: вход, поиск места, отметки в каталоге.
+        shop = SHOPPING[0]
+        reward = REWARD[0]
+        target = REWARD[5]
+        app.setup(extra={"stg:passport": json.dumps({"v": 1, "visits": {reward["id"]: visit, shop["id"]: visit}, "seen": {}})})
+        app.go("#/places", cold=True)
+        marked = b.js("[...document.querySelectorAll('.places-results .info-card')].filter((c) => c.querySelector('.info-card__visited')).map((c) => c.getAttribute('href').split('/').pop()).sort()")
+        check("каталог: «✓ Отмечено в паспорте» стоит ровно у отмеченных мест, включая покупки",
+              marked == sorted([reward["id"], shop["id"]]) and app.text(".info-card__visited") == "✓ Отмечено в паспорте", marked)
+        app.go("#/passport", cold=True)
+        stats = app.text(".passport-stat__value")
+        check("паспорт: отмеченная покупка наград не даёт — в прогрессе одно место", stats == "1", stats)
+        find = b.js("(() => { const a = document.querySelector('.passport-find'); return a ? [a.getAttribute('href'), a.textContent, Math.round(a.getBoundingClientRect().height)] : null; })()")
+        check("паспорт: есть переход «Найти место по названию» в поиск каталога", bool(find) and find[0] == "#/places" and "Найти место" in find[1] and find[2] >= 44, find)
+        check("паспорт: схема, семь частей побережья и вход в альбом на месте",
+              b.js("document.querySelectorAll('.pp-badge').length") == 7 and b.js("document.querySelectorAll('.passport-part').length") == 7 and b.js("!!document.querySelector('.passport-album-link')"))
+        app.click(".passport-find")
+        b.wait_ready()
+        check("из паспорта открылся каталог: есть «← К паспорту», курсор в поле поиска",
+              b.js("location.hash") == "#/places" and app.text(".place-detail__back") == "← К паспорту" and b.js("document.activeElement === document.querySelector('.search-bar__input')"),
+              [b.js("location.hash"), app.text(".place-detail__back")])
+        b.js(f"{TYPE_SEARCH}({json.dumps(target['name']['ru'])})")
+        b.js(f"document.querySelector('.places-results a[href=\"#/place/{target['id']}\"]').click(); true")
+        b.wait_ready()
+        check("поиск из паспорта привёл в карточку нужного места", app.text(".view-title") == target["name"]["ru"], app.text(".view-title"))
+        app.click(".passport-block button", "Отметить посещение")
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("после отметки строка места в каталоге сразу помечена, выход в паспорт остался",
+              b.js(f"!!document.querySelector('a[href=\"#/place/{target['id']}\"] .info-card__visited')") and app.text(".place-detail__back") == "← К паспорту")
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("«← К паспорту» возвращает в паспорт, новая отметка в счётчике, прежние на месте",
+              b.js("location.hash") == "#/passport" and app.text(".passport-stat__value") == "2"
+              and sorted((app.storage("stg:passport") or {}).get("visits", {})) == sorted([reward["id"], shop["id"], target["id"]]), app.text(".passport-stat__value"))
+        app.go(f"#/place/{target['id']}", cold=True)
+        app.click(".passport-block button", "Снять отметку")
+        app.go("#/places", cold=True)
+        check("после снятия отметки признак в каталоге исчезает",
+              not b.js(f"!!document.querySelector('a[href=\"#/place/{target['id']}\"] .info-card__visited')"))
+        app.setup()
+        app.go("#/places", cold=True)
+        check("пустой паспорт: в каталоге нет ни одной отметки и нет ошибок", b.js("document.querySelectorAll('.info-card__visited').length") == 0 and not app.errors())
+        app.setup(extra={"stg:passport": '{"visits": [повреждено'})
+        app.go("#/places", cold=True)
+        app.errors()
+        check("повреждённый stg:passport: каталог открывается, отметок нет, значение не перезаписано",
+              app.text(".places-count") == f"Найдено {len(PLACES)}" and b.js("document.querySelectorAll('.info-card__visited').length") == 0
+              and app.raw("stg:passport") == '{"visits": [повреждено')
+
+        # --- C. Справка по группам, адрес проживания, внешние ссылки.
+        app.setup()
+        app.go("#/info", cold=True)
+        shown = b.js("[...document.querySelectorAll('#view a.info-card')].map((a) => a.getAttribute('href'))")
+        check(f"справка: все {len(info)} тем на экране, каждая один раз, «Под рукой» — первой",
+              shown[0] == "#/handy" and sorted(shown[1:]) == sorted(f"#/info/{i['id']}" for i in info), shown[:3])
+        titles = b.js("[...document.querySelectorAll('.info-group__title')].map((h) => h.textContent)")
+        jumps = b.js("[...document.querySelectorAll('.handy__jump .chip')].map((c) => c.textContent)")
+        check("справка: темы разбиты на несколько групп, быстрые переходы повторяют заголовки групп",
+              3 <= len(titles) <= 6 and jumps == titles, [titles, jumps])
+        sizes = b.js("[...document.querySelectorAll('.info-group__title')].map((h) => h.nextElementSibling.querySelectorAll('a').length)")
+        check("справка: в каждой группе есть темы, ни одна группа не длиннее восьми", all(1 <= n <= 8 for n in sizes) and sum(sizes) == len(info), sizes)
+        h0 = b.js("history.length")
+        app.click(".handy__jump .chip", titles[-1])
+        top = b.js("Math.round([...document.querySelectorAll('.info-group__title')].pop().getBoundingClientRect().top)")
+        check("справка: быстрый переход прокручивает к группе, адрес и история не меняются",
+              -2 <= top <= 400 and b.js("location.hash") == "#/info" and b.js("history.length") == h0, top)
+        check("справка: «О приложении» объясняет, что работает без сети и что помечено стрелкой",
+              "без интернета" in (app.text(".about__offline") or "") and "↗" in (app.text(".about__offline") or ""))
+        app.go(f"#/info/{info[0]['id']}", cold=True)
+        arrow = b.js("""(() => { const a = document.querySelector('.sources__list a[target="_blank"]'); return a ? getComputedStyle(a, '::after').content : null; })()""")
+        check("внешняя ссылка-источник помечена стрелкой «↗»", arrow is None or "↗" in arrow, arrow)
+        app.go(f"#/place/{PLACES[0]['id']}", cold=True)
+        app.click(".route-toggle")
+        check("кнопки (в том числе ссылки режима маршрута) стрелкой не помечаются",
+              b.js("getComputedStyle(document.querySelector('.route-choice a'), '::after').content") in ("none", "normal"))
+
+        for width, height in ((375, 667), (320, 568)):
+            b.set_viewport(width, height)
+            app.setup(now="2026,10,20,10,0")
+            app.go("#/", cold=True)
+            notice = b.js("(() => { const n = document.querySelector('.home-notice'); const a = n && n.querySelector('a'); return n ? [n.textContent, a && a.getAttribute('href'), a && Math.round(a.getBoundingClientRect().height)] : null; })()")
+            check(f"{width}px до поездки без адреса: напоминание со ссылкой к полю адреса",
+                  bool(notice) and "Адрес проживания" in notice[0] and notice[1] == "#/settings?section=home" and notice[2] >= 44, notice)
+            check(f"{width}px до поездки без адреса: чек-лист и остальные блоки на месте, без переполнения и ошибок",
+                  b.js("!!document.querySelector('.progress-block') && !!document.querySelector('.home-action')") and app.overflow() <= 0 and not app.errors())
+            b.js("document.querySelector('.home-notice a').click(); true")
+            b.wait_ready()
+            time.sleep(0.3)
+            field = b.js("(() => { const f = document.querySelector('#trip-home-address'); const r = f.getBoundingClientRect(); return [Math.round(r.top), Math.round(r.bottom), innerHeight, f.value]; })()")
+            check(f"{width}px ссылка открывает настройки сразу на блоке адреса: поле на экране и пустое",
+                  b.js("location.hash") == "#/settings?section=home" and 0 <= field[0] and field[1] <= field[2] and field[3] == "", field)
+        b.set_viewport(375, 667)
+        app.go("#/settings", cold=True)
+        time.sleep(0.3)
+        check("настройки без параметра открываются с начала экрана", b.js("window.scrollY") == 0)
+        b.js(f"(() => {{ const f = document.querySelector('#trip-home-address'); f.value = {json.dumps(HOME['addressZh'])}; return true; }})()")
+        app.click("#view button", "Готово")
+        b.wait_ready()
+        check("адрес сохранён существующей настройкой", ((app.storage("stg:trip") or {}).get("home") or {}).get("addressZh") == HOME["addressZh"], app.storage("stg:trip"))
+        app.go("#/", cold=True)
+        check("адрес указан: напоминания на «Сейчас» больше нет", b.js("!document.querySelector('.home-notice')"))
+        app.go("#/handy", cold=True)
+        check("«Под рукой»: адрес показан, «Изменить адрес» ведёт к блоку адреса",
+              app.text(".handy-home__address") == HOME["addressZh"] and b.js("document.querySelector('.handy-home .home-link').getAttribute('href')") == "#/settings?section=home")
+        app.setup(now="2026,11,12,9,0")
+        app.go("#/", cold=True)
+        check("за два дня до вылета: напоминание уступает место блоку прилёта, ссылка одна",
+              b.js("!document.querySelector('.home-notice')") and b.js("document.querySelectorAll('#view a[href=\"#/settings?section=home\"]').length") == 1)
+        app.setup(now="2026,11,19,10,0")
+        app.go("#/handy", cold=True)
+        check("«Под рукой» без адреса: понятная подсказка и ссылка к блоку адреса, адрес не выдуман",
+              "Адрес не указан" in (app.text(".handy-home") or "") and b.js("document.querySelector('.handy-home__action').getAttribute('href')") == "#/settings?section=home"
+              and not b.js("!!document.querySelector('.handy-home__address')"))
+        app.go("#/handy/taxi", cold=True)
+        check("экран адреса для таксиста без адреса: возврат в «Под рукой» без ошибки", b.js("location.hash") == "#/handy" and not app.errors())
+
+        # --- E. Проверка офлайн-копии: правило «готово» и копия данных.
+        b.js("(async () => { window.W = await import('./js/pwa.js'); return true; })()")
+        table = b.js("""(() => { const s = (o) => W.offlineState(Object.assign({ supported: true, controlled: true, standalone: false, version: 'v1', total: 10, cached: 10 }, o));
+            return [s({}), s({ cached: 9 }), s({ cached: 0 }), s({ total: 0, cached: 0 }), s({ controlled: false }), s({ supported: false }), W.offlineState(null), s({ total: 0, cached: 5 })]; })()""")
+        check("офлайн-статус «готово» — только при полном кэше под управлением воркера",
+              table == ["ready", "partial", "partial", "unknown", "not-ready", "unsupported", "unsupported", "unknown"], table)
+        app.setup()
+        app.go("#/prepare", cold=True)
+        b.js("Object.defineProperty(navigator.serviceWorker, 'controller', { configurable: true, get: () => null }); true")
+        app.click(".offline-check__again")
+        b.wait_for("document.querySelector('.offline-check').dataset.state !== 'checking'", 5)
+        state = b.js("[document.querySelector('.offline-check').dataset.state, document.querySelector('.offline-check__state').textContent]")
+        check("«Подготовка»: без управляющего воркера статус — «ещё не готова», слова «сохранено» нет",
+              state[0] == "not-ready" and "ещё не готова" in state[1] and "✓" not in state[1], state)
+        check("«Подготовка»: блок офлайн-проверки не ломает чек-лист, без переполнения и мелких зон",
+              b.js("document.querySelectorAll('.phase').length") > 0 and app.overflow() <= 0 and not app.small_targets(".offline-check"), app.small_targets(".offline-check"))
+
+        app.setup(extra={"stg:passport": json.dumps({"v": 1, "visits": {reward["id"]: dict(visit, note="Заметка для копии")}, "seen": {}}), "stg:saved": json.dumps([reward["id"]])})
+        app.go("#/data", cold=True)
+        b.js("""(() => { window.__downloads = []; const click = HTMLAnchorElement.prototype.click;
+            HTMLAnchorElement.prototype.click = function () { if (this.download) { window.__downloads.push(this.download); return; } return click.call(this); }; return true; })()""")
+        check("«Мои данные»: до скачивания сообщения о файле нет", b.js("document.querySelector('.backup-download-status').hidden") is True)
+        app.click(".backup-actions button", "Скачать файл копии")
+        b.wait_for("window.__downloads.length > 0", 5)
+        time.sleep(0.2)
+        status = b.js("(() => { const s = document.querySelector('.backup-download-status'); return [s.hidden, s.textContent, window.__downloads[0]]; })()")
+        check("«Мои данные»: после «Скачать» видно имя файла и где его искать",
+              status[0] is False and bool(status[2]) and status[2] in status[1] and "загрузках" in status[1], status)
+        text = b.js("""(async () => { const B = await import('./js/logic/backup.js'); const S = (await import('./js/storage.js')).storage; return B.serializeBackup(B.buildBackup(S.readUserData())); })()""")
+        b.js("localStorage.removeItem('stg:passport'); localStorage.removeItem('stg:saved'); true")
+        app.go("#/data", cold=True)
+        b.js(f"document.querySelector('#backup-text').value = {json.dumps(text)}; true")
+        app.click(".backup-actions button", "Проверить текст копии")
+        check("восстановление: сначала показывается состав копии, данные ещё не тронуты",
+              b.js("!!document.querySelector('.backup-preview')") and app.raw("stg:passport") is None)
+        app.click(".backup-preview button", "Заменить мои данные")
+        b.wait_for("!!document.querySelector('.backup-message')")
+        restored = app.storage("stg:passport") or {}
+        check("экспорт → импорт возвращает отметку с заметкой и избранное",
+              restored.get("visits", {}).get(reward["id"], {}).get("note") == "Заметка для копии" and app.storage("stg:saved") == [reward["id"]], restored)
+        check("ошибок в консоли нет", not app.errors(), app.errors())
+    finally:
+        app.close()
+
+    # --- Нижняя панель на 320 px: подпись активной вкладки не обрезается.
+    app = App(port, 320, 568)
+    b = app.b
+    try:
+        app.setup()
+        cut = []
+        for route in ("#/", "#/places", "#/excursions", "#/prepare", "#/info"):
+            app.go(route, cold=True)
+            label = b.js("(() => { const l = document.querySelector('.bottom-nav__item.is-active .bottom-nav__label'); return [l.textContent, l.scrollWidth, l.clientWidth]; })()")
+            if label[1] > label[2]:
+                cut.append(label)
+        check("320px нижняя панель: подпись активной вкладки помещается целиком на всех пяти вкладках", not cut, cut)
+    finally:
+        app.close()
+
+    # --- A2. Редактор заметки: поле и кнопки не под закреплённым блоком.
+    note_place = REWARD[0]
+    for width, height, label in ((320, 568, ""), (375, 667, ""), (414, 896, ""), (320, 330, " (экран сжат, как при открытой клавиатуре)"), (375, 340, " (экран сжат, как при открытой клавиатуре)")):
+        app = App(port, width, height)
+        b = app.b
+        try:
+            app.setup(extra={"stg:passport": json.dumps({"v": 1, "visits": {note_place["id"]: visit}, "seen": {}})})
+            app.go(f"#/place/{note_place['id']}", cold=True)
+            check(f"{width}×{height} до редактора действия карточки закреплены", b.js("getComputedStyle(document.querySelector('.place-actions')).position") == "sticky")
+            app.click(".passport-block button", "Добавить заметку")
+            time.sleep(0.3)
+            g = b.js(EDITOR_GEOMETRY)
+            check(f"{width}×{height}{label}: поле заметки и обе кнопки на экране, над нижней панелью",
+                  g["top"] >= 0 and all(bottom <= g["nav"] for bottom in g["bottoms"]) and g["labels"] == ["Сохранить", "Отмена"], g)
+            check(f"{width}×{height}{label}: «Сохранить» и «Отмена» ничем не перекрыты (нажатие попадает в кнопку)", all(g["hit"]), g)
+            check(f"{width}×{height}{label}: закреплённые действия на время редактирования стоят в потоке, без переполнения",
+                  g["actions"] == "static" and app.overflow() <= 0 and not app.small_targets(".passport-block"), g["actions"])
+            b.js("(() => { const t = document.querySelector('#passport-note-text'); t.value = 'Пришли к девяти утра'; t.dispatchEvent(new Event('input')); return true; })()")
+            app.click(".passport-note button", "Сохранить")
+            check(f"{width}×{height}{label}: заметка сохраняется, действия карточки снова закреплены, «Показать таксисту» на месте",
+                  (app.storage("stg:passport") or {})["visits"][note_place["id"]].get("note") == "Пришли к девяти утра"
+                  and b.js("getComputedStyle(document.querySelector('.place-actions')).position") == "sticky"
+                  and b.js("document.querySelector('.place-actions .btn').textContent") == "Показать таксисту")
+            app.click(".passport-block button", "Изменить заметку")
+            time.sleep(0.2)
+            b.js("(() => { const t = document.querySelector('#passport-note-text'); t.value = 'черновик, который отменят'; return true; })()")
+            g = b.js(EDITOR_GEOMETRY)
+            app.click(".passport-note button", "Отмена")
+            check(f"{width}×{height}{label}: «Отмена» доступна и не меняет заметку",
+                  all(g["hit"]) and (app.storage("stg:passport") or {})["visits"][note_place["id"]].get("note") == "Пришли к девяти утра"
+                  and b.js("getComputedStyle(document.querySelector('.place-actions')).position") == "sticky", g)
+            check(f"{width}×{height}{label}: ошибок в консоли нет", not app.errors(), app.errors())
+        finally:
+            app.close()
+
+
 # ------------------------------------------------------------------ main
 
 def main():
-    sections = sys.argv[1:] or ["static", "unit", "passport", "map", "layout", "regression", "travel", "offline", "upgrade"]
+    sections = sys.argv[1:] or ["static", "unit", "passport", "map", "layout", "regression", "travel", "ux", "offline", "upgrade"]
     port = 8650
     server = None
-    if any(s in sections for s in ("unit", "passport", "map", "layout", "regression", "travel")):
+    if any(s in sections for s in ("unit", "passport", "map", "layout", "regression", "travel", "ux")):
         server = serve(ROOT, port)
     started = time.time()
     try:
@@ -1474,6 +1951,8 @@ def main():
                 run_regression(port)
             elif name == "travel":
                 run_travel(port)
+            elif name == "ux":
+                run_ux(port)
             elif name == "offline":
                 run_offline(port + 1)
             elif name == "upgrade":

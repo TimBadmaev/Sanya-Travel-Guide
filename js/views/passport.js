@@ -124,6 +124,12 @@ export async function renderPassport(container, ctx) {
   if (!storage.isAvailable()) appendText(page, "p", "area-notice", NO_STORAGE_TEXT);
 
   renderStats(page, result);
+  // Найти конкретное место: схема и части побережья подсказывают, где оно, но
+  // искать по названию быстрее. Ведёт в существующий поиск «Мест» (там строка
+  // места показывает «✓ Отмечено», а «← К паспорту» возвращает сюда) — второго
+  // поиска в паспорте нет.
+  const find = appendText(page, "a", "btn btn--secondary passport-find", "🔎 Найти место по названию");
+  find.href = "#/places";
   renderOverview(page, { result, content, places, state });
   renderStickerPreview(page, result, config);
   renderVisits(page, result);
@@ -159,7 +165,7 @@ function renderStats(page, result) {
     notes.push(`И ещё ${stickerCounts.optionalEarned} ${pluralizeRu(stickerCounts.optionalEarned, ["необязательная наклейка", "необязательные наклейки", "необязательных наклеек"])}.`);
   }
   notes.push(KEEPSAKE_TEXT);
-  appendText(page, "p", "settings__hint passport__note", notes.join(" "));
+  appendText(page, "p", "settings__hint passport__note passport__note--tight", notes.join(" "));
 }
 
 function mapFigure(parent, svg, legendExtra) {
@@ -589,6 +595,8 @@ export function renderPassportBlock(container, { place, places, config, content 
 
   function draw() {
     body.innerHTML = "";
+    // Редактор заметки закрыт — закреплённые действия карточки снова sticky.
+    block.classList.remove("is-editing");
     const visit = getVisit(storage.getPassport(), place.id);
     if (!isRewardPlace(place)) appendText(body, "p", "passport-block__muted", KEEPSAKE_TEXT);
 
@@ -688,7 +696,7 @@ export function renderPassportBlock(container, { place, places, config, content 
     form.insertBefore(textarea, counter);
     const buttons = document.createElement("div");
     buttons.className = "passport-note__buttons";
-    button(buttons, "Сохранить заметку", "btn btn--primary", () => {
+    button(buttons, "Сохранить", "btn btn--primary", () => {
       if (!storage.setPassportNote(place.id, textarea.value)) {
         status.textContent = SAVE_FAILED_TEXT;
         return;
@@ -702,7 +710,14 @@ export function renderPassportBlock(container, { place, places, config, content 
     });
     form.appendChild(buttons);
     body.appendChild(form);
-    textarea.focus();
+    // Пока редактор открыт, закреплённые действия карточки («Показать
+    // таксисту» и др.) стоят в потоке, а не поверх экрана (CSS по классу
+    // блока): раньше они закрывали «Сохранить» и «Отмена». Сам редактор
+    // подводится к верху экрана — поле и обе кнопки остаются над экранной
+    // клавиатурой, насколько позволяет высота телефона.
+    block.classList.add("is-editing");
+    textarea.focus({ preventScroll: true });
+    form.scrollIntoView({ block: "start" });
   }
 
   draw();

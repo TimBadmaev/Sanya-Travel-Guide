@@ -1956,6 +1956,14 @@ textarea.settings-field__input {
   }
 }
 
+/* На 320 px активная вкладка «Подготовка» полужирным не помещалась в свою
+   пятую часть экрана и обрезалась многоточием («Подготов…»). */
+@media (max-width: 359px) {
+  .bottom-nav__item.is-active {
+    letter-spacing: -0.03em;
+  }
+}
+
 /* Закреплённые действия карточки места на узком экране (D-07
    REAL-DEVICE-QA-2026-09.md). На 320×568 три кнопки вставали в три строки:
    183 px закреплённого блока плюс 65 px нижней панели закрывали 44 % экрана.
@@ -2510,10 +2518,6 @@ textarea.settings-field__input {
 }
 
 /* ===== Паспорт исследователя (Passport v1, EXPLORER-PASSPORT-SPEC.md) — только новые правила ===== */
-
-.home-passport-link {
-  margin-top: var(--space-3);
-}
 
 .passport__period {
   margin: calc(-1 * var(--space-2)) 0 var(--space-3);
@@ -3107,4 +3111,258 @@ textarea.settings-field__input {
 .passport-icon {
   flex: 0 0 auto;
   margin-right: 6px;
+}
+
+/* ===== UX-итерация 2026-10 (PRODUCT.md 8.16) — только новые правила ===== */
+
+/* Текст для экранного диктора и структуры страницы, не занимающий места. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* «Места»: первый результат — на первом экране 320×568. Шапка, две кнопки
+   инструментов в одну строку и строка «Найдено N» вместо двух плашек. */
+.places-head {
+  margin: 0 0 var(--space-2);
+}
+
+.places-head .mode-switch {
+  margin: 0;
+}
+
+/* Две кнопки в строку; «Рядом со мной» длиннее, ей шире колонка. Если
+   подпись всё же не поместится (другой шрифт телефона), она перенесётся
+   внутри кнопки, а не уронит вторую кнопку на отдельную строку. */
+.places-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+}
+
+/* Раскрытая панель (результат «Рядом со мной», форма подбора, строка
+   «Подбор: …») — обе панели друг под другом во всю ширину. */
+.places-tools.has-open-nearby,
+.places-tools.has-open-picker {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.places-tools .nearby,
+.places-tools .picker {
+  min-width: 0;
+  margin: 0;
+}
+
+.places-tools .nearby__cta,
+.places-tools .picker__cta {
+  padding: var(--space-2) var(--space-1);
+  line-height: 1.25;
+}
+
+.search-bar,
+.chips {
+  margin-bottom: var(--space-2);
+}
+
+.places-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-3);
+  margin: 0 0 var(--space-2);
+}
+
+.places-meta__text {
+  flex: 1 1 0;
+  min-width: 9em;
+}
+
+.places-meta .places-count {
+  margin: 0;
+}
+
+.places-scope {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.places-meta__action {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+/* Редактор заметки паспорта в карточке места: закреплённые действия карточки
+   не перекрывают поле и кнопки. Пока редактор открыт, блок действий стоит в
+   потоке (в конце карточки) — он не скрыт и не удалён. Кнопки редактора — в
+   одну строку, чтобы форма помещалась над экранной клавиатурой. */
+.passport-block.is-editing ~ .place-actions {
+  position: static;
+}
+
+.passport-note {
+  scroll-margin-top: var(--space-3);
+}
+
+.passport-note__buttons {
+  flex-direction: row;
+}
+
+.passport-note__buttons .btn {
+  flex: 1 1 0;
+  width: auto;
+  padding-left: var(--space-2);
+  padding-right: var(--space-2);
+}
+
+/* «Как добраться»: выбор режима маршрута Amap (js/views/route.js). Панель —
+   отдельная строка внутри блока действий карточки. */
+.route-choice {
+  flex-basis: 100%;
+  min-width: 0;
+}
+
+.route-choice[hidden] {
+  display: none;
+}
+
+.route-choice__hint {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.route-choice__modes {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.route-choice__modes .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  padding-left: var(--space-2);
+  padding-right: var(--space-2);
+  text-decoration: none;
+}
+
+.route-toggle[aria-expanded="true"] {
+  border-color: var(--color-primary);
+}
+
+/* «Сейчас»: вход в паспорт — в шапке экрана, рядом с настройками. */
+.home-head__links {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.home-head__passport {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  margin-top: calc(-1 * var(--space-2));
+  padding: 0 var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+/* Паспорт: переход к поиску места в каталоге. */
+.passport-find {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 var(--space-5);
+  text-decoration: none;
+}
+
+/* «Места»: признак «отмечено в паспорте» в строке места — текст с галочкой,
+   а не только цвет. */
+.info-card__visited {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+
+.passport__note--tight {
+  margin-bottom: var(--space-3);
+}
+
+/* «Справка»: темы по группам. Заголовок группы — как раздел «Под рукой»;
+   отступ сверху учитывает прокрутку к группе из строки быстрых переходов. */
+.info-group__title {
+  scroll-margin-top: var(--space-3);
+}
+
+.about__offline {
+  margin: 0 0 var(--space-2);
+}
+
+/* Внешние ссылки (источники, «Больше фото», лицензии): стрелка — «откроется
+   вне приложения, нужен интернет». Кнопок это не касается. */
+#view a[target="_blank"]:not(.btn)::after {
+  content: "\00a0↗";
+}
+
+/* «Сейчас» до поездки: напоминание про адрес проживания для таксиста. */
+.home-notice {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.home-status__meta + .home-notice {
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.home-notice + .progress-block {
+  margin-top: var(--space-3);
+}
+
+/* «Подготовка»: проверка готовности к работе без интернета. */
+.offline-check {
+  margin-top: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.offline-check__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.offline-check__state,
+.offline-check__line {
+  margin: 0 0 var(--space-2);
+}
+
+.offline-check[data-state="ready"] .offline-check__state {
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+
+.offline-check__hint {
+  margin: 0 0 var(--space-3);
+}
+
+.offline-check__again {
+  width: 100%;
 }

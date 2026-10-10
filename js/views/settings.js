@@ -326,6 +326,16 @@ export async function renderSettings(container, ctx) {
     nameInput = name.input;
     homeSection.append(address.field, name.field);
     form.appendChild(homeSection);
+    // Ссылки «Указать адрес» (Главная, «Под рукой») ведут сразу к этому блоку:
+    // он третий на экране, и на телефоне его приходилось искать прокруткой.
+    // Роутер после отрисовки возвращает прокрутку записи истории (для новой
+    // записи — 0), поэтому подводим блок следующим тиком и только если экран
+    // остался в начале — возврат «Назад» со своей прокруткой не перебиваем.
+    if (ctx.query.get("section") === "home") {
+      setTimeout(() => {
+        if (ctx.isCurrent() && homeSection.isConnected && window.scrollY === 0) homeSection.scrollIntoView({ block: "start" });
+      }, 0);
+    }
   }
 
   // Блок 4 — действия. «Готово» — в нижней половине экрана (PRODUCT.md 8.9).

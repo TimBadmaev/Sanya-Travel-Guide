@@ -244,11 +244,13 @@ export async function renderExcursion(container, ctx) {
 
   container.innerHTML = "";
 
-  // Возврат: из дня плана или рекомендации — в этот день, иначе — к списку
-  // (со списка ctx.back сохраняет его фильтры через history.back()).
+  // Возврат: из дня плана или рекомендации — в этот день, с «Сейчас»
+  // (карточка «Сегодня») — на «Сейчас», иначе — к списку (со списка ctx.back
+  // сохраняет его фильтры через history.back()). Раньше экскурсия, открытая с
+  // «Сейчас», возвращала в список экскурсий — пользователь терял свой день.
   const fromHash = ctx.from || "";
   const fromPath = fromHash.replace(/^#/, "").split("?")[0];
-  const fromDay = /^\/(plan|recommended)\/[^/]+$/.test(fromPath);
+  const fromDay = /^\/(plan|recommended)\/[^/]+$/.test(fromPath) || fromPath === "/";
   const parentHash = fromDay ? fromHash : fromPath === "/excursions" ? fromHash : "#/excursions";
   const back = appendText(container, "a", "place-detail__back", fromDay ? "← Назад" : "← К экскурсиям");
   back.href = parentHash;

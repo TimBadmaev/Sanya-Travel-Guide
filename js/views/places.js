@@ -25,8 +25,9 @@ import {
 import { haversineKm, formatDistance } from "../logic/distance.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
 import { getKnownPosition, setKnownPosition } from "../logic/geo.js";
+import { getVisit } from "../logic/passport.js";
 import { formatDayMonth, isIsoDate } from "../logic/plan.js";
-import { renderFoodSection, renderModeSwitcher, MODE } from "./food.js";
+import { renderFoodSection, renderPlacesHead, MODE } from "./food.js";
 
 // Ключ иконки категории (config.categories[].icon) → эмодзи. Деталь
 // отображения, как ICONS в info.js (PLACES-IMPLEMENTATION.md [PI-7], [OQ-14]).
@@ -87,23 +88,7 @@ function renderAddToNotice(addTo, onCancel) {
   return notice;
 }
 
-// Плашка радиуса (Q-21): список ограничен, и это видно; «Показать все»
-// снимает ограничение без навигации — как снятие чипа.
-function renderNearNotice(precision, onShowAll) {
-  const notice = document.createElement("p");
-  notice.className = "area-notice near-notice";
-  const from = precision === ORIGIN_PRECISION.EXACT ? "от места проживания" : "от центра района";
-  notice.append(`Показаны места в радиусе ${NEAR_RADIUS_KM} км ${from}. `);
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "area-notice__link area-notice__button";
-  button.textContent = "Показать все";
-  button.addEventListener("click", onShowAll);
-  notice.appendChild(button);
-  return notice;
-}
-
-function renderPlaceRow(place, category, distanceText, addTo) {
+function renderPlaceRow(place, category, distanceText, addTo, visited) {
   const card = document.createElement("a");
   card.href = addTo ? `#/place/${place.id}?addTo=${addTo}` : `#/place/${place.id}`;
   card.className = "info-card";
@@ -129,40 +114,75 @@ function renderPlaceRow(place, category, distanceText, addTo) {
     .join(" · ");
 
   body.append(title, summary);
+  // Отметка паспорта (stg:passport) — только факт «здесь уже были»: текст с
+  // галочкой, не один цвет. Покупки помечаются так же, наград это не даёт.
+  if (visited) {
+    const mark = document.createElement("span");
+    mark.className = "info-card__visited";
+    mark.textContent = "✓ Отмечено в паспорте";
+    body.appendChild(mark);
+  }
   card.append(icon, body);
   return card;
 }
 
-// Плашка над результатами — три случая (§10 + ITERATION-3-LOCATION-REVIEW §8).
-// Приглашение — обычная ссылка: запись в истории создаёт пользователь.
-// Для района без центра ("other") приглашение выбрать район неуместно —
-// район уже выбран ([I3-15]), поэтому там нейтральное пояснение без ссылки.
-function renderAreaNotice(precision, selectedArea) {
-  // Точка проживания известна — ничего объяснять не нужно.
-  if (precision === ORIGIN_PRECISION.EXACT) return null;
-  const notice = document.createElement("p");
-  notice.className = "area-notice";
-  if (precision === ORIGIN_PRECISION.AREA) {
-    // Расстояния считаются, но от условной точки протяжённого района —
-    // говорим об этом прямо и предлагаем уточнить (R12).
-    notice.append("Расстояния — от центра района, это приблизительно. ");
+// Строка над результатами: «Найдено N», от чего считаются расстояния и одно
+// действие. Раньше это были две отдельные плашки над списком (радиус Q-21 и
+// пояснение про центр района, §10 + ITERATION-3-LOCATION-REVIEW §8) — вместе
+// со счётчиком они занимали до трёх строк-карточек и уводили первый результат
+// за первый экран. Смысл прежний:
+//   • радиус сценариев «Сейчас» (near=1) — видно, что список ограничен, и
+//     «Показать все» снимает ограничение без навигации, как снятие чипа;
+//   • расстояния от центра района — сказано прямо, что это приблизительно, и
+//     предложено уточнить (R12); приглашение — обычная ссылка;
+//   • район без центра ("other") — нейтральное пояснение без ссылки ([I3-15]);
+//   • точка проживания известна и радиус не включён — только счётчик.
+function renderMeta(count, { near, precision, selectedArea, onShowAll }) {
+  const meta = document.createElement("div");
+  meta.className = "places-meta";
+  const text = document.createElement("div");
+  text.className = "places-meta__text";
+  const countEl = document.createElement("p");
+  countEl.className = "places-count";
+  countEl.textContent = `Найдено ${count}`;
+  text.appendChild(countEl);
+  meta.appendChild(text);
+
+  const scope = (value) => {
+    const p = document.createElement("p");
+    p.className = "places-scope";
+    p.textContent = value;
+    text.appendChild(p);
+  };
+  const settingsLink = (label, ariaLabel) => {
     const link = document.createElement("a");
     link.href = "#/settings";
-    link.className = "area-notice__link";
-    link.textContent = "Уточнить, где вы живёте";
-    notice.appendChild(link);
-    return notice;
+    link.className = "area-notice__link places-meta__action";
+    link.textContent = label;
+    if (ariaLabel) link.setAttribute("aria-label", ariaLabel);
+    meta.appendChild(link);
+  };
+
+  if (near) {
+    const from = precision === ORIGIN_PRECISION.EXACT ? "от места проживания" : "от центра района";
+    scope(`В радиусе ${NEAR_RADIUS_KM} км ${from}`);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "area-notice__link area-notice__button places-meta__action";
+    button.textContent = "Показать все";
+    button.addEventListener("click", onShowAll);
+    meta.appendChild(button);
+  } else if (precision === ORIGIN_PRECISION.AREA) {
+    scope("Расстояния — от центра района, приблизительно");
+    settingsLink("Уточнить", "Уточнить, где вы живёте");
+  } else if (precision !== ORIGIN_PRECISION.EXACT) {
+    if (selectedArea) {
+      scope(`Для района «${selectedArea.name}» расстояние не считается — у него нет центра на карте.`);
+    } else {
+      settingsLink("Выберите район, чтобы видеть расстояние");
+    }
   }
-  if (selectedArea) {
-    notice.textContent = `Для района «${selectedArea.name}» расстояние не считается — у него нет центра на карте.`;
-    return notice;
-  }
-  const link = document.createElement("a");
-  link.href = "#/settings";
-  link.className = "area-notice__link";
-  link.textContent = "Выберите район, чтобы видеть расстояние";
-  notice.appendChild(link);
-  return notice;
+  return meta;
 }
 
 // Активный чип может оказаться за правым краем горизонтального ряда (.chips —
@@ -320,6 +340,10 @@ export async function renderPlaces(container, ctx) {
     places.forEach((place) => distanceTexts.set(place.id, formatDistance(haversineKm(origin, place.location))));
   }
   const categoriesById = new Map(config.categories.map((c) => [c.id, c]));
+  // Отметки паспорта читаются один раз на рендер экрана; своего состояния у
+  // списка нет — возврат с карточки рисует экран заново и видит новую отметку.
+  const passportState = storage.getPassport();
+  const isVisited = (place) => Boolean(getVisit(passportState, place.id));
   const kidsTag = config.tags.find((t) => t.id === "kids");
 
   function labelFor(token) {
@@ -329,18 +353,31 @@ export async function renderPlaces(container, ctx) {
   }
 
   container.innerHTML = "";
-
-  const heading = document.createElement("h2");
-  heading.className = "view-title";
-  heading.textContent = "Места";
-  container.appendChild(heading);
-
-  if (!addTo) {
-    container.appendChild(renderModeSwitcher(MODE.PLACES));
-  }
+  const fromPassport = !addTo && (ctx.from || "").replace(/^#/, "").split("?")[0] === "/passport";
 
   if (addTo) {
+    // В режиме выбора места для дня переключателя «Места» / «Еда» нет —
+    // заголовок остаётся обычной строкой.
+    const heading = document.createElement("h2");
+    heading.className = "view-title";
+    heading.textContent = "Места";
+    container.appendChild(heading);
     container.appendChild(renderAddToNotice(addTo, () => ctx.back(`#/plan/${addTo}`)));
+  } else {
+    // Из паспорта («Найти место по названию») — выход обратно в паспорт: в
+    // установленном приложении кнопки «Назад» браузера нет.
+    if (fromPassport) {
+      const back = document.createElement("a");
+      back.href = "#/passport";
+      back.className = "place-detail__back";
+      back.textContent = "← К паспорту";
+      back.addEventListener("click", (event) => {
+        event.preventDefault();
+        ctx.back("#/passport");
+      });
+      container.appendChild(back);
+    }
+    container.appendChild(renderPlacesHead(MODE.PLACES));
   }
 
   if (!places.length) {
@@ -367,9 +404,18 @@ export async function renderPlaces(container, ctx) {
     nearbyStatus = nearbyResults.length ? NEARBY_STATUS.SUCCESS : NEARBY_STATUS.EMPTY;
   }
 
+  // «Рядом со мной» и подборщик — одной строкой, пока оба свёрнуты: две
+  // кнопки во всю ширину друг под другом вместе с плашками уводили первый
+  // результат за первый экран. Когда одна из панелей раскрыта (результат
+  // «Рядом со мной», форма подбора, строка «Подбор: …»), обе встают друг под
+  // другом во всю ширину — класс на контейнере, панели друг о друге не знают.
+  const tools = document.createElement("div");
+  tools.className = "places-tools";
+  container.appendChild(tools);
+
   const nearbyPanel = document.createElement("div");
   nearbyPanel.className = "nearby";
-  container.appendChild(nearbyPanel);
+  tools.appendChild(nearbyPanel);
 
   function resetNearby() {
     if (!ctx.isCurrent()) return;
@@ -406,6 +452,7 @@ export async function renderPlaces(container, ctx) {
 
   function renderNearbyPanel() {
     nearbyPanel.innerHTML = "";
+    tools.classList.toggle("has-open-nearby", nearbyStatus !== NEARBY_STATUS.IDLE);
 
     if (nearbyStatus === NEARBY_STATUS.LOADING) {
       const p = document.createElement("p");
@@ -425,7 +472,7 @@ export async function renderPlaces(container, ctx) {
       list.className = "info-list";
       nearbyResults.forEach((place) => {
         const distanceText = formatDistance(haversineKm(nearbyOrigin, place.location));
-        list.appendChild(renderPlaceRow(place, categoriesById.get(place.category), distanceText, addTo));
+        list.appendChild(renderPlaceRow(place, categoriesById.get(place.category), distanceText, addTo, isVisited(place)));
       });
       nearbyPanel.appendChild(list);
 
@@ -465,7 +512,10 @@ export async function renderPlaces(container, ctx) {
     const cta = document.createElement("button");
     cta.type = "button";
     cta.className = "btn btn--secondary nearby__cta";
-    cta.textContent = "📍 Показать места рядом со мной";
+    // Видимая подпись короткая, чтобы две кнопки помещались в строку на
+    // 320 px; полное название действия — в aria-label (содержит видимый текст).
+    cta.textContent = "📍 Рядом со мной";
+    cta.setAttribute("aria-label", "Показать места рядом со мной");
     cta.addEventListener("click", requestNearby);
     nearbyPanel.appendChild(cta);
   }
@@ -482,7 +532,7 @@ export async function renderPlaces(container, ctx) {
   // независимые переменные, поэтому подборщик не мешает и не подменяет near.
   const pickerPanel = document.createElement("div");
   pickerPanel.className = "picker";
-  container.appendChild(pickerPanel);
+  tools.appendChild(pickerPanel);
 
   // === Поиск по названию (Should, PRODUCT.md §7) ===========================
   // Вторичный инструмент над чипами (не заменяет их, D-10): фильтрует по
@@ -514,6 +564,9 @@ export async function renderPlaces(container, ctx) {
   searchBar.appendChild(searchClear);
 
   container.appendChild(searchBar);
+  // Пришли из паспорта искать место — курсор сразу в поле поиска (там, где
+  // браузер разрешает фокус без жеста; иначе поле просто на первом экране).
+  if (fromPassport) searchInput.focus({ preventScroll: true });
 
   function updateSearchClear() {
     searchClear.hidden = !searchQuery;
@@ -557,15 +610,6 @@ export async function renderPlaces(container, ctx) {
   container.appendChild(chipsRow);
   revealActiveChip(chipsRow, chips, tokens);
 
-  const notice = renderAreaNotice(precision, selectedArea);
-  if (notice) container.appendChild(notice);
-
-  let nearNotice = null;
-  if (near) {
-    nearNotice = renderNearNotice(precision, showAll);
-    container.appendChild(nearNotice);
-  }
-
   const results = document.createElement("div");
   results.className = "places-results";
   container.appendChild(results);
@@ -584,16 +628,13 @@ export async function renderPlaces(container, ctx) {
     // При origin === null sortByDistance возвращает копию — порядок places.json.
     const found = sortByDistance(applyFilters(searchedPlaces(), tokens, { savedIds }), origin);
 
-    const count = document.createElement("p");
-    count.className = "places-count";
-    count.textContent = `Найдено ${found.length}`;
-    results.appendChild(count);
+    results.appendChild(renderMeta(found.length, { near, precision, selectedArea, onShowAll: showAll }));
 
     if (found.length) {
       const list = document.createElement("div");
       list.className = "info-list";
       found.forEach((place) => {
-        list.appendChild(renderPlaceRow(place, categoriesById.get(place.category), distanceTexts.get(place.id), addTo));
+        list.appendChild(renderPlaceRow(place, categoriesById.get(place.category), distanceTexts.get(place.id), addTo, isVisited(place)));
       });
       results.appendChild(list);
       return;
@@ -662,7 +703,6 @@ export async function renderPlaces(container, ctx) {
   function showAll() {
     if (!ctx.isCurrent() || !near) return;
     near = false;
-    if (nearNotice) nearNotice.remove();
     renderResults();
     history.replaceState(history.state, "", placesHash(tokens, near, addTo));
     if (chips.length) chips[0].focus();
@@ -748,12 +788,15 @@ export async function renderPlaces(container, ctx) {
 
   function renderPickerPanel() {
     pickerPanel.innerHTML = "";
+    // Форма и строка «Подбор: …» занимают всю ширину; одна кнопка — половину.
+    tools.classList.toggle("has-open-picker", pickerOpen || pickerSummaryParts().length > 0);
 
     if (!pickerOpen) {
       const cta = document.createElement("button");
       cta.type = "button";
       cta.className = "btn btn--secondary picker__cta";
-      cta.textContent = "🎯 Подобрать по времени и интересу";
+      cta.textContent = "🎯 Подобрать";
+      cta.setAttribute("aria-label", "Подобрать по времени и интересу");
       cta.addEventListener("click", () => {
         pickedTime = undefined;
         pickedInterest = undefined;

@@ -21,10 +21,13 @@ import { renderArrivalBlock, renderDepartureBlock, renderNowPreview, renderToday
 // поездки. Район на выбор состояния не влияет — только на содержимое строк
 // и на сценарий «Рядом с отелем».
 
-// «Паспорт исследователя» (Passport v1) — вложенный экран «Сейчас». Вход
-// всегда ниже основного сценария состояния: первый экран 320×568 не
-// сдвигается.
-const PASSPORT_LINK_TEXT = "🛂 Паспорт исследователя";
+// «Паспорт исследователя» (Passport v1) — вложенный экран «Сейчас». Вход —
+// компактная ссылка в шапке экрана, рядом с настройками (UX-итерация
+// 2026-10): раньше это была строка внизу длинной страницы, на втором-третьем
+// экране. Шапка уже существует, поэтому первый экран 320×568 по-прежнему не
+// сдвигается ни на пиксель; вход один во всех четырёх состояниях.
+const PASSPORT_LINK_TEXT = "🛂 Паспорт";
+const PASSPORT_LINK_LABEL = "Паспорт исследователя";
 
 // Сколько ближайших дел показываем в состоянии «До поездки».
 const NEAR_TASKS_LIMIT = 3;
@@ -231,20 +234,37 @@ export async function renderHome(container, ctx) {
   heading.className = "view-title";
   heading.textContent = "Сейчас";
   head.appendChild(heading);
+  const headLinks = document.createElement("div");
+  headLinks.className = "home-head__links";
+  const passportLink = document.createElement("a");
+  passportLink.href = "#/passport";
+  passportLink.className = "home-head__passport";
+  passportLink.setAttribute("aria-label", PASSPORT_LINK_LABEL);
+  passportLink.textContent = PASSPORT_LINK_TEXT;
   // Единственный вход в настройки поездки (MVP-UX-SPEC §8 п. 6).
   const settingsLink = document.createElement("a");
   settingsLink.href = "#/settings";
   settingsLink.className = "home-head__settings";
   settingsLink.setAttribute("aria-label", "Настройки поездки");
   settingsLink.textContent = "⚙️";
-  head.appendChild(settingsLink);
+  headLinks.append(passportLink, settingsLink);
+  head.appendChild(headLinks);
   container.appendChild(head);
 
   if (state === TRIP_STATE.BEFORE) {
     const days = `${daysUntil} ${pluralizeRu(daysUntil, ["день", "дня", "дней"])}`;
     appendLine(container, "home-status", `До поездки: ${days}`);
     if (area) appendLine(container, "home-status__meta", `Район: ${area.name}`);
-    if (daysUntil <= ARRIVAL_SOON_DAYS) renderArrivalBlock(container);
+    if (daysUntil <= ARRIVAL_SOON_DAYS) {
+      renderArrivalBlock(container);
+    } else if (!trip.home) {
+      // Адрес проживания для таксиста лучше внести дома, а не искать в
+      // аэропорту: напоминание до поездки, пока адрес не сохранён. За два дня
+      // до вылета его сменяет блок прилёта с той же ссылкой. Ничего не
+      // блокирует и не выдумывает — только ведёт к полю в настройках.
+      const notice = appendLine(container, "home-notice", "Адрес проживания для таксиста пока не указан. ");
+      appendActionLink(notice, "Указать адрес", "#/settings?section=home", "area-notice__link");
+    }
 
     const progress = renderProgressBlock(container, doneCount, checklist.length);
 
@@ -281,7 +301,6 @@ export async function renderHome(container, ctx) {
     renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
     // Расходы до поездки (виза, страховка, eSIM) — категория «Подготовка».
     appendActionLink(container, "Расходы поездки", "#/expenses", "home-link");
-    appendActionLink(container, PASSPORT_LINK_TEXT, "#/passport", "home-link");
     return;
   }
 
@@ -344,7 +363,6 @@ export async function renderHome(container, ctx) {
       const label = `Сохранено: ${savedCount} ${pluralizeRu(savedCount, ["место", "места", "мест"])}`;
       appendActionLink(container, label, "#/places?f=saved", "home-link");
     }
-    appendActionLink(container, PASSPORT_LINK_TEXT, "#/passport", "home-link");
 
     // «Поесть рядом» — единственная точка входа в Food Nearby с Главной
     // (PRODUCT.md 8.3, 8.1): near=1 переиспользует тот же токен, что уже
@@ -394,5 +412,4 @@ export async function renderHome(container, ctx) {
     ["Хочу природу", "#/places?f=nature"],
     ["Куда сходить с детьми", "#/places?f=kids"],
   ]);
-  appendActionLink(container, PASSPORT_LINK_TEXT, "#/passport", "home-link home-passport-link");
 }

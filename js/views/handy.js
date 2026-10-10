@@ -95,7 +95,7 @@ function appendSubtitle(container, text) {
 // Быстрый переход к разделу: экран длинный, а телефоны и фразы «Здоровье и
 // помощь» нужны сразу. Те же .chip, что у фильтров «Мест»; это прокрутка, а
 // не навигация — истории и адреса она не меняет.
-function appendJump(nav, label, target) {
+export function appendJump(nav, label, target) {
   const chip = document.createElement("button");
   chip.type = "button";
   chip.className = "chip";
@@ -158,7 +158,7 @@ function renderHomeBlock(container, home) {
     const p = document.createElement("p");
     p.textContent = "Адрес не указан. Добавьте адрес отеля на китайском в настройках поездки — его можно будет показать таксисту.";
     const link = document.createElement("a");
-    link.href = "#/settings";
+    link.href = "#/settings?section=home";
     link.className = "btn btn--primary handy-home__action";
     link.textContent = "Указать адрес";
     block.append(p, link);
@@ -185,7 +185,7 @@ function renderHomeBlock(container, home) {
   taxiLink.textContent = "Показать таксисту";
 
   const editLink = document.createElement("a");
-  editLink.href = "#/settings";
+  editLink.href = "#/settings?section=home";
   editLink.className = "home-link";
   editLink.textContent = "Изменить адрес";
 

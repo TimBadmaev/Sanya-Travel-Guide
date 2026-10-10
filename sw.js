@@ -5,7 +5,7 @@
 
 // ЕДИНСТВЕННАЯ версия кэша. При каждой публикации обновления меняйте это
 // значение (README.md, «Как выпустить новую версию»).
-const CACHE_VERSION = "v18";
+const CACHE_VERSION = "v19";
 
 // Префикс нужен, чтобы activate удалял только кэши этого приложения: у всех
 // репозиториев на <аккаунт>.github.io общий origin и общее хранилище кэшей.
@@ -50,6 +50,7 @@ const PRECACHE = [
   "./js/views/plan.js",
   "./js/views/prepare.js",
   "./js/views/recommended.js",
+  "./js/views/route.js",
   "./js/views/settings.js",
   "./js/views/task.js",
   "./js/views/taxi.js",
@@ -120,6 +121,19 @@ self.addEventListener("message", (event) => {
     self.skipWaiting();
   } else if (data.type === "GET_VERSION" && event.ports[0]) {
     event.ports[0].postMessage(CACHE_VERSION);
+  } else if (data.type === "GET_OFFLINE_STATUS" && event.ports[0]) {
+    // Проверка готовности к работе без сети («Подготовка», js/pwa.js): сколько
+    // файлов PRECACHE действительно лежит в кэше этой версии. Список файлов
+    // знает только воркер; страница получает числа и ничего не докачивает.
+    const port = event.ports[0];
+    const reply = (cached) => port.postMessage({ version: CACHE_VERSION, total: PRECACHE.length, cached });
+    event.waitUntil(
+      caches
+        .open(CACHE_NAME)
+        .then((cache) => Promise.all(PRECACHE.map((url) => cache.match(url, { ignoreVary: true }))))
+        .then((hits) => reply(hits.filter(Boolean).length))
+        .catch(() => reply(0))
+    );
   }
 });
 

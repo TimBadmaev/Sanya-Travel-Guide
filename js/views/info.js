@@ -1,6 +1,7 @@
 import { loadInfo, loadChecklist, loadPlaces, loadExcursions, loadContacts, loadPhrases, loadErrorMessage } from "../data.js";
 import { formatVerifiedDate } from "../logic/checklist.js";
 import { getAppVersion } from "../pwa.js";
+import { appendJump } from "./handy.js";
 
 // Дисклеймер (Q-12, решение владельца 2026-09-13) — текст дословно.
 const DISCLAIMER =
@@ -19,6 +20,19 @@ const ICONS = {
 };
 
 const DEFAULT_ICON = "ℹ️";
+
+// Группы тем — тоже деталь отображения для известных id, как ICONS (и как
+// GROUPS у контактов в handy.js): в data/info.json поля группы нет. Темы
+// внутри группы идут в порядке файла; тема с неизвестным id (новая карточка,
+// которую сюда ещё не вписали) не теряется — попадает в «Другое» в конце.
+const INFO_GROUPS = [
+  ["Прилёт и вылет", ["arrival-card", "visa-entry", "first-evening", "airport-arrival", "luggage-delivery"]],
+  ["Связь и транспорт", ["connectivity", "taxi-amap", "taxi-rules", "city-transport"]],
+  ["Деньги, билеты и покупки", ["payment", "attraction-booking", "duty-free-shopping", "tax-refund", "seafood-buying", "passport-friendly"]],
+  ["Погода, здоровье и помощь", ["emergency", "extreme-weather", "climate", "beach-safety", "health-mosquitoes"]],
+  ["Правила и запреты", ["military-photography", "drones", "coral-marine-protection", "smoking"]],
+];
+const OTHER_GROUP_LABEL = "Другое";
 
 function renderErrorState(container, message, onRetry) {
   container.innerHTML = "";
@@ -83,10 +97,16 @@ function appendAbout(container, ctx, infoItems) {
   disclaimer.className = "about__disclaimer";
   disclaimer.textContent = DISCLAIMER;
 
+  // Что работает без сети, а что нет: внешние ссылки помечены стрелкой (CSS).
+  const offline = document.createElement("p");
+  offline.className = "task__meta about__offline";
+  offline.textContent =
+    "Места, справка, фразы, план и паспорт открываются без интернета. Ссылки со стрелкой ↗ и маршруты Amap открываются вне приложения — им нужен интернет.";
+
   const version = document.createElement("p");
   version.className = "task__meta about__version";
 
-  section.append(title, disclaimer, version);
+  section.append(title, disclaimer, offline, version);
   container.appendChild(section);
 
   const soft = (promise) => promise.catch(() => []);
@@ -149,20 +169,41 @@ export async function renderInfo(container, ctx) {
     return;
   }
 
-  const list = document.createElement("div");
-  list.className = "info-list";
+  // Быстрый переход к группе: тем больше двадцати, список длинный. Та же
+  // строка чипов, что в «Под рукой» — прокрутка, а не навигация.
+  const jump = document.createElement("div");
+  jump.className = "chips handy__jump";
+  jump.setAttribute("role", "group");
+  jump.setAttribute("aria-label", "Быстрый переход");
+  container.appendChild(jump);
 
   // «Под рукой» (#/handy) — первой строкой: не тема для чтения, а действия в
   // один тап (Итерация 4). Подписи — деталь отображения, как ICONS.
-  list.appendChild(
+  const handyList = document.createElement("div");
+  handyList.className = "info-list";
+  handyList.appendChild(
     renderCard("#/handy", "📞", "Под рукой", "Телефоны в один тап, фразы на китайском, адрес для таксиста")
   );
+  container.appendChild(handyList);
 
-  items.forEach((item) => {
-    list.appendChild(renderCard(`#/info/${item.id}`, ICONS[item.id] || DEFAULT_ICON, item.title, item.summary));
+  const known = INFO_GROUPS.flatMap(([, ids]) => ids);
+  const groups = INFO_GROUPS.map(([label, ids]) => [label, items.filter((item) => ids.includes(item.id))]);
+  groups.push([OTHER_GROUP_LABEL, items.filter((item) => !known.includes(item.id))]);
+  groups.forEach(([label, groupItems]) => {
+    if (!groupItems.length) return;
+    const title = document.createElement("h3");
+    title.className = "handy__subtitle info-group__title";
+    title.textContent = label;
+    container.appendChild(title);
+    appendJump(jump, label, title);
+    const list = document.createElement("div");
+    list.className = "info-list";
+    groupItems.forEach((item) => {
+      list.appendChild(renderCard(`#/info/${item.id}`, ICONS[item.id] || DEFAULT_ICON, item.title, item.summary));
+    });
+    container.appendChild(list);
   });
 
-  container.appendChild(list);
   appendAbout(container, ctx, items);
 }
 
@@ -203,13 +244,18 @@ export async function renderInfoDetail(container, ctx) {
   // искать единственную ссылку под текстом приходилось прокруткой. Тот же
   // элемент и то же поведение, что у «← К местам» (place.js); ссылка внизу
   // остаётся — она удобна как раз после прочтения.
+  // Карточку открывают и со списка, и с «Сейчас» (блоки прилёта и вылета, «Под
+  // рукой»): возврат — туда, откуда пришли; глубокая ссылка — к списку.
+  const fromPath = (ctx.from || "").replace(/^#/, "").split("?")[0];
+  const parent = fromPath === "/" ? "#/" : "#/info";
+  const backText = parent === "#/" ? "← Назад" : "← К справке";
   const topBack = document.createElement("a");
-  topBack.href = "#/info";
+  topBack.href = parent;
   topBack.className = "place-detail__back";
-  topBack.textContent = "← К справке";
+  topBack.textContent = backText;
   topBack.addEventListener("click", (event) => {
     event.preventDefault();
-    ctx.back("#/info");
+    ctx.back(parent);
   });
   container.appendChild(topBack);
 
@@ -274,16 +320,16 @@ export async function renderInfoDetail(container, ctx) {
   container.appendChild(meta);
 
   const backLink = document.createElement("a");
-  backLink.href = "#/info";
+  backLink.href = parent;
   backLink.className = "info-detail__back";
-  backLink.textContent = "← К справке";
+  backLink.textContent = backText;
   // ctx.back вместо перехода по обычной ссылке (ITERATION-2-FOUNDATION.md §6.5):
   // если пришли со списка — history.back() без роста истории; если это
   // глубокая ссылка — replace на список. Разметка остаётся ссылкой ради
   // семантики и доступности, переход перехватывается кодом.
   backLink.addEventListener("click", (event) => {
     event.preventDefault();
-    ctx.back("#/info");
+    ctx.back(parent);
   });
   container.appendChild(backLink);
 }

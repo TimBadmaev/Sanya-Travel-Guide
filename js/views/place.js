@@ -4,9 +4,10 @@ import { EFFORT_LABELS, SETTING_LABELS, PRICE_LABELS, formatDuration } from "../
 import { haversineKm, formatDistance } from "../logic/distance.js";
 import { formatVerifiedDate } from "../logic/checklist.js";
 import { ORIGIN_PRECISION, resolveOrigin } from "../logic/trip.js";
-import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
+import { isValidLocation } from "../logic/amap.js";
 import { userDistanceText, primeCurrentPosition, getKnownPosition } from "../logic/geo.js";
 import { bindCopyButton, renderShowScreen } from "./taxi.js";
+import { createRouteControl } from "./route.js";
 import { renderAddToDayBlock } from "./plan.js";
 import { renderPassportBlock } from "./passport.js";
 import { OPEN_STATE, formatOpenStatus, getOpenStatus, localMoment } from "../logic/hours.js";
@@ -138,7 +139,13 @@ export async function renderPlace(container, ctx) {
   // в режиме addTo — в список выбора с тем же addTo.
   // С карточки экскурсии (её «Связанные места») — тоже «← Назад» в неё.
   // Из паспорта (#/passport, часть побережья, альбом) — «← Назад» туда же.
-  const fromDay = /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath) || /^\/passport(\/zone\/[^/]+|\/album)?$/.test(fromPath);
+  // С «Сейчас» («Сегодня», «Подходит сейчас») и с «Что делать сейчас» — тоже
+  // туда, откуда пришли, а не в каталог.
+  const fromDay =
+    /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath) ||
+    /^\/passport(\/zone\/[^/]+|\/album)?$/.test(fromPath) ||
+    fromPath === "/" ||
+    fromPath === "/now";
   const parentHash = fromDay ? fromHash : addTo ? `#/places?addTo=${addTo}` : "#/places";
   const backLink = document.createElement("a");
   backLink.href = parentHash;
@@ -416,18 +423,18 @@ export async function renderPlace(container, ctx) {
   // «Как добраться» — маршрут в Amap (amap.js, разрешение Q-03). Отдельно от
   // «Показать таксисту» (D-02, D-12): та остаётся главной закреплённой
   // кнопкой, эта — второе, не конкурирующее с ней действие. Без валидной
-  // location кнопки нет (координат не выдумываем).
+  // location кнопки нет (координат не выдумываем). Кнопка раскрывает выбор
+  // режима — на машине или пешком (views/route.js); панель выбора стоит
+  // после кнопок и занимает строку целиком.
   const buttons = [taxiLink];
+  let routePanel = null;
   if (isValidLocation(place.location)) {
-    const amapLink = document.createElement("a");
-    amapLink.href = buildAmapWalkingUrl(place.location, place.name.ru);
-    amapLink.target = "_blank";
-    amapLink.rel = "noopener noreferrer";
-    amapLink.className = "btn btn--secondary";
-    amapLink.textContent = "Как добраться";
-    buttons.push(amapLink);
+    const [routeToggle, panel] = createRouteControl(place.location, place.name.ru);
+    buttons.push(routeToggle);
+    routePanel = panel;
   }
   buttons.push(copyBtn);
+  if (routePanel) buttons.push(routePanel);
 
   actions.append(...buttons, status);
   container.appendChild(actions);

@@ -1,6 +1,7 @@
 import { loadFood, loadConfig, loadErrorMessage } from "../data.js";
 import { renderShowScreen } from "./taxi.js";
-import { isValidLocation, buildAmapWalkingUrl } from "../logic/amap.js";
+import { isValidLocation } from "../logic/amap.js";
+import { createRouteControl } from "./route.js";
 import {
   userDistanceText,
   primeCurrentPosition,
@@ -47,6 +48,21 @@ export function renderModeSwitcher(current) {
   return nav;
 }
 
+// Шапка обоих режимов #/places: переключатель «Места» / «Еда» и заголовок
+// экрана одной строкой. Заголовок h2 остаётся в разметке (структура страницы,
+// экранный диктор), но скрыт визуально: активная вкладка переключателя и
+// нижняя панель уже называют раздел, а отдельная строка заголовка отодвигала
+// первый результат за пределы первого экрана 320×568.
+export function renderPlacesHead(current) {
+  const head = document.createElement("div");
+  head.className = "places-head";
+  const heading = document.createElement("h2");
+  heading.className = "view-title visually-hidden";
+  heading.textContent = "Места";
+  head.append(heading, renderModeSwitcher(current));
+  return head;
+}
+
 const FOOD_KIND_LABELS = {
   restaurant: "Ресторан",
   foodcourt: "Фудкорт",
@@ -63,11 +79,7 @@ const DEFAULT_FOOD_ICON = "🍽️";
 
 function renderErrorState(container, message, onRetry) {
   container.innerHTML = "";
-  const heading = document.createElement("h2");
-  heading.className = "view-title";
-  heading.textContent = "Места";
-  container.appendChild(heading);
-  container.appendChild(renderModeSwitcher(MODE.FOOD));
+  container.appendChild(renderPlacesHead(MODE.FOOD));
 
   const wrap = document.createElement("div");
   wrap.className = "error-state";
@@ -177,14 +189,9 @@ function renderFoodCard(item, area) {
 
     // «Как добраться» — маршрут в Amap (amap.js), второе действие рядом с
     // таксистом, не заменяющее его. Без валидной location кнопки нет.
+    // Кнопка раскрывает выбор режима маршрута (views/route.js).
     if (isValidLocation(item.location)) {
-      const amapLink = document.createElement("a");
-      amapLink.href = buildAmapWalkingUrl(item.location, item.name.ru);
-      amapLink.target = "_blank";
-      amapLink.rel = "noopener noreferrer";
-      amapLink.className = "btn btn--secondary";
-      amapLink.textContent = "Как добраться";
-      actions.appendChild(amapLink);
+      actions.append(...createRouteControl(item.location, item.name.ru));
     }
 
     card.appendChild(actions);
@@ -241,12 +248,7 @@ export async function renderFoodSection(container, ctx) {
 
   container.innerHTML = "";
 
-  const heading = document.createElement("h2");
-  heading.className = "view-title";
-  heading.textContent = "Места";
-  container.appendChild(heading);
-
-  container.appendChild(renderModeSwitcher(MODE.FOOD));
+  container.appendChild(renderPlacesHead(MODE.FOOD));
 
   if (!food.length) {
     // Черновики не доходят до этого массива (loadFood(), D-18) — пустое

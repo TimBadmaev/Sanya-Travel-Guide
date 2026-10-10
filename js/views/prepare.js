@@ -3,6 +3,7 @@ import { storage } from "../storage.js";
 import { PHASE_ORDER, PHASE_LABELS, getDefaultOpenPhases } from "../logic/trip.js";
 import { groupByPhase } from "../logic/checklist.js";
 import { renderTask } from "./task.js";
+import { OFFLINE_STATE, getOfflineStatus, offlineState } from "../pwa.js";
 
 // Кэш данных теперь в data.js (ITERATION-2-FOUNDATION.md §5) — здесь
 // остаётся только UI-состояние: какие этапы раскрыты, чтобы при
@@ -27,6 +28,67 @@ function renderErrorState(container, message, onRetry) {
   btn.addEventListener("click", onRetry);
   wrap.append(p, btn);
   container.appendChild(wrap);
+}
+
+const OFFLINE_TEXT = {
+  [OFFLINE_STATE.UNSUPPORTED]:
+    "В этом браузере офлайн-режим недоступен. Откройте приложение по основной ссылке (https) в Safari или Chrome, не в приватной вкладке.",
+  [OFFLINE_STATE.NOT_READY]:
+    "Офлайн-копия ещё не готова. Оставьте приложение открытым с интернетом на несколько секунд и нажмите «Проверить снова».",
+  [OFFLINE_STATE.UNKNOWN]: "Не удалось проверить офлайн-копию. Нажмите «Проверить снова».",
+};
+
+// «Работа без интернета» внизу «Подготовки»: проверяемый статус офлайн-копии
+// (js/pwa.js → getOfflineStatus) и то, что проверить нельзя, — словами.
+// «Готово» показывается только когда воркер подтвердил все файлы.
+function renderOfflineCheck(container, ctx) {
+  const section = document.createElement("section");
+  section.className = "offline-check";
+  const title = document.createElement("h3");
+  title.className = "offline-check__title";
+  title.textContent = "Работа без интернета";
+  const state = document.createElement("p");
+  state.className = "offline-check__state";
+  state.setAttribute("role", "status");
+  const install = document.createElement("p");
+  install.className = "offline-check__line";
+  const data = document.createElement("p");
+  data.className = "offline-check__line";
+  data.hidden = storage.isAvailable();
+  data.textContent = "Отметки, план и заметки не сохраняются: память браузера недоступна.";
+  const hint = document.createElement("p");
+  hint.className = "task__meta offline-check__hint";
+  hint.textContent =
+    "Проверьте сами перед вылетом: включите авиарежим и откройте приложение заново. Маршруты Amap и ссылки со стрелкой ↗ без сети не откроются.";
+  const again = document.createElement("button");
+  again.type = "button";
+  again.className = "btn btn--secondary offline-check__again";
+  again.textContent = "Проверить снова";
+  section.append(title, state, install, data, hint, again);
+  container.appendChild(section);
+
+  function check() {
+    section.dataset.state = "checking";
+    state.textContent = "Проверяем офлайн-копию…";
+    getOfflineStatus().then((status) => {
+      if (!ctx.isCurrent() || !section.isConnected) return;
+      const result = offlineState(status);
+      section.dataset.state = result;
+      if (result === OFFLINE_STATE.READY) {
+        state.textContent = `✓ Приложение сохранено на этом телефоне: все ${status.total} файлов версии ${status.version}. Места, справка, фразы, план и паспорт откроются без сети.`;
+      } else if (result === OFFLINE_STATE.PARTIAL) {
+        state.textContent = `Офлайн-копия неполная: сохранено ${status.cached} из ${status.total} файлов. Откройте приложение с интернетом ещё раз и нажмите «Проверить снова».`;
+      } else {
+        state.textContent = OFFLINE_TEXT[result];
+      }
+      install.hidden = result === OFFLINE_STATE.UNSUPPORTED;
+      install.textContent = status.standalone
+        ? "Запущено с экрана «Домой» — так и открывайте его в поездке."
+        : "Сейчас приложение открыто в браузере. Добавьте его на экран «Домой» и в поездке открывайте с иконки — так надёжнее.";
+    });
+  }
+  again.addEventListener("click", check);
+  check();
 }
 
 export async function renderPrepare(container, ctx) {
@@ -182,4 +244,5 @@ export async function renderPrepare(container, ctx) {
   });
 
   updateProgress();
+  renderOfflineCheck(container, ctx);
 }

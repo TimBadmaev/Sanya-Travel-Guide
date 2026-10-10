@@ -50,7 +50,7 @@ export function renderArrivalBlock(container) {
   links.className = "home-help";
   [
     ["Первый вечер: по шагам", "#/info/first-evening"],
-    storage.getTrip().home ? ["Показать адрес таксисту", "#/handy/taxi"] : ["Указать адрес отеля для таксиста", "#/settings"],
+    storage.getTrip().home ? ["Показать адрес таксисту", "#/handy/taxi"] : ["Указать адрес отеля для таксиста", "#/settings?section=home"],
     ["Аэропорт: такси, автобус, ориентиры", "#/info/airport-arrival"],
   ].forEach(([label, href]) => {
     appendText(links, "a", "home-link", label).href = href;

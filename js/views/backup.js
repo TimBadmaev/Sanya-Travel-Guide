@@ -130,9 +130,21 @@ function renderExport(container) {
 
   const download = appendText(section, "button", "btn btn--primary", "Скачать файл копии");
   download.type = "button";
+  // После нажатия видно, что произошло и где искать файл: раньше экран никак
+  // не менялся. Приложение не знает, сохранил ли браузер файл, — поэтому
+  // текст говорит «передан браузеру» и называет запасные способы.
+  const downloadStatus = document.createElement("p");
+  downloadStatus.className = "settings__hint backup-download-status";
+  downloadStatus.setAttribute("role", "status");
+  downloadStatus.hidden = true;
   download.addEventListener("click", async () => {
-    downloadText(await currentBackupText(), backupFileName());
+    const fileName = backupFileName();
+    downloadText(await currentBackupText(), fileName);
+    if (!downloadStatus.isConnected) return;
+    downloadStatus.textContent = `Файл «${fileName}» передан браузеру. Ищите его в загрузках (на iPhone — «Файлы» → «Загрузки»). Не нашли — сохраните копию другим способом ниже.`;
+    downloadStatus.hidden = false;
   });
+  section.appendChild(downloadStatus);
 
   // «Отправить» — системное меню «Поделиться» с файлом, где браузер это умеет
   // (Web Share с файлами): удобно сразу отправить копию себе в мессенджер.

@@ -16,6 +16,8 @@ const INSTALL_HINT_DELAY_MS = 3000;
 const VERSION_TIMEOUT_MS = 1500;
 // Если после «Обновить» контроллер так и не сменился, кнопку можно нажать снова.
 const UPDATE_RETRY_MS = 4000;
+// Если воркер не ответил на проверку офлайн-копии — состояние «не удалось проверить».
+const OFFLINE_STATUS_TIMEOUT_MS = 3000;
 
 // Service Worker есть только в secure context (HTTPS, localhost). По адресу
 // http://192.168.x.x (проверка с телефона, D-25) приложение работает как
@@ -242,6 +244,50 @@ export function getAppVersion() {
     };
     navigator.serviceWorker.controller.postMessage({ type: "GET_VERSION" }, [channel.port2]);
   });
+}
+
+// Готовность к работе без сети — для блока на «Подготовке». Проверяется то,
+// что можно проверить достоверно: страница под управлением Service Worker и
+// все файлы PRECACHE лежат в кэше текущей версии (считает сам воркер). Это не
+// гарантия на будущее: браузер может очистить данные сайта, поэтому текст
+// рядом советует проверить в авиарежиме.
+export function getOfflineStatus() {
+  const status = { supported: isSupported(), controlled: false, standalone: isStandalone(), version: null, total: 0, cached: 0 };
+  if (!status.supported || !navigator.serviceWorker.controller) return Promise.resolve(status);
+  status.controlled = true;
+  return new Promise((resolve) => {
+    const channel = new MessageChannel();
+    const timer = setTimeout(() => resolve(status), OFFLINE_STATUS_TIMEOUT_MS);
+    channel.port1.onmessage = (event) => {
+      clearTimeout(timer);
+      const data = event.data && typeof event.data === "object" ? event.data : {};
+      resolve({
+        ...status,
+        version: typeof data.version === "string" ? data.version : null,
+        total: Number.isInteger(data.total) && data.total > 0 ? data.total : 0,
+        cached: Number.isInteger(data.cached) && data.cached > 0 ? data.cached : 0,
+      });
+    };
+    navigator.serviceWorker.controller.postMessage({ type: "GET_OFFLINE_STATUS" }, [channel.port2]);
+  });
+}
+
+export const OFFLINE_STATE = {
+  UNSUPPORTED: "unsupported",
+  NOT_READY: "not-ready",
+  UNKNOWN: "unknown",
+  PARTIAL: "partial",
+  READY: "ready",
+};
+
+// Чистое правило: «готово» — только когда воркер управляет страницей, назвал
+// непустой список файлов и в кэше лежат все до одного. Любое сомнение (нет
+// ответа, файлов меньше) — не «готово».
+export function offlineState(status) {
+  if (!status || !status.supported) return OFFLINE_STATE.UNSUPPORTED;
+  if (!status.controlled) return OFFLINE_STATE.NOT_READY;
+  if (!status.total) return OFFLINE_STATE.UNKNOWN;
+  return status.cached >= status.total ? OFFLINE_STATE.READY : OFFLINE_STATE.PARTIAL;
 }
 
 export function initPwa() {
