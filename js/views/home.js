@@ -15,7 +15,7 @@ import {
 import { groupByPhase } from "../logic/checklist.js";
 import { renderTask } from "./task.js";
 import { renderHomeExpenses } from "./expenses.js";
-import { renderDepartureBlock, renderNowPreview, renderTodayCard } from "./today.js";
+import { renderArrivalBlock, renderDepartureBlock, renderNowPreview, renderTodayCard } from "./today.js";
 
 // Экран «Сейчас» (PRODUCT.md 8.3, MVP-UX-SPEC §3): четыре состояния по датам
 // поездки. Район на выбор состояния не влияет — только на содержимое строк
@@ -28,6 +28,10 @@ const PASSPORT_LINK_TEXT = "🛂 Паспорт исследователя";
 
 // Сколько ближайших дел показываем в состоянии «До поездки».
 const NEAR_TASKS_LIMIT = 3;
+
+// За сколько дней до начала поездки «До поездки» показывает блок прилёта:
+// вылет бывает накануне, и памятка нужна уже в дороге.
+const ARRIVAL_SOON_DAYS = 2;
 
 // Первый запуск показывается не чаще одного раза за сессию страницы: при
 // недоступном localStorage getTrip().isFirstRun всегда true, и без флага
@@ -240,6 +244,7 @@ export async function renderHome(container, ctx) {
     const days = `${daysUntil} ${pluralizeRu(daysUntil, ["день", "дня", "дней"])}`;
     appendLine(container, "home-status", `До поездки: ${days}`);
     if (area) appendLine(container, "home-status__meta", `Район: ${area.name}`);
+    if (daysUntil <= ARRIVAL_SOON_DAYS) renderArrivalBlock(container);
 
     const progress = renderProgressBlock(container, doneCount, checklist.length);
 
@@ -290,6 +295,7 @@ export async function renderHome(container, ctx) {
     // исследования, а не для действия. Нет дня в плане — прежний блок плана.
     if (!renderTodayCard(container, { plan, places, excursions, config, trip })) {
       renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
+      if (trip.start === getTodayIso()) renderArrivalBlock(container);
       if (trip.end === getTodayIso()) renderDepartureBlock(container);
     }
     renderHomeExpenses(container, getTodayIso());

@@ -1074,6 +1074,23 @@ button {
   color: var(--color-text-muted);
 }
 
+/* Подзаголовок группы фраз внутри раздела «Фразы на китайском». */
+.handy__group {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.handy__hint + .handy__group {
+  margin-top: 0;
+}
+
+/* Строка быстрых переходов стоит между заголовком и первым разделом. */
+.handy__jump + .handy__subtitle {
+  margin-top: 0;
+}
+
 .handy-home {
   display: flex;
   flex-direction: column;
@@ -2374,6 +2391,12 @@ textarea.settings-field__input {
 .today-departure__title {
   margin: 0;
   font-weight: 700;
+}
+
+/* Блок прилёта на «Сейчас» до поездки стоит вне карточки «Сегодня». */
+.home-status__meta + .today-arrival,
+.home-status + .today-arrival {
+  margin-bottom: var(--space-4);
 }
 
 /* «Подходит сейчас» и экран #/now: строка места со статусом часов. */

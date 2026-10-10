@@ -152,6 +152,18 @@
     "verifiedAt": "2026-09-13"
   },
   {
+    "id": "test-offline-mode",
+    "status": "verified",
+    "phase": "days",
+    "topic": "apps",
+    "title": "Проверьте, что путеводитель открывается без интернета",
+    "details": "Включите авиарежим и запустите приложение с иконки на экране «Домой». Должны открыться «Под рукой» с адресом для таксиста, «Справка» с карточкой «Первый вечер: по шагам» и карточки мест. Не открылось — выключите авиарежим, откройте приложение с интернетом, дождитесь загрузки и повторите проверку. Заодно сохраните копию своих данных: «Настройки поездки» → «Мои данные».",
+    "critical": false,
+    "volatile": false,
+    "sources": [],
+    "verifiedAt": "2026-10-10"
+  },
+  {
     "id": "pack-for-tropical-climate",
     "status": "verified",
     "phase": "packing",
@@ -297,14 +309,16 @@
     "phase": "days",
     "topic": "other",
     "title": "Решите, как поедете из аэропорта",
-    "details": "До бухт из аэропорта Феникс идут два маршрута аэропортовского автобуса (линия 1 — Санья Бэй, Дадунхай, Ялунвань; линия 2 — Хайтан и CDF), по 25 ¥; посадка — напротив выхода 5 зала внутренних прилётов. Многие отели дают бесплатный трансфер, но об этом нужно договориться заранее, а не по прилёте. Проверьте расписание последнего рейса, если летите вечером.",
+    "details": "Вариантов три: трансфер отеля — о нём нужно договориться заранее, а не по прилёте; официальное такси со стоянки у зала прилёта; автобус аэропорта, линия 1 — через Санья Бэй и Дадунхай к отелям Ялунваня, раз в час с 09:00, последний рейс в 02:00, до 25 ¥. С 23:00 до 06:00 такси дороже на 20 %. Расписание автобуса аэропорт называет справочным — перепроверьте его за день до вылета. Порядок действий после посадки — в карточке «Первый вечер: по шагам» в «Справке».",
     "critical": false,
     "volatile": true,
     "sources": [
       { "title": "Аэропорт Санья Феникс — «Airport Bus»", "url": "https://en.sanyaairport.com/enjcbs" },
+      { "title": "Аэропорт Санья Феникс — «Taxis»", "url": "https://en.sanyaairport.com/enczqc.jhtml" },
+      { "title": "Sanya Tourism Board — «Taxis/Ride-Hailing Services»", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/taxis-ride-hailing-services" },
       { "title": "Sanya Tourism Board — «Public Transportation»", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/public-transportation" }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-10-10"
   },
   {
     "id": "book-attraction-tickets-online",

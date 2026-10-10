@@ -3,7 +3,7 @@
 регрессия существующих экранов, офлайн и обновление Service Worker.
 
 Запуск из корня проекта:  python3 -u tests/run_tests.py [раздел …]
-Разделы: static unit passport map layout regression offline upgrade (по умолчанию — все).
+Разделы: static unit passport map layout regression travel offline upgrade (по умолчанию — все).
 Нужен Google Chrome (путь — переменная CHROME). Node и сторонние пакеты не
 нужны. В приложение и в публикацию каталог tests/ не входит.
 """
@@ -153,6 +153,57 @@ def run_static():
     sizes = {p["id"]: sum(1 for x in PLACES if part_of(x) == p["id"]) for p in parts}
     check("в части побережья не больше 14 мест", max(sizes.values()) <= 14, sizes)
     check("в каждой части побережья есть места без shopping", all(any(part_of(x) == p["id"] for x in REWARD) for p in parts))
+
+    # Справочный контент «Под рукой», «Справки» и чек-листа (схемы — js/data.js).
+    today = time.strftime("%Y-%m-%d")
+    date_ok = lambda v: isinstance(v, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", v) and v <= today  # noqa: E731
+    url_ok = lambda s: isinstance(s, dict) and s.get("title") and str(s.get("url", "")).startswith(("https://", "http://"))  # noqa: E731
+    handy_src = open(os.path.join(ROOT, "js/views/handy.js"), encoding="utf-8").read()
+
+    def group_ids(const):
+        return set(re.findall(r'\["([a-z-]+)", "', re.search(const + r" = \[(.*?)\];", handy_src, re.S).group(1)))
+
+    phrases = load("data/phrases.json")
+    check("phrases.json: id уникальны", len({p["id"] for p in phrases}) == len(phrases))
+    bad = [p["id"] for p in phrases if not (p.get("ru") and p.get("zh") and p.get("context") and url_ok(p.get("source")) and date_ok(p.get("verifiedAt")))]
+    check(f"phrases.json: у всех {len(phrases)} фраз есть перевод, иероглифы, контекст, источник и дата проверки", not bad, bad)
+    bad = [p["id"] for p in phrases if p.get("group") not in group_ids("PHRASE_GROUPS")]
+    check("phrases.json: группа каждой фразы известна экрану «Под рукой»", not bad, bad)
+    bad = [p["id"] for p in phrases if "pinyin" in p and not str(p["pinyin"]).strip()]
+    check("phrases.json: пустого пиньиня нет (поле либо заполнено, либо отсутствует)", not bad, bad)
+
+    contacts = load("data/contacts.json")
+    check("contacts.json: id уникальны", len({c["id"] for c in contacts}) == len(contacts))
+    bad = [c["id"] for c in contacts if not (c.get("label") and c.get("number") and date_ok(c.get("verifiedAt")) and c.get("sources") and all(url_ok(s) for s in c["sources"]))]
+    check(f"contacts.json: у всех {len(contacts)} контактов есть подпись, номер, источник и дата проверки", not bad, bad)
+    digits = lambda v: re.sub(r"[^\d+]", "", v)  # noqa: E731
+    bad = [c["id"] for c in contacts if not c.get("tel", "").startswith("tel:") or digits(c["tel"][4:]).lstrip("+")[-len(digits(c["number"]).lstrip("+")):] != digits(c["number"]).lstrip("+")]
+    check("contacts.json: ссылка tel: набирает тот же номер, что показан", not bad, bad)
+    bad = [c["id"] for c in contacts if c.get("group") not in group_ids("GROUPS")]
+    check("contacts.json: группа каждого контакта известна экрану «Под рукой»", not bad, bad)
+
+    # У источника «Справки» url может быть пустым (документ без страницы в
+    # сети — info.js показывает его текстом), но хотя бы одна ссылка нужна.
+    info_all = load("data/info.json")
+    info_ids = {i["id"] for i in info_all if i["status"] == "verified"}
+    check("info.json: id уникальны", len({i["id"] for i in info_all}) == len(info_all))
+    bad = [i["id"] for i in info_all if i["status"] == "verified" and not (i.get("title") and i.get("summary") and i.get("points")
+           and all(isinstance(p, str) and p.strip() for p in i["points"]) and i.get("sources") and any(url_ok(s) for s in i["sources"]) and all(url_ok(s) or (s.get("title") and s.get("url") == "") for s in i["sources"])
+           and date_ok(i.get("verifiedAt")))]
+    check(f"info.json: у всех {len(info_ids)} карточек есть текст, источники и дата проверки", not bad, bad)
+    bad = {i["id"]: len(i["points"]) for i in info_all if i["status"] == "verified" and not 3 <= len(i["points"]) <= 7}
+    check("info.json: в каждой карточке 3–7 пунктов (PRODUCT.md 9.6)", not bad, bad)
+    linked = set()
+    for name in sorted(os.listdir(os.path.join(ROOT, "js/views"))):
+        linked |= set(re.findall(r'"#/info/([a-z0-9-]+)"', open(os.path.join(ROOT, "js/views", name), encoding="utf-8").read()))
+    check(f"все {len(linked)} карточек «Справки», на которые ссылаются экраны, существуют и verified", linked <= info_ids, sorted(linked - info_ids))
+
+    checklist = load("data/checklist.json")
+    check("checklist.json: id уникальны", len({c["id"] for c in checklist}) == len(checklist))
+    phases = set(re.findall(r'"([a-z]+)"', re.search(r"PHASE_ORDER = \[(.*?)\]", open(os.path.join(ROOT, "js/logic/trip.js"), encoding="utf-8").read()).group(1)))
+    bad = [c["id"] for c in checklist if c.get("phase") not in phases or not c.get("title") or not c.get("details") or not date_ok(c.get("verifiedAt"))
+           or not all(url_ok(s) for s in c.get("sources", []))]
+    check(f"checklist.json: у всех {len(checklist)} дел известный этап, текст и дата проверки", not bad, bad)
 
     workflow = open(os.path.join(ROOT, ".github/workflows/pages.yml"), encoding="utf-8").read() if os.path.exists(os.path.join(ROOT, ".github/workflows/pages.yml")) else ""
     if workflow:
@@ -1137,6 +1188,125 @@ def run_regression(port):
         app.close()
 
 
+# ------------------------------------------------------------------ travel
+
+HOME = {"addressZh": "三亚市吉阳区亚龙湾国家旅游度假区测试酒店", "nameRu": "Тестовый отель"}
+
+
+def run_travel(port):
+    SECTION[0] = "travel"
+    print("\n[travel] прилёт и первый вечер, фразы по группам, справка для поездки")
+    phrases = load("data/phrases.json")
+    contacts = load("data/contacts.json")
+    first_evening = next(i for i in load("data/info.json") if i["id"] == "first-evening")
+    arrival_links = "[...document.querySelectorAll('.today-arrival a')].map((a) => a.getAttribute('href'))"
+    for width, height in ((375, 667), (320, 568)):
+        app = App(port, width, height)
+        b = app.b
+        try:
+            # Вечер прилёта, адрес отеля ещё не указан.
+            app.setup(now="2026,11,13,20,30")
+            app.go("#/", cold=True)
+            check(f"{width}px вечер прилёта: блок «Прилёт и первый вечер» на «Сейчас»",
+                  b.js(arrival_links) == ["#/info/first-evening", "#/settings", "#/info/airport-arrival"], b.js(arrival_links))
+            check(f"{width}px вечер прилёта: блок один, без переполнения и ошибок",
+                  b.js("document.querySelectorAll('.today-arrival').length") == 1 and app.overflow() <= 0 and not app.errors())
+            check(f"{width}px вечер прилёта: ссылки блока не меньше 44 px", not app.small_targets(".today-arrival"), app.small_targets(".today-arrival"))
+
+            # Адрес указан: с Главной — сразу на экран для таксиста и обратно.
+            app.setup(now="2026,11,13,20,30", trip=dict(TRIP, home=HOME))
+            app.go("#/", cold=True)
+            check(f"{width}px с адресом: ссылка «Показать адрес таксисту»",
+                  b.js(arrival_links) == ["#/info/first-evening", "#/handy/taxi", "#/info/airport-arrival"], b.js(arrival_links))
+            b.js("document.querySelector('.today-arrival a[href=\"#/handy/taxi\"]').click(); true")
+            b.wait_ready()
+            check(f"{width}px адрес открыт крупно, китайский текст из настроек", app.text(".taxi__name") == HOME["addressZh"], app.text(".taxi__name"))
+            check(f"{width}px экран адреса: без переполнения", app.overflow() <= 0)
+            app.click(".taxi__actions a", "Закрыть")
+            b.wait_ready()
+            check(f"{width}px «Закрыть» возвращает на «Сейчас»", b.js("location.hash") == "#/", b.js("location.hash"))
+            # Прежний путь: из «Под рукой» «Закрыть» возвращает в «Под рукой».
+            app.go("#/handy", cold=True)
+            b.js("document.querySelector('a[href=\"#/handy/taxi\"]').click(); true")
+            b.wait_ready()
+            app.click(".taxi__actions a", "Закрыть")
+            b.wait_ready()
+            check(f"{width}px из «Под рукой» «Закрыть» возвращает в «Под рукой»", b.js("location.hash") == "#/handy", b.js("location.hash"))
+
+            # День прилёта с планом на день: блок внутри карточки «Сегодня».
+            app.setup(now="2026,11,13,20,30", extra={
+                "stg:myplan": json.dumps({"planId": None, "days": {"2026-11-13": {"placeIds": ["yalong-bay-beach"], "origin": "user"}}})})
+            app.go("#/", cold=True)
+            check(f"{width}px день прилёта с планом: блок внутри карточки «Сегодня», один",
+                  b.js("document.querySelectorAll('.today .today-arrival').length") == 1 and b.js("document.querySelectorAll('.today-arrival').length") == 1)
+
+            # Когда блок нужен, а когда нет.
+            for label, now, expected in (("накануне вылета", "2026,11,12,9,0", 1), ("за две недели", "2026,11,1,9,0", 0),
+                                         ("в середине поездки", "2026,11,19,10,0", 0), ("после поездки", "2026,12,5,10,0", 0)):
+                app.setup(now=now)
+                app.go("#/", cold=True)
+                check(f"{width}px {label}: блок прилёта {'есть' if expected else 'не показан'}",
+                      b.js("document.querySelectorAll('.today-arrival').length") == expected)
+                check(f"{width}px {label}: «Сейчас» без переполнения и ошибок", app.overflow() <= 0 and not app.errors())
+
+            # Карточки справки для поездки.
+            app.setup(now="2026,11,13,20,30")
+            for info_id in ("first-evening", "airport-arrival", "taxi-rules", "payment", "connectivity"):
+                app.go(f"#/info/{info_id}", cold=True)
+                item = next(i for i in load("data/info.json") if i["id"] == info_id)
+                shown = b.js("document.querySelectorAll('.info-detail__points li').length")
+                links = b.js("document.querySelectorAll('.sources__list a').length")
+                check(f"{width}px #/info/{info_id}: все пункты и источники на экране, без переполнения",
+                      app.text(".view-title") == item["title"] and shown == len(item["points"]) and links == len(item["sources"]) and app.overflow() <= 0 and not app.errors(),
+                      {"points": shown, "sources": links, "overflow": app.overflow()})
+            app.go("#/info", cold=True)
+            order = b.js("[...document.querySelectorAll('.info-list a')].map((a) => a.getAttribute('href'))")
+            check(f"{width}px «Справка»: «Первый вечер» стоит перед «Прилётом»",
+                  "#/info/first-evening" in order and order.index("#/info/first-evening") < order.index("#/info/airport-arrival"), order[:6])
+
+            # «Под рукой»: фразы по группам, контакт аэропорта.
+            app.go("#/handy", cold=True)
+            groups = b.js("[...document.querySelectorAll('.handy__group')].map((h) => h.textContent)")
+            check(f"{width}px «Под рукой»: четыре группы фраз по порядку", groups == ["Основное", "Такси и дорога", "Кафе и покупки", "Здоровье и помощь"], groups)
+            check(f"{width}px «Под рукой»: показаны все {len(phrases)} фраз, каждая один раз",
+                  sorted(b.js("[...document.querySelectorAll('a.phrase')].map((a) => decodeURIComponent(a.getAttribute('href').split('/').pop()))")) == sorted(p["id"] for p in phrases))
+            check(f"{width}px «Под рукой»: показаны все {len(contacts)} контактов",
+                  b.js("document.querySelectorAll('a.contact').length") == len(contacts))
+            check(f"{width}px «Под рукой»: справочная аэропорта набирается в один тап",
+                  b.js("!!document.querySelector('a.contact[href=\"tel:0898-9612333\"]')"))
+            check(f"{width}px «Под рукой»: без переполнения, ошибок и мелких целей",
+                  app.overflow() <= 0 and not app.errors() and not app.small_targets("#view"), app.small_targets("#view"))
+            # Быстрый переход: прокрутка к разделу без смены адреса и истории.
+            chips = b.js("[...document.querySelectorAll('.handy__jump .chip')].map((c) => c.textContent)")
+            check(f"{width}px «Под рукой»: быстрые переходы к телефонам и группам фраз",
+                  chips == ["Телефоны", "Основное", "Такси и дорога", "Кафе и покупки", "Здоровье и помощь"], chips)
+            h0 = b.js("history.length")
+            app.click(".handy__jump .chip", "Здоровье и помощь")
+            top = b.js("Math.round([...document.querySelectorAll('.handy__group')].find((h) => h.textContent === 'Здоровье и помощь').getBoundingClientRect().top)")
+            check(f"{width}px быстрый переход прокручивает к группе «Здоровье и помощь»", top is not None and -2 <= top <= height / 2, top)
+            check(f"{width}px быстрый переход не меняет адрес и историю", b.js("location.hash") == "#/handy" and b.js("history.length") == h0)
+            # Фраза без пиньиня (источник его не даёт) и фраза с пиньинем.
+            b.js("document.querySelector('a.phrase[href=\"#/handy/phrase/receipt\"]').click(); true")
+            b.wait_ready()
+            check(f"{width}px фраза без пиньиня: иероглифы и перевод, пустой строки нет",
+                  app.text(".taxi__name") == "发票" and b.js("document.querySelectorAll('.taxi__pinyin').length") == 0 and app.text(".taxi__ru") == "Чек")
+            app.click(".taxi__actions a", "Закрыть")
+            b.wait_ready()
+            check(f"{width}px фраза → «Закрыть» возвращает в «Под рукой»", b.js("location.hash") == "#/handy")
+            app.go("#/handy/phrase/cash", cold=True)
+            check(f"{width}px фраза с пиньинем показывает его", app.text(".taxi__name") == "现金" and bool(app.text(".taxi__pinyin")) and app.overflow() <= 0)
+
+            # Новое дело чек-листа видно в «Подготовке».
+            app.go("#/prepare", cold=True)
+            check(f"{width}px «Подготовка»: есть дело про проверку без интернета",
+                  b.js("[...document.querySelectorAll('.task')].some((t) => t.textContent.includes('открывается без интернета'))"))
+            check(f"{width}px «Подготовка»: без переполнения и ошибок", app.overflow() <= 0 and not app.errors())
+        finally:
+            app.close()
+    check("карточка «Первый вечер» ссылается только на существующие разделы приложения",
+          all(name in " ".join(first_evening["points"]) for name in ("«Под рукой»", "«Показать таксисту»", "«Прилёт: аэропорт Феникс»")))
+
+
 # ------------------------------------------------------------------ offline
 
 def run_offline(port):
@@ -1172,6 +1342,20 @@ def run_offline(port):
               b.js("!!document.querySelector('.pp-marker--visited[data-place=\"yalong-bay-beach\"]')"))
         app.go("#/passport/album", cold=True)
         check("без сети альбом открывается", b.js("document.querySelectorAll('.passport-album .passport-sticker').length") == 12)
+        # Вечер прилёта без сети: памятка, адрес для таксиста, фразы и телефоны.
+        b.js(f"localStorage.setItem('stg:trip', {json.dumps(json.dumps(dict(TRIP, home=HOME)))}); sessionStorage.setItem('__fakeNow', '2026,11,13,20,30'); true")
+        app.go("#/", cold=True)
+        check("без сети на «Сейчас» есть блок прилёта", b.js("document.querySelectorAll('.today-arrival a').length") == 3)
+        app.go("#/info/first-evening", cold=True)
+        check("без сети открывается «Первый вечер: по шагам»", app.text(".view-title") == "Первый вечер: по шагам"
+              and b.js("document.querySelectorAll('.info-detail__points li').length") > 5)
+        app.go("#/handy/taxi", cold=True)
+        check("без сети адрес отеля показывается таксисту", app.text(".taxi__name") == HOME["addressZh"], app.text(".taxi__name"))
+        app.go("#/handy", cold=True)
+        check("без сети «Под рукой» показывает фразы и телефоны",
+              b.js("document.querySelectorAll('a.phrase').length") == len(load("data/phrases.json"))
+              and b.js("document.querySelectorAll('a.contact').length") == len(load("data/contacts.json")))
+        check("без сети ошибок в консоли нет", not app.errors())
     finally:
         app.close()
         try:
@@ -1268,10 +1452,10 @@ def run_upgrade(port):
 # ------------------------------------------------------------------ main
 
 def main():
-    sections = sys.argv[1:] or ["static", "unit", "passport", "map", "layout", "regression", "offline", "upgrade"]
+    sections = sys.argv[1:] or ["static", "unit", "passport", "map", "layout", "regression", "travel", "offline", "upgrade"]
     port = 8650
     server = None
-    if any(s in sections for s in ("unit", "passport", "map", "layout", "regression")):
+    if any(s in sections for s in ("unit", "passport", "map", "layout", "regression", "travel")):
         server = serve(ROOT, port)
     started = time.time()
     try:
@@ -1288,6 +1472,8 @@ def main():
                 run_layout(port)
             elif name == "regression":
                 run_regression(port)
+            elif name == "travel":
+                run_travel(port)
             elif name == "offline":
                 run_offline(port + 1)
             elif name == "upgrade":

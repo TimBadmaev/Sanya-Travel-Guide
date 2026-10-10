@@ -14,11 +14,28 @@ import { renderShowScreen } from "./taxi.js";
 const GROUPS = [
   ["emergency", "Экстренные службы"],
   ["taxi", "Такси"],
+  ["airport", "Аэропорт"],
   ["city", "Город"],
   ["consumer", "Цены и качество"],
   ["consulate", "Консульство России"],
 ];
 const OTHER_GROUP_LABEL = "Другое";
+
+// Группы фраз — то же правило, что у контактов: подпись и порядок для
+// известных значений group, фраза без группы или с неизвестной — в конце.
+const PHRASE_GROUPS = [
+  ["basic", "Основное"],
+  ["taxi", "Такси и дорога"],
+  ["food", "Кафе и покупки"],
+  ["help", "Здоровье и помощь"],
+];
+
+// «Показать таксисту» открывается из «Под рукой» и с Главной (блок прилёта):
+// «Закрыть» возвращает туда, откуда пришли.
+function taxiParentHash(ctx) {
+  const path = ctx.from ? ctx.from.replace(/^#/, "").split("?")[0] || "/" : null;
+  return path === "/" ? "#/" : "#/handy";
+}
 
 // Сюда ведут Главная («Под рукой» в поездке) и Справка. «← Назад» уходит на
 // ту из них, откуда пришли; иначе (глубокая ссылка, перезагрузка) — на Справку.
@@ -72,6 +89,21 @@ function appendSubtitle(container, text) {
   h.className = "handy__subtitle";
   h.textContent = text;
   container.appendChild(h);
+  return h;
+}
+
+// Быстрый переход к разделу: экран длинный, а телефоны и фразы «Здоровье и
+// помощь» нужны сразу. Те же .chip, что у фильтров «Мест»; это прокрутка, а
+// не навигация — истории и адреса она не меняет.
+function appendJump(nav, label, target) {
+  const chip = document.createElement("button");
+  chip.type = "button";
+  chip.className = "chip";
+  chip.textContent = label;
+  chip.addEventListener("click", () => {
+    target.scrollIntoView({ block: "start" });
+  });
+  nav.appendChild(chip);
 }
 
 function appendText(parent, className, text, lang) {
@@ -235,6 +267,12 @@ export async function renderHandy(container, ctx) {
   heading.textContent = "Под рукой";
   container.appendChild(heading);
 
+  const jump = document.createElement("div");
+  jump.className = "chips handy__jump";
+  jump.setAttribute("role", "group");
+  jump.setAttribute("aria-label", "Быстрый переход");
+  container.appendChild(jump);
+
   renderHomeBlock(container, storage.getTrip().home);
 
   // Контакты по группам в порядке GROUPS, внутри группы — порядок файла.
@@ -244,7 +282,8 @@ export async function renderHandy(container, ctx) {
   groups.forEach(([groupId, label]) => {
     const items = contacts.filter((c) => (groupId === null ? !knownGroups.includes(c.group) : c.group === groupId));
     if (!items.length) return;
-    appendSubtitle(container, label);
+    const subtitle = appendSubtitle(container, label);
+    if (!jump.children.length) appendJump(jump, "Телефоны", subtitle);
     const list = document.createElement("div");
     list.className = "info-list";
     items.forEach((contact) => list.appendChild(renderContact(contact)));
@@ -264,16 +303,29 @@ export async function renderHandy(container, ctx) {
     hint.className = "handy__hint";
     hint.textContent = "Нажмите на фразу — она откроется крупно, чтобы показать собеседнику.";
     container.appendChild(hint);
-    const list = document.createElement("div");
-    list.className = "info-list";
-    phrases.forEach((phrase) => list.appendChild(renderPhraseRow(phrase)));
-    container.appendChild(list);
+    const knownPhraseGroups = PHRASE_GROUPS.map(([id]) => id);
+    const phraseGroups = [...PHRASE_GROUPS];
+    if (phrases.some((p) => !knownPhraseGroups.includes(p.group))) phraseGroups.push([null, OTHER_GROUP_LABEL]);
+    phraseGroups.forEach(([groupId, label]) => {
+      const items = phrases.filter((p) => (groupId === null ? !knownPhraseGroups.includes(p.group) : p.group === groupId));
+      if (!items.length) return;
+      const groupTitle = document.createElement("h4");
+      groupTitle.className = "handy__group";
+      groupTitle.textContent = label;
+      container.appendChild(groupTitle);
+      appendJump(jump, label, groupTitle);
+      const list = document.createElement("div");
+      list.className = "info-list";
+      items.forEach((phrase) => list.appendChild(renderPhraseRow(phrase)));
+      container.appendChild(list);
+    });
     appendSources(
       container,
       phrases.map((p) => p.source),
       phrases.map((p) => p.verifiedAt)
     );
   }
+  if (!jump.children.length) jump.remove();
 }
 
 // Фраза крупно (#/handy/phrase/<id>): иероглифы — главное, ниже пиньинь и
@@ -334,13 +386,14 @@ export function renderHandyTaxi(container, ctx) {
     return;
   }
 
+  const parent = taxiParentHash(ctx);
   renderShowScreen(container, {
     lines: [
       { text: home.addressZh, className: "taxi__name", lang: "zh-CN" },
       { text: home.nameRu || "Адрес проживания", className: "taxi__ru" },
     ],
     getCopyText: () => home.addressZh,
-    closeHref: "#/handy",
-    onClose: () => ctx.back("#/handy"),
+    closeHref: parent,
+    onClose: () => ctx.back(parent),
   });
 }

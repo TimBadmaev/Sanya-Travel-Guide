@@ -93,8 +93,9 @@ export async function loadContacts() {
   return items.slice();
 }
 
-// Фразы на китайском (CONTENT-ITERATION-4.md §3): { id, ru, zh, pinyin,
-// context, source, verifiedAt }. Как и контакты — без status.
+// Фразы на китайском (CONTENT-ITERATION-4.md §3): { id, group, ru, zh,
+// pinyin?, context, source, verifiedAt }. Как и контакты — без status;
+// pinyin есть только там, где его даёт источник.
 export async function loadPhrases() {
   const items = await loadJSON("data/phrases.json");
   return items.slice();

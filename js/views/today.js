@@ -5,7 +5,7 @@ import { formatDistance } from "../logic/distance.js";
 import { formatOpenStatus, getOpenStatus, localMoment, formatClock, OPEN_STATE } from "../logic/hours.js";
 import { ORIGIN_PRECISION, pluralizeRu, resolveOrigin } from "../logic/trip.js";
 import { TODAY_STATE, formatShortDate, getPeriodDates, isDayEmpty, resolveDayTitle, resolveToday } from "../logic/plan.js";
-import { dayItems, isDepartureDay, nextItem, nowCandidates, rhythmNow } from "../logic/today.js";
+import { dayItems, isArrivalDay, isDepartureDay, nextItem, nowCandidates, rhythmNow } from "../logic/today.js";
 import { CATEGORY_ICONS, DEFAULT_ICON } from "./places.js";
 import { EXCURSION_ICON, appendBackLink, createTypeChip, excursionSummary, renderPlanError, typesMap } from "./plan.js";
 
@@ -34,6 +34,29 @@ function shiftIso(iso, days) {
 function knownStatusText(place, moment) {
   const status = getOpenStatus(place.openingHours, moment);
   return status.state === OPEN_STATE.UNKNOWN ? "" : formatOpenStatus(status);
+}
+
+// ------------------------------------------------------------ день прилёта
+
+// Вечер прилёта: порядок действий и адрес для таксиста в один тап. Все три
+// ссылки ведут на экраны, которые работают без сети; фактов здесь нет — они
+// в карточках «Справки». Без сохранённого адреса — ссылка туда, где его
+// указывают.
+export function renderArrivalBlock(container) {
+  const block = document.createElement("div");
+  block.className = "today-departure today-arrival";
+  appendText(block, "p", "today-departure__title", "🛬 Прилёт и первый вечер");
+  const links = document.createElement("div");
+  links.className = "home-help";
+  [
+    ["Первый вечер: по шагам", "#/info/first-evening"],
+    storage.getTrip().home ? ["Показать адрес таксисту", "#/handy/taxi"] : ["Указать адрес отеля для таксиста", "#/settings"],
+    ["Аэропорт: такси, автобус, ориентиры", "#/info/airport-arrival"],
+  ].forEach(([label, href]) => {
+    appendText(links, "a", "home-link", label).href = href;
+  });
+  block.appendChild(links);
+  container.appendChild(block);
 }
 
 // ------------------------------------------------------------ день вылета
@@ -116,6 +139,7 @@ export function renderTodayCard(container, { plan, places, excursions, config, t
       appendText(card, "p", "today__tomorrow", `Завтра: ${text}`);
     }
 
+    if (isArrivalDay(day, today, trip && trip.start)) renderArrivalBlock(card);
     if (isDepartureDay(day, today, trip && trip.end)) renderDepartureBlock(card);
   };
   draw();

@@ -57,11 +57,12 @@
     "label": "Заказать такси",
     "number": "96789",
     "tel": "tel:96789",
-    "note": "Служба заказа такси Саньи",
+    "note": "Служба заказа такси Саньи. Китайская версия сайта аэропорта называет другой номер — 95128 (после соединения нажать 2)",
     "sources": [
-      { "title": "Аэропорт Саньи — «Taxis»", "url": "https://en.sanyaairport.com/enczqc" }
+      { "title": "Аэропорт Санья Феникс — «Taxis» (стоянка, тариф, памятка пассажиру)", "url": "https://en.sanyaairport.com/enczqc.jhtml" },
+      { "title": "Аэропорт Санья Феникс — «出租汽车» (стоянки по терминалам, тариф, чек, телефоны)", "url": "https://www.sanyaairport.com/czqc.jhtml" }
     ],
-    "verifiedAt": "2026-09-13"
+    "verifiedAt": "2026-10-10"
   },
   {
     "id": "taxi-complaint",
@@ -71,9 +72,21 @@
     "tel": "tel:12328",
     "note": "Транспортное бюро Саньи: жалобы и предложения по работе такси. Пригодится номер машины и чек",
     "sources": [
-      { "title": "Аэропорт Саньи — «Taxis»", "url": "https://en.sanyaairport.com/enczqc" }
+      { "title": "Аэропорт Санья Феникс — «Taxis» (стоянка, тариф, памятка пассажиру)", "url": "https://en.sanyaairport.com/enczqc.jhtml" }
     ],
-    "verifiedAt": "2026-09-13"
+    "verifiedAt": "2026-10-10"
+  },
+  {
+    "id": "airport-hotline",
+    "group": "airport",
+    "label": "Справочная аэропорта",
+    "number": "0898-9612333",
+    "tel": "tel:0898-9612333",
+    "note": "Круглосуточная линия аэропорта Санья Феникс",
+    "sources": [
+      { "title": "Аэропорт Санья Феникс — «Enquiry» (круглосуточная справочная)", "url": "https://en.sanyaairport.com/enjcwx.jhtml" }
+    ],
+    "verifiedAt": "2026-10-10"
   },
   {
     "id": "city-hotline",

@@ -105,6 +105,11 @@ export function nowCandidates(places, { moment, origin = null, radiusKm = NEAR_R
   return { suitable: suitable.sort(byDistance), unconfirmed: unconfirmed.sort(byDistance), closedCount };
 }
 
+// День прилёта: тип дня «Прилёт» в плане или первый день поездки.
+export function isArrivalDay(day, date, firstDate) {
+  return Boolean((day && day.type === "arrival") || (firstDate && date === firstDate));
+}
+
 // День вылета: тип дня «Отъезд» в плане или последний день поездки.
 export function isDepartureDay(day, date, lastDate) {
   return Boolean((day && day.type === "departure") || (lastDate && date === lastDate));
