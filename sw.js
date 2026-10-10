@@ -5,7 +5,7 @@
 
 // ЕДИНСТВЕННАЯ версия кэша. При каждой публикации обновления меняйте это
 // значение (README.md, «Как выпустить новую версию»).
-const CACHE_VERSION = "v19";
+const CACHE_VERSION = "v20";
 
 // Префикс нужен, чтобы activate удалял только кэши этого приложения: у всех
 // репозиториев на <аккаунт>.github.io общий origin и общее хранилище кэшей.
@@ -29,6 +29,7 @@ const PRECACHE = [
   "./js/logic/expenses.js",
   "./js/logic/filters.js",
   "./js/logic/geo.js",
+  "./js/logic/guide.js",
   "./js/logic/hours.js",
   "./js/logic/myplan.js",
   "./js/logic/passport.js",
@@ -40,6 +41,7 @@ const PRECACHE = [
   "./js/views/excursions.js",
   "./js/views/expenses.js",
   "./js/views/food.js",
+  "./js/views/guide.js",
   "./js/views/handy.js",
   "./js/views/home.js",
   "./js/views/info.js",

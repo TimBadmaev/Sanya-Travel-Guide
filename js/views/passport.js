@@ -7,8 +7,9 @@ import {
   getVisit,
   isRewardPlace,
   prepareContent,
+  visitJourney,
 } from "../logic/passport.js";
-import { layoutMarkers, orderForMap, projectPoint } from "../logic/passport-map.js";
+import { layoutJourney, layoutMarkers, orderForMap, projectPoint } from "../logic/passport-map.js";
 import { formatDayMonth, formatPeriod } from "../logic/plan.js";
 import { getTodayIso, pluralizeRu, resolveOrigin } from "../logic/trip.js";
 import { CATEGORY_ICONS, DEFAULT_ICON } from "./places.js";
@@ -17,7 +18,8 @@ import { CATEGORY_INK, PART_BADGES, createMapSvg, createStickerArt, el, tiltOf }
 
 // «Паспорт исследователя» (EXPLORER-PASSPORT-SPEC.md): экран #/passport со
 // схемой побережья, экраны частей побережья #/passport/zone/<id>, альбом
-// наклеек #/passport/album и блок «Паспорт» в карточке места. Отметка
+// наклеек #/passport/album, хроника «Мой путь по Санье» #/passport/journey
+// и блок «Паспорт» в карточке места. Отметка
 // ставится вручную, без геолокации; награды и прогресс считает
 // logic/passport.js по отметкам и актуальному каталогу — карта, части и
 // альбом читают один и тот же расчёт, своего состояния у них нет.
@@ -28,6 +30,12 @@ const NEAREST_STICKERS = 2;
 const KEEPSAKE_TEXT = "Покупки можно отмечать на память, но в прогресс и наклейки паспорта они не входят.";
 // Постоянная подпись схемы (спецификация 4.4): схема — не навигация.
 export const MAP_CAPTION = "Схема для отметок. Форма берега и расстояния условны. Дорога — в карточке места.";
+// Постоянная подпись хроники (спецификация 18.3): линия — порядок отметок, а
+// не дорога. Стоит рядом с визуализацией в любом состоянии экрана.
+export const JOURNEY_CAPTION = "Путь показывает порядок отметок, а не фактический маршрут передвижения.";
+const STOP_WORDS = ["остановка", "остановки", "остановок"];
+// Сколько последних остановок помещается в ленте-превью на #/passport.
+const TRAIL_LIMIT = 5;
 const OVERVIEW_BOX = { x: 0, y: 150, w: 1000, h: 850 };
 
 function appendText(parent, tag, className, text) {
@@ -131,6 +139,7 @@ export async function renderPassport(container, ctx) {
   const find = appendText(page, "a", "btn btn--secondary passport-find", "🔎 Найти место по названию");
   find.href = "#/places";
   renderOverview(page, { result, content, places, state });
+  renderJourneyEntry(page, visitJourney(state, places));
   renderStickerPreview(page, result, config);
   renderVisits(page, result);
   renderOtherPlaces(page, { places, result });
@@ -465,6 +474,228 @@ export async function renderPassportAlbum(container, ctx) {
   page.appendChild(list);
 }
 
+// ------------------------------------------------------------ #/passport/journey
+
+// Вход в хронику на #/passport: лента последних остановок и кнопка. Самой
+// схемы пути здесь нет — она на отдельном экране, как альбом и части
+// побережья: обзорная схема остаётся прежней.
+function renderJourneyEntry(page, journey) {
+  const section = document.createElement("section");
+  section.className = "settings-section passport-journey-entry";
+  appendText(section, "h3", "settings-section__title", "Мой путь по Санье");
+  if (journey.length) {
+    const last = journey[journey.length - 1];
+    const shown = journey.slice(-TRAIL_LIMIT);
+    const trail = document.createElement("div");
+    trail.className = "passport-trail";
+    trail.setAttribute("aria-hidden", "true");
+    if (shown.length < journey.length) appendText(trail, "span", "passport-trail__more", "…");
+    shown.forEach((stop, index) => {
+      const linked = stop.linked && index > 0;
+      const classes = ["passport-trail__stop", stop.exact ? "" : "passport-trail__stop--loose", linked ? "passport-trail__stop--linked" : ""];
+      appendText(trail, "span", classes.filter(Boolean).join(" "), String(stop.number));
+    });
+    section.appendChild(trail);
+    appendText(
+      section,
+      "p",
+      "passport-journey-entry__text",
+      `${journey.length} ${pluralizeRu(journey.length, STOP_WORDS)} по порядку отметок. Последняя — «${last.place.name.ru}».`
+    );
+  } else {
+    appendText(section, "p", "passport-journey-entry__text", "Путь начнётся с первой отметки: каждое отмеченное место станет остановкой с номером.");
+  }
+  const link = appendText(section, "a", "btn btn--secondary passport-journey-link", "Открыть мой путь");
+  link.href = "#/passport/journey";
+  page.appendChild(section);
+}
+
+// Мягкая дуга между двумя значками: концы не заходят под кружки, изгиб
+// чередуется, чтобы путь «туда и обратно» не слипался в одну линию.
+function journeyCurve(a, b, trim, index) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const length = Math.hypot(dx, dy);
+  if (length <= trim * 2) return null;
+  const ux = dx / length;
+  const uy = dy / length;
+  const bend = length * 0.14 * (index % 2 ? 1 : -1);
+  const f = (n) => n.toFixed(1);
+  return `M${f(a.x + ux * trim)},${f(a.y + uy * trim)} Q${f((a.x + b.x) / 2 - uy * bend)},${f((a.y + b.y) / 2 + ux * bend)} ${f(b.x - ux * trim)},${f(b.y - uy * trim)}`;
+}
+
+// Схема хроники: остановки с номерами на той же декоративной схеме и
+// пунктир между соседними по порядку. Пунктир проводится только там, где
+// соседство известно (stop.linked) и обе остановки есть на схеме.
+function renderJourneyMap(page, { journey, content }) {
+  const located = journey.map((stop) => ({ stop, point: projectPoint(stop.place.location) }));
+  const points = located.filter((o) => o.point).map(({ stop, point }) => ({ id: stop.place.id, x: point.x, y: point.y }));
+  if (!points.length) return { offMap: located.length };
+  const layout = layoutJourney(points);
+  const markers = new Map(layout.markers.map((marker) => [marker.id, marker]));
+  const r = layout.hitR;
+  const svg = createMapSvg({ viewBox: layout.viewBox, parts: content.coastParts, label: "Декоративная схема побережья Саньи: остановки по порядку отметок" });
+
+  // Декоративная табличка «Санья» стоит в углу полной схемы: если рамка
+  // режет её или на неё попал значок, она не рисуется вовсе.
+  const box = layout.viewBox;
+  const clipped = box.x > 745 || box.x + box.w < 985 || box.y > 918 || box.y + box.h < 982;
+  const covered = layout.markers.some((m) => m.x + r > 745 && m.x - r < 985 && m.y + r > 918 && m.y - r < 982);
+  if (clipped || covered) svg.querySelector(".pp-cartouche").remove();
+
+  const lines = el("g", { class: "pp-journey", "aria-hidden": "true" }, svg);
+  journey.forEach((stop, index) => {
+    if (!stop.linked) return;
+    const from = markers.get(journey[index - 1].place.id);
+    const to = markers.get(stop.place.id);
+    const d = from && to ? journeyCurve(from, to, r * 0.7, index) : null;
+    if (!d) return;
+    el("path", { d, class: "pp-journey__casing", "stroke-width": r * 0.34 }, lines);
+    el("path", { d, class: "pp-journey__line", "stroke-width": r * 0.15, "stroke-dasharray": `${(r * 0.02).toFixed(1)} ${(r * 0.36).toFixed(1)}`, "data-to": stop.number }, lines);
+  });
+
+  const layer = el("g", { class: "pp-markers" }, svg);
+  journey.forEach((stop, index) => {
+    const marker = markers.get(stop.place.id);
+    if (!marker) return;
+    const link = el("a", {
+      href: `#/place/${stop.place.id}`,
+      class: `pp-marker pp-stop${stop.exact ? " pp-marker--visited" : " pp-stop--loose"}`,
+      "aria-label": `Остановка ${stop.number}: ${stop.place.name.ru}. ${markedLine(stop.visit)}${stop.exact ? "" : ". Порядок внутри дня неизвестен"}`,
+      "data-place": stop.place.id,
+      "data-stop": stop.number,
+      style: `--ink: ${CATEGORY_INK[stop.place.category] || "#0b6e6e"}; --i: ${Math.min(index, 12)}`,
+    }, layer);
+    if (marker.moved) {
+      el("line", { x1: marker.tx, y1: marker.ty, x2: marker.x, y2: marker.y, class: "pp-marker__leader", "stroke-width": r * 0.08 }, link);
+      el("circle", { cx: marker.tx, cy: marker.ty, r: r * 0.16, class: "pp-marker__true" }, link);
+    }
+    el("circle", { cx: marker.x, cy: marker.y, r, class: "pp-marker__hit" }, link);
+    el("circle", { cx: marker.x, cy: marker.y, r: r * 0.62, class: "pp-marker__disc", "stroke-width": r * 0.12, ...(stop.exact ? {} : { "stroke-dasharray": `${(r * 0.2).toFixed(1)} ${(r * 0.16).toFixed(1)}` }) }, link);
+    const num = el("text", { x: marker.x, y: marker.y + r * 0.02, class: "pp-marker__num", "font-size": r * (stop.number > 99 ? 0.44 : 0.62) }, link);
+    num.textContent = String(stop.number);
+  });
+
+  const figure = document.createElement("figure");
+  figure.className = "passport-map passport-journey-map";
+  figure.appendChild(svg);
+  appendText(figure, "figcaption", "passport-map__caption", MAP_CAPTION).setAttribute("lang", "ru");
+  page.appendChild(figure);
+  return { offMap: located.length - points.length, moved: layout.markers.some((marker) => marker.moved) };
+}
+
+export async function renderPassportJourney(container, ctx) {
+  const data = await loadPassportData(container, ctx, "Мой путь по Санье", () => renderPassportJourney(container, ctx));
+  if (!data) return;
+  const { page, result, content, places, state } = data;
+  // Хроника открывается из паспорта, с «Сейчас» и из карточки места:
+  // «← Назад» ведёт туда, откуда пришли.
+  const fromPath = (ctx.from || "").replace(/^#/, "").split("?")[0];
+  const fromOutside = /^\/place\/[^/]+$/.test(fromPath) || fromPath === "/";
+  appendBackLink(page, fromOutside ? "← Назад" : "← К паспорту", fromOutside ? ctx.from : "#/passport", ctx);
+  appendText(page, "h2", "view-title", "Мой путь по Санье");
+  appendText(
+    page,
+    "p",
+    "settings__intro",
+    "Каждое отмеченное место — остановка с номером. Номера идут в том порядке, в котором вы ставили отметки в приложении."
+  );
+  if (!storage.isAvailable()) appendText(page, "p", "area-notice", NO_STORAGE_TEXT);
+
+  const journey = visitJourney(state, places);
+  if (!journey.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state passport-journey-empty";
+    appendText(empty, "p", "passport-journey-empty__art", "①┄②┄③").setAttribute("aria-hidden", "true");
+    appendText(empty, "p", "", "Путь пока не начат.");
+    appendText(empty, "p", "", "Откройте карточку места, где вы побывали, и нажмите «Отметить посещение» — здесь появится остановка № 1.");
+    const first = appendText(empty, "a", "btn btn--primary passport-empty__action", "Выбрать первое место");
+    first.href = "#/places";
+    page.appendChild(empty);
+    appendText(page, "p", "passport-journey__caption", JOURNEY_CAPTION);
+    return;
+  }
+
+  const partsSeen = new Set(journey.map((stop) => result.partOf(stop.place)).filter(Boolean)).size;
+  const summary = [`${journey.length} ${pluralizeRu(journey.length, STOP_WORDS)}`];
+  if (partsSeen) summary.push(`${partsSeen} ${pluralizeRu(partsSeen, ["часть побережья", "части побережья", "частей побережья"])}`);
+  appendText(page, "p", "passport-journey__summary", summary.join(" · "));
+
+  const map = renderJourneyMap(page, { journey, content });
+  appendText(page, "p", "passport-journey__caption", JOURNEY_CAPTION);
+  const loose = journey.filter((stop) => !stop.exact).length;
+  const legend = document.createElement("p");
+  legend.className = "passport-map__legend";
+  appendText(legend, "span", "passport-map__key passport-map__key--visited", "остановка, номер — по порядку отметок");
+  if (loose) {
+    appendText(legend, "span", "passport-map__key passport-map__key--loose", "отметка без точного времени");
+    appendText(
+      legend,
+      "span",
+      "passport-map__note passport-journey__loose-note",
+      "У отметок без точного времени известен только день. Их порядок внутри дня неизвестен, поэтому номер условный, а линия к ним не проведена."
+    );
+  }
+  if (map.moved) appendText(legend, "span", "passport-map__note", "Близкие места раздвинуты: тонкая линия ведёт к точке из карточки места.");
+  if (map.offMap) {
+    appendText(
+      legend,
+      "span",
+      "passport-map__note passport-journey__offmap-note",
+      `Нет на схеме: ${map.offMap} ${pluralizeRu(map.offMap, ["место", "места", "мест"])} — координаты вне охвата схемы. Все остановки есть в списке ниже.`
+    );
+  }
+  page.appendChild(legend);
+
+  const section = document.createElement("section");
+  section.className = "settings-section";
+  appendText(section, "h3", "settings-section__title", `Хроника отметок · ${journey.length}`);
+  const list = document.createElement("ol");
+  list.className = "passport-journey-list";
+  journey.forEach((stop, index) => {
+    const { place, visit } = stop;
+    const next = journey[index + 1];
+    const item = document.createElement("li");
+    item.className = `passport-journey-item${stop.exact ? "" : " passport-journey-item--loose"}${next && next.linked ? " passport-journey-item--to-next" : ""}`;
+    item.dataset.place = place.id;
+    item.dataset.stop = String(stop.number);
+    appendText(item, "span", "passport-journey-item__num", String(stop.number)).setAttribute("aria-hidden", "true");
+    const body = document.createElement("div");
+    body.className = "passport-journey-item__body";
+    const link = placeLink(place, "passport-visit__link");
+    const icon = document.createElement("span");
+    icon.className = "passport-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = placeIcon(place);
+    link.prepend(icon);
+    body.appendChild(link);
+    const part = content.coastParts.find((p) => p.id === result.partOf(place));
+    appendText(body, "p", "passport-visit__date", part ? `${markedLine(visit)} · ${part.name}` : markedLine(visit));
+    if (!stop.exact) appendText(body, "p", "passport-visit__keepsake passport-journey-item__loose", "Точное время отметки не сохранилось — порядок внутри этого дня неизвестен.");
+    if (visit.note) {
+      const note = appendText(body, "a", "passport-journey-item__note", `📝 «${visit.note}»`);
+      note.href = `#/place/${place.id}?section=passport`;
+      note.setAttribute("aria-label", `Заметка к месту «${place.name.ru}»: ${visit.note}`);
+    }
+    if (!isRewardPlace(place)) appendText(body, "p", "passport-visit__keepsake", "На память — не входит в прогресс и наклейки.");
+    if (!projectPoint(place.location)) appendText(body, "p", "passport-visit__keepsake passport-journey-item__offmap", "Нет на схеме: координаты места вне охвата схемы.");
+    item.appendChild(body);
+    list.appendChild(item);
+  });
+  section.appendChild(list);
+  page.appendChild(section);
+
+  const footer = document.createElement("section");
+  footer.className = "settings-section passport-journey-next";
+  const { earned, total } = result.stickerCounts;
+  appendText(footer, "p", "settings__hint", `Следующая остановка появится здесь сама, когда вы отметите ещё одно место. Наклеек открыто: ${earned} из ${total}.`);
+  const more = appendText(footer, "a", "btn btn--secondary passport-journey-link", "Выбрать следующее место");
+  more.href = "#/places";
+  const album = appendText(footer, "a", "home-link", "Открыть альбом наклеек ›");
+  album.href = "#/passport/album";
+  page.appendChild(footer);
+}
+
 // ------------------------------------------------------------ #/passport/zone/<id>
 
 export async function renderPassportZone(container, ctx) {
@@ -597,6 +828,7 @@ export function renderPassportBlock(container, { place, places, config, content 
     body.innerHTML = "";
     // Редактор заметки закрыт — закреплённые действия карточки снова sticky.
     block.classList.remove("is-editing");
+    block.classList.remove("is-fresh");
     const visit = getVisit(storage.getPassport(), place.id);
     if (!isRewardPlace(place)) appendText(body, "p", "passport-block__muted", KEEPSAKE_TEXT);
 
@@ -614,6 +846,9 @@ export function renderPassportBlock(container, { place, places, config, content 
           ? `Отмечено. Новая наклейка: ${fresh.map((id) => `«${stickerTitle(id)}»`).join(", ")}.`
           : "Отмечено.";
         draw();
+        // Короткая «печать штампа» (CSS, с учётом prefers-reduced-motion):
+        // данные уже сохранены и показаны, анимация на них не влияет.
+        block.classList.add("is-fresh");
         body.querySelector("button").focus();
       });
       if (removed) {
@@ -633,6 +868,13 @@ export function renderPassportBlock(container, { place, places, config, content 
     }
 
     appendText(body, "p", "passport-block__state passport-block__state--done", `✓ ${markedLine(visit)}`);
+    // Место отметки в хронике «Мой путь по Санье»: номер считается из тех же
+    // отметок, отдельно не хранится.
+    const stop = visitJourney(storage.getPassport(), places).find((s) => s.place.id === place.id);
+    if (stop) {
+      const stopLink = appendText(body, "a", "passport-block__stop", stop.exact ? `Остановка № ${stop.number} на вашем пути ›` : "Есть на вашем пути ›");
+      stopLink.href = "#/passport/journey";
+    }
     if (visit.note) {
       appendText(body, "p", "passport-block__note", `Заметка: «${visit.note}»`);
     } else {

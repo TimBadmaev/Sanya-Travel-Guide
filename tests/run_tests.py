@@ -3,7 +3,7 @@
 регрессия существующих экранов, офлайн и обновление Service Worker.
 
 Запуск из корня проекта:  python3 -u tests/run_tests.py [раздел …]
-Разделы: static unit passport map layout regression travel ux offline upgrade (по умолчанию — все).
+Разделы: static unit passport map layout regression travel ux journey offline upgrade (по умолчанию — все).
 Нужен Google Chrome (путь — переменная CHROME). Node и сторонние пакеты не
 нужны. В приложение и в публикацию каталог tests/ не входит.
 """
@@ -107,6 +107,8 @@ def run_static():
     check("все фото verified-мест в PRECACHE", all(f in precache for f in photos))
     for f in ("js/logic/passport.js", "js/views/passport.js", "data/passport.json", "js/logic/passport-map.js", "js/views/passport-art.js"):
         check(f"файл паспорта {f} в PRECACHE", f in precache)
+    for f in ("js/logic/guide.js", "js/views/guide.js"):
+        check(f"файл помощника {f} в PRECACHE", f in precache)
 
     version = re.search(r'const CACHE_VERSION = "v(\d+)"', sw)
     try:
@@ -1126,7 +1128,7 @@ def run_regression(port):
         f"#/place/{PLACES[0]['id']}/plan", "#/excursions", f"#/excursion/{excursions[0]['id']}", "#/prepare", "#/info",
         f"#/info/{info[0]['id']}", "#/handy", "#/handy/taxi", "#/plan", "#/plan/2026-11-19", "#/recommended",
         "#/recommended/2026-11-19", "#/expenses", "#/expenses/add", "#/expenses/settings", "#/now", "#/data", "#/settings",
-        "#/passport", "#/passport/album", *[f"#/passport/zone/{p['id']}" for p in PASSPORT["coastParts"]],
+        "#/passport", "#/passport/album", "#/passport/journey", *[f"#/passport/zone/{p['id']}" for p in PASSPORT["coastParts"]],
     ]
     for width, height in ((375, 667), (320, 568)):
         app = App(port, width, height)
@@ -1353,6 +1355,8 @@ def run_offline(port):
         check(f"кэш называется sanya-guide-{CACHE}", f"sanya-guide-{CACHE}" in cached["keys"], cached["keys"])
         for f in ("js/logic/passport.js", "js/views/passport.js", "data/passport.json", "js/logic/passport-map.js", "js/views/passport-art.js"):
             check(f"в кэше есть {f}", f in cached["urls"])
+        for f in ("js/logic/guide.js", "js/views/guide.js"):
+            check(f"в кэше есть {f}", f in cached["urls"])
         # «Подготовка»: проверяемый статус офлайн-копии (число файлов называет воркер).
         precache = re.findall(r'"\./([^"]+)"', open(os.path.join(ROOT, "sw.js"), encoding="utf-8").read().split("const PRECACHE")[1].split("];")[0])
         offline_state = "(() => { const s = document.querySelector('.offline-check'); return s ? [s.dataset.state, s.querySelector('.offline-check__state').textContent] : null; })()"
@@ -1377,6 +1381,21 @@ def run_offline(port):
               b.js("!!document.querySelector('.pp-marker--visited[data-place=\"yalong-bay-beach\"]')"))
         app.go("#/passport/album", cold=True)
         check("без сети альбом открывается", b.js("document.querySelectorAll('.passport-album .passport-sticker').length") == 12)
+        # «Моё путешествие» без сети: помощник на «Сейчас» и хроника паспорта.
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        check("без сети на «Сейчас» есть блок «Начните своё путешествие»: офлайн-копия и первая наклейка отмечены",
+              len(steps) == 5 and steps["prepare"]["done"] and steps["sticker"]["done"] and steps["find"]["done"] and not steps["memory"]["done"], steps)
+        app.go("#/passport/journey", cold=True)
+        check("без сети хроника открывается: отметка, поставленная без сети, — остановка № 1 на схеме и в списке",
+              b.js(JOURNEY_LIST) == [[1, "yalong-bay-beach"]] and b.js(JOURNEY_MAP) == [[1, "yalong-bay-beach"]] and app.text(".passport-journey__caption") == JOURNEY_CAPTION, b.js(JOURNEY_LIST))
+        # Часы теста после холодной загрузки снова показывают __fakeNow — вторая отметка ставится «позже».
+        b.js("sessionStorage.setItem('__fakeNow', '2026,11,19,10,30'); true")
+        app.go("#/place/luhuitou-park", cold=True)
+        app.click(".passport-block button", "Отметить посещение")
+        app.go("#/passport/journey", cold=True)
+        check("без сети вторая отметка дополняет хронику и линию",
+              b.js(JOURNEY_LIST) == [[1, "yalong-bay-beach"], [2, "luhuitou-park"]] and b.js(JOURNEY_LINES) == [2], [b.js(JOURNEY_LIST), b.js(JOURNEY_LINES)])
         # Вечер прилёта без сети: памятка, адрес для таксиста, фразы и телефоны.
         b.js(f"localStorage.setItem('stg:trip', {json.dumps(json.dumps(dict(TRIP, home=HOME)))}); sessionStorage.setItem('__fakeNow', '2026,11,13,20,30'); true")
         app.go("#/", cold=True)
@@ -1409,6 +1428,9 @@ def run_offline(port):
         state = b.js(offline_state)
         check("неполный кэш: статус «неполная», а не «готово»",
               state[0] == "partial" and f"{len(precache) - 1} из {len(precache)}" in state[1] and "✓" not in state[1], state)
+        app.go("#/")
+        steps = guide_steps(app)
+        check("неполный кэш: шаг «Подготовьте путеводитель» на «Сейчас» не отмечен", len(steps) == 5 and not steps["prepare"]["done"] and steps["prepare"]["kind"] == "current", steps)
     finally:
         app.close()
         try:
@@ -1487,11 +1509,21 @@ def run_upgrade(port):
         check("после обновления прежняя отметка видна на схеме части побережья",
               b.js("!!document.querySelector('.pp-marker--visited[data-place=\"luhuitou-park\"]')"))
         check("после обновления прежняя заметка видна в списке части", "Закат с горы" in (b.js("document.querySelector('.passport-zone-list').textContent") or ""))
+        b.go(base, "#/passport/journey", cold=True)
+        check("после обновления прежняя отметка — остановка № 1 хроники, заметка при ней",
+              b.js(JOURNEY_LIST) == [[1, "luhuitou-park"]] and "Закат с горы" in (b.js("(document.querySelector('.passport-journey-item__note') || {}).textContent") or ""), b.js(JOURNEY_LIST))
+        check("после обновления хроника не дописала ничего в localStorage",
+              b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map((k) => [k, localStorage.getItem(k)])))") == before)
+        b.go(base, "#/", cold=True)
+        check("после обновления на «Сейчас» есть блок «Начните своё путешествие»", b.js("document.querySelectorAll('.guide .guide-step a').length") == 5)
         b.go(base, "#/place/yalong-bay-beach", cold=True)
         b.js("window.__click('.passport-block button', 'Отметить посещение')")
         passport = json.loads(b.js("localStorage.getItem('stg:passport')") or "{}")
         check("после обновления паспорт работает", "yalong-bay-beach" in passport.get("visits", {}))
         check("после обновления прежняя отметка и заметка на месте", passport.get("visits", {}).get("luhuitou-park", {}).get("note") == "Закат с горы")
+        b.go(base, "#/passport/journey", cold=True)
+        check("после обновления новая отметка продолжает хронику: № 2 и линия от прежней",
+              b.js(JOURNEY_LIST) == [[1, "luhuitou-park"], [2, "yalong-bay-beach"]] and b.js(JOURNEY_LINES) == [2], [b.js(JOURNEY_LIST), b.js(JOURNEY_LINES)])
         rest = json.loads(b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().filter((k) => k !== 'stg:passport').map((k) => [k, localStorage.getItem(k)])))"))
         before_rest = {k: v for k, v in json.loads(before).items() if k != "stg:passport"}
         check("отметка в паспорте не тронула другие ключи", rest == before_rest)
@@ -1945,13 +1977,639 @@ def run_ux(port):
             app.close()
 
 
+# ------------------------------------------------------------------ journey
+
+GUIDE_STEPS = "[...document.querySelectorAll('.guide-step')].map((s) => [s.dataset.step, s.dataset.done === 'true', s.querySelector('a').getAttribute('href'), s.className.split('--')[1]])"
+GUIDE_READY = "!!document.querySelector('.guide-step[data-step=\"prepare\"]') && !document.querySelector('.guide-step[data-step=\"prepare\"]').textContent.includes('Проверяем')"
+JOURNEY_LIST = "[...document.querySelectorAll('.passport-journey-item')].map((s) => [Number(s.dataset.stop), s.dataset.place])"
+JOURNEY_MAP = "[...document.querySelectorAll('.pp-stop')].map((s) => [Number(s.dataset.stop), s.dataset.place])"
+JOURNEY_LINES = "[...document.querySelectorAll('.pp-journey__line')].map((p) => Number(p.dataset.to))"
+JOURNEY_CAPTION = "Путь показывает порядок отметок, а не фактический маршрут передвижения."
+# Место с координатами вне охвата схемы: подмена ответа places.json на странице
+# (id — в sessionStorage.__offMap). Каталог на диске не меняется.
+OFF_MAP = r"""
+(() => {
+  let id = null;
+  try { id = sessionStorage.getItem('__offMap'); } catch (e) {}
+  if (!id) return;
+  const orig = window.fetch;
+  window.fetch = async (...args) => {
+    const res = await orig(...args);
+    const url = String((args[0] && args[0].url) || args[0]);
+    if (!/data\/places\.json/.test(url)) return res;
+    const list = await res.json();
+    list.forEach((p) => { if (p.id === id) p.location = { lat: 19.9, lng: 110.3 }; });
+    return new Response(JSON.stringify(list), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  };
+})();
+"""
+
+
+def guide_steps(app):
+    app.b.wait_for(GUIDE_READY, 10)
+    return {row[0]: {"done": row[1], "href": row[2], "kind": row[3]} for row in app.b.js(GUIDE_STEPS)}
+
+
+def tap(b, selector):
+    """Настоящее нажатие в центр элемента (а не el.click()): попадает туда же, куда палец."""
+    pos = b.js(f"""(() => {{ const el = document.querySelector({json.dumps(selector)}); if (!el) return null; el.scrollIntoView({{ block: 'center' }});
+        const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }})()""")
+    if not pos:
+        return False
+    for kind in ("mousePressed", "mouseReleased"):
+        b.send("Input.dispatchMouseEvent", {"type": kind, "x": pos[0], "y": pos[1], "button": "left", "clickCount": 1})
+    time.sleep(0.1)
+    b.wait_ready()
+    return True
+
+
+def run_journey(port):
+    SECTION[0] = "journey"
+    print("\n[journey] «Начните своё путешествие» на «Сейчас» и хроника «Мой путь по Санье»")
+    index = {p["id"]: i for i, p in enumerate(PLACES)}
+    a, bb, c, d = sorted(["yalong-bay-beach", "luhuitou-park", "tianya-haijiao", "nanshan-cultural-zone"], key=index.get)
+    shop = SHOPPING[0]["id"]
+    name = {p["id"]: p["name"]["ru"] for p in PLACES}
+    no_dates = {"start": None, "end": None, "area": None, "stay": None, "home": None}
+
+    # ---------------------------------------------------------------- логика
+    app = App(port)
+    b = app.b
+    try:
+        app.setup()
+        b.js("""(async () => {
+          window.P = await import('./js/logic/passport.js');
+          window.G = await import('./js/logic/guide.js');
+          window.M = await import('./js/logic/passport-map.js');
+          window.B = await import('./js/logic/backup.js');
+          window.S = (await import('./js/storage.js')).storage;
+          window.D = await import('./js/data.js');
+          window.places = await D.loadPlaces();
+          window.config = await D.loadConfig();
+          window.content = P.prepareContent(await D.loadPassport(), config);
+          return true; })()""")
+        r = b.js(f"""(() => {{
+          const [a, b, c, d, shop] = {json.dumps([a, bb, c, d, shop])};
+          const J = (state) => P.visitJourney(state, places).map((s) => [s.number, s.place.id, s.exact, s.linked]);
+          const r = {{}};
+          r.empty = J({{ v: 1, visits: {{}} }}).length === 0 && J(null).length === 0;
+          let s = P.withVisit(null, c, {{ date: '2026-11-14', at: '2026-11-14T02:00:00.000Z' }});
+          r.first = J(s);
+          s = P.withVisit(s, a, {{ date: '2026-11-14', at: '2026-11-14T02:00:05.000Z' }});
+          r.second = J(s);
+          s = P.withVisit(s, d, {{ date: '2026-11-14', at: '2026-11-14T02:00:01.000Z' }});
+          r.sameDay = J(s);
+          s = P.withVisit(s, b, {{ date: '2026-11-15', at: '2026-11-15T01:00:00.000Z' }});
+          r.nextDay = J(s);
+          const taken = P.getVisit(s, d);
+          const without = P.withoutVisit(s, d);
+          r.removed = J(without);
+          r.restored = J(P.withRestoredVisit(without, d, taken));
+          r.offset = J({{ v: 1, visits: {{ [a]: {{ date: '2026-11-14', at: '2026-11-14T10:00:00+08:00' }}, [b]: {{ date: '2026-11-14', at: '2026-11-14T01:30:00.000Z' }} }} }});
+          const old = {{ v: 1, visits: {{ [a]: {{ date: '2026-11-10', note: 'старая' }}, [b]: {{ date: '2026-11-12' }}, [c]: {{ date: '2026-11-12' }},
+                        [d]: {{ date: '2026-11-13', at: '2026-11-13T03:00:00.000Z' }} }}, seen: {{}} }};
+          const before = JSON.stringify(old);
+          r.old = J(old);
+          r.oldUntouched = JSON.stringify(old) === before && JSON.stringify(P.normalizePassportState(old)) === before;
+          r.oldNoInventedTime = Object.values(P.normalizePassportState(old).visits).filter((v) => 'at' in v).length === 1;
+          r.mixed = J({{ v: 1, visits: {{ [a]: {{ date: '2026-11-12' }}, [b]: {{ date: '2026-11-12', at: '2026-11-12T02:00:00.000Z' }},
+                        [c]: {{ date: '2026-11-12', at: '2026-11-12T03:00:00.000Z' }}, [d]: {{ date: '2026-11-13', at: '2026-11-13T03:00:00.000Z' }} }} }});
+          r.equalAt = J({{ v: 1, visits: {{ [a]: {{ date: '2026-11-12', at: '2026-11-12T02:00:00.000Z' }}, [b]: {{ date: '2026-11-12', at: '2026-11-12T02:00:00.000Z' }} }} }});
+          r.singles = J({{ v: 1, visits: {{ [a]: {{ date: '2026-11-10' }}, [b]: {{ date: '2026-11-11' }} }} }});
+          r.unknownPlace = J({{ v: 1, visits: {{ 'no-such-place': {{ date: '2026-11-10' }}, [a]: {{ date: '2026-11-11' }} }} }});
+          const shopState = {{ v: 1, visits: {{ [shop]: {{ date: '2026-11-14', at: '2026-11-14T02:00:00.000Z', note: 'сувениры' }} }} }};
+          const shopResult = P.evaluatePassport({{ state: shopState, places, content }});
+          r.shop = {{ stops: J(shopState).length, reward: shopResult.reward.visited, stickers: shopResult.stickerCounts.earned + shopResult.stickerCounts.optionalEarned, keepsakes: shopResult.keepsakes }};
+          // Награды считает прежняя логика: хроника её вход и результат не меняет.
+          const evalBefore = JSON.stringify(P.evaluatePassport({{ state: s, places, content }}).stickers.map((x) => [x.id, x.earned, x.progress]));
+          P.visitJourney(s, places);
+          r.rewardsSame = evalBefore === JSON.stringify(P.evaluatePassport({{ state: s, places, content }}).stickers.map((x) => [x.id, x.earned, x.progress]));
+
+          const base = {{ places, savedIds: [], myPlan: {{ days: {{}} }}, journey: [], stickersEarned: 0, offline: 'ready' }};
+          const g = (over) => {{ const p = G.guideProgress({{ ...base, ...over }}); return {{ done: p.steps.map((x) => x.done), href: p.steps.map((x) => x.href), current: p.currentId, n: p.done, total: p.total, ids: p.steps.map((x) => x.id) }}; }};
+          r.gFresh = g({{ offline: null }});
+          r.gOffline = ['ready', 'partial', 'not-ready', 'unknown', 'unsupported'].map((o) => g({{ offline: o }}).done[0]);
+          r.gSaved = g({{ savedIds: [b, 'no-such'] }});
+          r.gSavedUnknown = g({{ savedIds: ['no-such'] }}).done;
+          r.gPlan = g({{ myPlan: {{ days: {{ '2026-11-19': {{ placeIds: [a] }} }} }} }});
+          r.gPlanUnknown = g({{ myPlan: {{ days: {{ '2026-11-19': {{ placeIds: ['no-such'] }} }} }} }}).done;
+          r.gPlanExcursion = g({{ myPlan: {{ days: {{ '2026-11-19': {{ excursionIds: ['x'] }} }} }} }}).done;
+          const oneVisit = P.visitJourney(P.withVisit(null, c, {{ date: '2026-11-14', at: '2026-11-14T02:00:00.000Z' }}), places);
+          r.gVisit = g({{ journey: oneVisit, stickersEarned: 1 }});
+          const noted = P.visitJourney(P.withNote(P.withVisit(null, c, {{ date: '2026-11-14', at: '2026-11-14T02:00:00.000Z' }}), c, 'заметка'), places);
+          r.gNote = g({{ journey: noted, stickersEarned: 1 }});
+          r.gStickerUnknown = g({{ journey: noted, stickersEarned: null }}).done[4];
+          r.gNoArgs = G.guideProgress().done === 0;
+
+          const pts = places.map((p) => ({{ id: p.id, ...(M.projectPoint(p.location) || {{}}) }})).filter((p) => Number.isFinite(p.x));
+          const inside = (l) => l.markers.every((m) => m.x - l.hitR >= l.viewBox.x - 0.2 && m.x + l.hitR <= l.viewBox.x + l.viewBox.w + 0.2
+            && m.y - l.hitR >= l.viewBox.y - 0.2 && m.y + l.hitR <= l.viewBox.y + l.viewBox.h + 0.2);
+          const apart = (l) => l.markers.every((m, i) => l.markers.every((n, j) => i >= j || Math.hypot(m.x - n.x, m.y - n.y) >= 2 * l.hitR - 0.3));
+          const px = (l) => (l.hitR * 280) / l.viewBox.w;
+          const one = M.layoutJourney(pts.slice(0, 1));
+          const all = M.layoutJourney(pts);
+          r.layoutOne = {{ w: one.viewBox.w, px: px(one), inside: inside(one), ratio: one.viewBox.h / one.viewBox.w }};
+          r.layoutAll = {{ n: all.markers.length, px: px(all), inside: inside(all), apart: apart(all), same: JSON.stringify(all) === JSON.stringify(M.layoutJourney(pts)) }};
+          r.layoutEmpty = M.layoutJourney([]).viewBox === null;
+          r.zoneLayoutSame = JSON.stringify(M.layoutMarkers(pts.slice(0, 5))) === JSON.stringify(M.layoutMarkers(pts.slice(0, 5), {{ minBoxWidth: 220 }}));
+          return r; }})()""")
+        T, F = True, False
+        check("хроника: без отметок остановок нет", r["empty"])
+        check("хроника: первая отметка — остановка № 1", r["first"] == [[1, c, T, F]], r["first"])
+        check("хроника: следующая отметка получает № 2, даже если место раньше в каталоге", r["second"] == [[1, c, T, F], [2, a, T, T]], r["second"])
+        check("хроника: три отметки одного дня идут по моменту отметки", r["sameDay"] == [[1, c, T, F], [2, d, T, T], [3, a, T, T]], r["sameDay"])
+        check("хроника: отметка следующего дня продолжает нумерацию", r["nextDay"] == [[1, c, T, F], [2, d, T, T], [3, a, T, T], [4, bb, T, T]], r["nextDay"])
+        check("хроника: снятая отметка пересчитывает номера и линию", r["removed"] == [[1, c, T, F], [2, a, T, T], [3, bb, T, T]], r["removed"])
+        check("хроника: возвращённая отметка встаёт на прежнее место", r["restored"] == r["nextDay"], r["restored"])
+        check("хроника: моменты сравниваются как время, а не как строки (+08:00)", r["offset"] == [[1, bb, T, F], [2, a, T, T]], r["offset"])
+        check("старые отметки без времени: порядок внутри дня неизвестен, линий к ним нет",
+              r["old"] == [[1, a, T, F], [2, bb, F, F], [3, c, F, F], [4, d, T, F]], r["old"])
+        check("старые отметки: расчёт и нормализация не меняют данные", r["oldUntouched"])
+        check("старые отметки: время не придумывается (at только там, где оно было)", r["oldNoInventedTime"])
+        check("день с одной отметкой без времени: весь день без линий, следующий день не привязан",
+              r["mixed"] == [[1, a, F, F], [2, bb, F, F], [3, c, F, F], [4, d, T, F]], r["mixed"])
+        check("совпавшие моменты отметок — порядок неизвестен", r["equalAt"] == [[1, a, F, F], [2, bb, F, F]], r["equalAt"])
+        check("одна отметка в день без времени: порядок по дням известен, линия есть", r["singles"] == [[1, a, T, F], [2, bb, T, T]], r["singles"])
+        check("отметка места, которого нет в каталоге, в хронику не попадает", r["unknownPlace"] == [[1, a, T, F]], r["unknownPlace"])
+        check("покупки: остановка в хронике есть, наград и прогресса нет",
+              r["shop"] == {"stops": 1, "reward": 0, "stickers": 0, "keepsakes": 1}, r["shop"])
+        check("расчёт хроники не влияет на расчёт наклеек", r["rewardsSame"])
+
+        fresh = r["gFresh"]
+        check("помощник: пять шагов в заданном порядке", fresh["ids"] == ["prepare", "find", "plan", "memory", "sticker"] and fresh["total"] == 5, fresh["ids"])
+        check("помощник: без данных ни один шаг не отмечен, первый — следующий", fresh["done"] == [F] * 5 and fresh["current"] == "prepare", fresh)
+        check("помощник: шаги ведут на существующие экраны",
+              fresh["href"] == ["#/prepare", "#/places", "#/places", "#/places", "#/passport/album"], fresh["href"])
+        check("помощник: офлайн-шаг отмечен только при полной офлайн-копии", r["gOffline"] == [T, F, F, F, F], r["gOffline"])
+        check("помощник: место в избранном закрывает «Найдите место» и ведёт следующий шаг в его карточку",
+              r["gSaved"]["done"] == [T, T, F, F, F] and r["gSaved"]["href"][2] == f"#/place/{bb}" and r["gSaved"]["current"] == "plan", r["gSaved"])
+        check("помощник: id не из каталога шаг не закрывает", r["gSavedUnknown"] == [T, F, F, F, F] and r["gPlanUnknown"] == [T, F, F, F, F],
+              [r["gSavedUnknown"], r["gPlanUnknown"]])
+        check("помощник: место в «Моём плане» закрывает «Запланируйте посещение»",
+              r["gPlan"]["done"] == [T, T, T, F, F] and r["gPlan"]["href"][2] == "#/plan" and r["gPlan"]["href"][3] == f"#/place/{a}", r["gPlan"])
+        check("помощник: экскурсия в плане шаг про место не закрывает", r["gPlanExcursion"] == [T, F, F, F, F], r["gPlanExcursion"])
+        check("помощник: отметка без заметки — «Сохраните воспоминание» ещё не пройдено и ведёт в карточку",
+              r["gVisit"]["done"] == [T, T, F, F, T] and r["gVisit"]["href"][3] == f"#/place/{c}", r["gVisit"])
+        check("помощник: заметка закрывает шаг и ведёт в хронику",
+              r["gNote"]["done"] == [T, T, F, T, T] and r["gNote"]["href"][3] == "#/passport/journey", r["gNote"])
+        check("помощник: наклейку нельзя проверить — шаг не отмечен", r["gStickerUnknown"] is False and r["gNoArgs"])
+
+        one, every = r["layoutOne"], r["layoutAll"]
+        check("схема хроники: одна остановка — рамка не уже 520 единиц, значок 44 px",
+              one["w"] >= 519 and 21.9 <= one["px"] <= 22.1 and one["inside"] and 0.59 <= one["ratio"] <= 1.11, one)
+        check(f"схема хроники: все {every['n']} мест каталога — зоны нажатия не меньше 44 px, не пересекаются и не обрезаны",
+              every["px"] >= 21.9 and every["inside"] and every["apart"] and every["same"], every)
+        check("схема хроники: пустой вход и прежняя раскладка частей побережья не затронуты", r["layoutEmpty"] and r["zoneLayoutSame"])
+    finally:
+        app.close()
+
+    # ---------------------------------------------------------------- «Сейчас»
+    plan_today = {"stg:myplan": json.dumps({"planId": None, "days": {"2026-11-19": {"placeIds": [a], "origin": "user"}}})}
+    states = [
+        ("до поездки", "2026,11,1,10,0", TRIP, {}, [".home-action", ".home-tasks"]),
+        ("за день до вылета", "2026,11,12,10,0", TRIP, {}, [".today-arrival", ".home-action"]),
+        ("вечер прилёта", "2026,11,13,20,30", TRIP, {}, [".today-arrival", ".now-preview"]),
+        ("в поездке, день в плане", "2026,11,19,10,0", TRIP, plan_today, [".today", ".home-expenses", ".now-preview"]),
+        ("после поездки", "2026,12,5,10,0", TRIP, {}, [".home-action", ".home-scenarios"]),
+        ("без дат", "2026,11,19,10,0", no_dates, {}, [".home-action", ".home-scenarios"]),
+    ]
+    for width, height in ((320, 568), (375, 667), (414, 896)):
+        app = App(port, width, height)
+        b = app.b
+        try:
+            for label, now, trip, extra, mains in states:
+                app.setup(now=now, trip=trip, extra=extra)
+                app.go("#/", cold=True)
+                b.wait_for(GUIDE_READY, 10)
+                geo = b.js(f"""(() => {{ const g = document.querySelectorAll('.guide'); if (g.length !== 1) return {{ count: g.length }};
+                    const top = g[0].getBoundingClientRect().top + scrollY;
+                    const mains = {json.dumps(mains)}.map((sel) => {{ const el = document.querySelector(sel); return el ? Math.round(el.getBoundingClientRect().bottom + scrollY) : null; }});
+                    const hit = {json.dumps(mains)}.map((sel) => {{ const root = document.querySelector(sel); if (!root) return false;
+                      const el = root.matches('a, button') ? root : root.querySelector('a, button, input') || root; el.scrollIntoView({{ block: 'center' }});
+                      const r = el.getBoundingClientRect(); const at = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+                      return !!at && (el === at || el.contains(at) || at.contains(el)) && !at.closest('.guide'); }});
+                    scrollTo(0, 0);
+                    return {{ count: 1, top: Math.round(top), mains, hit, steps: g[0].querySelectorAll('.guide-step a').length,
+                             title: g[0].querySelector('.guide__title').textContent, toggle: g[0].querySelector('.guide__toggle').tagName,
+                             modal: !!document.querySelector('dialog, [role="dialog"], [aria-modal="true"]'), tabs: document.querySelectorAll('.bottom-nav__item').length }}; }})()""")
+                check(f"{width}px «Сейчас» {label}: блок «Начните своё путешествие» один, с пятью шагами-ссылками",
+                      geo.get("count") == 1 and geo.get("steps") == 5 and geo.get("title") == "Начните своё путешествие" and geo.get("toggle") == "BUTTON", geo)
+                check(f"{width}px «Сейчас» {label}: блок стоит ниже основного сценария и не перекрывает его действия",
+                      geo.get("count") == 1 and all(m is not None and m <= geo["top"] + 1 for m in geo["mains"]) and all(geo["hit"]), geo)
+                check(f"{width}px «Сейчас» {label}: без модального окна, шестой вкладки, переполнения и ошибок",
+                      geo.get("modal") is False and geo.get("tabs") == 5 and app.overflow() <= 0 and not app.errors(), geo)
+                check(f"{width}px «Сейчас» {label}: зоны нажатия блока не меньше 44 px", not app.small_targets(".guide"), app.small_targets(".guide"))
+            # Вечер прилёта: блок прилёта по-прежнему на первом экране.
+            app.setup(now="2026,11,13,20,30")
+            app.go("#/", cold=True)
+            arrival = b.js("(() => { const el = document.querySelector('.today-arrival'); return el ? Math.round(el.getBoundingClientRect().top) : null; })()")
+            check(f"{width}px вечер прилёта: «Прилёт и первый вечер» остаётся на первом экране", arrival is not None and arrival < height, arrival)
+        finally:
+            app.close()
+
+    app = App(port)
+    b = app.b
+    try:
+        # Шаги ведут на существующие экраны; «Назад» возвращает на «Сейчас».
+        app.setup(now="2026,11,1,10,0")
+        expected = {"prepare": ("#/prepare", "Подготовка к поездке"), "find": ("#/places", "Места"), "plan": ("#/places", "Места"),
+                    "memory": ("#/places", "Места"), "sticker": ("#/passport/album", "Альбом наклеек")}
+        for step, (target, title) in expected.items():
+            app.go("#/", cold=True)
+            b.wait_for(GUIDE_READY, 10)
+            b.js(f"document.querySelector('.guide-step[data-step=\"{step}\"] a').click(); true")
+            time.sleep(0.05)
+            b.wait_ready()
+            opened = [b.js("location.hash"), app.text(".view-title")]
+            b.js("history.back(); true")
+            time.sleep(0.1)
+            b.wait_ready()
+            check(f"шаг «{step}» открывает {target}, «Назад» возвращает на «Сейчас»", opened == [target, title] and b.js("location.hash") == "#/", opened)
+
+        # Состояние шагов согласовано с данными — по настоящим действиям в приложении.
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        offline_now = b.js("import('./js/pwa.js').then((m) => m.getOfflineStatus().then((s) => m.offlineState(s)))")
+        check("«Подготовьте путеводитель» отмечен тогда же, когда «Подготовка» называет офлайн-копию готовой",
+              steps["prepare"]["done"] == (offline_now == "ready"), [steps["prepare"], offline_now])
+        check("чистые данные: остальные четыре шага не отмечены", [steps[s]["done"] for s in ("find", "plan", "memory", "sticker")] == [F, F, F, F], steps)
+        check("чистые данные: счётчик блока совпадает с числом пройденных шагов",
+              app.text(".guide__count") == f"{sum(1 for s in steps.values() if s['done'])} из 5", app.text(".guide__count"))
+
+        app.go(f"#/place/{a}", cold=True)
+        app.click(".place-detail__save")
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        check("место в избранном: «Найдите место» отмечен, следующий — «Запланируйте посещение» с его карточкой",
+              steps["find"]["done"] and steps["plan"]["kind"] in ("current", "ahead") and steps["plan"]["href"] == f"#/place/{a}" and not steps["plan"]["done"], steps)
+
+        b.js("document.querySelector('.guide-step[data-step=\"plan\"] a').click(); true")
+        b.wait_ready()
+        app.click(".place-plan-link")
+        b.wait_ready()
+        app.click(".plan-row")
+        b.wait_for("location.hash === '#/plan/2026-11-13'", 5)
+        check("шаг плана ведёт в карточку, место добавлено в «Мой план» действующей функцией",
+              a in (app.storage("stg:myplan") or {}).get("days", {}).get("2026-11-13", {}).get("placeIds", []), [b.js("location.hash"), app.storage("stg:myplan")])
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        check("место в плане: «Запланируйте посещение» отмечен и ведёт в «Мой план»", steps["plan"]["done"] and steps["plan"]["href"] == "#/plan", steps)
+        b.js("document.querySelector('.guide-step[data-step=\"plan\"] a').click(); true")
+        b.wait_ready()
+        check("пройденный шаг плана открывает «Мой план»", [b.js("location.hash"), app.text(".view-title")] == ["#/plan", "Мой план"])
+
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        check("до отметки «Сохраните воспоминание» ведёт в карточку запланированного места", steps["memory"]["href"] == f"#/place/{a}" and not steps["memory"]["done"], steps)
+        b.js("document.querySelector('.guide-step[data-step=\"memory\"] a').click(); true")
+        b.wait_ready()
+        app.click(".passport-block button", "Отметить посещение")
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        check("отметка без заметки: «Сохраните воспоминание» не отмечен, «Получите первую наклейку» отмечен",
+              not steps["memory"]["done"] and steps["sticker"]["done"] and steps["memory"]["kind"] == "current" and steps["memory"]["href"] == f"#/place/{a}", steps)
+        check("следующая остановка подсказывает, что осталось", "осталось добавить заметку" in (app.text(".guide-step--current") or ""), app.text(".guide-step--current"))
+        app.go(f"#/place/{a}", cold=True)
+        app.click(".passport-block button", "Добавить заметку")
+        b.js("(() => { const t = document.querySelector('#passport-note-text'); t.value = 'Вода тёплая'; t.dispatchEvent(new Event('input')); return true; })()")
+        app.click(".passport-note__buttons button", "Сохранить")
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        check("заметка сохранена: «Сохраните воспоминание» отмечен и ведёт в хронику", steps["memory"]["done"] and steps["memory"]["href"] == "#/passport/journey", steps)
+        b.js("document.querySelector('.guide-step[data-step=\"memory\"] a').click(); true")
+        b.wait_ready()
+        opened = [b.js("location.hash"), app.text(".view-title"), app.text(".place-detail__back")]
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("пройденный шаг открывает «Мой путь по Санье», «← Назад» возвращает на «Сейчас»",
+              opened == ["#/passport/journey", "Мой путь по Санье", "← Назад"] and b.js("location.hash") == "#/", opened)
+
+        # Данные изменились обратно — шаги честно закрываются.
+        app.go(f"#/place/{a}", cold=True)
+        app.click(".passport-block button", "Снять отметку")
+        app.click(".passport-block .plan-confirm button", "Снять отметку и заметку")
+        b.js("localStorage.setItem('stg:myplan', JSON.stringify({ planId: null, days: {} })); true")
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        check("отметку сняли, план очистили: шаги плана, воспоминания и наклейки снова не отмечены",
+              [steps[s]["done"] for s in ("find", "plan", "memory", "sticker")] == [T, F, F, F], steps)
+
+        # Покупки преимуществ не дают: отметка с заметкой есть, наклейки нет.
+        app.setup(now="2026,11,19,10,0", extra={"stg:passport": json.dumps({"v": 1, "visits": {shop: {"date": "2026-11-18", "at": "2026-11-18T03:00:00.000Z", "note": "сувениры"}}, "seen": {}})})
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        check("отмечены только покупки: воспоминание сохранено, шаг наклейки не отмечен (shopping без наград)",
+              steps["memory"]["done"] and steps["find"]["done"] and not steps["sticker"]["done"], steps)
+
+        # Свернуть и открыть снова; выбор переживает перезапуск.
+        app.setup(now="2026,11,1,10,0")
+        app.go("#/", cold=True)
+        view = "(() => { const g = document.querySelector('.guide'); const t = g.querySelector('.guide__toggle'); const body = g.querySelector('.guide__body'); return { collapsed: g.dataset.collapsed, expanded: t.getAttribute('aria-expanded'), hidden: body.hidden, visible: !!g.querySelector('.guide-step a').getClientRects().length, h: Math.round(g.getBoundingClientRect().height), controls: t.getAttribute('aria-controls') === body.id }; })()"
+        v = b.js(view)
+        check("блок по умолчанию развёрнут, выбор ещё не сохранён", v["collapsed"] == "false" and v["expanded"] == "true" and v["visible"] and v["controls"] and app.raw("stg:guideCollapsed") is None, v)
+        check("кнопка «свернуть» доступна с клавиатуры", b.js("(() => { const t = document.querySelector('.guide__toggle'); t.focus(); return document.activeElement === t && t.tabIndex === 0; })()"))
+        app.click(".guide__toggle")
+        v = b.js(view)
+        check("блок сворачивается в одну строку со счётчиком", v["collapsed"] == "true" and v["expanded"] == "false" and v["hidden"] and not v["visible"] and v["h"] <= 80
+              and "из 5" in (app.text(".guide__count") or "") and app.raw("stg:guideCollapsed") == "1", v)
+        app.go("#/", cold=True)
+        v = b.js(view)
+        check("после перезапуска блок остаётся свёрнутым", v["collapsed"] == "true" and not v["visible"], v)
+        app.click(".guide__toggle")
+        v = b.js(view)
+        check("блок открывается снова", v["collapsed"] == "false" and v["visible"] and app.raw("stg:guideCollapsed") == "0", v)
+        app.go("#/", cold=True)
+        check("после перезапуска блок остаётся развёрнутым", b.js(view)["collapsed"] == "false")
+        keys = b.js("Promise.all([import('./js/logic/backup.js'), import('./js/storage.js')]).then(([B, S]) => Object.keys(B.buildBackup(S.storage.readUserData()).data))")
+        check("служебный флаг блока в копию данных не входит, прогресс шагов нигде не хранится",
+              "stg:guideCollapsed" not in keys and not [k for k in b.js("Object.keys(localStorage)") if "guide" in k and k != "stg:guideCollapsed"], keys)
+        all_done = {"stg:saved": json.dumps([a]), "stg:myplan": json.dumps({"planId": None, "days": {"2026-11-20": {"placeIds": [a], "origin": "user"}}}),
+                    "stg:passport": json.dumps({"v": 1, "visits": {a: {"date": "2026-11-18", "at": "2026-11-18T03:00:00.000Z", "note": "тёплая вода"}}, "seen": {}})}
+        app.setup(now="2026,11,19,10,0", extra=all_done)
+        app.go("#/", cold=True)
+        steps = guide_steps(app)
+        v = b.js(view)
+        check("всё пройдено и выбора нет: блок сам свёрнут, но открывается", v["collapsed"] == "true" and all(steps[s]["done"] for s in ("find", "plan", "memory", "sticker")), [v, steps])
+        app.click(".guide__toggle")
+        check("пройденный блок открывается и показывает шаги пройденными", b.js(view)["visible"] and b.js("document.querySelectorAll('.guide-step--done').length") >= 4)
+        b.send("Emulation.setEmulatedMedia", {"features": [{"name": "prefers-reduced-motion", "value": "reduce"}]})
+        app.setup(now="2026,11,1,10,0")
+        app.go("#/", cold=True)
+        b.wait_for(GUIDE_READY, 10)
+        reduced = b.js("getComputedStyle(document.querySelector('.guide-step--current .guide-step__node')).animationName")
+        b.send("Emulation.setEmulatedMedia", {"features": [{"name": "prefers-reduced-motion", "value": "no-preference"}]})
+        app.go("#/", cold=True)
+        b.wait_for(GUIDE_READY, 10)
+        moving = b.js("getComputedStyle(document.querySelector('.guide-step--current .guide-step__node')).animationName")
+        check("анимация следующей остановки отключается при «уменьшении движения»", reduced == "none" and moving == "guide-next", [reduced, moving])
+        check("«Сейчас»: ошибок в консоли нет", not app.errors(), app.errors())
+
+        # ---------------------------------------------------------------- хроника
+        app.setup(now="2026,11,14,10,0")
+        app.go("#/passport/journey", cold=True)
+        check("пустая хроника: приглашение отметить первое место со ссылкой в каталог",
+              "Отметить посещение" in (app.text(".passport-journey-empty") or "") and b.js("!!document.querySelector('.passport-journey-empty a[href=\"#/places\"]')")
+              and b.js("document.querySelectorAll('.pp-stop, .passport-journey-item').length") == 0, app.text(".passport-journey-empty"))
+        check("пустая хроника: постоянная подпись на месте", app.text(".passport-journey__caption") == JOURNEY_CAPTION, app.text(".passport-journey__caption"))
+        check("хроника — экран паспорта: подсвечена «Сейчас», выход «← К паспорту»",
+              b.js("document.querySelector('.bottom-nav__item.is-active').dataset.route") == "/" and app.text(".place-detail__back") == "← К паспорту")
+        app.go("#/passport", cold=True)
+        entry = b.js("""(() => { const s = document.querySelector('.passport-journey-entry'); return s ? { link: !!s.querySelector('a[href="#/passport/journey"]'), text: s.textContent,
+            badges: document.querySelectorAll('.passport .pp-badge').length, parts: document.querySelectorAll('.passport-parts li').length,
+            strip: document.querySelectorAll('.passport-strip__item').length, maps: document.querySelectorAll('.passport .pp-map__svg').length,
+            caption: document.querySelector('.passport-map__caption').textContent } : null; })()""")
+        check("паспорт: вход «Мой путь по Санье» есть, прежние схема, 7 частей и 12 наклеек на месте",
+              bool(entry) and entry["link"] and "Путь начнётся с первой отметки" in entry["text"] and entry["badges"] == 7 and entry["parts"] == 7
+              and entry["strip"] == 12 and entry["maps"] == 1 and entry["caption"].startswith("Схема для отметок."), entry)
+
+        # Часы теста после каждой холодной загрузки начинают отсчёт заново с
+        # __fakeNow, поэтому время следующей отметки задаётся явно.
+        def mark(place_id, now=None):
+            if now:
+                b.js(f"sessionStorage.setItem('__fakeNow', {json.dumps(now)}); true")
+            app.go(f"#/place/{place_id}", cold=True)
+            app.click(".passport-block button", "Отметить посещение")
+            time.sleep(0.05)
+            return app.text(".passport-block__stop")
+
+        check("первая отметка: карточка называет остановку № 1", mark(c) == "Остановка № 1 на вашем пути ›", app.text(".passport-block__stop"))
+        check("обратная связь после отметки не меняет сообщение статуса", "Отмечено." in (app.text(".passport-block__status") or "") and b.js("document.querySelector('.passport-block').classList.contains('is-fresh')"))
+        h0 = b.js("history.length")
+        app.click(".passport-block__stop")
+        b.wait_ready()
+        check("ссылка из карточки открывает хронику с первой остановкой",
+              b.js("location.hash") == "#/passport/journey" and b.js(JOURNEY_LIST) == [[1, c]] and b.js(JOURNEY_MAP) == [[1, c]] and b.js(JOURNEY_LINES) == [], [b.js(JOURNEY_LIST), b.js(JOURNEY_MAP)])
+        check("с одной остановкой линии нет, подпись на месте", app.text(".passport-journey__caption") == JOURNEY_CAPTION and "1 остановка" in (app.text(".passport-journey__summary") or ""))
+        back_label = app.text(".place-detail__back")
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("из хроники «← Назад» возвращает в карточку места без роста истории",
+              back_label == "← Назад" and b.js("location.hash") == f"#/place/{c}" and b.js("history.length") <= h0 + 1, [back_label, b.js("location.hash")])
+
+        check("вторая отметка того же дня получает № 2", mark(a, "2026,11,14,10,5") == "Остановка № 2 на вашем пути ›", app.text(".passport-block__stop"))
+        check("третья отметка того же дня получает № 3", mark(d, "2026,11,14,10,10") == "Остановка № 3 на вашем пути ›", app.text(".passport-block__stop"))
+        visits = (app.storage("stg:passport") or {}).get("visits", {})
+        stamps = [visits.get(p, {}).get("at", "") for p in (c, a, d)]
+        check("у новых отметок один день и строго растущий момент отметки",
+              {visits[p]["date"] for p in (c, a, d)} == {"2026-11-14"} and all(stamps) and stamps == sorted(stamps) and len(set(stamps)) == 3, visits)
+        app.go("#/passport/journey", cold=True)
+        check("несколько отметок одного дня идут в порядке отметок, а не каталога",
+              b.js(JOURNEY_LIST) == [[1, c], [2, a], [3, d]] and sorted(b.js(JOURNEY_MAP)) == [[1, c], [2, a], [3, d]] and b.js(JOURNEY_LINES) == [2, 3],
+              [b.js(JOURNEY_LIST), b.js(JOURNEY_LINES)])
+        check("отметка следующего дня получает № 4", mark(bb, "2026,11,15,9,0") == "Остановка № 4 на вашем пути ›", app.text(".passport-block__stop"))
+        b.js("import('./js/storage.js').then((m) => m.storage.setPassportNote(" + json.dumps(a) + ", 'Вода тёплая, песок белый'))")
+        app.go("#/passport/journey", cold=True)
+        check("хроника дополняется без ручного редактирования: четыре остановки, три отрезка",
+              b.js(JOURNEY_LIST) == [[1, c], [2, a], [3, d], [4, bb]] and b.js(JOURNEY_LINES) == [2, 3, 4] and "4 остановки" in (app.text(".passport-journey__summary") or ""), b.js(JOURNEY_LIST))
+        rows = b.js("""[...document.querySelectorAll('.passport-journey-item')].map((li) => ({ id: li.dataset.place, name: li.querySelector('.passport-visit__link').textContent.trim(),
+            href: li.querySelector('.passport-visit__link').getAttribute('href'), date: li.querySelector('.passport-visit__date').textContent,
+            note: li.querySelector('.passport-journey-item__note') ? [li.querySelector('.passport-journey-item__note').getAttribute('href'), li.querySelector('.passport-journey-item__note').textContent] : null }))""")
+        check("в хронике у каждой остановки название, дата отметки и ссылка на карточку",
+              all(name[row["id"]] in row["name"] and row["href"] == f"#/place/{row['id']}" for row in rows)
+              and [("14 ноября 2026" in row["date"]) for row in rows] == [T, T, T, F] and "15 ноября 2026" in rows[3]["date"], rows)
+        check("заметка привязана к своему месту и только к нему",
+              [row["note"] for row in rows] == [None, [f"#/place/{a}?section=passport", "📝 «Вода тёплая, песок белый»"], None, None], [row["note"] for row in rows])
+        labels = b.js("[...document.querySelectorAll('.pp-stop')].map((s) => s.getAttribute('aria-label'))")
+        check("значки на схеме названы: номер, место и дата отметки",
+              sorted(labels) == sorted(f"Остановка {n}: {name[p]}. Отмечено · {day} ноября 2026" for n, p, day in ((1, c, 14), (2, a, 14), (3, d, 14), (4, bb, 15))), labels)
+        check("значки доступны с клавиатуры", b.js("[...document.querySelectorAll('.pp-stop')].every((s) => { s.focus(); return document.activeElement === s; })"))
+
+        tap(b, f".pp-stop[data-place=\"{a}\"] .pp-marker__hit")
+        opened = [b.js("location.hash"), app.text(".view-title"), app.text(".place-detail__back")]
+        app.click(".place-detail__back")
+        b.wait_ready()
+        check("нажатие на точку открывает карточку этого места, «← Назад» возвращает в хронику",
+              opened == [f"#/place/{a}", name[a], "← Назад"] and b.js("location.hash") == "#/passport/journey", opened)
+        tap(b, f".passport-journey-item[data-place=\"{a}\"] .passport-journey-item__note")
+        time.sleep(0.3)
+        note_view = b.js("(() => { const blk = document.querySelector('.passport-block'); const r = blk.getBoundingClientRect(); return { hash: location.hash, text: blk.querySelector('.passport-block__note').textContent, top: Math.round(r.top), h: innerHeight }; })()")
+        check("ссылка заметки открывает карточку на блоке паспорта с этой заметкой",
+              note_view["hash"] == f"#/place/{a}?section=passport" and note_view["text"] == "Заметка: «Вода тёплая, песок белый»" and 0 <= note_view["top"] < note_view["h"] / 2, note_view)
+
+        # Снятие отметки пересчитывает номера и линию; «Вернуть» ставит на прежнее место.
+        app.go(f"#/place/{c}", cold=True)
+        app.click(".passport-block button", "Снять отметку")
+        after_remove = b.js("Promise.all([import('./js/logic/passport.js'), import('./js/storage.js'), import('./js/data.js')]).then(async ([P, S, D]) => P.visitJourney(S.storage.getPassport(), await D.loadPlaces()).map((s) => [s.number, s.place.id]))")
+        check("снятая отметка: карточка больше не называет остановку, номера пересчитаны",
+              b.js("!document.querySelector('.passport-block__stop')") and after_remove == [[1, a], [2, d], [3, bb]], after_remove)
+        app.click(".passport-block button", "Вернуть отметку")
+        check("«Вернуть отметку» возвращает остановку на прежнее место — № 1", app.text(".passport-block__stop") == "Остановка № 1 на вашем пути ›", app.text(".passport-block__stop"))
+        app.click(".passport-block button", "Снять отметку")
+        app.go("#/passport/journey", cold=True)
+        check("после снятия первой отметки хроника и линия пересчитаны",
+              b.js(JOURNEY_LIST) == [[1, a], [2, d], [3, bb]] and sorted(b.js(JOURNEY_MAP)) == [[1, a], [2, d], [3, bb]] and b.js(JOURNEY_LINES) == [2, 3]
+              and "3 остановки" in (app.text(".passport-journey__summary") or ""), [b.js(JOURNEY_LIST), b.js(JOURNEY_LINES)])
+        check("заметка осталась у своего места после пересчёта",
+              b.js(f"document.querySelector('.passport-journey-item[data-place=\"{a}\"] .passport-journey-item__note').textContent") == "📝 «Вода тёплая, песок белый»"
+              and b.js("document.querySelectorAll('.passport-journey-item__note').length") == 1)
+
+        # Покупки: остановка есть, наград нет.
+        app.go("#/passport", cold=True)
+        stats_before = b.js("[...document.querySelectorAll('.passport-stat__value')].map((e) => e.textContent)")
+        stop_text = mark(shop, "2026,11,15,12,0")
+        app.go("#/passport", cold=True)
+        stats_after = b.js("[...document.querySelectorAll('.passport-stat__value')].map((e) => e.textContent)")
+        trail = b.js("[...document.querySelectorAll('.passport-trail__stop')].map((e) => e.textContent)")
+        check("отметка покупок: остановка № 4 в хронике, счётчики мест, наклеек и частей побережья не изменились",
+              stop_text == "Остановка № 4 на вашем пути ›" and stats_before == stats_after and stats_after[0] == "3" and trail == ["1", "2", "3", "4"], [stop_text, stats_before, stats_after, trail])
+        app.go("#/passport/journey", cold=True)
+        check("покупки в хронике помечены «На память»",
+              "На память" in (b.js(f"document.querySelector('.passport-journey-item[data-place=\"{shop}\"]').textContent") or "") and len(b.js(JOURNEY_LIST)) == 4)
+        text = b.js("document.querySelector('.passport').textContent")
+        check("на экране хроники нет расстояний, времени в пути и слова «трек»; «маршрут» — только в подписи-оговорке",
+              not re.search(r"\d\s*(км|м\b|мин|ч\b)|трек|GPS|геолокац", text) and text.count("маршрут") == 1, re.findall(r"\d\s*(?:км|мин)|маршрут\w*|трек", text))
+        check("хроника: ошибок в консоли нет", not app.errors(), app.errors())
+
+        # ---------------------------------------------------------------- старые данные
+        old = {"v": 1, "visits": {a: {"date": "2026-11-10", "note": "старая заметка"}, bb: {"date": "2026-11-12"}, c: {"date": "2026-11-12"},
+                                  d: {"date": "2026-11-13", "at": "2026-11-13T03:00:00.000Z"}}, "seen": {}}
+        old_raw = json.dumps(old, ensure_ascii=False)
+        app.setup(now="2026,11,19,10,0", extra={"stg:passport": old_raw})
+        for route in ("#/", "#/passport", "#/passport/journey", "#/passport/album", "#/passport/zone/coast-yalong", f"#/place/{bb}", "#/places"):
+            app.go(route, cold=True)
+        check("старые отметки: открытие экранов ничего не дописывает в stg:passport (миграции с выдуманным временем нет)",
+              app.raw("stg:passport") == old_raw and app.raw("stg:schema") == "1", app.raw("stg:passport"))
+        app.go("#/passport/journey", cold=True)
+        loose = b.js("""({ list: [...document.querySelectorAll('.passport-journey-item--loose')].map((li) => li.dataset.place).sort(),
+            map: [...document.querySelectorAll('.pp-stop--loose')].map((s) => s.dataset.place).sort(),
+            labels: [...document.querySelectorAll('.pp-stop--loose')].every((s) => s.getAttribute('aria-label').includes('Порядок внутри дня неизвестен')),
+            note: (document.querySelector('.passport-journey__loose-note') || {}).textContent || '',
+            rowText: [...document.querySelectorAll('.passport-journey-item--loose')].every((li) => li.textContent.includes('порядок внутри этого дня неизвестен')),
+            toNext: [...document.querySelectorAll('.passport-journey-item--to-next')].length })""")
+        check("старые отметки одного дня явно помечены: порядок внутри дня неизвестен",
+              loose["list"] == sorted([bb, c]) and loose["map"] == sorted([bb, c]) and loose["labels"] and loose["rowText"] and "линия к ним не проведена" in loose["note"], loose)
+        check("между записями с неизвестным порядком линий нет — ни на схеме, ни в списке", b.js(JOURNEY_LINES) == [] and loose["toNext"] == 0, [b.js(JOURNEY_LINES), loose["toNext"]])
+        check("все четыре старые отметки видны, старая заметка — у своего места",
+              len(b.js(JOURNEY_LIST)) == 4 and b.js(JOURNEY_LIST)[0] == [1, a] and b.js(JOURNEY_LIST)[3] == [4, d]
+              and b.js(f"document.querySelector('.passport-journey-item[data-place=\"{a}\"] .passport-journey-item__note').textContent") == "📝 «старая заметка»", b.js(JOURNEY_LIST))
+        app.go(f"#/place/{bb}", cold=True)
+        check("карточка старой отметки не называет условный номер", app.text(".passport-block__stop") == "Есть на вашем пути ›", app.text(".passport-block__stop"))
+        new_place = "dadonghai-beach"
+        check("новая отметка поверх старых данных получает № 5", mark(new_place) == "Остановка № 5 на вашем пути ›", app.text(".passport-block__stop"))
+        stored = app.storage("stg:passport")
+        check("новая отметка хранит момент, старые записи не получили выдуманного времени и не потеряны",
+              "at" in stored["visits"][new_place] and all("at" not in stored["visits"][p] for p in (a, bb, c)) and stored["visits"][d] == old["visits"][d]
+              and stored["visits"][a] == old["visits"][a] and stored["v"] == 1, stored)
+        app.go("#/passport/journey", cold=True)
+        order_before = b.js(JOURNEY_LIST)
+        check("линия проведена только между записями с известным порядком (№ 4 → № 5)", b.js(JOURNEY_LINES) == [5] and order_before[4] == [5, new_place], [b.js(JOURNEY_LINES), order_before])
+
+        # Экспорт и импорт: старые и новые данные сохраняются как есть.
+        app.go("#/data", cold=True)
+        b.js("""(() => { window.__blobs = []; const orig = URL.createObjectURL; URL.createObjectURL = (blob) => { window.__blobs.push(blob); return orig(blob); };
+              HTMLAnchorElement.prototype.click = function () { window.__downloaded = this.download; }; return true; })()""")
+        app.click(".backup-actions button", "Скачать файл копии")
+        b.wait_for("window.__downloaded")
+        exported = json.loads(b.js("window.__blobs[0].text()"))
+        check("экспорт: раздел паспорта совпадает с хранилищем (старые записи без времени, новая — с моментом)",
+              exported.get("data", {}).get("stg:passport") == stored and exported.get("schemaVersion") == 1, exported.get("data", {}).get("stg:passport"))
+        b.js("localStorage.removeItem('stg:passport'); true")
+        app.go("#/data", cold=True)
+        b.js(f"document.querySelector('#backup-text').value = {json.dumps(json.dumps(exported))}; true")
+        app.click(".backup-actions button", "Проверить текст копии")
+        app.click(".backup-preview button", "Заменить мои данные")
+        b.wait_for("!!document.querySelector('.backup-message')")
+        check("импорт вернул отметки и заметки без изменений", app.storage("stg:passport") == stored, app.storage("stg:passport"))
+        app.go("#/passport/journey", cold=True)
+        check("после импорта хроника та же: порядок, неизвестный порядок и линия", b.js(JOURNEY_LIST) == order_before and b.js(JOURNEY_LINES) == [5]
+              and sorted(b.js("[...document.querySelectorAll('.pp-stop--loose')].map((s) => s.dataset.place)")) == sorted([bb, c]), b.js(JOURNEY_LIST))
+        # Копия старой версии: отметки без момента и без номера версии раздела.
+        legacy = {"app": "sanya-travel-guide", "kind": "user-data-backup", "schemaVersion": 1, "exportedAt": "2026-10-10T10:00:00.000Z", "appVersion": "v16",
+                  "data": {"stg:passport": {"visits": {c: {"date": "2026-11-11", "note": "из старой копии"}, a: {"date": "2026-11-11"}, bb: {"date": "2026-11-09"}}}}}
+        app.go("#/data", cold=True)
+        b.js(f"document.querySelector('#backup-text').value = {json.dumps(json.dumps(legacy))}; true")
+        app.click(".backup-actions button", "Проверить текст копии")
+        app.click(".backup-preview button", "Заменить мои данные")
+        b.wait_for("!!document.querySelector('.backup-message')")
+        stored = app.storage("stg:passport")
+        check("копия старой версии импортируется совместимо: три отметки, заметка на месте, времени не добавлено",
+              stored["v"] == 1 and set(stored["visits"]) == {a, bb, c} and stored["visits"][c] == {"date": "2026-11-11", "note": "из старой копии"}
+              and all("at" not in v for v in stored["visits"].values()), stored)
+        app.go("#/passport/journey", cold=True)
+        check("после импорта старой копии: один день известен, два места одного дня — без линии",
+              b.js(JOURNEY_LIST)[0] == [1, bb] and b.js(JOURNEY_LINES) == [] and sorted(b.js("[...document.querySelectorAll('.pp-stop--loose')].map((s) => s.dataset.place)")) == sorted([a, c]), b.js(JOURNEY_LIST))
+        check("старые данные: ошибок в консоли нет", not app.errors(), app.errors())
+    finally:
+        app.close()
+
+    # ---------------------------------------------------------------- место вне схемы
+    app = App(port)
+    b = app.b
+    b.add_init_script(OFF_MAP)
+    try:
+        trio = {"v": 1, "visits": {a: {"date": "2026-11-14", "at": "2026-11-14T02:00:00.000Z"}, bb: {"date": "2026-11-14", "at": "2026-11-14T04:00:00.000Z", "note": "без точки"},
+                                   c: {"date": "2026-11-14", "at": "2026-11-14T06:00:00.000Z"}, d: {"date": "2026-11-15", "at": "2026-11-15T02:00:00.000Z"}}, "seen": {}}
+        app.setup(extra={"stg:passport": json.dumps(trio)})
+        b.js(f"sessionStorage.setItem('__offMap', {json.dumps(bb)}); true")
+        app.go("#/passport/journey", cold=True)
+        off = b.js(f"""({{ list: {JOURNEY_LIST}, map: {JOURNEY_MAP}, lines: {JOURNEY_LINES},
+            row: document.querySelector('.passport-journey-item[data-place="{bb}"]').textContent,
+            link: document.querySelector('.passport-journey-item[data-place="{bb}"] .passport-visit__link').getAttribute('href'),
+            note: (document.querySelector('.passport-journey__offmap-note') || {{}}).textContent || '' }})""")
+        check("место без точки на схеме остаётся в списке хроники со своим номером, ссылкой и заметкой",
+              off["list"] == [[1, a], [2, bb], [3, c], [4, d]] and "Нет на схеме" in off["row"] and "без точки" in off["row"] and off["link"] == f"#/place/{bb}", off)
+        check("на схеме такого места нет, и это объяснено под схемой", sorted(off["map"]) == [[1, a], [3, c], [4, d]] and "Нет на схеме: 1 место" in off["note"] and "в списке ниже" in off["note"], off)
+        check("линия не проводится через пропущенное место (нет отрезков к № 2 и от него)", off["lines"] == [4], off["lines"])
+        check("место вне схемы: без ошибок и переполнения", not app.errors() and app.overflow() <= 0)
+    finally:
+        app.close()
+
+    # ---------------------------------------------------------------- вёрстка
+    many_ids = [p["id"] for p in PLACES if py_part_of(p) in ("coast-centre", "coast-dadonghai")][:9] + [a, c, "wuzhizhou-island"]
+    many_ids = list(dict.fromkeys(many_ids))
+    many = {"v": 1, "visits": {pid: {"date": "2026-11-%02d" % (14 + i // 4), "at": "2026-11-%02dT0%d:00:00.000Z" % (14 + i // 4, 1 + i % 4), **({"note": "заметка " * 12} if i == 2 else {})}
+                               for i, pid in enumerate(many_ids)}, "seen": {}}
+    for width, height in ((320, 568), (375, 667), (414, 896)):
+        app = App(port, width, height)
+        b = app.b
+        try:
+            app.setup(extra={"stg:passport": json.dumps(many)})
+            app.go("#/passport/journey", cold=True)
+            geo = b.js("""(() => { const svg = document.querySelector('.passport-journey-map .pp-map__svg').getBoundingClientRect();
+                const hits = [...document.querySelectorAll('.pp-stop')].map((s) => { const r = s.querySelector('.pp-marker__hit').getBoundingClientRect();
+                  return { id: s.dataset.place, n: s.querySelector('.pp-marker__num').textContent, x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height,
+                           inside: r.left >= svg.left - 0.5 && r.right <= svg.right + 0.5 && r.top >= svg.top - 0.5 && r.bottom <= svg.bottom + 0.5 }; });
+                let minGap = Infinity; hits.forEach((p, i) => hits.forEach((q, j) => { if (i < j) minGap = Math.min(minGap, Math.hypot(p.x - q.x, p.y - q.y)); }));
+                const tapped = [...document.querySelectorAll('.pp-stop')].map((s) => { s.scrollIntoView({ block: 'center' }); const r = s.querySelector('.pp-marker__hit').getBoundingClientRect();
+                  const at = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!at && at.closest('.pp-stop') === s; });
+                const nums = hits.map((h) => Number(h.n)).sort((x, y) => x - y);
+                return { n: hits.length, minW: Math.min(...hits.map((h) => Math.min(h.w, h.h))), minGap, inside: hits.every((h) => h.inside), tapped: tapped.every(Boolean),
+                         nums, list: document.querySelectorAll('.passport-journey-item').length, lines: document.querySelectorAll('.pp-journey__line').length,
+                         caption: document.querySelector('.passport-journey__caption').textContent, mapCaption: document.querySelector('.passport-journey-map figcaption').textContent }; })()""")
+            n = len(many_ids)
+            check(f"{width}px хроника из {n} остановок: все места на схеме и в списке, номера 1…{n} без повторов",
+                  geo["n"] == n and geo["list"] == n and geo["nums"] == list(range(1, n + 1)) and geo["lines"] == n - 1, geo)
+            check(f"{width}px хроника: зоны нажатия не меньше 44 px, номера не накладываются, нажатие попадает в свою точку",
+                  geo["minW"] >= 43.9 and geo["minGap"] >= 43.5 and geo["inside"] and geo["tapped"], geo)
+            check(f"{width}px хроника: обе подписи на месте, без переполнения и ошибок",
+                  geo["caption"] == JOURNEY_CAPTION and geo["mapCaption"].startswith("Схема для отметок.") and app.overflow() <= 0 and not app.errors(), geo)
+            check(f"{width}px хроника: ссылки и кнопки не меньше 44 px", not app.small_targets(".passport"), app.small_targets(".passport"))
+            app.go("#/passport", cold=True)
+            check(f"{width}px паспорт с входом в хронику: без переполнения, зоны нажатия не меньше 44 px",
+                  app.overflow() <= 0 and not app.small_targets(".passport-journey-entry") and not app.errors(), app.small_targets(".passport-journey-entry"))
+            app.go(f"#/place/{many_ids[0]}", cold=True)
+            check(f"{width}px карточка места: ссылка на остановку не меньше 44 px, без переполнения",
+                  not app.small_targets(".passport-block") and app.overflow() <= 0, app.small_targets(".passport-block"))
+            if width == 375:
+                b.send("Emulation.setEmulatedMedia", {"features": [{"name": "prefers-reduced-motion", "value": "reduce"}]})
+                app.go("#/passport/journey", cold=True)
+                reduced = b.js("[getComputedStyle(document.querySelector('.pp-stop')).animationName, getComputedStyle(document.querySelector('.pp-journey')).animationName, document.querySelectorAll('.pp-stop').length]")
+                b.send("Emulation.setEmulatedMedia", {"features": [{"name": "prefers-reduced-motion", "value": "no-preference"}]})
+                app.go("#/passport/journey", cold=True)
+                moving = b.js("getComputedStyle(document.querySelector('.pp-stop')).animationName")
+                check("анимация появления остановок отключается при «уменьшении движения», данные на месте сразу",
+                      reduced == ["none", "none", n] and moving == "pp-stop-in", [reduced, moving])
+        finally:
+            app.close()
+
+
 # ------------------------------------------------------------------ main
 
 def main():
-    sections = sys.argv[1:] or ["static", "unit", "passport", "map", "layout", "regression", "travel", "ux", "offline", "upgrade"]
+    sections = sys.argv[1:] or ["static", "unit", "passport", "map", "layout", "regression", "travel", "ux", "journey", "offline", "upgrade"]
     port = 8650
     server = None
-    if any(s in sections for s in ("unit", "passport", "map", "layout", "regression", "travel", "ux")):
+    if any(s in sections for s in ("unit", "passport", "map", "layout", "regression", "travel", "ux", "journey")):
         server = serve(ROOT, port)
     started = time.time()
     try:
@@ -1972,6 +2630,8 @@ def main():
                 run_travel(port)
             elif name == "ux":
                 run_ux(port)
+            elif name == "journey":
+                run_journey(port)
             elif name == "offline":
                 run_offline(port + 1)
             elif name == "upgrade":

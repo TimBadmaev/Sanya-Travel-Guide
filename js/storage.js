@@ -36,6 +36,11 @@ export const KEYS = {
   // снятая перед первой записью поверх него (как у stg:expenses).
   passport: "stg:passport",
   passportBackup: "stg:passport:backup",
+  // Блок «Начните своё путешествие» на «Сейчас» свёрнут ("1") или развёрнут
+  // ("0") самим пользователем. Только вид блока: прогресс шагов нигде не
+  // хранится (js/logic/guide.js). Служебный флаг, как подсказка установки, —
+  // к схеме не относится и в копию данных не входит.
+  guideCollapsed: "stg:guideCollapsed",
 };
 
 // Данные пользователя, которые переносит копия (Iteration 9, экспорт/импорт):
@@ -305,6 +310,29 @@ function setInstallHintDismissed() {
   if (!storageAvailable) return false;
   try {
     window.localStorage.setItem(KEYS.installHintDismissed, "1");
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// true / false — пользователь сам свернул или развернул блок; null — ещё не
+// выбирал (или хранилище недоступно): вид блока решает экран.
+function getGuideCollapsed() {
+  if (!storageAvailable) return null;
+  try {
+    const raw = window.localStorage.getItem(KEYS.guideCollapsed);
+    return raw === "1" ? true : raw === "0" ? false : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+// Без хранилища выбор живёт до перезагрузки — это не ошибка.
+function setGuideCollapsed(collapsed) {
+  if (!storageAvailable) return false;
+  try {
+    window.localStorage.setItem(KEYS.guideCollapsed, collapsed ? "1" : "0");
     return true;
   } catch (e) {
     return false;
@@ -706,6 +734,8 @@ export const storage = {
   setMyPlan,
   isInstallHintDismissed,
   setInstallHintDismissed,
+  getGuideCollapsed,
+  setGuideCollapsed,
   getChecklistState,
   setChecklistItemDone,
   getSavedIds,

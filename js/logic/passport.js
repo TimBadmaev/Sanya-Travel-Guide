@@ -273,6 +273,56 @@ export function visitList(state, places) {
   return list.map(({ place, visit }) => ({ place, visit }));
 }
 
+// «Мой путь по Санье»: те же видимые отметки в порядке, в котором их
+// поставили (старые первыми), с номерами остановок 1, 2, 3… Порядок берётся
+// только из уже хранимых полей: день отметки `date`, внутри дня — момент
+// `at`. Отдельного счётчика или поля порядка нет, поэтому снятая отметка
+// просто исчезает из последовательности, а возвращённая («Вернуть отметку»)
+// встаёт на прежнее место со своим `at`.
+//
+// Время не придумывается. У отметки без `at` известен только день. День, где
+// отметок несколько и хотя бы у одной нет момента (или моменты совпали), —
+// день с неизвестным порядком: его остановки получают exact: false. Номер у
+// них остаётся (по нему остановка находится в списке), но он условный.
+// linked — можно ли провести линию от предыдущей остановки к этой: только
+// когда обе стоят на точно известных местах последовательности. Иначе линия
+// утверждала бы соседство, которого в данных нет.
+export function visitJourney(state, places) {
+  const list = [];
+  (places || []).forEach((place, index) => {
+    const visit = getVisit(state, place.id);
+    if (!visit) return;
+    const time = visit.at ? Date.parse(visit.at) : NaN;
+    list.push({ place, visit, index, time: Number.isNaN(time) ? null : time });
+  });
+  list.sort((a, b) => {
+    if (a.visit.date !== b.visit.date) return a.visit.date < b.visit.date ? -1 : 1;
+    // Без момента — в начале дня, в порядке каталога: позиция условная.
+    if (a.time === null || b.time === null) return (a.time === null ? 0 : 1) - (b.time === null ? 0 : 1) || a.index - b.index;
+    return a.time - b.time || a.index - b.index;
+  });
+  const days = new Map();
+  list.forEach((entry) => {
+    if (!days.has(entry.visit.date)) days.set(entry.visit.date, []);
+    days.get(entry.visit.date).push(entry);
+  });
+  const exactDays = new Set();
+  days.forEach((entries, date) => {
+    const times = entries.map((entry) => entry.time);
+    if (entries.length === 1 || (!times.includes(null) && new Set(times).size === times.length)) exactDays.add(date);
+  });
+  return list.map(({ place, visit }, i) => {
+    const exact = exactDays.has(visit.date);
+    return {
+      number: i + 1,
+      place,
+      visit,
+      exact,
+      linked: i > 0 && exact && exactDays.has(list[i - 1].visit.date),
+    };
+  });
+}
+
 // Значение, которое «собирает» правило, у одного места: для distinct-правил
 // — категория или часть побережья, для count — само место.
 function ruleKey(rule, place, partOf) {

@@ -138,12 +138,13 @@ export async function renderPlace(container, ctx) {
   // Итерация 6: из дня «Моего плана» или рекомендации возврат — в этот день;
   // в режиме addTo — в список выбора с тем же addTo.
   // С карточки экскурсии (её «Связанные места») — тоже «← Назад» в неё.
-  // Из паспорта (#/passport, часть побережья, альбом) — «← Назад» туда же.
+  // Из паспорта (#/passport, часть побережья, альбом, хроника) — «← Назад»
+  // туда же.
   // С «Сейчас» («Сегодня», «Подходит сейчас») и с «Что делать сейчас» — тоже
   // туда, откуда пришли, а не в каталог.
   const fromDay =
     /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath) ||
-    /^\/passport(\/zone\/[^/]+|\/album)?$/.test(fromPath) ||
+    /^\/passport(\/zone\/[^/]+|\/album|\/journey)?$/.test(fromPath) ||
     fromPath === "/" ||
     fromPath === "/now";
   const parentHash = fromDay ? fromHash : addTo ? `#/places?addTo=${addTo}` : "#/places";
@@ -316,6 +317,15 @@ export async function renderPlace(container, ctx) {
     // «Добавить в мой план». Порядок D-12 и закреплённая «Показать таксисту»
     // не меняются; в режиме выбора места для дня блока нет.
     renderPassportBlock(container, { place, places, config, content: passportContent });
+    // Из хроники паспорта («📝 заметка») карточка открывается на блоке
+    // паспорта — тот же приём, что у #/settings?section=home: следующим
+    // тиком и только если экран остался в начале.
+    if (ctx.query.get("section") === "passport") {
+      setTimeout(() => {
+        const block = container.querySelector(".passport-block");
+        if (ctx.isCurrent() && block && window.scrollY === 0) block.scrollIntoView({ block: "start" });
+      }, 0);
+    }
   }
 
   // 5. Лучшее время, часы, цена — только непустые; у мест нет поля volatile,

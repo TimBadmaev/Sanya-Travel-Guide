@@ -1,4 +1,4 @@
-import { loadChecklist, loadConfig, loadExcursions, loadPlaces, loadPlan, loadErrorMessage } from "../data.js";
+import { loadChecklist, loadConfig, loadExcursions, loadPassport, loadPlaces, loadPlan, loadErrorMessage } from "../data.js";
 import { TODAY_STATE, getPeriodDates, isDayEmpty, resolveDayTitle, resolveToday } from "../logic/plan.js";
 import { countPlannedDays } from "../logic/myplan.js";
 import { EMPTY_DAY_TEXT, createTypeChip, typesMap } from "./plan.js";
@@ -16,6 +16,7 @@ import { groupByPhase } from "../logic/checklist.js";
 import { renderTask } from "./task.js";
 import { renderHomeExpenses } from "./expenses.js";
 import { renderArrivalBlock, renderDepartureBlock, renderNowPreview, renderTodayCard } from "./today.js";
+import { renderGuide } from "./guide.js";
 
 // Экран «Сейчас» (PRODUCT.md 8.3, MVP-UX-SPEC §3): четыре состояния по датам
 // поездки. Район на выбор состояния не влияет — только на содержимое строк
@@ -183,6 +184,7 @@ export async function renderHome(container, ctx) {
   let places;
   let plan;
   let excursions;
+  let passportRaw;
   try {
     // Справочник — ради названия района, чек-лист — ради прогресса и
     // ближайших дел, места — ради счётчика «Сохранено: N». Новых сетевых
@@ -191,12 +193,15 @@ export async function renderHome(container, ctx) {
     // превращает Главную в ошибку, просто нет блока плана.
     // Экскурсии нужны только заголовку дня в блоке плана — как и план,
     // необязательны: без них Главная не превращается в ошибку.
-    [config, checklist, places, plan, excursions] = await Promise.all([
+    // Контент паспорта нужен только шагу «первая наклейка» блока «Начните
+    // своё путешествие» — тоже необязателен.
+    [config, checklist, places, plan, excursions, passportRaw] = await Promise.all([
       loadConfig(),
       loadChecklist(),
       loadPlaces(),
       loadPlan().catch(() => null),
       loadExcursions().catch(() => []),
+      loadPassport().catch(() => null),
     ]);
   } catch (e) {
     console.error(e);
@@ -251,6 +256,11 @@ export async function renderHome(container, ctx) {
   head.appendChild(headLinks);
   container.appendChild(head);
 
+  // «Начните своё путешествие» — пять остановок-подсказок (js/views/guide.js).
+  // Во всех состояниях блок стоит ниже основного сценария (D-33 (4)): блок
+  // прилёта, чек-лист, карточка «Сегодня» и расходы остаются выше него.
+  const guide = () => renderGuide(container, { places, config, passportRaw });
+
   if (state === TRIP_STATE.BEFORE) {
     const days = `${daysUntil} ${pluralizeRu(daysUntil, ["день", "дня", "дней"])}`;
     appendLine(container, "home-status", `До поездки: ${days}`);
@@ -301,6 +311,7 @@ export async function renderHome(container, ctx) {
     renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
     // Расходы до поездки (виза, страховка, eSIM) — категория «Подготовка».
     appendActionLink(container, "Расходы поездки", "#/expenses", "home-link");
+    guide();
     return;
   }
 
@@ -319,6 +330,7 @@ export async function renderHome(container, ctx) {
     }
     renderHomeExpenses(container, getTodayIso());
     renderNowPreview(container, { places, config, trip, plan });
+    guide();
 
     // В поездке сценарии ищут места рядом (Q-21): near=1 ограничивает список
     // радиусом NEAR_RADIUS_KM от точки отсчёта (logic/filters.js). Без точки
@@ -412,4 +424,5 @@ export async function renderHome(container, ctx) {
     ["Хочу природу", "#/places?f=nature"],
     ["Куда сходить с детьми", "#/places?f=kids"],
   ]);
+  guide();
 }

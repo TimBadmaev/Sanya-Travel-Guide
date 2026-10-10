@@ -175,3 +175,73 @@ export function layoutMarkers(points, { minWidthPx = 280, hitPx = 22, minBoxWidt
     })),
   };
 }
+
+// Раскладка остановок хроники «Мой путь по Санье». points — [{ id, x, y }] в
+// порядке отметок. В отличие от части побережья (до 14 мест) остановок может
+// быть сколько угодно, и все они на одной схеме, поэтому правило другое:
+// ширина рамки и размер значка фиксированы (зона нажатия — ровно hitPx на
+// самой узкой карте), а тесноту схема разрешает ростом вниз, а не уменьшением
+// значков. Остановки ставятся по очереди: первая — в свою точку, следующая —
+// в ближайшее к своей точке свободное место (перебор по кольцам, порядок
+// фиксирован). Сдвинутый значок соединяется с настоящей точкой тонкой
+// линией. Результат зависит только от входа.
+const ART_MIN = -40;
+const ART_MAX = 1040;
+const JOURNEY_PAD = 1.7;
+
+export function layoutJourney(points, { minWidthPx = 280, hitPx = 22, minBoxWidth = 520 } = {}) {
+  if (!points.length) return { viewBox: null, hitR: 0, markers: [] };
+  const scale = hitPx / minWidthPx;
+  const span = boxOf(points, 0);
+  // Рамка — под разброс точек с полями, но не уже minBoxWidth: одна
+  // остановка не превращается в кружок на весь экран.
+  const width = Math.max(minBoxWidth, span.w / (1 - 2 * JOURNEY_PAD * scale));
+  const hitR = scale * width;
+  const pad = JOURNEY_PAD * hitR;
+  let left = span.x + span.w / 2 - width / 2;
+  // По возможности рамка не выходит за рисунок суши.
+  if (width <= ART_MAX - ART_MIN) left = Math.min(Math.max(left, ART_MIN), ART_MAX - width);
+  const xMin = left + pad;
+  const xMax = left + width - pad;
+  const yMin = ART_MIN + pad;
+  const clamp = (p) => ({ x: Math.min(Math.max(p.x, xMin), xMax), y: Math.max(p.y, yMin) });
+  const sep = 2 * hitR;
+  const placed = [];
+  const free = (p) => placed.every((q) => Math.hypot(p.x - q.x, p.y - q.y) >= sep - 1e-6);
+  points.forEach((point) => {
+    let spot = clamp(point);
+    for (let ring = 1; !free(spot); ring += 1) {
+      const radius = ring * hitR * 0.25;
+      const steps = 8 + 4 * ring;
+      let found = null;
+      for (let i = 0; i < steps && !found; i += 1) {
+        // Первым проверяется место ниже точки: теснота уходит к морю.
+        const angle = Math.PI / 2 + (i * 2 * Math.PI) / steps;
+        const candidate = clamp({ x: point.x + radius * Math.cos(angle), y: point.y + radius * Math.sin(angle) });
+        if (free(candidate)) found = candidate;
+      }
+      if (found) spot = found;
+    }
+    placed.push(spot);
+  });
+  const ys = placed.map((p) => p.y);
+  let top = Math.min(...ys) - pad;
+  let height = Math.max(...ys) + pad - top;
+  if (height < width * 0.6) {
+    top = Math.max(top - (width * 0.6 - height) / 2, Math.min(top, ART_MIN));
+    height = width * 0.6;
+  }
+  const round1 = (n) => Math.round(n * 10) / 10;
+  return {
+    viewBox: { x: round1(left), y: round1(top), w: round1(width), h: round1(height) },
+    hitR: round1(hitR),
+    markers: points.map((p, i) => ({
+      id: p.id,
+      x: round1(placed[i].x),
+      y: round1(placed[i].y),
+      tx: p.x,
+      ty: p.y,
+      moved: Math.hypot(placed[i].x - p.x, placed[i].y - p.y) > 1,
+    })),
+  };
+}
