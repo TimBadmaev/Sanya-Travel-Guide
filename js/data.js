@@ -80,6 +80,11 @@ export async function loadFood() {
 // ({ id, status, title, summary, format, durationHours, effort, setting,
 // placeIds, whatToSee, goodFor, tips, bestTime, sources, verifiedAt }).
 // Возвращает только status "verified" (D-18).
+export async function loadExcursionStories() {
+  const data = await loadJSON("data/excursion-stories.json");
+  return data && data.items && typeof data.items === "object" ? data.items : {};
+}
+
 export async function loadExcursions() {
   const items = await loadJSON("data/excursions.json");
   return items.filter((item) => item.status === "verified");

@@ -20,6 +20,7 @@ const chapterPhotos = {
   sea: "dadonghai-beach-1.webp",
   nature: "yalong-tropical-forest-park-1.webp",
   culture: "nanshan-cultural-zone-1.webp",
+  diary: "sanya-bay-beach-1.webp",
 };
 
 function travelCaption(trip) {
@@ -63,7 +64,7 @@ function drawNode(parent, node, index, isNext) {
     node.done ? "✓" : node.kind === "lesson" ? "📚" :
     node.kind === "category" ? "⭐" :
     node.kind === "notes" ? "📝" :
-    node.kind === "planned" ? "🗓️" : "📍");
+    node.kind === "planned" ? "🗓️" : node.kind === "expenses" ? "💰" : node.kind === "app-days" ? "🎁" : "📍");
   el(link, "span", "quest-step__title", node.title);
   const state = node.done ? "Готово!" : node.progress > 0 ?
     (node.progress + " / " + node.goal) : node.kind === "lesson" ? "Узнать историю" : "Открыть задание";
@@ -115,7 +116,7 @@ export async function renderAdventure(container, ctx) {
   const p = evaluatePassport({ state: storage.getPassport(), places, content: prepareContent(passportRaw, config) });
   const game = evaluateExplore({
     places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(), passportResult: p,
-    explore: storage.getExplore(), expenses: storage.getExpenses(),
+    explore: storage.getExplore(), expenses: storage.getExpenses(), activity: storage.getActivity(),
     chapters: exploreRaw.chapters, lessons: exploreRaw.lessons,
   });
   const next = game.chapters.flatMap((c) => c.nodes).find((n) => !n.done);
@@ -132,7 +133,10 @@ export async function renderAdventure(container, ctx) {
   xp.setAttribute("aria-label", "Опыт " + game.xp);
   el(points, "span", "quest-hud__visited", "🏅 " + p.reward.visited);
 
+
   const intro = el(page, "section", "quest-intro");
+  const daily = el(intro, "p", "quest-intro__daily", "🎁 +3 XP за первый запуск приложения каждый день · без серий и штрафов");
+  daily.setAttribute("aria-label", "Три очка опыта за каждый уникальный день использования");
   const eyebrow = el(intro, "div", "quest-intro__eyebrow", "ТВОЯ ИСТОРИЯ НА ОСТРОВЕ");
   eyebrow.setAttribute("role", "heading"); eyebrow.setAttribute("aria-level", "3");
   el(intro, "h2", "quest-intro__title", "Готов к открытиям?");

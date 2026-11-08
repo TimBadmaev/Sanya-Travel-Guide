@@ -46,7 +46,7 @@ export async function renderMe(container, ctx) {
   const status = getTripState(trip, getTodayIso());
   const passport = evaluatePassport({ state: storage.getPassport(), places, content: prepareContent(passportRaw, config) });
   const game = evaluateExplore({ places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(), passportResult: passport,
-    explore: storage.getExplore(), expenses: storage.getExpenses(), chapters: exploreRaw.chapters, lessons: exploreRaw.lessons });
+    explore: storage.getExplore(), expenses: storage.getExpenses(), activity: storage.getActivity(), chapters: exploreRaw.chapters, lessons: exploreRaw.lessons });
 
   container.replaceChildren();
   const page = el(container, "div", "quest-me");
