@@ -455,6 +455,15 @@ export async function renderFoodSection(container, ctx) {
   searchInput.placeholder = "Поиск по названию еды";
   searchInput.setAttribute("aria-label", "Поиск по названию еды");
   searchInput.autocomplete = "off";
+  searchInput.enterKeyHint = "search";
+  // Кнопка «Найти» на клавиатуре закрывает её: результаты уже обновляются
+  // по мере ввода, поэтому дополнительный submit не нужен.
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searchInput.blur();
+    }
+  });
   searchBar.appendChild(searchInput);
 
   const searchClear = document.createElement("button");

@@ -77,6 +77,43 @@ function renderScenarios(container, scenarios) {
   container.appendChild(wrap);
 }
 
+// Частые действия в поездке должны быть доступны сразу после плана дня,
+// а не после длинных списков рекомендаций. Используем существующие маршруты.
+function renderQuickActions(container, { hasOrigin, trip, nearbyHref }) {
+  const section = document.createElement("section");
+  section.className = "home-quick";
+  const title = document.createElement("h3");
+  title.className = "home-quick__heading";
+  title.textContent = "Быстрые действия";
+  section.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "home-quick__grid";
+  const actions = [
+    ["🍜", "Поесть рядом", "#/places?mode=food&near=1", "Найти еду рядом со мной"],
+    ["📍", "Места рядом", hasOrigin ? nearbyHref : "#/settings", hasOrigin ? "Найти места рядом с отелем" : "Указать район проживания"],
+    ["🈶", "Адрес таксисту", trip.home ? "#/handy/taxi" : "#/settings?section=home", trip.home ? "Показать адрес отеля по-китайски" : "Сначала указать адрес отеля"],
+    ["☎️", "Под рукой", "#/handy", "Телефоны, фразы и адрес для таксиста"],
+  ];
+  actions.forEach(([icon, label, href, accessible]) => {
+    const link = document.createElement("a");
+    link.className = "home-quick__link";
+    link.href = href;
+    link.setAttribute("aria-label", accessible);
+    const symbol = document.createElement("span");
+    symbol.className = "home-quick__icon";
+    symbol.textContent = icon;
+    symbol.setAttribute("aria-hidden", "true");
+    const text = document.createElement("span");
+    text.className = "home-quick__text";
+    text.textContent = label;
+    link.append(symbol, text);
+    grid.appendChild(link);
+  });
+  section.appendChild(grid);
+  container.appendChild(section);
+}
+
 function renderProgressBlock(container, done, total) {
   const wrap = document.createElement("div");
   wrap.className = "progress-block";
@@ -328,10 +365,6 @@ export async function renderHome(container, ctx) {
       if (trip.start === getTodayIso()) renderArrivalBlock(container);
       if (trip.end === getTodayIso()) renderDepartureBlock(container);
     }
-    renderHomeExpenses(container, getTodayIso());
-    renderNowPreview(container, { places, config, trip, plan });
-    guide();
-
     // В поездке сценарии ищут места рядом (Q-21): near=1 ограничивает список
     // радиусом NEAR_RADIUS_KM от точки отсчёта (logic/filters.js). Без точки
     // ограничивать не от чего — ссылки остаются прежними.
@@ -340,13 +373,17 @@ export async function renderHome(container, ctx) {
       const params = [filter ? `f=${filter}` : "", hasOrigin ? "near=1" : ""].filter(Boolean);
       return params.length ? `#/places?${params.join("&")}` : "#/places";
     };
+    // Главные действия не требуют прокрутки через рекомендации и обучение.
+    renderQuickActions(container, { hasOrigin, trip, nearbyHref: scenarioHref(null) });
+    renderHomeExpenses(container, getTodayIso());
+    renderNowPreview(container, { places, config, trip, plan });
+
     appendLine(container, "home-subtitle", "Куда сходить");
     renderScenarios(container, [
       // Сценарий требует точки отсчёта, а не района: без неё список нечем
       // сортировать, поэтому сначала ведём к выбору ([I3-18], ревью §9).
       // При известной точке это обычный список — он уже отсортирован по
       // расстоянию.
-      ["Рядом с отелем", hasOrigin ? scenarioHref(null) : "#/settings"],
       ["Есть 2–3 часа", scenarioHref("short")],
       ["Хочу природу", scenarioHref("nature")],
       ["В помещении", scenarioHref("indoor")],
@@ -376,19 +413,14 @@ export async function renderHome(container, ctx) {
       appendActionLink(container, label, "#/places?f=saved", "home-link");
     }
 
-    // «Поесть рядом» — единственная точка входа в Food Nearby с Главной
-    // (PRODUCT.md 8.3, 8.1): near=1 переиспользует тот же токен, что уже
-    // включает «Рядом со мной» у Places (см. scenarioHref выше, places.js) —
-    // второй механизм для Food Nearby не заводится (food.js).
-    appendActionLink(container, "🍜 Поесть рядом", "#/places?mode=food&near=1", "btn btn--secondary home-action");
-
-    appendLine(container, "home-subtitle", "Под рукой");
+    appendLine(container, "home-subtitle", "Полезные памятки");
     const help = document.createElement("div");
     help.className = "home-help";
-    appendActionLink(help, "Телефоны, фразы и адрес для таксиста", "#/handy", "home-link");
     appendActionLink(help, "Такси и Amap", "#/info/taxi-amap", "home-link");
     appendActionLink(help, "Экстренные номера", "#/info/emergency", "home-link");
     container.appendChild(help);
+    // Обучение остаётся доступным, но не отодвигает сценарии поездки.
+    guide();
     return;
   }
 

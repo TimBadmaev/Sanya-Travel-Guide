@@ -128,6 +128,15 @@ export async function renderExcursions(container, ctx) {
   searchInput.placeholder = "Название или что посмотреть";
   searchInput.setAttribute("aria-label", "Поиск экскурсий: название или описание");
   searchInput.autocomplete = "off";
+  searchInput.enterKeyHint = "search";
+  // Кнопка «Найти» на клавиатуре закрывает её: результаты уже обновляются
+  // по мере ввода, поэтому дополнительный submit не нужен.
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searchInput.blur();
+    }
+  });
   const searchClear = appendText(searchBar, "button", "search-bar__clear", "✕");
   searchClear.type = "button";
   searchClear.setAttribute("aria-label", "Очистить поиск");
