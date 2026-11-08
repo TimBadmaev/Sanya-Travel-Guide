@@ -958,7 +958,7 @@ def run_map(port):
         # v24: схема SVG остаётся полностью локальной, но отдельная уличная
         # карта законно получает ТОЛЬКО видимые OSM тайлы с сервера.
         external = ov["external"]
-        allowed_tiles = all(re.match(r"^https://tile\\.openstreetmap\\.org/\\d+/\\d+/\\d+\\.png$", url) for url in external)
+        allowed_tiles = all(re.fullmatch(r"https://tile[.]openstreetmap[.]org/[0-9]+/[0-9]+/[0-9]+[.]png", url) for url in external)
         check("у офлайн-схемы нет внешних изображений; онлайн-карта запрашивает только OSM тайлы",
               allowed_tiles and ov["images"] == 0, external)
         check("схема — группа с доступным названием (не картинка со ссылками)", ov["role"] == "group" and "схема" in (ov["label"] or "").lower())
