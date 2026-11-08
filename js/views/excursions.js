@@ -104,13 +104,13 @@ function picture(parent, photo, className, eager = false) {
   img.addEventListener("error", () => { img.classList.add("is-unavailable"); });
   parent.appendChild(img);
 }
-function renderExcursionRow(excursion, photos = [], story = null) {
+function renderExcursionRow(excursion, photos = [], story = null, priority = false) {
   const card = document.createElement("a");
   card.href = `#/excursion/${excursion.id}`;
   card.className = "excursion-card";
   const cover = document.createElement("span");
   cover.className = "excursion-card__cover";
-  if (photos[0]) picture(cover, photos[0], "excursion-card__photo");
+  if (photos[0]) picture(cover, photos[0], "excursion-card__photo", priority);
   else appendText(cover, "span", "excursion-card__fallback", "🌴");
   appendText(cover, "span", "excursion-card__type", EXCURSION_FORMAT_LABELS[excursion.format] || "Экскурсия");
   card.appendChild(cover);
@@ -264,7 +264,7 @@ export async function renderExcursions(container, ctx) {
     if (found.length) {
       const list = document.createElement("div");
       list.className = "info-list";
-      found.forEach((excursion) => list.appendChild(renderExcursionRow(excursion, excursionPhotos(excursion, places, stories[excursion.id]), stories[excursion.id])));
+      found.forEach((excursion, i) => list.appendChild(renderExcursionRow(excursion, excursionPhotos(excursion, places, stories[excursion.id]), stories[excursion.id], i < 2)));
       results.appendChild(list);
       return;
     }

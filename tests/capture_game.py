@@ -92,6 +92,9 @@ def run(root, prefix, output):
             if prefix == "after" and name == "discover":
                 if not b.wait_for("[...document.querySelectorAll(\'.discover__category-photo\')].every(img=>img.complete&&img.naturalWidth>0)", 20):
                     raise RuntimeError("Фотографии категорий не загрузились")
+            if prefix == "after" and name == "excursions":
+                if not b.wait_for("document.querySelector('.excursion-card__photo').complete && document.querySelector('.excursion-card__photo').naturalWidth > 0", 20):
+                    raise RuntimeError("Обложка первой экскурсии не загрузилась")
             out = os.path.join(output, f"{prefix}_{name}.png")
             write_shot(b, out)
             print(out, os.path.getsize(out), "bytes", flush=True)

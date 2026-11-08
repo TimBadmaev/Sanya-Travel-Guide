@@ -40,6 +40,7 @@ def main():
         check("correct street map attribution","document.querySelector('.street-map__credit').textContent.includes('OpenStreetMap')")
         check("actual markers on street map","document.querySelectorAll('.street-map__pin').length >= 4")
         check("offline SVG still available below","document.querySelector('.passport-map .pp-map__svg') !== null")
+        check("offline schematic button is available","document.querySelector('.street-map__offline').textContent.includes('без интернета')")
         b.js("document.querySelector('.street-map__pin').click();true")
         check("selecting marker opens map preview","!document.querySelector('.street-map__preview').hidden")
         check("map preview links to existing catalog","document.querySelector('.street-map__open').getAttribute('href').startsWith('#/place/')")
@@ -48,6 +49,9 @@ def main():
         go("#/excursions",".excursion-card")
         check("all excursions shown as photo-rich cards","document.querySelectorAll('.excursion-card').length",36)
         check("licensed local cover photo","document.querySelector('.excursion-card__photo').src.includes('/assets/photos/')")
+        if not b.wait_for("document.querySelector('.excursion-card__photo').complete && document.querySelector('.excursion-card__photo').naturalWidth > 0",12):
+            raise AssertionError("First excursion photo did not load")
+        check("first cover photo is eager","document.querySelector('.excursion-card__photo').loading","eager")
         go("#/excursion/nanshan-tianya-day",".excursion-gallery")
         check("Nanshan gallery contains multiple licensed photos","document.querySelectorAll('.excursion-gallery__photo').length >= 2")
         check("editorial guide readable","document.querySelectorAll('.excursion-story__steps li').length >= 3")

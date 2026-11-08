@@ -80,8 +80,13 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
   const preview = node(section, "div", "street-map__preview");
   preview.hidden = true;
   const note = node(section, "p", "street-map__note",
-    "Карта улиц загружается с интернетом. Без сети пользуйся схемой побережья ниже. " +
-    "Точки — ориентиры, не маршрут и не гарантия входа на территорию.");
+    "Карта улиц загружается с интернетом. Точки — ориентиры, не маршрут и не гарантия входа на территорию.");
+  const fallback = node(section, "button", "street-map__offline", "🏝️ Открыть схему побережья без интернета ↓");
+  fallback.type = "button";
+  fallback.addEventListener("click", () => {
+    const schematic = parent.querySelector(".passport-map");
+    if (schematic) schematic.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
   const credit = node(section, "p", "street-map__credit");
   const attribution = node(credit, "a", "", "© OpenStreetMap contributors");
   attribution.href = "https://www.openstreetmap.org/copyright";

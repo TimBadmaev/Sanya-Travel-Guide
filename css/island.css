@@ -399,3 +399,6 @@ a, button { -webkit-tap-highlight-color: transparent; }
 @media(max-width:359px){.excursion-card__cover{height:125px}.excursion-card__title{font-size:17px}.excursion-gallery__item--main .excursion-gallery__photo{height:185px} }
 .expense-xp-tip { margin:8px 0 14px;padding:13px 14px;border-radius:14px;background:#f4f9df;border:2px solid #dfeebd;color:#3a6548;font-size:13px;line-height:1.45;font-weight:700; }
 .quest-intro__daily { margin:0 0 9px;padding:6px 9px;display:inline-flex;max-width:100%;background:rgba(255,255,255,.8);border-radius:11px;color:#277b5a;font-size:11px;line-height:1.3;font-weight:800; }
+
+.street-map__offline {display:flex;justify-content:center;align-items:center;width:100%;min-height:45px;margin:7px 0 9px;padding:9px 12px;background:#e7f8ef;color:#087d5e;border:2px solid #c4e9d4;border-radius:13px;font-size:13px;font-weight:900;cursor:pointer;}
+.street-map__offline:focus-visible {outline:3px solid #079c75;}
