@@ -1,0 +1,247 @@
+{
+  "v": 1,
+  "updatedAt": "2026-11-08",
+  "chapters": [
+    {
+      "id": "start",
+      "title": "Первые открытия",
+      "icon": "🧭",
+      "subtitle": "Выберите маршрут — и сделайте первый шаг.",
+      "color": "lagoon",
+      "nodes": [
+        {
+          "id": "first-save",
+          "kind": "saved",
+          "title": "Найти своё место",
+          "description": "Сохраните понравившееся место в избранное.",
+          "count": 1,
+          "href": "#/places"
+        },
+        {
+          "id": "first-plan",
+          "kind": "planned",
+          "title": "Спланировать приключение",
+          "description": "Добавьте место в «Мой план».",
+          "count": 1,
+          "href": "#/plan"
+        },
+        {
+          "id": "first-visit",
+          "kind": "visited",
+          "title": "Первый штамп",
+          "description": "Отметьте посещённое место в паспорте.",
+          "count": 1,
+          "href": "#/places"
+        }
+      ]
+    },
+    {
+      "id": "sea",
+      "title": "Морской исследователь",
+      "icon": "🌊",
+      "subtitle": "Откройте бухты и тайны побережья.",
+      "color": "sea",
+      "nodes": [
+        {
+          "id": "first-beach",
+          "kind": "category",
+          "category": "beach",
+          "title": "Свой первый пляж",
+          "description": "Отметьте один посещённый пляж.",
+          "count": 1,
+          "href": "#/places?f=beach"
+        },
+        {
+          "id": "learn-sea",
+          "kind": "lesson",
+          "lessonId": "sea",
+          "title": "Море, которое нас окружает",
+          "description": "Мини-история и вопрос о побережье.",
+          "count": 1,
+          "href": "#/explore/lesson/sea"
+        },
+        {
+          "id": "two-beaches",
+          "kind": "category",
+          "category": "beach",
+          "title": "Две разные бухты",
+          "description": "Откройте два разных пляжа.",
+          "count": 2,
+          "href": "#/places?f=beach"
+        }
+      ]
+    },
+    {
+      "id": "nature",
+      "title": "Зелёный остров",
+      "icon": "🌿",
+      "subtitle": "Парки, панорамы и тропическая природа.",
+      "color": "forest",
+      "nodes": [
+        {
+          "id": "first-nature",
+          "kind": "category",
+          "category": "nature",
+          "title": "Первая прогулка",
+          "description": "Отметьте природное место.",
+          "count": 1,
+          "href": "#/places?f=nature"
+        },
+        {
+          "id": "learn-nanshan",
+          "kind": "lesson",
+          "lessonId": "nanshan",
+          "title": "Загадка Наньшаня",
+          "description": "Откройте интересный факт и ответьте на вопрос.",
+          "count": 1,
+          "href": "#/explore/lesson/nanshan"
+        },
+        {
+          "id": "nature-three",
+          "kind": "category",
+          "category": "nature",
+          "title": "Три стороны природы",
+          "description": "Отметьте три разных природных места.",
+          "count": 3,
+          "href": "#/places?f=nature"
+        }
+      ]
+    },
+    {
+      "id": "culture",
+      "title": "Истории Хайнаня",
+      "icon": "🏮",
+      "subtitle": "Местные традиции и памятные истории.",
+      "color": "sunset",
+      "nodes": [
+        {
+          "id": "first-culture",
+          "kind": "category",
+          "category": "culture",
+          "title": "Место с историей",
+          "description": "Отметьте культурное место.",
+          "count": 1,
+          "href": "#/places?f=culture"
+        },
+        {
+          "id": "learn-li",
+          "kind": "lesson",
+          "lessonId": "li",
+          "title": "Узоры народа ли",
+          "description": "Мини-история о традиционном ремесле.",
+          "count": 1,
+          "href": "#/explore/lesson/li"
+        },
+        {
+          "id": "one-memory",
+          "kind": "notes",
+          "title": "Сохранить воспоминание",
+          "description": "Добавьте заметку к посещённому месту.",
+          "count": 1,
+          "href": "#/passport"
+        }
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "sea",
+      "chapter": "sea",
+      "icon": "🌊",
+      "title": "Море вокруг нас",
+      "intro": "Знакомство с географией острова. Морские панорамы Наньшаня — один из символов южного побережья Саньи.",
+      "question": "Какое море омывает южное побережье Хайнаня?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Восточно-Китайское"
+        },
+        {
+          "id": "b",
+          "label": "Жёлтое"
+        },
+        {
+          "id": "c",
+          "label": "Южно-Китайское"
+        },
+        {
+          "id": "d",
+          "label": "Японское"
+        }
+      ],
+      "answer": "c",
+      "explanation": "Хайнань расположен в Южно-Китайском море. Береговые панорамы Саньи выходят именно к нему.",
+      "source": {
+        "url": "https://www.visitsanya.com/destination/nanshan-culture-tourism-zone",
+        "label": "Sanya Tourism Board"
+      },
+      "verifiedAt": "2026-11-08"
+    },
+    {
+      "id": "nanshan",
+      "chapter": "nature",
+      "icon": "🪷",
+      "title": "Тайна Наньшаня",
+      "intro": "В культурно-туристической зоне Наньшань стоит впечатляющая статуя Гуаньинь, которую видно со стороны моря.",
+      "question": "Какова высота знаменитой статуи Гуаньинь в Наньшане?",
+      "options": [
+        {
+          "id": "a",
+          "label": "88 метров"
+        },
+        {
+          "id": "b",
+          "label": "108 метров"
+        },
+        {
+          "id": "c",
+          "label": "128 метров"
+        },
+        {
+          "id": "d",
+          "label": "68 метров"
+        }
+      ],
+      "answer": "b",
+      "explanation": "Статуя Гуаньинь в Наньшане имеет высоту 108 метров — это подтверждает официальный туристический сайт Саньи.",
+      "source": {
+        "url": "https://www.visitsanya.com/destination/nanshan-culture-tourism-zone",
+        "label": "Sanya Tourism Board"
+      },
+      "verifiedAt": "2026-11-08"
+    },
+    {
+      "id": "li",
+      "chapter": "culture",
+      "icon": "🧵",
+      "title": "Узоры народа ли",
+      "intro": "На Хайнане народ ли сохраняет традиционные ремёсла, передавая техники и орнаменты из поколения в поколение.",
+      "question": "Какое ремесло народа ли внесено в список нематериального наследия ЮНЕСКО?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Резьба по нефриту"
+        },
+        {
+          "id": "b",
+          "label": "Изготовление фарфора"
+        },
+        {
+          "id": "c",
+          "label": "Литьё колоколов"
+        },
+        {
+          "id": "d",
+          "label": "Ткачество и вышивка"
+        }
+      ],
+      "answer": "d",
+      "explanation": "В 2024 году ЮНЕСКО включила традиционные техники прядения, окрашивания, ткачества и вышивки народа ли в Репрезентативный список нематериального культурного наследия человечества.",
+      "source": {
+        "url": "https://ich.unesco.org/en/RL/traditional-li-textile-techniques-spinning-dyeing-weaving-and-embroidering-02153",
+        "label": "UNESCO"
+      },
+      "verifiedAt": "2026-11-08"
+    }
+  ]
+}
