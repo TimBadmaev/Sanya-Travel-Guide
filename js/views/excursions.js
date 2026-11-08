@@ -1,4 +1,4 @@
-import { loadExcursions, loadPlaces, loadConfig, loadErrorMessage } from "../data.js";
+import { loadExcursions, loadExcursionStories, loadPlaces, loadConfig, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 import {
   EFFORT_LABELS,
@@ -79,27 +79,119 @@ function excursionsHash(tokens) {
   return tokens.length ? `#/excursions?f=${serializeFilters(tokens)}` : "#/excursions";
 }
 
-function renderExcursionRow(excursion) {
+// Photos are either existing licensed local place photos or explicitly credited
+// Wikimedia Commons images. Nothing is generated/mislabelled as a real place.
+function excursionPhotos(excursion, places, story = null) {
+  const linked = (excursion.placeIds || []).map((id) => places.find((p) => p.id === id)).filter(Boolean);
+  const local = linked.flatMap((p) => (p.photos || []).map((photo) => ({
+    url: "assets/photos/" + photo.file,
+    alt: photo.alt || p.name.ru,
+    credit: [photo.author, photo.license].filter(Boolean).join(" · "),
+    source: photo.sourceUrl || null,
+    offline: true,
+  })));
+  const remote = Array.isArray(story?.photos) ? story.photos.filter((photo) =>
+    photo.url.startsWith("https://commons.wikimedia.org/wiki/Special:FilePath/") && photo.source.startsWith("https://commons.wikimedia.org/")) : [];
+  return [...local, ...remote].slice(0, 4);
+}
+function picture(parent, photo, className, eager = false) {
+  const img = document.createElement("img");
+  img.className = className;
+  img.src = photo.url;
+  img.alt = photo.alt;
+  img.loading = eager ? "eager" : "lazy";
+  img.decoding = "async";
+  img.addEventListener("error", () => { img.classList.add("is-unavailable"); });
+  parent.appendChild(img);
+}
+function renderExcursionRow(excursion, photos = [], story = null) {
   const card = document.createElement("a");
   card.href = `#/excursion/${excursion.id}`;
-  card.className = "info-card";
-  appendText(card, "span", "info-card__icon", EXCURSION_ICON).setAttribute("aria-hidden", "true");
+  card.className = "excursion-card";
+  const cover = document.createElement("span");
+  cover.className = "excursion-card__cover";
+  if (photos[0]) picture(cover, photos[0], "excursion-card__photo");
+  else appendText(cover, "span", "excursion-card__fallback", "🌴");
+  appendText(cover, "span", "excursion-card__type", EXCURSION_FORMAT_LABELS[excursion.format] || "Экскурсия");
+  card.appendChild(cover);
   const body = document.createElement("span");
-  body.className = "info-card__body";
-  appendText(body, "span", "info-card__title", excursion.title.ru);
-  appendText(body, "span", "info-card__text", excursion.summary);
-  appendText(body, "span", "info-card__summary", excursionSummary(excursion));
+  body.className = "excursion-card__body";
+  appendText(body, "strong", "excursion-card__title", excursion.title.ru);
+  appendText(body, "span", "excursion-card__text", story?.lead || excursion.summary);
+  appendText(body, "span", "excursion-card__meta", excursionSummary(excursion));
+  if (story?.videos?.length) appendText(body, "span", "excursion-card__video", "▶ Есть видеообзор");
   card.appendChild(body);
   return card;
+}
+function renderStory(parent, story) {
+  if (!story) return;
+  const block = document.createElement("section");
+  block.className = "excursion-story";
+  appendText(block, "p", "excursion-story__eyebrow", "📖 ИСТОРИЯ ПРИКЛЮЧЕНИЯ");
+  appendText(block, "h3", "excursion-story__title", "Как может пройти твой день");
+  const list = document.createElement("ol");
+  list.className = "excursion-story__steps";
+  (story.moments || []).forEach((moment) => appendText(list, "li", "", moment));
+  block.appendChild(list);
+  if (story.editorNote) {
+    const note = document.createElement("div");
+    note.className = "excursion-story__tip";
+    appendText(note, "strong", "", "💡 Совет путешественнику");
+    appendText(note, "p", "", story.editorNote);
+    block.appendChild(note);
+  }
+  parent.appendChild(block);
+  if (Array.isArray(story.videos) && story.videos.length) {
+    const video = document.createElement("section");
+    video.className = "excursion-reviews";
+    appendText(video, "h3", "place-detail__subtitle", "▶ Посмотри глазами путешественников");
+    appendText(video, "p", "excursion-reviews__intro", "Русскоязычные обзоры. Видео открывается на внешнем сайте при наличии интернета.");
+    story.videos.forEach((item) => {
+      const a = appendText(video, "a", "excursion-reviews__link", item.platform + " · " + item.title + " ↗");
+      a.href = item.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    });
+    parent.appendChild(video);
+  }
+  if (Array.isArray(story.references) && story.references.length) {
+    const refs = document.createElement("div");
+    refs.className = "excursion-reviews__references";
+    appendText(refs, "strong", "", "Дополнительные материалы и отзывы:");
+    story.references.forEach((source) => {
+      const a = appendText(refs, "a", "", source.title + " ↗");
+      a.href = source.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    });
+    parent.appendChild(refs);
+  }
+}
+function renderGallery(container, photos) {
+  if (!photos.length) return;
+  const gallery = document.createElement("div");
+  gallery.className = "excursion-gallery";
+  photos.forEach((photo, i) => {
+    const figure = document.createElement("figure");
+    figure.className = "excursion-gallery__item" + (i === 0 ? " excursion-gallery__item--main" : "");
+    picture(figure, photo, "excursion-gallery__photo", i === 0);
+    const caption = document.createElement("figcaption");
+    caption.className = "excursion-gallery__credit";
+    if (photo.source) {
+      const a = appendText(caption, "a", "", photo.credit + " ↗");
+      a.href = photo.source; a.target = "_blank"; a.rel = "noopener noreferrer";
+    } else caption.textContent = photo.credit || photo.alt;
+    figure.appendChild(caption);
+    gallery.appendChild(figure);
+  });
+  container.appendChild(gallery);
 }
 
 // ---------------------------------------------------------------- #/excursions
 
 export async function renderExcursions(container, ctx) {
   container.innerHTML = '<p class="loading">Загрузка экскурсий…</p>';
-  let excursions;
+  let excursions, stories, places;
   try {
-    excursions = await loadExcursions();
+    [excursions, stories, places] = await Promise.all([loadExcursions(), loadExcursionStories(), loadPlaces()]);
   } catch (e) {
     console.error(e);
     if (ctx.isCurrent()) renderErrorState(container, loadErrorMessage(e), () => renderExcursions(container, ctx));
@@ -112,8 +204,9 @@ export async function renderExcursions(container, ctx) {
   let searchQuery = "";
 
   container.innerHTML = "";
-  appendText(container, "h2", "view-title", TITLE);
-  appendText(container, "p", "plan-subtitle", "Куда съездить из Саньи и что там посмотреть.");
+  appendText(container, "p", "excursion-list__eyebrow", "ВЫБИРАЙ ПРИКЛЮЧЕНИЕ");
+  appendText(container, "h2", "view-title", "Куда отправимся?");
+  appendText(container, "p", "plan-subtitle", "36 проверенных идей: фотографии, истории, реальные советы и видео там, где удалось проверить источник.");
 
   if (!excursions.length) {
     appendText(container, "p", "empty-state", "Пока нет проверенных экскурсий. Загляните позже.");
@@ -171,7 +264,7 @@ export async function renderExcursions(container, ctx) {
     if (found.length) {
       const list = document.createElement("div");
       list.className = "info-list";
-      found.forEach((excursion) => list.appendChild(renderExcursionRow(excursion)));
+      found.forEach((excursion) => list.appendChild(renderExcursionRow(excursion, excursionPhotos(excursion, places, stories[excursion.id]), stories[excursion.id])));
       results.appendChild(list);
       return;
     }
@@ -235,8 +328,9 @@ export async function renderExcursion(container, ctx) {
   let excursions;
   let places;
   let config;
+  let stories;
   try {
-    [excursions, places, config] = await Promise.all([loadExcursions(), loadPlaces(), loadConfig()]);
+    [excursions, places, config, stories] = await Promise.all([loadExcursions(), loadPlaces(), loadConfig(), loadExcursionStories()]);
   } catch (e) {
     console.error(e);
     if (ctx.isCurrent()) renderErrorState(container, loadErrorMessage(e), () => renderExcursion(container, ctx));
@@ -275,8 +369,11 @@ export async function renderExcursion(container, ctx) {
     zh.lang = "zh-CN";
   }
 
-  // 2. Короткое описание.
-  appendText(container, "p", "place-detail__summary", excursion.summary);
+  // Фотографии с сохранением авторства и оригинальный редакционный текст.
+  const story = stories[excursion.id] || null;
+  renderGallery(container, excursionPhotos(excursion, places, story));
+  if (story) appendText(container, "p", "excursion-detail__lead", story.lead);
+  else appendText(container, "p", "place-detail__summary", excursion.summary);
 
   // 3–5. Формат, длительность, нагрузка, на улице / в помещении.
   const params = document.createElement("ul");
@@ -292,7 +389,8 @@ export async function renderExcursion(container, ctx) {
   container.appendChild(params);
   appendText(container, "p", "task__meta", "Время указано без дороги.");
 
-  // 6–8. Что увидишь, кому подходит, когда ехать и советы.
+  // 6–8. История, обзор, факты, кому подходит и советы.
+  renderStory(container, story);
   appendPoints(container, "Что увидите", excursion.whatToSee);
   appendPoints(container, "Кому подходит", excursion.goodFor);
   if (excursion.bestTime) appendText(container, "p", "", `Когда ехать: ${excursion.bestTime}`);

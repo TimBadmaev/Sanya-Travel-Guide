@@ -141,6 +141,20 @@
           "title": "Русскоязычные экскурсии и мнения — Tripster",
           "url": "https://experience.tripster.ru/experience/Sanya/61977-guided-tour/reviews/"
         }
+      ],
+      "photos": [
+        {
+          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Yanoda.jpg?width=640",
+          "alt": "Тропический лес Янода (архивное фото)",
+          "credit": "Hanno Böck · CC0 · Wikimedia Commons",
+          "source": "https://commons.wikimedia.org/wiki/File:Yanoda.jpg"
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Yanoda-entrance.jpg?width=640",
+          "alt": "Вход в парк Янода (архивное фото)",
+          "credit": "Hanno Böck · CC0 · Wikimedia Commons",
+          "source": "https://commons.wikimedia.org/wiki/File:Yanoda-entrance.jpg"
+        }
       ]
     },
     "luhuitou-sunset-evening": {
@@ -206,6 +220,70 @@
         {
           "title": "Туристический портал Саньи — обзор мест",
           "url": "https://www.visitsanya.com/destinations"
+        }
+      ]
+    },
+    "binglanggu-li-miao": {
+      "lead": "Остров Хайнань — это не только море. В Бинлангу можно познакомиться с традициями народов ли и мяо: жилыми постройками, ремёслами и культурой, которую не увидишь на туристической набережной.",
+      "moments": [
+        "Пройти культурные павильоны и обратить внимание на традиционные жилища и текстиль.",
+        "Узнать, как местные ремёсла и узоры связаны с историей острова.",
+        "Выбрать время для прогулки по зелёной территории и осмотра ремесленных зон."
+      ],
+      "editorNote": "Это туристический культурный парк, а не совершенно нетронутая деревня. Подходите к программе как к знакомству с наследием, а не к реконструкции ежедневной жизни всех народов Хайнаня.",
+      "photos": [
+        {
+          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Binglanggu_30.jpg?width=640",
+          "alt": "Традиционное жилище народа ли в Бинлангу",
+          "credit": "STW932 · CC BY-SA 4.0 · Wikimedia Commons",
+          "source": "https://commons.wikimedia.org/wiki/File:Binglanggu_30.jpg"
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Binglanggu_15.jpg?width=640",
+          "alt": "Вход в деревню мяо в парке Бинлангу",
+          "credit": "STW932 · CC BY-SA 4.0 · Wikimedia Commons",
+          "source": "https://commons.wikimedia.org/wiki/File:Binglanggu_15.jpg"
+        }
+      ],
+      "videos": [
+        {
+          "title": "Экскурсии Хайнаня: впечатления от трёх маршрутов",
+          "platform": "RUTUBE",
+          "url": "https://rutube.ru/video/57af6f2d9e64f2bd31ec43caa1c8fa6e/"
+        }
+      ],
+      "references": [
+        {
+          "title": "Wikimedia Commons — фото культурного парка",
+          "url": "https://commons.wikimedia.org/wiki/File:Binglanggu_30.jpg"
+        },
+        {
+          "title": "Русские экскурсии и отзывы в Санье",
+          "url": "https://experience.tripster.ru/experience/Sanya/61977-guided-tour/reviews/"
+        }
+      ]
+    },
+    "nanwan-monkey-island": {
+      "lead": "Выезд к побережью Линшуя ради необычного вида: остров и прибрежные поселения соединены с канатной дорогой, а в парке можно увидеть макак. Это путешествие с акцентом на природу, а не на купание.",
+      "moments": [
+        "Добраться до входа и выбрать разрешённый способ переезда к парку.",
+        "Полюбоваться береговыми видами и понаблюдать за обезьянами с безопасного расстояния.",
+        "Вернуться до закрытия транспортного сообщения, не оставляя последнюю переправу на случайность."
+      ],
+      "editorNote": "Дикие макаки могут выхватывать еду и вещи. Не кормите животных, не подходите с детьми слишком близко и следуйте указаниям персонала.",
+      "photos": [
+        {
+          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Nanwan_Monkey_Island_02.jpg?width=640",
+          "alt": "Остров обезьян Наньвань (архивное фото)",
+          "credit": "Lucius Kwok · CC BY-SA 2.0 · Wikimedia Commons",
+          "source": "https://commons.wikimedia.org/wiki/File:Nanwan_Monkey_Island_02.jpg"
+        }
+      ],
+      "videos": [],
+      "references": [
+        {
+          "title": "Wikimedia Commons — фото острова Наньвань",
+          "url": "https://commons.wikimedia.org/wiki/File:Nanwan_Monkey_Island_02.jpg"
         }
       ]
     }
