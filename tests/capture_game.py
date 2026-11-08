@@ -64,7 +64,13 @@ def run(root, prefix, output):
         b.js("(() => { const entries = " + json.dumps(seed, ensure_ascii=False) +
              "; Object.entries(entries).forEach(([k,v]) => localStorage.setItem(k, JSON.stringify(v))); localStorage.setItem(\'stg:installHintDismissed\', \'1\'); return true; })()")
         if prefix == "before":
-            pages = [("home", "#/", ".home-head"), ("passport", "#/passport", ".passport-map")]
+            pages = [
+                ("home", "#/", ".quest-world"),
+                ("passport", "#/passport", ".passport-map"),
+                ("excursions", "#/excursions", ".info-card"),
+                ("excursion", "#/excursion/nanshan-tianya-day", ".view-title"),
+                ("expenses", "#/expenses", ".view-title"),
+            ]
         else:
             pages = [
                 ("welcome", "#/welcome", ".welcome__title"),
@@ -73,6 +79,9 @@ def run(root, prefix, output):
                 ("passport", "#/passport", ".passport-map"),
                 ("profile", "#/me", ".quest-me__hero"),
                 ("lesson", "#/explore/lesson/nanshan", ".explore-lesson__question"),
+                ("excursions", "#/excursions", ".excursion-card"),
+                ("excursion", "#/excursion/nanshan-tianya-day", ".excursion-gallery"),
+                ("expenses", "#/expenses", ".expense-xp-tip"),
             ]
         for name, path, element in pages:
             b.go(base, path, cold=True)
