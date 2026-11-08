@@ -612,7 +612,7 @@ def run_passport(port):
 
         # Экран паспорта.
         app.go("#/passport")
-        check("#/passport открылся с карточки места («Паспорт ›» не нужен — переход по hash)", app.text(".view-title") == "Паспорт исследователя")
+        check("#/passport открылся с карточки места («Паспорт ›» не нужен — переход по hash)", app.text(".view-title") == "Живая карта Саньи")
         stats = b.js("[...document.querySelectorAll('.passport-stat')].map((li) => li.textContent)")
         reward_total = len(REWARD)
         check(f"счётчик мест без покупок: 2 из {reward_total}", stats and stats[0] == f"2из {reward_total} мест", stats)
@@ -645,7 +645,7 @@ def run_passport(port):
         b.wait_ready()
         check("«← К паспорту» из альбома — назад на #/passport", b.js("location.hash") == "#/passport")
         check("ссылка «Сохранить копию ›» ведёт в #/data", b.js("!!document.querySelector('.passport a[href=\"#/data\"]')"))
-        check("подсвечена вкладка «Сейчас»", b.js("document.querySelector('.bottom-nav__item.is-active').dataset.route") == "/")
+        check("подсвечена вкладка «Карта»", b.js("document.querySelector('.bottom-nav__item.is-active').dataset.route") == "/passport")
         check("ошибок в консоли нет", not app.errors())
 
         # Переход в карточку из паспорта и обратно.
@@ -663,7 +663,7 @@ def run_passport(port):
 
         # Вход с Главной и «Назад».
         app.go("#/", cold=True)
-        check("на Главной есть вход в паспорт", b.js("!!document.querySelector('.home-head a[href=\"#/passport\"]')"))
+        check("в нижней навигации есть вход в живую карту", b.js("!!document.querySelector('.bottom-nav a[href=\"#/passport\"]')"))
         b.js("document.querySelector('a[href=\"#/passport\"]').click(); true")
         b.wait_ready()
         app.click(".place-detail__back")
@@ -1109,6 +1109,7 @@ def run_map(port):
         b.navigate(f"http://127.0.0.1:{port}/index.html#/places")
         b.js(f"localStorage.clear(); localStorage.setItem('stg:trip', {json.dumps(json.dumps(TRIP))}); localStorage.setItem('stg:installHintDismissed', '1'); true")
         b.navigate(f"http://127.0.0.1:{port}/index.html#/place/egret-park")
+        check("карточка места дождалась асинхронной загрузки", b.wait_for("!![...document.querySelectorAll('.passport-block button')].find((e) => e.textContent === 'Отметить посещение')", 15))
         b.js("[...document.querySelectorAll('.passport-block button')].find((e) => e.textContent === 'Отметить посещение').click(); true")
         real = b.js("""(() => { const v = JSON.parse(localStorage.getItem('stg:passport')).visits['egret-park']; const d = new Date();
             const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -1519,7 +1520,7 @@ def run_upgrade(port):
         check("после обновления хроника не дописала ничего в localStorage",
               b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map((k) => [k, localStorage.getItem(k)])))") == before)
         b.go(base, "#/", cold=True)
-        check("после обновления на «Сейчас» есть блок «Начните своё путешествие»", b.js("document.querySelectorAll('.guide .guide-step a').length") == 5)
+        check("после обновления на главной есть игровой путь из 12 заданий", b.js("document.querySelectorAll('.quest-step__link').length") == 12)
         b.go(base, "#/place/yalong-bay-beach", cold=True)
         b.js("window.__click('.passport-block button', 'Отметить посещение')")
         passport = json.loads(b.js("localStorage.getItem('stg:passport')") or "{}")

@@ -63,16 +63,26 @@ def run(root, prefix, output):
             seed["stg:explore"] = {"v": 1, "completed": ["sea"]}
         b.js("(() => { const entries = " + json.dumps(seed, ensure_ascii=False) +
              "; Object.entries(entries).forEach(([k,v]) => localStorage.setItem(k, JSON.stringify(v))); localStorage.setItem(\'stg:installHintDismissed\', \'1\'); return true; })()")
-        pages = [("home", "#/", ".home-head"), ("passport", "#/passport", ".passport-map")]
-        if prefix == "after":
-            pages.append(("game", "#/explore", ".explore-chapter__path"))
-            pages.append(("lesson", "#/explore/lesson/nanshan", ".explore-lesson__question"))
+        if prefix == "before":
+            pages = [("home", "#/", ".home-head"), ("passport", "#/passport", ".passport-map")]
+        else:
+            pages = [
+                ("welcome", "#/welcome", ".welcome__title"),
+                ("home", "#/", ".quest-world"),
+                ("discover", "#/discover", ".discover__categories"),
+                ("passport", "#/passport", ".passport-map"),
+                ("profile", "#/me", ".quest-me__hero"),
+                ("lesson", "#/explore/lesson/nanshan", ".explore-lesson__question"),
+            ]
         for name, path, element in pages:
             b.go(base, path, cold=True)
             if not b.wait_for(f"!!document.querySelector({json.dumps(element)}) && !document.querySelector('.loading')", 20):
                 raise RuntimeError(f"{prefix} {path} did not render: {b.exceptions}")
             if b.exceptions:
                 raise RuntimeError(f"{prefix} {path}: JS exceptions {b.exceptions}")
+            if prefix == "after" and name == "discover":
+                if not b.wait_for("[...document.querySelectorAll(\'.discover__category-photo\')].every(img=>img.complete&&img.naturalWidth>0)", 20):
+                    raise RuntimeError("Фотографии категорий не загрузились")
             out = os.path.join(output, f"{prefix}_{name}.png")
             write_shot(b, out)
             print(out, os.path.getsize(out), "bytes", flush=True)

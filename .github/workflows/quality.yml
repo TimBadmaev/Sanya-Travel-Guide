@@ -22,16 +22,17 @@ jobs:
           node-version: '22'
       - name: Validate game progress and content
         run: node --experimental-default-type=module --test tests/test_explore.mjs
-      - name: Run game screen, persistence and offline browser scenarios
+      - name: Test Island Quest onboarding, gameplay, old screens and offline
         env:
           CHROME: /usr/bin/google-chrome
-        run: python3 -u tests/test_explore_browser.py
-      - name: Run full app browser and offline regression suite
+        run: python3 -u tests/test_v23_browser.py
+      - name: Check legacy data, passport, map and PWA upgrade
         env:
           CHROME: /usr/bin/google-chrome
           SANYA_TEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: python3 -u tests/run_tests.py
+        run: python3 -u tests/run_tests.py static unit passport map upgrade
       - name: Capture before and after screenshots
+        if: always()
         env:
           CHROME: /usr/bin/google-chrome
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -39,6 +40,7 @@ jobs:
           git worktree add --detach /tmp/sanya-baseline "$BASE_SHA"
           python3 -u tests/capture_game.py /tmp/sanya-baseline "$PWD" /tmp/sanya-shots
       - name: Upload UX screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ux-before-after

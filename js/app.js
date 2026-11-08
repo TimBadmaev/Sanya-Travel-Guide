@@ -1,4 +1,7 @@
-import { renderHome } from "./views/home.js";
+import { renderAdventure } from "./views/adventure.js";
+import { renderDiscover } from "./views/discover.js";
+import { renderMe } from "./views/me.js";
+import { renderWelcome } from "./views/welcome.js";
 import { renderPlaces } from "./views/places.js";
 import { renderPlace, renderPlaceTaxi } from "./views/place.js";
 import { renderFoodTaxi } from "./views/food.js";
@@ -13,7 +16,7 @@ import { renderExpenses, renderExpenseForm, renderExpenseSettings } from "./view
 import { renderNow } from "./views/today.js";
 import { renderBackup } from "./views/backup.js";
 import { renderPassport, renderPassportAlbum, renderPassportJourney, renderPassportZone } from "./views/passport.js";
-import { renderExplore, renderExploreLesson } from "./views/explore.js";
+import { renderExploreLesson } from "./views/explore.js";
 import { initPwa } from "./pwa.js";
 import { primeCurrentPosition } from "./logic/geo.js";
 
@@ -21,59 +24,62 @@ import { primeCurrentPosition } from "./logic/geo.js";
 // §3): якорные regexp с именованными группами параметров. Первое совпадение
 // побеждает; nav — какая вкладка нижней навигации подсвечивается.
 const routes = [
-  { pattern: /^\/$/, render: renderHome, nav: "/" },
-  { pattern: /^\/places$/, render: renderPlaces, nav: "/places" },
-  { pattern: /^\/place\/(?<id>[^/]+)$/, render: renderPlace, nav: "/places" },
-  { pattern: /^\/place\/(?<id>[^/]+)\/taxi$/, render: renderPlaceTaxi, nav: "/places", fullscreen: true },
+  { pattern: /^\/$/, render: renderAdventure, nav: "/" },
+  { pattern: /^\/welcome$/, render: renderWelcome, nav: "/", fullscreen: true },
+  { pattern: /^\/discover$/, render: renderDiscover, nav: "/discover" },
+  { pattern: /^\/me$/, render: renderMe, nav: "/me" },
+  { pattern: /^\/places$/, render: renderPlaces, nav: "/discover" },
+  { pattern: /^\/place\/(?<id>[^/]+)$/, render: renderPlace, nav: "/discover" },
+  { pattern: /^\/place\/(?<id>[^/]+)\/taxi$/, render: renderPlaceTaxi, nav: "/discover", fullscreen: true },
   // Еда (режим #/places?mode=food, ITERATION-8-CONTENT-ARCHITECTURE.md Batch
   // D) — вложенный экран «Показать таксисту» под тем же разделом, без нового
   // основного маршрута и без отдельной вкладки (D-06, D-07).
-  { pattern: /^\/places\/food\/(?<id>[^/]+)\/taxi$/, render: renderFoodTaxi, nav: "/places", fullscreen: true },
+  { pattern: /^\/places\/food\/(?<id>[^/]+)\/taxi$/, render: renderFoodTaxi, nav: "/discover", fullscreen: true },
   // «Экскурсии» (пятая вкладка, D-07): список, карточка и выбор дня для
   // экскурсии — продолжение карточки, подсвечены «Экскурсии».
-  { pattern: /^\/excursions$/, render: renderExcursions, nav: "/excursions" },
-  { pattern: /^\/excursion\/(?<id>[^/]+)$/, render: renderExcursion, nav: "/excursions" },
-  { pattern: /^\/excursion\/(?<id>[^/]+)\/plan$/, render: renderExcursionPlan, nav: "/excursions" },
-  { pattern: /^\/prepare$/, render: renderPrepare, nav: "/prepare" },
+  { pattern: /^\/excursions$/, render: renderExcursions, nav: "/discover" },
+  { pattern: /^\/excursion\/(?<id>[^/]+)$/, render: renderExcursion, nav: "/discover" },
+  { pattern: /^\/excursion\/(?<id>[^/]+)\/plan$/, render: renderExcursionPlan, nav: "/discover" },
+  { pattern: /^\/prepare$/, render: renderPrepare, nav: "/me" },
   // Настройки — вложенный экран Главной, поэтому подсвечена «Сейчас» ([I3-8]).
-  { pattern: /^\/settings$/, render: renderSettings, nav: "/" },
-  { pattern: /^\/info$/, render: renderInfo, nav: "/info" },
-  { pattern: /^\/info\/(?<id>[^/]+)$/, render: renderInfoDetail, nav: "/info" },
+  { pattern: /^\/settings$/, render: renderSettings, nav: "/me" },
+  { pattern: /^\/info$/, render: renderInfo, nav: "/me" },
+  { pattern: /^\/info\/(?<id>[^/]+)$/, render: renderInfoDetail, nav: "/me" },
   // «Под рукой» (Итерация 4): открывается с Главной и из Справки; подсвечена
   // «Справка» — как у карточек справки, на которые Главная тоже ссылается.
-  { pattern: /^\/handy$/, render: renderHandy, nav: "/info" },
-  { pattern: /^\/handy\/phrase\/(?<id>[^/]+)$/, render: renderHandyPhrase, nav: "/info", fullscreen: true },
-  { pattern: /^\/handy\/taxi$/, render: renderHandyTaxi, nav: "/info", fullscreen: true },
+  { pattern: /^\/handy$/, render: renderHandy, nav: "/me" },
+  { pattern: /^\/handy\/phrase\/(?<id>[^/]+)$/, render: renderHandyPhrase, nav: "/me", fullscreen: true },
+  { pattern: /^\/handy\/taxi$/, render: renderHandyTaxi, nav: "/me", fullscreen: true },
   // «Мой план» и рекомендованный план (Итерация 6): вложенные экраны
   // Главной — подсвечена «Сейчас», как у #/settings.
-  { pattern: /^\/plan$/, render: renderMyPlan, nav: "/" },
-  { pattern: /^\/plan\/(?<date>[^/]+)$/, render: renderMyPlanDay, nav: "/" },
-  { pattern: /^\/plan\/(?<date>[^/]+)\/move$/, render: renderMoveDay, nav: "/" },
-  { pattern: /^\/recommended$/, render: renderRecommended, nav: "/" },
-  { pattern: /^\/recommended\/(?<date>[^/]+)$/, render: renderRecommendedDay, nav: "/" },
+  { pattern: /^\/plan$/, render: renderMyPlan, nav: "/me" },
+  { pattern: /^\/plan\/(?<date>[^/]+)$/, render: renderMyPlanDay, nav: "/me" },
+  { pattern: /^\/plan\/(?<date>[^/]+)\/move$/, render: renderMoveDay, nav: "/me" },
+  { pattern: /^\/recommended$/, render: renderRecommended, nav: "/me" },
+  { pattern: /^\/recommended\/(?<date>[^/]+)$/, render: renderRecommendedDay, nav: "/me" },
   // Расходы поездки (Iteration 8): вложенные экраны Главной, как «Мой план».
   // add и settings — раньше шаблона с id, иначе совпали бы с ним.
-  { pattern: /^\/expenses$/, render: renderExpenses, nav: "/" },
-  { pattern: /^\/expenses\/add$/, render: renderExpenseForm, nav: "/" },
-  { pattern: /^\/expenses\/settings$/, render: renderExpenseSettings, nav: "/" },
-  { pattern: /^\/expenses\/(?<id>exp-[^/]+)$/, render: renderExpenseForm, nav: "/" },
+  { pattern: /^\/expenses$/, render: renderExpenses, nav: "/me" },
+  { pattern: /^\/expenses\/add$/, render: renderExpenseForm, nav: "/me" },
+  { pattern: /^\/expenses\/settings$/, render: renderExpenseSettings, nav: "/me" },
+  { pattern: /^\/expenses\/(?<id>exp-[^/]+)$/, render: renderExpenseForm, nav: "/me" },
   // Iteration 9: «Что делать сейчас» и «Мои данные» (копия и восстановление)
   // — тоже вложенные экраны Главной.
   { pattern: /^\/now$/, render: renderNow, nav: "/" },
-  { pattern: /^\/data$/, render: renderBackup, nav: "/" },
+  { pattern: /^\/data$/, render: renderBackup, nav: "/me" },
   // «Паспорт исследователя» (Passport v1) — вложенный экран Главной, без
   // шестой вкладки (D-07).
-  { pattern: /^\/passport$/, render: renderPassport, nav: "/" },
+  { pattern: /^\/passport$/, render: renderPassport, nav: "/passport" },
   // «Открой Хайнань» — игровое продолжение паспорта, без шестой вкладки.
-  { pattern: /^\/explore$/, render: renderExplore, nav: "/" },
+  { pattern: /^\/explore$/, render: renderAdventure, nav: "/" },
   { pattern: /^\/explore\/lesson\/(?<id>[a-z0-9-]+)$/, render: renderExploreLesson, nav: "/" },
   // Схема части побережья и альбом наклеек — продолжение паспорта.
-  { pattern: /^\/passport\/zone\/(?<zone>[a-z0-9-]+)$/, render: renderPassportZone, nav: "/" },
-  { pattern: /^\/passport\/album$/, render: renderPassportAlbum, nav: "/" },
+  { pattern: /^\/passport\/zone\/(?<zone>[a-z0-9-]+)$/, render: renderPassportZone, nav: "/passport" },
+  { pattern: /^\/passport\/album$/, render: renderPassportAlbum, nav: "/passport" },
   // «Мой путь по Санье» — хроника отметок по порядку, тоже экран паспорта.
-  { pattern: /^\/passport\/journey$/, render: renderPassportJourney, nav: "/" },
+  { pattern: /^\/passport\/journey$/, render: renderPassportJourney, nav: "/passport" },
   // Выбор дня для места — продолжение карточки места.
-  { pattern: /^\/place\/(?<id>[^/]+)\/plan$/, render: renderPlacePlan, nav: "/places" },
+  { pattern: /^\/place\/(?<id>[^/]+)\/plan$/, render: renderPlacePlan, nav: "/discover" },
 ];
 
 // Счётчик навигаций (§4): экран после каждого await сверяет ctx.isCurrent(),

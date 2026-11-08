@@ -120,19 +120,24 @@ export async function renderPassport(container, ctx) {
   const fromPath = (ctx.from || "").replace(/^#/, "").split("?")[0];
   const parent = /^\/place\/[^/]+$/.test(fromPath) ? ctx.from : "#/";
   appendBackLink(page, "← Назад", parent, ctx);
-  appendText(page, "h2", "view-title", "Паспорт исследователя");
+  appendText(page, "p", "quest-map__eyebrow", "ТВОЙ ОСТРОВ");
+  appendText(page, "h2", "view-title", "Живая карта Саньи");
   const period = trip.start && trip.end ? formatPeriod({ startDate: trip.start, endDate: trip.end }) : "";
   if (period) appendText(page, "p", "passport__period", `Санья · ${period}`);
   appendText(
     page,
     "p",
-    "settings__intro",
-    "Отмечайте места, где побывали, — паспорт соберёт ваши посещения, заметки и наклейки. Отметка ставится вручную в карточке места, без геолокации."
+    "quest-map__intro",
+    "Каждое посещённое место раскрашивает остров. Отмечайте открытия в карточках мест и собирайте свою историю!"
   );
   if (!storage.isAvailable()) appendText(page, "p", "area-notice", NO_STORAGE_TEXT);
 
+  const mapProgress = appendText(page, "div", "quest-map__progress",
+    "🎨 Раскрашено " + result.reward.visited + " из " + result.reward.total + " мест · " + result.coastPartsVisited + " из " + result.coastParts.length + " частей побережья");
+  mapProgress.setAttribute("role", "status");
+  renderOverview(page, { result, content, places, state });
   renderStats(page, result);
-  const adventure = appendText(page, "a", "explore-passport-link", "🧭 Продолжить приключение · Открой Хайнань ›");
+  const adventure = appendText(page, "a", "explore-passport-link", "🚀 Вернуться к игровому пути ›");
   adventure.href = "#/explore";
   // Найти конкретное место: схема и части побережья подсказывают, где оно, но
   // искать по названию быстрее. Ведёт в существующий поиск «Мест» (там строка
@@ -140,7 +145,6 @@ export async function renderPassport(container, ctx) {
   // поиска в паспорте нет.
   const find = appendText(page, "a", "btn btn--secondary passport-find", "🔎 Найти место по названию");
   find.href = "#/places";
-  renderOverview(page, { result, content, places, state });
   renderJourneyEntry(page, visitJourney(state, places));
   renderStickerPreview(page, result, config);
   renderVisits(page, result);
