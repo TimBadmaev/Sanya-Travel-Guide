@@ -1508,8 +1508,9 @@ def run_upgrade(port):
         version = b.js("""new Promise((resolve) => { const ch = new MessageChannel(); ch.port1.onmessage = (e) => resolve(e.data);
             navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' }, [ch.port2]); setTimeout(() => resolve(null), 3000); })""")
         check(f"после «Обновить» работает {CACHE} (было {head_version})", version == CACHE, version)
-        after = b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map((k) => [k, localStorage.getItem(k)])))")
-        check("обновление не изменило localStorage", after == before)
+        after = b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().filter((k) => k !== 'stg:activity').map((k) => [k, localStorage.getItem(k)])))")
+        check("обновление сохранило прежние ключи localStorage", after == before)
+        check("v24 добавила только локальный день использования", b.js("JSON.parse(localStorage.getItem('stg:activity')).days.length") == 1)
         b.go(base, "#/passport/zone/coast-dadonghai", cold=True)
         check("после обновления прежняя отметка видна на схеме части побережья",
               b.js("!!document.querySelector('.pp-marker--visited[data-place=\"luhuitou-park\"]')"))
@@ -1518,9 +1519,9 @@ def run_upgrade(port):
         check("после обновления прежняя отметка — остановка № 1 хроники, заметка при ней",
               b.js(JOURNEY_LIST) == [[1, "luhuitou-park"]] and "Закат с горы" in (b.js("(document.querySelector('.passport-journey-item__note') || {}).textContent") or ""), b.js(JOURNEY_LIST))
         check("после обновления хроника не дописала ничего в localStorage",
-              b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map((k) => [k, localStorage.getItem(k)])))") == before)
+              b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().filter((k) => k !== 'stg:activity').map((k) => [k, localStorage.getItem(k)])))") == before)
         b.go(base, "#/", cold=True)
-        check("после обновления на главной есть игровой путь из 12 заданий", b.js("document.querySelectorAll('.quest-step__link').length") == 12)
+        check("после обновления на главной есть игровой путь из 15 заданий", b.js("document.querySelectorAll('.quest-step__link').length") == 15)
         b.go(base, "#/place/yalong-bay-beach", cold=True)
         b.js("window.__click('.passport-block button', 'Отметить посещение')")
         passport = json.loads(b.js("localStorage.getItem('stg:passport')") or "{}")
@@ -1529,7 +1530,7 @@ def run_upgrade(port):
         b.go(base, "#/passport/journey", cold=True)
         check("после обновления новая отметка продолжает хронику: № 2 и линия от прежней",
               b.js(JOURNEY_LIST) == [[1, "luhuitou-park"], [2, "yalong-bay-beach"]] and b.js(JOURNEY_LINES) == [2], [b.js(JOURNEY_LIST), b.js(JOURNEY_LINES)])
-        rest = json.loads(b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().filter((k) => k !== 'stg:passport').map((k) => [k, localStorage.getItem(k)])))"))
+        rest = json.loads(b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().filter((k) => k !== 'stg:passport' && k !== 'stg:activity').map((k) => [k, localStorage.getItem(k)])))"))
         before_rest = {k: v for k, v in json.loads(before).items() if k != "stg:passport"}
         check("отметка в паспорте не тронула другие ключи", rest == before_rest)
     finally:
