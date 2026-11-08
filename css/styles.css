@@ -4201,7 +4201,8 @@ textarea.settings-field__input {
   .places-meta { margin-bottom: 2px; line-height: 1.2; }
   .places-meta__text { min-width: 0; }
   .places-scope { font-size: 12px; line-height: 1.2; }
-  .bottom-nav__item[data-route="/prepare"] { flex-grow: 1.24; letter-spacing: -0.045em; }
+  .bottom-nav__item[data-route="/prepare"] { flex-grow: 1.20; letter-spacing: -0.045em; }
+  .bottom-nav__item[data-route="/excursions"] { flex-grow: 1.10; }
 }
 /* Chrome округляет границу кнопок на 1px вниз при высоте клавиатуры 330px. */
 @media (max-height: 350px) {
