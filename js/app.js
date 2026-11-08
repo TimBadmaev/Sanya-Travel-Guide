@@ -13,6 +13,7 @@ import { renderExpenses, renderExpenseForm, renderExpenseSettings } from "./view
 import { renderNow } from "./views/today.js";
 import { renderBackup } from "./views/backup.js";
 import { renderPassport, renderPassportAlbum, renderPassportJourney, renderPassportZone } from "./views/passport.js";
+import { renderExplore, renderExploreLesson } from "./views/explore.js";
 import { initPwa } from "./pwa.js";
 import { primeCurrentPosition } from "./logic/geo.js";
 
@@ -63,6 +64,9 @@ const routes = [
   // «Паспорт исследователя» (Passport v1) — вложенный экран Главной, без
   // шестой вкладки (D-07).
   { pattern: /^\/passport$/, render: renderPassport, nav: "/" },
+  // «Открой Хайнань» — игровое продолжение паспорта, без шестой вкладки.
+  { pattern: /^\/explore$/, render: renderExplore, nav: "/" },
+  { pattern: /^\/explore\/lesson\/(?<id>[a-z0-9-]+)$/, render: renderExploreLesson, nav: "/" },
   // Схема части побережья и альбом наклеек — продолжение паспорта.
   { pattern: /^\/passport\/zone\/(?<zone>[a-z0-9-]+)$/, render: renderPassportZone, nav: "/" },
   { pattern: /^\/passport\/album$/, render: renderPassportAlbum, nav: "/" },

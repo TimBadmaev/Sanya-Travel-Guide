@@ -26,6 +26,7 @@ export const SECTION_LABELS = {
   "stg:myplan": "Мой план",
   "stg:plandone": "Отметки «сделано» в плане",
   "stg:passport": "Паспорт исследователя",
+  "stg:explore": "Познавательные открытия",
   "stg:saved": "Избранные места",
   "stg:checklist": "Отметки подготовки",
   "stg:trip": "Даты, район и адрес проживания",
@@ -35,6 +36,7 @@ export const SECTION_LABELS = {
 // без строки здесь были в копии с самого начала (v15, Iteration 9).
 const SECTION_SINCE = {
   "stg:passport": 16,
+  "stg:explore": 22,
 };
 
 function versionNumber(appVersion) {
@@ -161,6 +163,8 @@ export function countSection(key, value) {
       return ["start", "end", "area", "stay", "home"].filter((field) => value[field]).length;
     case "stg:passport":
       return value.visits && typeof value.visits === "object" ? Object.keys(value.visits).length : 0;
+    case "stg:explore":
+      return Array.isArray(value.completed) ? value.completed.length : 0;
     default:
       return 0;
   }
@@ -182,6 +186,8 @@ export function countRaw(key, value) {
       return Array.isArray(value) ? 0 : Object.keys(value).length;
     case "stg:passport":
       return value.visits && typeof value.visits === "object" && !Array.isArray(value.visits) ? Object.keys(value.visits).length : 0;
+    case "stg:explore":
+      return Array.isArray(value.completed) ? value.completed.length : 0;
     default:
       return null;
   }
@@ -201,6 +207,8 @@ export function sectionUnit(key) {
       return ["отметка", "отметки", "отметок"];
     case "stg:passport":
       return ["посещение", "посещения", "посещений"];
+    case "stg:explore":
+      return ["урок", "урока", "уроков"];
     default:
       return null;
   }
