@@ -1,6 +1,6 @@
 {
-  "v": 1,
-  "updatedAt": "2026-11-08",
+  "v": 2,
+  "updatedAt": "2026-11-09",
   "chapters": [
     {
       "id": "start",
@@ -139,6 +139,39 @@
           "description": "Добавьте заметку к посещённому месту.",
           "count": 1,
           "href": "#/passport"
+        }
+      ]
+    },
+    {
+      "id": "diary",
+      "title": "Дневник путешественника",
+      "icon": "🎒",
+      "subtitle": "Запоминай впечатления и отмечай новые дни.",
+      "color": "sunset",
+      "nodes": [
+        {
+          "id": "first-expense",
+          "kind": "expenses",
+          "title": "Первый расход",
+          "description": "Запиши первую трату и заработай XP за день.",
+          "count": 1,
+          "href": "#/expenses/add"
+        },
+        {
+          "id": "three-app-days",
+          "kind": "app-days",
+          "title": "Три дня открытий",
+          "description": "Загляни в приложение в три разных дня. Никаких серий и штрафов.",
+          "count": 3,
+          "href": "#/"
+        },
+        {
+          "id": "three-expense-days",
+          "kind": "expenses",
+          "title": "Дневник привычек",
+          "description": "Записывай траты в три разных дня — суммы не важны.",
+          "count": 3,
+          "href": "#/expenses"
         }
       ]
     }

@@ -228,6 +228,8 @@ export async function renderExpenses(container, ctx) {
     appendText(container, "p", "area-notice", "Хранилище браузера недоступно — расходы не сохранятся.");
   }
 
+  const days = new Set(items.filter((item) => item.amount > 0 && /^\d{4}-\d{2}-\d{2}$/.test(item.date || "")).map((item) => item.date)).size;
+  appendText(container, "p", "expense-xp-tip", "🎮 Дневник исследователя: +12 XP за каждый день с записанными расходами (до 14 дней). Сумма покупки баллы не увеличивает. Уже " + Math.min(days, 14) * 12 + " XP.");
   const add = appendText(container, "a", "btn btn--primary expense-add", "+ Добавить расход");
   add.href = "#/expenses/add";
 

@@ -11,7 +11,8 @@ export const XP_RULES = Object.freeze({
   note: 10,
   lesson: 15,
   sticker: 20,
-  expenseDay: 5,
+  expenseDay: 12,
+  appDay: 3,
 });
 
 const ID_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
@@ -62,6 +63,7 @@ function nodeProgress(node, stats, completed) {
   else if (node.kind === "visited") progress = stats.visited;
   else if (node.kind === "notes") progress = stats.notes;
   else if (node.kind === "expenses") progress = stats.expenseDays;
+  else if (node.kind === "app-days") progress = stats.appDays;
   else if (node.kind === "category") progress = stats.byCategory[node.category] || 0;
   else if (node.kind === "lesson") progress = completed.has(node.lessonId) ? 1 : 0;
   else if (node.kind === "sticker") progress = stats.stickers;
@@ -69,7 +71,7 @@ function nodeProgress(node, stats, completed) {
 }
 
 export function evaluateExplore({ places = [], savedIds = [], myPlan = null, passportResult = null,
-  explore = null, expenses = null, chapters = [], lessons = [] } = {}) {
+  explore = null, expenses = null, activity = null, chapters = [], lessons = [] } = {}) {
   const rewardPlaces = places.filter((place) => place && place.status === "verified" && isRewardPlace(place));
   const rewardIds = new Set(rewardPlaces.map((place) => place.id));
   const saved = new Set((Array.isArray(savedIds) ? savedIds : []).filter((id) => rewardIds.has(id)));
@@ -101,6 +103,7 @@ export function evaluateExplore({ places = [], savedIds = [], myPlan = null, pas
     visited: uniqueVisits.size,
     notes,
     expenseDays,
+    appDays: Array.isArray(activity?.days) ? new Set(activity.days).size : 0,
     stickers,
     byCategory,
     lessons: completed.size,
@@ -111,7 +114,8 @@ export function evaluateExplore({ places = [], savedIds = [], myPlan = null, pas
     + stats.notes * XP_RULES.note
     + stats.lessons * XP_RULES.lesson
     + stats.stickers * XP_RULES.sticker
-    + Math.min(stats.expenseDays, 14) * XP_RULES.expenseDay;
+    + Math.min(stats.expenseDays, 14) * XP_RULES.expenseDay
+    + Math.min(stats.appDays, 14) * XP_RULES.appDay;
 
   const evaluated = chapters.map((chapter) => {
     const nodes = (chapter.nodes || []).map((node) => nodeProgress(node, stats, completed));

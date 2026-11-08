@@ -64,7 +64,13 @@ def run(root, prefix, output):
         b.js("(() => { const entries = " + json.dumps(seed, ensure_ascii=False) +
              "; Object.entries(entries).forEach(([k,v]) => localStorage.setItem(k, JSON.stringify(v))); localStorage.setItem(\'stg:installHintDismissed\', \'1\'); return true; })()")
         if prefix == "before":
-            pages = [("home", "#/", ".home-head"), ("passport", "#/passport", ".passport-map")]
+            pages = [
+                ("home", "#/", ".quest-world"),
+                ("passport", "#/passport", ".passport-map"),
+                ("excursions", "#/excursions", ".info-card"),
+                ("excursion", "#/excursion/nanshan-tianya-day", ".view-title"),
+                ("expenses", "#/expenses", ".view-title"),
+            ]
         else:
             pages = [
                 ("welcome", "#/welcome", ".welcome__title"),
@@ -73,6 +79,9 @@ def run(root, prefix, output):
                 ("passport", "#/passport", ".passport-map"),
                 ("profile", "#/me", ".quest-me__hero"),
                 ("lesson", "#/explore/lesson/nanshan", ".explore-lesson__question"),
+                ("excursions", "#/excursions", ".excursion-card"),
+                ("excursion", "#/excursion/nanshan-tianya-day", ".excursion-gallery"),
+                ("expenses", "#/expenses", ".expense-xp-tip"),
             ]
         for name, path, element in pages:
             b.go(base, path, cold=True)
@@ -83,6 +92,9 @@ def run(root, prefix, output):
             if prefix == "after" and name == "discover":
                 if not b.wait_for("[...document.querySelectorAll(\'.discover__category-photo\')].every(img=>img.complete&&img.naturalWidth>0)", 20):
                     raise RuntimeError("Фотографии категорий не загрузились")
+            if prefix == "after" and name == "excursions":
+                if not b.wait_for("document.querySelector('.excursion-card__photo').complete && document.querySelector('.excursion-card__photo').naturalWidth > 0", 20):
+                    raise RuntimeError("Обложка первой экскурсии не загрузилась")
             out = os.path.join(output, f"{prefix}_{name}.png")
             write_shot(b, out)
             print(out, os.path.getsize(out), "bytes", flush=True)

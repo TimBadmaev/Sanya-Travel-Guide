@@ -4,6 +4,7 @@
 import { normalizeBudgetState, normalizeExpensesState } from "./logic/expenses.js";
 import { normalizePassportState, withNote, withRestoredVisit, withVisit, withoutVisit } from "./logic/passport.js";
 import { normalizeExploreState, withCompletedLesson } from "./logic/explore.js";
+import { normalizeActivity, withOpenedDay } from "./logic/activity.js";
 
 const SCHEMA_VERSION = 1;
 
@@ -44,12 +45,13 @@ export const KEYS = {
   guideCollapsed: "stg:guideCollapsed",
   // Игровые мини-уроки: только id завершённых уроков. XP вычисляется из старых данных.
   explore: "stg:explore",
+  activity: "stg:activity",
 };
 
 // Данные пользователя, которые переносит копия (Iteration 9, экспорт/импорт):
 // только то, что нельзя восстановить из контента. Служебные флаги
 // (stg:schema, подсказка установки) и аварийные копии (…:backup) не входят.
-export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget, KEYS.passport, KEYS.explore];
+export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget, KEYS.passport, KEYS.explore, KEYS.activity];
 
 // Сырые копии повреждённых значений: перед записью поверх неразбираемого
 // значения (в том числе при импорте) оно один раз сохраняется сюда.
@@ -624,6 +626,27 @@ function completeExploreLesson(id, allowed) {
   }
 }
 
+// Первый запуск в календарный день начисляет маленький бонус. Не привязан к
+// длительности экрана, не трекает пользователя и не стимулирует расходовать.
+function getActivity() {
+  if (!storageAvailable) return normalizeActivity(null);
+  const { value } = readObject(KEYS.activity);
+  return normalizeActivity(value);
+}
+function recordAppOpen(today) {
+  if (!storageAvailable) return false;
+  const prior = getActivity();
+  const next = withOpenedDay(prior, today);
+  if (next.days.join() === prior.days.join()) return true;
+  try {
+    window.localStorage.setItem(KEYS.activity, JSON.stringify(next));
+    return true;
+  } catch (e) {
+    console.error("Не удалось сохранить день открытия приложения", e);
+    return false;
+  }
+}
+
 // ------------------------------------------------------------ копия данных
 
 // Нормализация раздела копии тем же белым списком, что и при обычной записи.
@@ -662,6 +685,8 @@ function normalizeSection(key, value) {
       return value && typeof value === "object" && !Array.isArray(value) ? normalizePassportState(value) : null;
     case KEYS.explore:
       return value && typeof value === "object" && !Array.isArray(value) ? normalizeExploreState(value) : null;
+    case KEYS.activity:
+      return value && typeof value === "object" && !Array.isArray(value) ? normalizeActivity(value) : null;
     default:
       return null;
   }
@@ -776,6 +801,8 @@ export const storage = {
   setBudget,
   getPassport,
   getExplore,
+  getActivity,
+  recordAppOpen,
   completeExploreLesson,
   markPassportVisit,
   removePassportVisit,

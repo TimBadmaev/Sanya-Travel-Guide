@@ -64,8 +64,8 @@ def main():
         checks += 1
         print("  PASS  first-run saved trip in old stg:trip schema", flush=True)
         check("new shell has exactly four tabs", "document.querySelectorAll('.bottom-nav__item').length", 4)
-        check("one game path with four worlds", "document.querySelectorAll('.quest-world').length", 4)
-        check("twelve tappable steps", "document.querySelectorAll('.quest-step__link').length", 12)
+        check("game path has five themed worlds", "document.querySelectorAll('.quest-world').length", 5)
+        check("fifteen tappable steps", "document.querySelectorAll('.quest-step__link').length", 15)
         check("first task opens existing catalog", "document.querySelector('.quest-step__link').getAttribute('href')", "#/places")
 
         # Existing data survives the new UI and contributes to scores.

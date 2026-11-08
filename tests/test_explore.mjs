@@ -31,7 +31,7 @@ test("База остаётся неизменной: 52 verified и 12 накл
   assert.equal(passportData.stickers.length, 12);
 });
 test("Контент уроков и заданий корректен, id уникальны, ссылки существуют", () => {
-  assert.equal(dataset.chapters.length, 4);
+  assert.equal(dataset.chapters.length, 5);
   assert.equal(dataset.lessons.length, 3);
   assert.equal(new Set(dataset.lessons.map((l) => l.id)).size, dataset.lessons.length);
   assert.ok(dataset.lessons.every((l) => l.options.length === 4 && l.options.some((o) => o.id === l.answer) && l.source.url.startsWith("https://")));
@@ -43,7 +43,7 @@ test("Нулевой прогресс без пользователя", () => {
   assert.equal(r.xp, 0);
   assert.equal(r.stats.visited, 0);
   assert.equal(r.level.level, 1);
-  assert.equal(r.totalTasks, 12);
+  assert.equal(r.totalTasks, 15);
 });
 test("Награды никогда не начисляются за shopping", () => {
   const r = make({
@@ -80,10 +80,10 @@ test("Баллы расходов не зависят от суммы, кате�
   const r = make({ expenses: { items: [
     { date: day, amount: 1 }, { date: day, amount: 50000 }, { date: "2026-11-16", amount: 3 },
   ] } });
-  assert.equal(r.xp, 10);
+  assert.equal(r.xp, 24);
   assert.equal(r.stats.expenseDays, 2);
   const many = make({ expenses: { items: Array.from({ length: 30 }, (_, i) => ({ date: "2026-11-" + String(i + 1).padStart(2, "0"), amount: 1 })) } });
-  assert.equal(many.xp, 70);
+  assert.equal(many.xp, 168);
 });
 test("Мини-урок начисляется один раз и переносится в копию", () => {
   const first = withCompletedLesson(null, "sea", [...available]);
@@ -102,4 +102,11 @@ test("Уровни предсказуемы и без бесконечной п�
   assert.equal(getLevel(100).level, 2);
   assert.equal(getLevel(215).current, 15);
   assert.equal(getLevel(-999).level, 1);
+});
+
+test("Посещения приложения дают XP только раз в день", () => {
+  const r = make({ activity: { v: 1, days: ["2026-11-09","2026-11-09","2026-11-10"] } });
+  assert.equal(r.stats.appDays, 2);
+  assert.equal(r.xp, 6);
+  assert.equal(r.chapters[4].nodes[1].progress, 2);
 });
