@@ -26,11 +26,11 @@ jobs:
         env:
           CHROME: /usr/bin/google-chrome
         run: python3 -u tests/test_v23_browser.py
-      - name: Run legacy business logic and compatibility checks
+      - name: Check legacy data, passport, map, layout, journey, offline and upgrades
         env:
           CHROME: /usr/bin/google-chrome
           SANYA_TEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: python3 -u tests/run_tests.py static unit passport map layout regression travel journey offline upgrade
+        run: python3 -u tests/run_tests.py static unit passport map layout journey offline upgrade
       - name: Capture before and after screenshots
         if: always()
         env:

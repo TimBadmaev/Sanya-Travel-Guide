@@ -21,7 +21,7 @@ function photo(parent, file, alt, className) {
   const img = el(parent, "img", className);
   img.src = "assets/photos/" + file;
   img.alt = alt;
-  img.loading = "lazy";
+  img.loading = "eager";
   img.decoding = "async";
   return img;
 }

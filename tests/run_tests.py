@@ -612,7 +612,7 @@ def run_passport(port):
 
         # Экран паспорта.
         app.go("#/passport")
-        check("#/passport открылся с карточки места («Паспорт ›» не нужен — переход по hash)", app.text(".view-title") == "Паспорт исследователя")
+        check("#/passport открылся с карточки места («Паспорт ›» не нужен — переход по hash)", app.text(".view-title") == "Живая карта Саньи")
         stats = b.js("[...document.querySelectorAll('.passport-stat')].map((li) => li.textContent)")
         reward_total = len(REWARD)
         check(f"счётчик мест без покупок: 2 из {reward_total}", stats and stats[0] == f"2из {reward_total} мест", stats)
@@ -645,7 +645,7 @@ def run_passport(port):
         b.wait_ready()
         check("«← К паспорту» из альбома — назад на #/passport", b.js("location.hash") == "#/passport")
         check("ссылка «Сохранить копию ›» ведёт в #/data", b.js("!!document.querySelector('.passport a[href=\"#/data\"]')"))
-        check("подсвечена вкладка «Сейчас»", b.js("document.querySelector('.bottom-nav__item.is-active').dataset.route") == "/")
+        check("подсвечена вкладка «Карта»", b.js("document.querySelector('.bottom-nav__item.is-active').dataset.route") == "/passport")
         check("ошибок в консоли нет", not app.errors())
 
         # Переход в карточку из паспорта и обратно.
@@ -663,7 +663,7 @@ def run_passport(port):
 
         # Вход с Главной и «Назад».
         app.go("#/", cold=True)
-        check("на Главной есть вход в паспорт", b.js("!!document.querySelector('.home-head a[href=\"#/passport\"]')"))
+        check("в нижней навигации есть вход в живую карту", b.js("!!document.querySelector('.bottom-nav a[href=\"#/passport\"]')"))
         b.js("document.querySelector('a[href=\"#/passport\"]').click(); true")
         b.wait_ready()
         app.click(".place-detail__back")

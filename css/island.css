@@ -312,3 +312,13 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .quest-app .explore-lesson__option[aria-pressed="true"] { border-color:#14ad7b;background:#e6fff0; }
 .quest-app .explore-lesson__submit { min-height:55px; }
 .quest-app .explore-lesson__feedback.is-success { border:2px solid #a8e5bc; }
+
+/* Карта должна сохранять минимум 44px у всех семи SVG-областей на 320px.
+   Не сужаем схему двойными внутренними отступами в новом оформлении. */
+.quest-app .passport > .settings-section:first-of-type { padding: 8px 2px; }
+.quest-app .passport > .settings-section:first-of-type > .settings-section__title,
+.quest-app .passport > .settings-section:first-of-type > .passport-parts__hint { margin-left: 12px; margin-right: 12px; }
+.quest-app .passport > .settings-section:first-of-type .passport-map { margin-left: -2px; margin-right: -2px; }
+/* Игровая дорожка: подписи читаются без необходимости приближать экран. */
+.quest-app .quest-step__title { font-size: 14px; }
+.quest-app .quest-step__subtitle { font-size: 12px; }

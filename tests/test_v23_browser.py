@@ -96,6 +96,7 @@ def main():
         for hash_, selector in [
           ("#/plan", ".view-title"), ("#/expenses", ".view-title"),
           ("#/prepare", ".view-title"), ("#/info", ".view-title"),
+          ("#/now", ".view-title"), ("#/handy", ".view-title"),
           ("#/excursions", ".view-title"), ("#/places", ".search-bar__input"),
           ("#/data", ".view-title")
         ]:
