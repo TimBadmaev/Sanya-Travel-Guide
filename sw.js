@@ -5,7 +5,7 @@
 
 // ЕДИНСТВЕННАЯ версия кэша. При каждой публикации обновления меняйте это
 // значение (README.md, «Как выпустить новую версию»).
-const CACHE_VERSION = "v23";
+const CACHE_VERSION = "v24";
 
 // Префикс нужен, чтобы activate удалял только кэши этого приложения: у всех
 // репозиториев на <аккаунт>.github.io общий origin и общее хранилище кэшей.
@@ -40,6 +40,7 @@ const PRECACHE = [
   "./js/logic/today.js",
   "./js/logic/trip.js",
   "./js/views/backup.js",
+  "./js/views/street-map.js",
   "./js/views/adventure.js",
   "./js/views/welcome.js",
   "./js/views/discover.js",
