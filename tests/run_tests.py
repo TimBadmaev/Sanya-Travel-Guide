@@ -1109,6 +1109,7 @@ def run_map(port):
         b.navigate(f"http://127.0.0.1:{port}/index.html#/places")
         b.js(f"localStorage.clear(); localStorage.setItem('stg:trip', {json.dumps(json.dumps(TRIP))}); localStorage.setItem('stg:installHintDismissed', '1'); true")
         b.navigate(f"http://127.0.0.1:{port}/index.html#/place/egret-park")
+        check("карточка места дождалась асинхронной загрузки", b.wait_for("!![...document.querySelectorAll('.passport-block button')].find((e) => e.textContent === 'Отметить посещение')", 15))
         b.js("[...document.querySelectorAll('.passport-block button')].find((e) => e.textContent === 'Отметить посещение').click(); true")
         real = b.js("""(() => { const v = JSON.parse(localStorage.getItem('stg:passport')).visits['egret-park']; const d = new Date();
             const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
