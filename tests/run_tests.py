@@ -955,7 +955,12 @@ def run_map(port):
         check("пляжи у кромки берега (≤ 25 единиц)", all(v <= 25 for v in beaches.values()), beaches)
         check("островов не нарисовано (координат островов в данных нет)", ov["islands"] == 0)
         check("постоянная подпись «Схема для отметок…»", ov["caption"] == "Схема для отметок. Форма берега и расстояния условны. Дорога — в карточке места.", ov["caption"])
-        check("нет запросов за пределы приложения и внешних изображений", not ov["external"] and ov["images"] == 0, ov["external"])
+        # v24: схема SVG остаётся полностью локальной, но отдельная уличная
+        # карта законно получает ТОЛЬКО видимые OSM тайлы с сервера.
+        external = ov["external"]
+        allowed_tiles = all(re.match(r"^https://tile\\.openstreetmap\\.org/\\d+/\\d+/\\d+\\.png$", url) for url in external)
+        check("у офлайн-схемы нет внешних изображений; онлайн-карта запрашивает только OSM тайлы",
+              allowed_tiles and ov["images"] == 0, external)
         check("схема — группа с доступным названием (не картинка со ссылками)", ov["role"] == "group" and "схема" in (ov["label"] or "").lower())
         check("на схеме нет GPS, отеля, линейки и маршрутов",
               b.js("!document.querySelector('.passport-map [class*=\"route\"], .passport-map [class*=\"hotel\"], .passport-map [class*=\"scale\"], .passport-map [class*=\"gps\"], .passport-map polyline')"))
