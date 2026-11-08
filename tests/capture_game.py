@@ -62,7 +62,7 @@ def run(root, prefix, output):
         if prefix == "after":
             seed["stg:explore"] = {"v": 1, "completed": ["sea"]}
         b.js("(() => { const entries = " + json.dumps(seed, ensure_ascii=False) +
-             "; Object.entries(entries).forEach(([k,v]) => localStorage.setItem(k, JSON.stringify(v))); return true; })()")
+             "; Object.entries(entries).forEach(([k,v]) => localStorage.setItem(k, JSON.stringify(v))); localStorage.setItem(\'stg:installHintDismissed\', \'1\'); return true; })()")
         pages = [("home", "#/", ".home-head"), ("passport", "#/passport", ".passport-map")]
         if prefix == "after":
             pages.append(("game", "#/explore", ".explore-chapter__path"))

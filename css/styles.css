@@ -4208,3 +4208,6 @@ textarea.settings-field__input {
 @media (max-height: 350px) {
   .passport-note__buttons { position: relative; top: -4px; }
 }
+
+/* Длинные названия уровня не заходят в соседний счётчик на 320–375 px. */
+.explore-hero__stat span { max-width: 100%; overflow-wrap: anywhere; line-height: 1.15; }
