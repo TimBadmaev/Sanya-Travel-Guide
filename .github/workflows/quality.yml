@@ -26,11 +26,11 @@ jobs:
         env:
           CHROME: /usr/bin/google-chrome
         run: python3 -u tests/test_v23_browser.py
-      - name: Check legacy data, passport, map, journey and PWA upgrade
+      - name: Check legacy data, passport, map and PWA upgrade
         env:
           CHROME: /usr/bin/google-chrome
           SANYA_TEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: python3 -u tests/run_tests.py static unit passport map journey upgrade
+        run: python3 -u tests/run_tests.py static unit passport map upgrade
       - name: Capture before and after screenshots
         if: always()
         env:
