@@ -296,3 +296,19 @@ a, button { -webkit-tap-highlight-color: transparent; }
   .quest-step__callout { animation:none; }
   .quest-step__disc,.welcome__progress-bar>span { transition:none; }
 }
+
+
+/* -------------------------- Живая карта / урок ----------------------------- */
+.quest-map__eyebrow { font-size:11px;font-weight:950;color:#0f956d;letter-spacing:.11em;margin:10px 0 5px; }
+.quest-map__intro { margin:0 0 12px;font-size:15px;line-height:1.45;color:#618376; }
+.quest-map__progress { display:inline-flex;align-items:center;padding:9px 12px;border:2px solid #cfebd8;background:#eaf9ed;border-radius:14px;color:#146c51;font-size:13px;font-weight:900;margin:0 0 14px; }
+.quest-app .passport > .settings-section:first-of-type { padding:12px;border:1px solid #e0f0e6;background:#fff;border-radius:20px;margin-bottom:16px; }
+.quest-app .passport-map { margin-top:10px; }
+.quest-app .passport-stats { margin:15px 0; }
+.quest-app .passport-stat { background:#fff;border:2px solid #e4f0e8; }
+.quest-app .explore-lesson__card { border:2px solid #e3eee6;border-radius:25px;padding:20px;background:#fff; }
+.quest-app .explore-lesson__title { font-size:28px;font-weight:950;letter-spacing:-.03em; }
+.quest-app .explore-lesson__option { border:2px solid #dfeee5;border-bottom-width:5px;border-radius:17px;min-height:59px;font-weight:850; }
+.quest-app .explore-lesson__option[aria-pressed="true"] { border-color:#14ad7b;background:#e6fff0; }
+.quest-app .explore-lesson__submit { min-height:55px; }
+.quest-app .explore-lesson__feedback.is-success { border:2px solid #a8e5bc; }
