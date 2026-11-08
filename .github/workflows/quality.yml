@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Node 22
         uses: actions/setup-node@v4
         with:
@@ -24,3 +26,16 @@ jobs:
         env:
           CHROME: /usr/bin/google-chrome
         run: python3 -u tests/run_tests.py
+      - name: Capture before and after screenshots
+        env:
+          CHROME: /usr/bin/google-chrome
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git worktree add --detach /tmp/sanya-baseline "$BASE_SHA"
+          python3 -u tests/capture_game.py /tmp/sanya-baseline "$PWD" /tmp/sanya-shots
+      - name: Upload UX screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-before-after
+          path: /tmp/sanya-shots/*.png
+          retention-days: 14
