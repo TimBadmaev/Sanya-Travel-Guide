@@ -1519,7 +1519,7 @@ def run_upgrade(port):
         check("после обновления хроника не дописала ничего в localStorage",
               b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map((k) => [k, localStorage.getItem(k)])))") == before)
         b.go(base, "#/", cold=True)
-        check("после обновления на «Сейчас» есть блок «Начните своё путешествие»", b.js("document.querySelectorAll('.guide .guide-step a').length") == 5)
+        check("после обновления на главной есть игровой путь из 12 заданий", b.js("document.querySelectorAll('.quest-step__link').length") == 12)
         b.go(base, "#/place/yalong-bay-beach", cold=True)
         b.js("window.__click('.passport-block button', 'Отметить посещение')")
         passport = json.loads(b.js("localStorage.getItem('stg:passport')") or "{}")
