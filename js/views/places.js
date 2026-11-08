@@ -553,6 +553,15 @@ export async function renderPlaces(container, ctx) {
   searchInput.placeholder = "Название, район или тип места";
   searchInput.setAttribute("aria-label", "Поиск мест: название, район или тип");
   searchInput.autocomplete = "off";
+  searchInput.enterKeyHint = "search";
+  // Кнопка «Найти» на клавиатуре закрывает её: результаты уже обновляются
+  // по мере ввода, поэтому дополнительный submit не нужен.
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searchInput.blur();
+    }
+  });
   searchBar.appendChild(searchInput);
 
   const searchClear = document.createElement("button");

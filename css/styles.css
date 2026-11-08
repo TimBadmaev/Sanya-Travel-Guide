@@ -3765,3 +3765,55 @@ textarea.settings-field__input {
   0% { transform: scale(1.12); opacity: 0.4; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+/* UX release v21: четыре частых действия без прокрутки через справочные блоки. */
+.home-quick {
+  margin: var(--space-2) 0 var(--space-3);
+}
+.home-quick__heading {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+.home-quick__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.home-quick__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  min-height: 60px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+.home-quick__link:first-child {
+  border-color: #b5d9d0;
+  background: #eaf6f2;
+}
+.home-quick__link:active {
+  background: var(--color-surface-alt);
+}
+.home-quick__icon {
+  flex: 0 0 auto;
+  font-size: 22px;
+  line-height: 1;
+}
+.home-quick__text {
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+@media (max-width: 359px) {
+  .home-quick__link {
+    padding: var(--space-2);
+    gap: 6px;
+    font-size: var(--font-size-sm);
+  }
+}
