@@ -4188,3 +4188,22 @@ textarea.settings-field__input {
 @media (prefers-reduced-motion: reduce) {
   .explore-node__marker, .explore-hero__bar-fill { transition: none; }
 }
+
+/* Chrome/Linux и самые узкие телефоны: первая карточка каталога должна
+   оставаться видимой без прокрутки. Сохраняем 44px цели, уплотняем отступы. */
+@media (max-width: 359px) {
+  .app-main:has(.places-head) { padding-top: 8px; }
+  .places-head,
+  .places-tools,
+  .search-bar,
+  .chips { margin-bottom: 4px; }
+  .chips { padding-top: 0; padding-bottom: 0; }
+  .places-meta { margin-bottom: 2px; line-height: 1.2; }
+  .places-meta__text { min-width: 0; }
+  .places-scope { font-size: 12px; line-height: 1.2; }
+  .bottom-nav__item[data-route="/prepare"] { flex-grow: 1.24; letter-spacing: -0.045em; }
+}
+/* Chrome округляет границу кнопок на 1px вниз при высоте клавиатуры 330px. */
+@media (max-height: 350px) {
+  .passport-note__buttons { position: relative; top: -4px; }
+}

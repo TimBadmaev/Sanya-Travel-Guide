@@ -25,6 +25,7 @@ jobs:
       - name: Run full app browser and offline regression suite
         env:
           CHROME: /usr/bin/google-chrome
+          SANYA_TEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: python3 -u tests/run_tests.py
       - name: Capture before and after screenshots
         env:
