@@ -22,6 +22,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from cdp import Browser, serve  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# В PR сравниваем установленную основную версию и рабочую ветку. При
+# локальном запуске без переменной ведём себя как прежде (HEAD).
+BASE_REF = os.environ.get("SANYA_TEST_BASE_SHA", "HEAD")
 RESULTS = []
 SECTION = [""]
 
@@ -112,7 +115,7 @@ def run_static():
 
     version = re.search(r'const CACHE_VERSION = "v(\d+)"', sw)
     try:
-        head = subprocess.run(["git", "show", "HEAD:sw.js"], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+        head = subprocess.run(["git", "show", f"{BASE_REF}:sw.js"], cwd=ROOT, capture_output=True, text=True, check=True).stdout
         head_version = int(re.search(r'const CACHE_VERSION = "v(\d+)"', head).group(1))
     except Exception:  # noqa: BLE001
         head_version = None
@@ -1447,7 +1450,8 @@ def run_upgrade(port):
     tmp = tempfile.mkdtemp(prefix="sanya-upgrade-")
     head_dir = os.path.join(tmp, "head")
     os.makedirs(head_dir)
-    subprocess.run(f"git archive HEAD | tar -x -C '{head_dir}'", shell=True, cwd=ROOT, check=True)
+    subprocess.run(["git", "archive", BASE_REF], cwd=ROOT, check=True, stdout=open(os.path.join(tmp, "baseline.tar"), "wb"))
+    subprocess.run(["tar", "-xf", os.path.join(tmp, "baseline.tar"), "-C", head_dir], check=True)
     head_version = re.search(r'CACHE_VERSION = "(v\d+)"', open(os.path.join(head_dir, "sw.js"), encoding="utf-8").read()).group(1)
     root = os.path.join(tmp, "root")
     os.makedirs(root)

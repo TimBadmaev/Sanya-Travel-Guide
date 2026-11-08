@@ -1,4 +1,4 @@
-import { loadChecklist, loadConfig, loadExcursions, loadPassport, loadPlaces, loadPlan, loadErrorMessage } from "../data.js";
+import { loadChecklist, loadConfig, loadExcursions, loadExplore, loadPassport, loadPlaces, loadPlan, loadErrorMessage } from "../data.js";
 import { TODAY_STATE, getPeriodDates, isDayEmpty, resolveDayTitle, resolveToday } from "../logic/plan.js";
 import { countPlannedDays } from "../logic/myplan.js";
 import { EMPTY_DAY_TEXT, createTypeChip, typesMap } from "./plan.js";
@@ -17,6 +17,8 @@ import { renderTask } from "./task.js";
 import { renderHomeExpenses } from "./expenses.js";
 import { renderArrivalBlock, renderDepartureBlock, renderNowPreview, renderTodayCard } from "./today.js";
 import { renderGuide } from "./guide.js";
+import { evaluateExplore } from "../logic/explore.js";
+import { evaluatePassport, prepareContent } from "../logic/passport.js";
 
 // Экран «Сейчас» (PRODUCT.md 8.3, MVP-UX-SPEC §3): четыре состояния по датам
 // поездки. Район на выбор состояния не влияет — только на содержимое строк
@@ -112,6 +114,42 @@ function renderQuickActions(container, { hasOrigin, trip, nearbyHref }) {
   });
   section.appendChild(grid);
   container.appendChild(section);
+}
+
+// Крупный игровой вход, но никогда не выше первоочередного сценария туриста.
+function renderExploreTeaser(container, { places, config, passportRaw, exploreRaw }) {
+  const link = document.createElement("a");
+  link.href = "#/explore";
+  link.className = "explore-teaser";
+  const icon = document.createElement("span");
+  icon.className = "explore-teaser__icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = "🌴";
+  const content = document.createElement("span");
+  content.className = "explore-teaser__body";
+  const label = document.createElement("strong");
+  label.textContent = "Открой Хайнань";
+  const hint = document.createElement("span");
+  hint.textContent = "Приключения, живой остров и награды";
+  content.append(label, hint);
+  if (passportRaw && exploreRaw && config) {
+    const result = evaluatePassport({
+      state: storage.getPassport(), places,
+      content: prepareContent(passportRaw, config),
+    });
+    const game = evaluateExplore({
+      places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(),
+      passportResult: result, explore: storage.getExplore(), expenses: storage.getExpenses(),
+      chapters: exploreRaw.chapters, lessons: exploreRaw.lessons,
+    });
+    hint.textContent = game.xp + " XP · уровень " + game.level.level + " · " + game.completedTasks + "/" + game.totalTasks + " заданий";
+  }
+  const arrow = document.createElement("span");
+  arrow.className = "explore-teaser__arrow";
+  arrow.textContent = "›";
+  arrow.setAttribute("aria-hidden", "true");
+  link.append(icon, content, arrow);
+  container.appendChild(link);
 }
 
 function renderProgressBlock(container, done, total) {
@@ -222,6 +260,7 @@ export async function renderHome(container, ctx) {
   let plan;
   let excursions;
   let passportRaw;
+  let exploreRaw;
   try {
     // Справочник — ради названия района, чек-лист — ради прогресса и
     // ближайших дел, места — ради счётчика «Сохранено: N». Новых сетевых
@@ -232,13 +271,14 @@ export async function renderHome(container, ctx) {
     // необязательны: без них Главная не превращается в ошибку.
     // Контент паспорта нужен только шагу «первая наклейка» блока «Начните
     // своё путешествие» — тоже необязателен.
-    [config, checklist, places, plan, excursions, passportRaw] = await Promise.all([
+    [config, checklist, places, plan, excursions, passportRaw, exploreRaw] = await Promise.all([
       loadConfig(),
       loadChecklist(),
       loadPlaces(),
       loadPlan().catch(() => null),
       loadExcursions().catch(() => []),
       loadPassport().catch(() => null),
+      loadExplore().catch(() => null),
     ]);
   } catch (e) {
     console.error(e);
@@ -348,6 +388,7 @@ export async function renderHome(container, ctx) {
     renderPlanBlock(container, { plan, places, excursions, config, tripState: state });
     // Расходы до поездки (виза, страховка, eSIM) — категория «Подготовка».
     appendActionLink(container, "Расходы поездки", "#/expenses", "home-link");
+    renderExploreTeaser(container, { places, config, passportRaw, exploreRaw });
     guide();
     return;
   }
@@ -377,6 +418,7 @@ export async function renderHome(container, ctx) {
     renderQuickActions(container, { hasOrigin, trip, nearbyHref: scenarioHref(null) });
     renderHomeExpenses(container, getTodayIso());
     renderNowPreview(container, { places, config, trip, plan });
+    renderExploreTeaser(container, { places, config, passportRaw, exploreRaw });
 
     appendLine(container, "home-subtitle", "Куда сходить");
     renderScenarios(container, [
@@ -456,5 +498,6 @@ export async function renderHome(container, ctx) {
     ["Хочу природу", "#/places?f=nature"],
     ["Куда сходить с детьми", "#/places?f=kids"],
   ]);
+  renderExploreTeaser(container, { places, config, passportRaw, exploreRaw });
   guide();
 }

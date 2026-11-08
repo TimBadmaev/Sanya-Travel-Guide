@@ -132,6 +132,8 @@ export async function renderPassport(container, ctx) {
   if (!storage.isAvailable()) appendText(page, "p", "area-notice", NO_STORAGE_TEXT);
 
   renderStats(page, result);
+  const adventure = appendText(page, "a", "explore-passport-link", "🧭 Продолжить приключение · Открой Хайнань ›");
+  adventure.href = "#/explore";
   // Найти конкретное место: схема и части побережья подсказывают, где оно, но
   // искать по названию быстрее. Ведёт в существующий поиск «Мест» (там строка
   // места показывает «✓ Отмечено», а «← К паспорту» возвращает сюда) — второго
@@ -187,6 +189,8 @@ function mapFigure(parent, svg, legendExtra) {
   const legend = document.createElement("p");
   legend.className = "passport-map__legend";
   appendText(legend, "span", "passport-map__key passport-map__key--visited", "отмечено");
+  appendText(legend, "span", "passport-map__key passport-map__key--planned", "в плане");
+  appendText(legend, "span", "passport-map__key passport-map__key--saved", "сохранено");
   appendText(legend, "span", "passport-map__key", "ещё не отмечено");
   if (legendExtra) appendText(legend, "span", "passport-map__note", legendExtra);
   parent.appendChild(legend);
@@ -206,16 +210,26 @@ function renderOverview(page, { result, content, places, state }) {
     label: "Декоративная схема побережья Саньи: части побережья и отмеченные места",
   });
   const dots = el("g", { class: "pp-dots", "aria-hidden": "true" }, svg);
+  const saved = new Set(storage.getSavedIds());
+  const plans = storage.getMyPlan().days;
+  const planned = new Set(Object.values(plans).flatMap((d) => Array.isArray(d.placeIds) ? d.placeIds : []));
   places.forEach((place) => {
     const point = projectPoint(place.location);
     if (!point || !result.partOf(place)) return;
     const visited = Boolean(getVisit(state, place.id));
+    const color = CATEGORY_INK[place.category] || "#0b6e6e";
+    if (visited) {
+      // Декоративное «раскрашивание» вокруг посещённой точки;
+      // форма берега и координаты по-прежнему условные.
+      el("circle", { cx: point.x, cy: point.y, r: 45,
+        class: "pp-reveal", style: `--ink: ${color}` }, dots);
+    }
     el("circle", {
       cx: point.x,
       cy: point.y,
-      r: visited ? 16 : 9,
-      class: `pp-dot${visited ? " pp-dot--visited" : ""}`,
-      style: `--ink: ${CATEGORY_INK[place.category] || "#0b6e6e"}`,
+      r: visited ? 16 : planned.has(place.id) ? 12 : 9,
+      class: `pp-dot${visited ? " pp-dot--visited" : planned.has(place.id) ? " pp-dot--planned" : saved.has(place.id) ? " pp-dot--saved" : ""}`,
+      style: `--ink: ${color}`,
       "data-place": place.id,
     }, dots);
   });

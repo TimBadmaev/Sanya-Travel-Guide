@@ -1,0 +1,46 @@
+name: Sanya Guide quality checks
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate game progress and content
+        run: node --experimental-default-type=module --test tests/test_explore.mjs
+      - name: Run game screen, persistence and offline browser scenarios
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_explore_browser.py
+      - name: Run full app browser and offline regression suite
+        env:
+          CHROME: /usr/bin/google-chrome
+          SANYA_TEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: python3 -u tests/run_tests.py
+      - name: Capture before and after screenshots
+        env:
+          CHROME: /usr/bin/google-chrome
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git worktree add --detach /tmp/sanya-baseline "$BASE_SHA"
+          python3 -u tests/capture_game.py /tmp/sanya-baseline "$PWD" /tmp/sanya-shots
+      - name: Upload UX screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-before-after
+          path: /tmp/sanya-shots/*.png
+          retention-days: 14

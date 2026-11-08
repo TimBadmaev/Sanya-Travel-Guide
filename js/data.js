@@ -127,6 +127,15 @@ export async function loadPassport() {
   };
 }
 
+// Гейм-дизайн: главы и мини-уроки отдельно от проверенных справочных данных.
+export async function loadExplore() {
+  const content = await loadJSON("data/explore.json");
+  return {
+    chapters: Array.isArray(content.chapters) ? content.chapters.slice() : [],
+    lessons: Array.isArray(content.lessons) ? content.lessons.slice() : [],
+  };
+}
+
 // Рекомендованный план (Итерация 6, ITERATION-6-RESEARCH.md §13.1): один
 // объект { meta, days }, а не массив. Только чтение — «Мой план» живёт в
 // stg:myplan (storage.js). Возвращается новый объект с новым массивом дней.

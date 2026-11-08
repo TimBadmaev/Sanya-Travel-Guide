@@ -3,6 +3,7 @@
 
 import { normalizeBudgetState, normalizeExpensesState } from "./logic/expenses.js";
 import { normalizePassportState, withNote, withRestoredVisit, withVisit, withoutVisit } from "./logic/passport.js";
+import { normalizeExploreState, withCompletedLesson } from "./logic/explore.js";
 
 const SCHEMA_VERSION = 1;
 
@@ -41,12 +42,14 @@ export const KEYS = {
   // хранится (js/logic/guide.js). Служебный флаг, как подсказка установки, —
   // к схеме не относится и в копию данных не входит.
   guideCollapsed: "stg:guideCollapsed",
+  // Игровые мини-уроки: только id завершённых уроков. XP вычисляется из старых данных.
+  explore: "stg:explore",
 };
 
 // Данные пользователя, которые переносит копия (Iteration 9, экспорт/импорт):
 // только то, что нельзя восстановить из контента. Служебные флаги
 // (stg:schema, подсказка установки) и аварийные копии (…:backup) не входят.
-export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget, KEYS.passport];
+export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget, KEYS.passport, KEYS.explore];
 
 // Сырые копии повреждённых значений: перед записью поверх неразбираемого
 // значения (в том числе при импорте) оно один раз сохраняется сюда.
@@ -598,6 +601,29 @@ function setPassportNote(placeId, note) {
   return writePassport((state) => withNote(state, placeId, note));
 }
 
+// Мини-уроки «Открой Хайнань». Никакой дублирующей статистики посещений.
+function getExplore() {
+  const empty = normalizeExploreState(null);
+  if (!storageAvailable) return empty;
+  ensureSchema();
+  const { value } = readObject(KEYS.explore);
+  return value ? normalizeExploreState(value) : empty;
+}
+
+function completeExploreLesson(id, allowed) {
+  if (!storageAvailable || !Array.isArray(allowed) || !allowed.includes(id)) return false;
+  try {
+    ensureSchema();
+    const previous = getExplore();
+    const next = withCompletedLesson(previous, id, allowed);
+    window.localStorage.setItem(KEYS.explore, JSON.stringify(next));
+    return true;
+  } catch (e) {
+    console.error("Не удалось сохранить прогресс урока", e);
+    return false;
+  }
+}
+
 // ------------------------------------------------------------ копия данных
 
 // Нормализация раздела копии тем же белым списком, что и при обычной записи.
@@ -634,6 +660,8 @@ function normalizeSection(key, value) {
       return value && typeof value === "object" && !Array.isArray(value) ? normalizeBudgetState(value) : null;
     case KEYS.passport:
       return value && typeof value === "object" && !Array.isArray(value) ? normalizePassportState(value) : null;
+    case KEYS.explore:
+      return value && typeof value === "object" && !Array.isArray(value) ? normalizeExploreState(value) : null;
     default:
       return null;
   }
@@ -747,6 +775,8 @@ export const storage = {
   getBudget,
   setBudget,
   getPassport,
+  getExplore,
+  completeExploreLesson,
   markPassportVisit,
   removePassportVisit,
   restorePassportVisit,
