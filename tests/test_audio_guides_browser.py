@@ -30,7 +30,7 @@ def main():
         check("catalog search and area are accessible","document.querySelectorAll('.audio-filter').length",2)
         check("mobile has no horizontal overflow","document.documentElement.scrollWidth<=innerWidth")
         check("bulk download requires user click","!!document.querySelector('.audio-catalog__actions button')")
-        check("download all button includes exact size","document.querySelector('.audio-catalog__all').textContent.includes('7,9 МБ')")
+        check("download all button includes exact size","document.querySelector('.audio-catalog__all').textContent.includes('8,6 МБ')")
         b.js("document.querySelector('.audio-catalog__all').click();true")
         check("download all requires explicit confirmation","!document.querySelector('.audio-catalog__confirm').hidden")
         check("confirm has not started network downloads","performance.getEntriesByType('resource').filter(e=>e.name.endsWith('.m4a')).length",0)

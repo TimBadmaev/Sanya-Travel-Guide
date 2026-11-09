@@ -13,7 +13,7 @@ def port():
         return s.getsockname()[1]
 
 def main():
-    assert os.path.getsize(os.path.join(ROOT, "assets", "audio-v2", "luhuitou-park.m4a")) > 10000
+    assert os.path.getsize(os.path.join(ROOT, "assets", "audio-v3", "luhuitou-park.m4a")) > 10000
     p=port();server=serve(ROOT,p);b=Browser(width=375,height=812)
     base=f"http://127.0.0.1:{p}/"; done=0
     def check(label, expression, expected=True):
@@ -34,7 +34,7 @@ def main():
         if not b.wait_for("document.querySelector('.audio-guide__status').textContent.includes('✓ Аудио сохранено')",30):
             raise AssertionError(f"MP3 did not download: {b.exceptions}")
         check("audio saved to dedicated Cache API",
-              "(async()=>!!(await(await caches.open('sanya-audio-offline-v1')).match(new URL('assets/audio-v2/luhuitou-park.m4a',document.baseURI))))()")
+              "(async()=>!!(await(await caches.open('sanya-audio-offline-v1')).match(new URL('assets/audio-v3/luhuitou-park.m4a',document.baseURI))))()")
         b.send("Network.emulateNetworkConditions",{
             "offline":True,"latency":0,"downloadThroughput":0,"uploadThroughput":0
         })

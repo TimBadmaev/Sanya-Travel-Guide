@@ -82,7 +82,7 @@ const PRECACHE = [
   "./data/explore.json",
   "./data/food.json",
   "./data/audio-guides.json",
-  "./data/audio-sizes.json",
+  "./data/audio-sizes-v3.json",
   "./data/hainan-coast.json",
   "./data/sanya-roads.json",
   "./data/info.json",

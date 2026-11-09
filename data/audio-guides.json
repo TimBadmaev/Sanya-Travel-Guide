@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "language": "ru-RU",
-  "voice": "Silero v5_cis_base_nostress · ru_ekaterina",
+  "voice": "Piper ru_RU-denis-medium · спокойный синтетический мужской голос",
   "updatedAt": "2026-11-09",
   "disclaimer": "Оригинальные рассказы по туристическим и историческим источникам; легенды помечены как предания. Видеообзоры — ссылки на оригинальные публикации, озвучка и музыка не заимствованы.",
   "items": {
@@ -13,7 +13,7 @@
       "minutes": 2,
       "wordCount": 204,
       "estimatedSeconds": 91,
-      "audio": "assets/audio-v2/dadonghai-beach.m4a",
+      "audio": "assets/audio-v3/dadonghai-beach.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Dadonghai»",
@@ -41,7 +41,7 @@
       "minutes": 2,
       "wordCount": 202,
       "estimatedSeconds": 90,
-      "audio": "assets/audio-v2/yalong-bay-beach.m4a",
+      "audio": "assets/audio-v3/yalong-bay-beach.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Yalong Bay»",
@@ -69,7 +69,7 @@
       "minutes": 2,
       "wordCount": 204,
       "estimatedSeconds": 91,
-      "audio": "assets/audio-v2/yalong-tropical-forest-park.m4a",
+      "audio": "assets/audio-v3/yalong-tropical-forest-park.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Yalong Bay Tropical Paradise Forest Park»",
@@ -97,7 +97,7 @@
       "minutes": 1,
       "wordCount": 187,
       "estimatedSeconds": 83,
-      "audio": "assets/audio-v2/sanya-bay-beach.m4a",
+      "audio": "assets/audio-v3/sanya-bay-beach.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Sanya Bay»",
@@ -125,7 +125,7 @@
       "minutes": 2,
       "wordCount": 222,
       "estimatedSeconds": 99,
-      "audio": "assets/audio-v2/tianya-haijiao.m4a",
+      "audio": "assets/audio-v3/tianya-haijiao.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Tianya Haijiao»",
@@ -153,7 +153,7 @@
       "minutes": 2,
       "wordCount": 210,
       "estimatedSeconds": 93,
-      "audio": "assets/audio-v2/luhuitou-park.m4a",
+      "audio": "assets/audio-v3/luhuitou-park.m4a",
       "sources": [
         {
           "title": "Официальный материал о месте",
@@ -185,7 +185,7 @@
       "minutes": 1,
       "wordCount": 198,
       "estimatedSeconds": 88,
-      "audio": "assets/audio-v2/wuzhizhou-island.m4a",
+      "audio": "assets/audio-v3/wuzhizhou-island.m4a",
       "sources": [
         {
           "title": "Официальный материал о месте",
@@ -217,7 +217,7 @@
       "minutes": 2,
       "wordCount": 233,
       "estimatedSeconds": 104,
-      "audio": "assets/audio-v2/nanshan-cultural-zone.m4a",
+      "audio": "assets/audio-v3/nanshan-cultural-zone.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Sanya Nanshan Cultural Tourism Zone»",
@@ -245,7 +245,7 @@
       "minutes": 1,
       "wordCount": 201,
       "estimatedSeconds": 89,
-      "audio": "assets/audio-v2/sanya-first-market.m4a",
+      "audio": "assets/audio-v3/sanya-first-market.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «First Market Night Market»",
@@ -269,7 +269,7 @@
       "minutes": 1,
       "wordCount": 173,
       "estimatedSeconds": 77,
-      "audio": "assets/audio-v2/sanya-song-cheng.m4a",
+      "audio": "assets/audio-v3/sanya-song-cheng.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Sanya Songcheng Show Park»",
@@ -293,7 +293,7 @@
       "minutes": 1,
       "wordCount": 201,
       "estimatedSeconds": 89,
-      "audio": "assets/audio-v2/yalong-bay-rose-valley.m4a",
+      "audio": "assets/audio-v3/yalong-bay-rose-valley.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Yalong Bay International Rose Valley»",
@@ -317,7 +317,7 @@
       "minutes": 2,
       "wordCount": 212,
       "estimatedSeconds": 94,
-      "audio": "assets/audio-v2/bohou-village.m4a",
+      "audio": "assets/audio-v3/bohou-village.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Bohou Village»",
@@ -341,7 +341,7 @@
       "minutes": 1,
       "wordCount": 180,
       "estimatedSeconds": 80,
-      "audio": "assets/audio-v2/sanya-shanhai-shell-museum.m4a",
+      "audio": "assets/audio-v3/sanya-shanhai-shell-museum.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Sanya Shan Hai Shell Culture Museum»",
@@ -365,7 +365,7 @@
       "minutes": 1,
       "wordCount": 200,
       "estimatedSeconds": 89,
-      "audio": "assets/audio-v2/egret-park.m4a",
+      "audio": "assets/audio-v3/egret-park.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Egret Park»",
@@ -385,7 +385,7 @@
       "minutes": 1,
       "wordCount": 191,
       "estimatedSeconds": 85,
-      "audio": "assets/audio-v2/linchunling-forest-park.m4a",
+      "audio": "assets/audio-v3/linchunling-forest-park.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Linchunling Forest Park»",
@@ -413,7 +413,7 @@
       "minutes": 2,
       "wordCount": 220,
       "estimatedSeconds": 98,
-      "audio": "assets/audio-v2/west-island.m4a",
+      "audio": "assets/audio-v3/west-island.m4a",
       "sources": [
         {
           "title": "Официальный материал о месте",
@@ -441,7 +441,7 @@
       "minutes": 1,
       "wordCount": 191,
       "estimatedSeconds": 85,
-      "audio": "assets/audio-v2/houhai-village.m4a",
+      "audio": "assets/audio-v3/houhai-village.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Houhai Village»",
@@ -461,7 +461,7 @@
       "minutes": 1,
       "wordCount": 197,
       "estimatedSeconds": 88,
-      "audio": "assets/audio-v2/fenghuangling-scenic-area.m4a",
+      "audio": "assets/audio-v3/fenghuangling-scenic-area.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Sanya Fenghuang Hill Pledge of Love Scenic Area»",
@@ -485,7 +485,7 @@
       "minutes": 1,
       "wordCount": 192,
       "estimatedSeconds": 85,
-      "audio": "assets/audio-v2/ganghua-night-market.m4a",
+      "audio": "assets/audio-v3/ganghua-night-market.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Ganghua Night Market»",
@@ -509,7 +509,7 @@
       "minutes": 1,
       "wordCount": 177,
       "estimatedSeconds": 79,
-      "audio": "assets/audio-v2/linwang-night-market.m4a",
+      "audio": "assets/audio-v3/linwang-night-market.m4a",
       "sources": [
         {
           "title": "三亚市旅游发展局 — «三亚夜市»: 林旺夜市, адрес 海棠区林旺路 (林旺社区水果市场东北侧约250米)",
@@ -533,7 +533,7 @@
       "minutes": 1,
       "wordCount": 190,
       "estimatedSeconds": 84,
-      "audio": "assets/audio-v2/yazhou-ancient-city.m4a",
+      "audio": "assets/audio-v3/yazhou-ancient-city.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Yazhou Ancient City»",
@@ -557,7 +557,7 @@
       "minutes": 2,
       "wordCount": 206,
       "estimatedSeconds": 92,
-      "audio": "assets/audio-v2/daxiaodongtian-scenic-area.m4a",
+      "audio": "assets/audio-v3/daxiaodongtian-scenic-area.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Sanya Dongtian Park Tourism Area» (адрес, часы, телефоны)",
@@ -581,7 +581,7 @@
       "minutes": 1,
       "wordCount": 181,
       "estimatedSeconds": 80,
-      "audio": "assets/audio-v2/tianya-town.m4a",
+      "audio": "assets/audio-v3/tianya-town.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Tianya Town»",
@@ -605,7 +605,7 @@
       "minutes": 2,
       "wordCount": 205,
       "estimatedSeconds": 91,
-      "audio": "assets/audio-v2/xiaozhou-island-park.m4a",
+      "audio": "assets/audio-v3/xiaozhou-island-park.m4a",
       "sources": [
         {
           "title": "Sanya Tourism Board — «Xiaozhou Island Green Restoration Park»",
@@ -629,7 +629,7 @@
       "minutes": 1,
       "wordCount": 163,
       "estimatedSeconds": 72,
-      "audio": "assets/audio-v2/sanya-city-library.m4a",
+      "audio": "assets/audio-v3/sanya-city-library.m4a",
       "sources": [
         {
           "title": "三亚新闻网 — «三亚文化场馆开放时间全汇总» от 2026-08-04 (адрес 凤凰路101号, часы вт–вс 08:00–21:00, бесплатно, телефон)",
@@ -653,7 +653,7 @@
       "minutes": 1,
       "wordCount": 185,
       "estimatedSeconds": 82,
-      "audio": "assets/audio-v2/yiheng-night-market.m4a",
+      "audio": "assets/audio-v3/yiheng-night-market.m4a",
       "sources": [
         {
           "title": "三亚市旅游发展局 — «三亚夜市» (亿恒夜市: адрес 吉阳区海润路22号, более 10 000 м², 500+ лотков, зонирование, «明码标价»)",
@@ -677,7 +677,7 @@
       "minutes": 2,
       "wordCount": 216,
       "estimatedSeconds": 96,
-      "audio": "assets/audio-v2/baoping-village.m4a",
+      "audio": "assets/audio-v3/baoping-village.m4a",
       "sources": [
         {
           "title": "人民网 / «Жэньминь жибао» (зарубежное издание) от 2026-05-19 — «歇歇脚，听段民歌，看眼明清老宅» (история с эпохи Тан, 0,25 км² охранной зоны и 100+ построек, статусы 2010 и 2012 годов, усадьба Чжанов как бесплатный музей, коралловая известь, «明经第» и 32 гуншэна, школа ячжоуских народных песен, «Книжный дом Баопина»)",
@@ -701,7 +701,7 @@
       "minutes": 2,
       "wordCount": 204,
       "estimatedSeconds": 91,
-      "audio": "assets/audio-v2/sanya-culture-centre.m4a",
+      "audio": "assets/audio-v3/sanya-culture-centre.m4a",
       "sources": [
         {
           "title": "三亚新闻网 — «三亚文化场馆开放时间全汇总» от 2026-08-04 (адрес 吉阳区迎宾路436号, часы пн–вс 08:00–12:00 и 15:00–18:00, телефон, состав: «1-3楼视听空间、非遗展厅、美术馆正常开放»)",
@@ -725,7 +725,7 @@
       "minutes": 1,
       "wordCount": 192,
       "estimatedSeconds": 85,
-      "audio": "assets/audio-v2/yanoda-rainforest-park.m4a",
+      "audio": "assets/audio-v3/yanoda-rainforest-park.m4a",
       "sources": [
         {
           "title": "Yanoda — официальный сайт и часы работы",
@@ -749,7 +749,7 @@
       "minutes": 1,
       "wordCount": 196,
       "estimatedSeconds": 87,
-      "audio": "assets/audio-v2/binglanggu-heritage-park.m4a",
+      "audio": "assets/audio-v3/binglanggu-heritage-park.m4a",
       "sources": [
         {
           "title": "Управление туризма Саньи — Bing Lang Gu",
@@ -773,7 +773,7 @@
       "minutes": 1,
       "wordCount": 176,
       "estimatedSeconds": 78,
-      "audio": "assets/audio-v2/fenjiezhou-island.m4a",
+      "audio": "assets/audio-v3/fenjiezhou-island.m4a",
       "sources": [
         {
           "title": "海南分界洲岛旅游区 — практическая информация",
@@ -797,7 +797,7 @@
       "minutes": 1,
       "wordCount": 189,
       "estimatedSeconds": 84,
-      "audio": "assets/audio-v2/nanwan-monkey-island-park.m4a",
+      "audio": "assets/audio-v3/nanwan-monkey-island-park.m4a",
       "sources": [
         {
           "title": "Правительство Хайнаня — Monkey Island, 2025",
@@ -821,7 +821,7 @@
       "minutes": 1,
       "wordCount": 166,
       "estimatedSeconds": 74,
-      "audio": "assets/audio-v2/qixianling-national-forest-park.m4a",
+      "audio": "assets/audio-v3/qixianling-national-forest-park.m4a",
       "sources": [
         {
           "title": "Правительство Хайнаня — туристический маршрут через Цисяньлин",

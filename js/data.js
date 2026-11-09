@@ -81,8 +81,8 @@ export async function loadFood() {
 // placeIds, whatToSee, goodFor, tips, bestTime, sources, verifiedAt }).
 // Возвращает только status "verified" (D-18).
 export async function loadAudioSizes() {
-  const data = await loadJSON("data/audio-sizes.json");
-  return data && data.version === 2 ? data : { totalBytes: 0, items: {} };
+  const data = await loadJSON("data/audio-sizes-v3.json");
+  return data && data.version === 3 ? data : { totalBytes: 0, items: {} };
 }
 
 export async function loadOfflineRoads() {
