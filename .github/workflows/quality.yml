@@ -27,6 +27,11 @@ jobs:
           node --experimental-default-type=module --test tests/test_prep_focus.mjs
           node --experimental-default-type=module --test tests/test_ranks.mjs
           node --experimental-default-type=module --test tests/test_v26_content.mjs
+          node --experimental-default-type=module --test tests/test_food_filters.mjs
+      - name: Test food filters on narrow screen
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_food_filters_browser.py
       - name: Test Island Quest onboarding, gameplay, old screens and offline
         env:
           CHROME: /usr/bin/google-chrome

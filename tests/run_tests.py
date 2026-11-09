@@ -635,7 +635,8 @@ def run_passport(port):
         check("подсказки — только у двух наклеек, ближайших к получению",
               b.js("[...document.querySelectorAll('.passport-sticker')].filter((li) => li.querySelector('.passport-sticker__hints')).length") == 2)
         parts = b.js("[...document.querySelectorAll('.passport-part')].map((a) => a.querySelector('.passport-part__name').textContent + ' ' + a.querySelector('.passport-part__count').textContent)")
-        check("части побережья: 7 строк, Ялонг Бэй — 1 из 6", len(parts) == 7 and "Ялонг Бэй 1 из 6 ›" in parts, parts)
+        ytotal = sum(1 for p in PLACES if py_part_of(p) == "coast-yalong" and p["category"] != "shopping")
+        check("части побережья: 7 строк, актуальный прогресс Ялонг Бэй", len(parts) == 7 and f"Ялонг Бэй 1 из {ytotal} ›" in parts, parts)
         app.go("#/passport/album")
         earned = b.js("[...document.querySelectorAll('.passport-sticker--earned .passport-sticker__title')].map((h) => h.textContent)")
         check("альбом: «Первый штамп» получен", earned == ["Первый штамп"], earned)
@@ -876,6 +877,7 @@ def run_map(port):
           const pts = places.map((p) => ({ id: p.id, loc: p.location, pt: M.projectPoint(p.location) }));
           let orderOk = true;
           for (const a of pts) for (const b of pts) {
+            if (!a.pt || !b.pt) continue;
             if (a.loc.lng < b.loc.lng && !(a.pt.x <= b.pt.x)) orderOk = false;
             if (a.loc.lat > b.loc.lat && !(a.pt.y <= b.pt.y)) orderOk = false;
           }
@@ -900,7 +902,10 @@ def run_map(port):
             layouts,
           }; })()""")
         expected = {p["id"]: py_project(p["location"]) for p in PLACES}
-        mismatch = [i for i, x, y in unit["all"] if expected[i] is None or abs(expected[i][0] - x) > 0.11 or abs(expected[i][1] - y) > 0.11]
+        mismatch = [i for i, x, y in unit["all"]
+                    if (expected[i] is None and (x is not None or y is not None))
+                    or (expected[i] is not None and (x is None or y is None
+                        or abs(expected[i][0] - x) > 0.11 or abs(expected[i][1] - y) > 0.11))]
         check(f"проекция всех {len(PLACES)} мест совпадает с независимым расчётом", not mismatch, mismatch)
         check("проекция сохраняет порядок: западнее — левее, севернее — выше", unit["orderOk"])
         check("проекция: опорная точка (18.20, 109.10) → (20, 910)", unit["corner"])
@@ -942,8 +947,9 @@ def run_map(port):
         check("значки ведут на экраны частей", ov["badgeHrefs"] == [f"#/passport/zone/{i}" for i in part_ids])
         check("значки с доступными названиями частей и счётом", all(lbl and "отмечено" in lbl for lbl in ov["badgeLabels"]) and "2. Тянья и Сидао: отмечено 0 из 3" in ov["badgeLabels"], ov["badgeLabels"])
         dot_ids = [d["id"] for d in ov["dots"]]
-        catalog_ids = {p["id"] for p in PLACES}
-        check(f"все {len(PLACES)} verified-мест — точками, ни одной лишней", sorted(dot_ids) == sorted(catalog_ids) and len(dot_ids) == len(set(dot_ids)))
+        catalog_ids = {p["id"] for p in PLACES if py_project(p["location"]) is not None}
+        check(f"все {len(catalog_ids)} мест внутри охвата схемы — точками, ни одной лишней",
+              sorted(dot_ids) == sorted(catalog_ids) and len(dot_ids) == len(set(dot_ids)))
         drafts = [p["id"] for p in load("data/places.json") if p["status"] != "verified"]
         check("черновиков на схеме нет", not (set(drafts) & set(dot_ids)))
         bad_pos = [d["id"] for d in ov["dots"] if expected[d["id"]] and (abs(d["x"] - expected[d["id"]][0]) > 0.11 or abs(d["y"] - expected[d["id"]][1]) > 0.11)]
@@ -1007,7 +1013,8 @@ def run_map(port):
               caption: !!document.querySelector('.passport-map__caption'),
             }))()""")
             check(f"{part['id']}: список — ровно места этой части ({len(want)})", sorted(z["items"]) == sorted(want) and len(z["items"]) == len(set(z["items"])), z["items"])
-            check(f"{part['id']}: на схеме значок у каждого места части", sorted(z["markers"]) == sorted(want))
+            mapped = [p["id"] for p in PLACES if py_part_of(p) == part["id"] and py_project(p["location"]) is not None]
+            check(f"{part['id']}: на схеме значок у каждого места внутри охвата", sorted(z["markers"]) == sorted(mapped))
             check(f"{part['id']}: отмеченные значки — по stg:passport", sorted(z["visitedMarkers"]) == sorted(i for i in want if i in visits))
             check(f"{part['id']}: прогресс без покупок «Отмечено {reward_visited} из {reward_total}»", z["progress"] == f"Отмечено {reward_visited} из {reward_total}", z["progress"])
             check(f"{part['id']}: заголовок, выделение части и подпись схемы", z["title"] == part["name"] and z["highlighted"] == part["id"] and z["caption"])
@@ -1071,7 +1078,7 @@ def run_map(port):
         app.go("#/passport", cold=True)
         check("схема: покупки отмечены на схеме, но счёт частей без покупок",
               b.js("document.querySelectorAll('.pp-dot--visited').length") == len(all_shop)
-              and b.js("document.querySelector('.pp-badge[data-part=\"coast-haitang\"]').getAttribute('aria-label')") == "7. Хайтанг Бэй: отмечено 0 из 7")
+              and b.js("document.querySelector('.pp-badge[data-part=\"coast-haitang\"]').getAttribute('aria-label')") == f"7. Хайтанг Бэй: отмечено 0 из {sum(1 for p in PLACES if py_part_of(p) == 'coast-haitang' and p['category'] != 'shopping')}")
 
         # Отметки и заметки после перезагрузки.
         b.js("location.reload(); true")
