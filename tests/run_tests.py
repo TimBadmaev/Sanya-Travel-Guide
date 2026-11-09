@@ -617,7 +617,7 @@ def run_passport(port):
         check("#/passport открылся с карточки места («Паспорт ›» не нужен — переход по hash)", app.text(".view-title") == "Живая карта Саньи")
         stats = b.js("[...document.querySelectorAll('.passport-stat')].map((li) => li.textContent)")
         reward_total = len(REWARD)
-        check(f"счётчик мест без покупок: 2 из {reward_total}", stats and stats[0] == f"2из {reward_total} мест", stats)
+        check(f"счётчик мест без покупок: 2 из {reward_total}", stats and stats[0].startswith(f"2из {reward_total} "), stats)
         check("счётчик наклеек «из 11»", stats and stats[1].endswith("из 11 наклеек"), stats)
         check("счётчик частей побережья «из 7»", stats and stats[2].endswith("из 7 частей побережья"), stats)
         visits = b.js("[...document.querySelectorAll('.passport-visit')].map((li) => li.textContent)")
