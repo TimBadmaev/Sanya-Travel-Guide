@@ -11,6 +11,7 @@ import { renderRealMap } from "./views/real-map.js";
 import { renderOfflineCenter } from "./views/offline-center.js";
 import { renderGames } from "./views/games.js";
 import { renderSnake, renderOcean } from "./views/retro-arcade.js";
+import { renderConnectFour, renderAirHockey } from "./views/duo-games.js";
 import { renderMustDo } from "./views/must-do.js";
 import { renderMemoryGame } from "./views/mini-arcade.js";
 import { renderPrepare } from "./views/prepare.js";
@@ -50,6 +51,8 @@ const routes = [
   { pattern: /^\/games\/phrases$/, render: () => window.location.replace("#/games"), nav: "/" },
   { pattern: /^\/must-do$/, render: renderMustDo, nav: "/discover" },
   { pattern: /^\/games\/memory$/, render: renderMemoryGame, nav: "/" },
+  { pattern: /^\/games\/four$/, render: renderConnectFour, nav: "/" },
+  { pattern: /^\/games\/hockey$/, render: renderAirHockey, nav: "/" },
   { pattern: /^\/place\/(?<id>[^/]+)$/, render: renderPlace, nav: "/discover" },
   { pattern: /^\/place\/(?<id>[^/]+)\/taxi$/, render: renderPlaceTaxi, nav: "/discover", fullscreen: true },
   // Еда (режим #/places?mode=food, ITERATION-8-CONTENT-ARCHITECTURE.md Batch
