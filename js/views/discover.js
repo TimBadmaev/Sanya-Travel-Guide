@@ -63,6 +63,7 @@ export async function renderDiscover(container, ctx) {
 
   const links = el(page, "div", "discover__shortcut-grid");
   [
+    ["🌴", "10 дел на Хайнане", "Личные впечатления с отметками", "#/must-do"],
     ["🎟️", "Экскурсии", "Идеи для целого дня", "#/excursions"],
     ["🗺️", "Карта и маршруты", "Реальные улицы Саньи офлайн · A → B", "#/map"],
     ["🏝️", "Обзор Хайнаня", "Весь остров и бухты", "#/island"],
