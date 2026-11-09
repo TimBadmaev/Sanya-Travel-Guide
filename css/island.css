@@ -846,3 +846,133 @@ a { color:var(--color-primary); }
  .map-page__pack-actions{grid-template-columns:1fr;}
  .map-page__focus .btn{min-width:96px;}
 }
+
+/* v36: travel-first home shortcuts without sacrificing Island Quest. */
+.travel-hub{
+ background:linear-gradient(145deg,#19415a,#142d4b 65%,#182a4a);
+ border:1px solid #547a9c;border-radius:23px;padding:16px;
+ box-shadow:0 9px 28px rgba(2,14,35,.23);color:#f5fbff;
+ margin:12px 0 17px;overflow:hidden;
+}
+.travel-hub__kicker{font-size:10px;letter-spacing:.12em;font-weight:900;color:#a6e8df;}
+.travel-hub__title{margin:8px 0 4px;font-size:20px;font-weight:950;color:#fff;line-height:1.24;}
+.travel-hub__subtitle{font-size:13px;line-height:1.5;margin:4px 0 12px;color:#d3e6f0;}
+.travel-hub__primary{
+ display:flex;align-items:center;justify-content:space-between;background:#e1f9f0;color:#0c4b4a;
+ padding:13px 14px;border-radius:14px;min-height:49px;text-decoration:none;
+ font-weight:900;font-size:14px;margin-bottom:10px;
+}
+.travel-hub__actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.travel-hub__action{
+ display:flex;align-items:center;gap:7px;text-decoration:none;min-height:48px;
+ color:#f7fbff;border:1px solid #63809e;border-radius:12px;padding:8px 9px;
+ background:#294664;font-size:12px;line-height:1.25;font-weight:800;
+}
+.travel-hub__action:focus-visible,.travel-hub__primary:focus-visible{outline:3px solid #a1f9ee;outline-offset:2px;}
+.travel-hub__icon{font-size:17px;flex-shrink:0;}
+/* Offline readiness dashboard. */
+.offline-center__intro,.game-hub__lead{color:#d0e2f1;line-height:1.55;}
+.offline-center{
+ background:#172d4b;border:1px solid #43678b;border-radius:20px;
+ padding:14px;margin:12px 0;color:#f3f9ff;
+}
+.offline-center__banner{padding:11px;border-radius:12px;background:#27425f;}
+.offline-center[data-ready="yes"] .offline-center__banner{background:#225647;}
+.offline-center__banner strong{display:block;font-weight:900;font-size:16px;}
+.offline-center__banner p{margin:4px 0 0;color:#cce1ee;font-size:12px;line-height:1.45;}
+.offline-center__list{display:grid;gap:2px;margin:10px 0;}
+.offline-center__item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #395772;}
+.offline-center__icon{font-size:22px;flex-shrink:0;}
+.offline-center__body{display:grid;gap:3px;min-width:0;flex:1;}
+.offline-center__body strong{font-size:13px;}
+.offline-center__body span{font-size:11px;line-height:1.4;color:#c7dbee;overflow-wrap:anywhere;}
+.offline-center__link{color:#b6fff0;font-size:12px;font-weight:900;padding:9px 4px;text-decoration:underline;flex-shrink:0;}
+.offline-center__refresh{width:100%;min-height:48px;margin-top:5px;}
+.offline-center__warning,.game-hub__note{font-size:12px;color:#bed1e2;line-height:1.6;}
+.offline-center__backup,.offline-center__entry{display:flex;align-items:center;justify-content:center;text-align:center;margin:12px 0;min-height:50px;}
+/* Game hub and games. */
+.game-hub__list{display:grid;gap:10px;margin:14px 0;}
+.game-hub__card{
+ display:flex;align-items:center;gap:12px;background:#193451;border:1px solid #52718b;
+ border-radius:17px;padding:14px;color:#fff;text-decoration:none;min-height:84px;
+}
+.game-hub__emoji{display:grid;place-items:center;flex-shrink:0;font-size:29px;width:48px;height:48px;border-radius:14px;background:#285372;}
+.game-hub__copy{display:grid;gap:5px;flex:1;min-width:0;}
+.game-hub__copy strong{font-size:16px;font-weight:900;}
+.game-hub__copy span{font-size:12px;color:#c6d9e9;line-height:1.4;}
+.game-hub__arrow{font-size:22px;color:#a0e9da;}
+.game-hub__records{background:#203858;border:1px solid #4e708e;border-radius:16px;padding:14px;}
+.game-hub__records h3{font-size:16px;margin:0 0 8px;color:#fff;}
+.game-hub__records p{margin:5px 0;font-size:13px;color:#d3e6f5;}
+.naval-game,.phrase-game,.memory-game{
+ background:#193451;border:1px solid #52718b;border-radius:18px;padding:12px;
+ color:#f1faff;margin:12px 0;
+}
+.naval-game__toolbar{display:flex;justify-content:flex-end;margin-bottom:9px;}
+.naval-game__toolbar .btn{font-size:12px;padding:8px 10px;min-height:43px;}
+.naval-game__new{display:grid;gap:10px;}
+.naval-game__new .btn{min-height:51px;}
+.naval-game__handoff{text-align:center;padding:24px 8px 28px;min-height:300px;}
+.naval-game__handoff h3{font-size:20px;line-height:1.3;color:#fff;}
+.naval-game__handoff p{line-height:1.55;color:#d3e6f1;}
+.naval-game__handoff button{width:100%;max-width:340px;min-height:52px;}
+.naval-game__icon{font-size:56px;}
+.naval-game__winner{text-align:center;color:#e9fbf5;font-size:22px;}
+.naval-game__turn{font-size:17px;margin:10px 0;color:#fff;}
+.naval-game__status{font-size:13px;color:#cfe2ef;}
+.naval-game__boards{display:grid;grid-template-columns:1fr;gap:15px;}
+.naval-game__board{min-width:0;background:#102947;border:1px solid #446f88;border-radius:14px;padding:9px;}
+.naval-game__board h3{font-size:13px;margin:1px 0 8px;color:#f4fbff;}
+.naval-game__grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px;max-width:410px;margin:auto;}
+.naval-game__cell{
+ display:grid;place-items:center;width:100%;min-width:0;aspect-ratio:1;
+ border:1px solid #6796ab;border-radius:5px;padding:0;
+ font-size:clamp(12px,4.2vw,19px);font-weight:900;
+ background:#237390;color:#e9fbff;touch-action:manipulation;
+}
+.naval-game__cell.is-ship{background:#426d81;color:#fff;}
+.naval-game__cell.is-hit{background:#e56d48;color:#fff;}
+.naval-game__cell.is-miss{background:#315b78;color:#cce4f0;}
+button.naval-game__cell:disabled{opacity:1;cursor:default;}
+button.naval-game__cell:not(:disabled):active{background:#74d5d7;}
+.phrase-game__progress{font-size:12px;color:#bad7e8;font-weight:800;}
+.phrase-game__question{
+ display:grid;place-items:center;text-align:center;gap:10px;
+ padding:16px 9px;background:#254969;border-radius:15px;margin:12px 0;
+}
+.phrase-game__zh{font-size:clamp(28px,8vw,42px);line-height:1.5;color:#fff;}
+.phrase-game__hint{color:#c7e1ea;font-size:13px;}
+.phrase-game__options{display:grid;gap:8px;}
+.phrase-game__option{
+ color:#e9fbff;background:#254667;border:2px solid #577998;
+ min-height:48px;padding:9px;text-align:left;border-radius:12px;font-size:13px;
+}
+.phrase-game__option.is-correct{background:#235e52;border-color:#7ef3b2;}
+.phrase-game__option.is-wrong{background:#703f50;border-color:#e5a5a7;}
+.phrase-game__option:disabled{opacity:1;}
+.phrase-game__feedback{font-size:13px;line-height:1.6;color:#d9f2f0;margin:12px 0;}
+.phrase-game__next{width:100%;margin:7px 0;}
+.phrase-game__next[hidden]{display:none;}
+.memory-game__status{font-size:13px;font-weight:800;color:#d7f3f2;margin:0 0 12px;}
+.memory-game__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;max-width:380px;margin:auto;}
+.memory-game__tile{
+ display:grid;place-items:center;aspect-ratio:1;border:2px solid #547b9b;
+ background:linear-gradient(145deg,#166d89,#234b7b);border-radius:12px;
+ font-size:clamp(24px,7vw,38px);color:#d9faff;touch-action:manipulation;
+}
+.memory-game__tile.is-open{background:#d9f0e5;color:#22465e;}
+.memory-game__tile.is-matched{background:#b8eacb;border-color:#7ac99e;}
+.memory-game__finish{margin-top:18px;text-align:center;}
+.memory-game__finish[hidden]{display:none;}
+@media(min-width:640px){
+ .naval-game__boards{grid-template-columns:repeat(2,minmax(0,1fr));}
+ .naval-game__cell{font-size:16px;}
+}
+@media(max-width:359px){
+ .travel-hub__action{padding:7px;gap:4px;font-size:11px;}
+ .offline-center__item{gap:6px;}
+ .naval-game__grid{gap:2px;}
+}
+@media(prefers-reduced-motion:reduce){
+ .game-hub__card,.travel-hub__primary,.travel-hub__action{transition:none;}
+}
