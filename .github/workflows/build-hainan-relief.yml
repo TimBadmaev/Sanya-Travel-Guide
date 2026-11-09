@@ -1,0 +1,42 @@
+name: Build accurate offline shaded relief for Hainan
+
+on:
+  push:
+    branches: [feature/audio-atlas-polish-v33]
+    paths:
+      - 'scripts/build_hainan_relief.py'
+      - '.github/workflows/build-hainan-relief.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/audio-atlas-polish-v33
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install geospatial image decoder
+        run: python -m pip install 'Pillow==11.3.0'
+      - name: Crop real Natural Earth shaded relief and generate lightweight WebP
+        run: python scripts/build_hainan_relief.py
+      - name: Commit only derived public-domain regional illustration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/maps/hainan-relief.webp
+          if git diff --cached --quiet; then
+            echo "No change to local map"
+          else
+            git commit -m "assets(map): public-domain Hainan terrain shading"
+            git fetch origin feature/audio-atlas-polish-v33
+            git rebase origin/feature/audio-atlas-polish-v33
+            git push origin HEAD:feature/audio-atlas-polish-v33
+          fi
