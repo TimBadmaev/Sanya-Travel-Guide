@@ -471,3 +471,51 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .quest-reset__delete:disabled { opacity: .45; cursor: not-allowed; }
 .quest-reset__status { font-size: 12px; font-weight: 750; }
 @media (prefers-reduced-motion:reduce) { .quest-preflight__bar span { transition: none; } }
+
+
+/* v26 — автономная игровая карта и лёгкая карта улиц по нажатию. */
+.quest-app .passport-map__intro { color:#367967; font-size:14px; margin:8px 12px 12px; }
+.quest-app .passport-map { background:linear-gradient(180deg,#def8f3,#eaffeb); overflow:hidden; border:2px solid #b6ddce; box-shadow:0 6px 0 #d8ede2; }
+.quest-app .passport-map .pp-sea { fill:url(#pp-water-shade); }
+.quest-app .passport-map .pp-land { fill:url(#pp-land-shade); }
+.quest-app .passport-map .pp-part--a { fill:#9bd8ae; opacity:.19; }
+.quest-app .passport-map .pp-part--b { fill:#f8e3b4; opacity:.20; }
+.quest-app .passport-map .pp-shallow { stroke:#79d9d9; stroke-width:38; opacity:.48; }
+.quest-app .passport-map .pp-surf { stroke:#f9e6b0; stroke-width:12; }
+.quest-app .passport-map .pp-wave { opacity:.42; }
+.quest-app .passport-map .pp-terrain__contour { fill:none; stroke:#639d6b; stroke-width:9; stroke-linecap:round; }
+.quest-app .passport-map .pp-reveal { transform-box:fill-box; transform-origin:center; animation:map-pulse 2.7s ease-in-out infinite alternate; }
+@keyframes map-pulse { from{opacity:.12;transform:scale(.85)}to{opacity:.25;transform:scale(1.08)} }
+.quest-app .street-map { border:2px solid #e0eee5; border-radius:20px; padding:14px; background:white; margin-top:18px; }
+.quest-app .street-map__consent { display:flex; flex-direction:column; gap:8px; margin:10px 0 12px; }
+.quest-app .street-map__activate { background:#14a67d;color:white;border:0;border-radius:16px;min-height:55px;padding:12px;font-size:15px;font-weight:950;box-shadow:0 4px #0a7f5c; }
+.quest-app .street-map__hint { margin:0;color:#647e73;font-size:12px;line-height:1.35; }
+.quest-app .street-map__frame[hidden], .quest-app .street-map__activate[hidden], .quest-app .street-map__count[hidden] { display:none; }
+.quest-app .street-map__frame { margin-top:12px; }
+.quest-home-rank, .passport-rank-link { display:flex;align-items:center;justify-content:center;min-height:46px;padding:10px 12px;margin:5px 0 16px;border:2px solid #ead3a6;background:#fff7e1;border-radius:15px;color:#78582e;font-weight:850;font-size:13px;text-decoration:none;line-height:1.35; }
+.rank-mascot { animation:rank-bob 3s ease-in-out infinite; }
+@keyframes rank-bob { 0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(6deg)} }
+.quest-me__rank { display:inline-flex;justify-content:center;padding:6px 13px;border-radius:20px;background:rgba(255,255,255,.23);font-size:14px;font-weight:950;margin:0 0 11px; }
+.rank-collection { padding:17px 15px;background:#fffdf3;border:2px solid #f1e4bb;border-radius:21px;margin:17px 0 22px; }
+.rank-collection h3 { font-size:21px;font-weight:950;margin:0 0 6px; }
+.rank-collection__desc { color:#74806e;font-size:13px;line-height:1.4;margin:0 0 14px; }
+.rank-collection__next { display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:7px; }
+.rank-collection__next strong { color:#795b28; }
+.rank-collection__next span { color:#956a25;white-space:nowrap; }
+.rank-collection__bar { height:12px;background:#ebdfc6;border-radius:20px;overflow:hidden;margin-bottom:15px; }
+.rank-collection__bar span { display:block;height:100%;background:linear-gradient(90deg,#13b18c,#fbc85e);border-radius:20px; }
+.rank-collection__grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px; }
+.rank-medal { display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;min-height:126px;padding:12px 5px;border:2px solid #e9e5d9;border-radius:16px;background:#fff; }
+.rank-medal.is-earned { border-color:#f5d47c;background:#fff9e4;box-shadow:0 3px #f3e4b5; }
+.rank-medal.is-locked { opacity:.68;background:#f6f6f1; }
+.rank-medal__icon { display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#f5e2a9;font-size:30px; }
+.rank-medal strong { font-size:12px;line-height:1.2;font-weight:950; }
+.rank-medal small { color:#8b806b;font-size:11px;line-height:1.25; }
+.place-feature { margin:18px 0;padding:18px;background:linear-gradient(135deg,#e8f9ed,#fff9e9);border:2px solid #d5ebda;border-radius:21px; }
+.place-feature__label { font-size:11px;color:#16825f;letter-spacing:.09em;font-weight:950; }
+.place-feature h3 {font-size:22px;line-height:1.2;font-weight:950;margin:9px 0;}
+.place-feature p {font-size:14px;color:#536d61;line-height:1.5;}
+.place-feature__moments {padding-left:20px;display:grid;gap:8px;font-size:14px;color:#315f50;line-height:1.4;}
+.place-feature__tip {padding:12px;background:white;border-radius:13px;}
+.place-feature__source {display:inline-flex;align-items:center;min-height:44px;font-weight:900;font-size:13px;}
+@media (prefers-reduced-motion:reduce){.quest-app .passport-map .pp-reveal,.rank-mascot{animation:none!important}}

@@ -25,6 +25,7 @@ jobs:
           node --experimental-default-type=module --test tests/test_explore.mjs
           node --experimental-default-type=module --test tests/test_v24.mjs
           node --experimental-default-type=module --test tests/test_prep_focus.mjs
+          node --experimental-default-type=module --test tests/test_ranks.mjs
       - name: Test Island Quest onboarding, gameplay, old screens and offline
         env:
           CHROME: /usr/bin/google-chrome
