@@ -2,41 +2,396 @@
   {
     "id": "yalong-bay-dongrong-food-plaza",
     "status": "verified",
-    "name": { "ru": "Фудкорт «Дунжун» (Ялунвань)", "zh": "亚龙湾东榕美食广场" },
+    "name": {
+      "ru": "Фудкорт «Дунжун» (Ялунвань)",
+      "zh": "亚龙湾东榕美食广场"
+    },
     "addressZh": "海南省三亚市吉阳区湾月路1号",
     "area": "yalong",
     "kind": "foodcourt",
-    "location": { "lat": 18.230332, "lng": 109.626830 },
+    "location": {
+      "lat": 18.230332,
+      "lng": 109.62683
+    },
     "priceLevel": "unknown",
-    "note": "Рынок морепродуктов с оплатой только за обработку, рестораны нескольких кухонь (сычуаньская, хунаньская, кантонская, хайнаньская), супермаркет.",
+    "note": "Гастрокомплекс с ресторанами хайнаньской, кантонской, сычуаньской и другой кухни, магазинами и зоной продажи морепродуктов. При выборе морепродуктов обычно оплачиваются сам продукт и его приготовление: уточните обе части стоимости до заказа.",
     "sources": [
-      { "title": "touch.go.qunar.com — «东榕美食广场»", "url": "https://touch.go.qunar.com/poi/29461100" },
-      { "title": "m.map.360.cn — «东榕美食广场(亚龙湾店)» (координаты объекта)", "url": "https://m.map.360.cn/m/search/detail/pid=ebed4eed7b1a7e80" },
-      { "title": "m.map.360.cn — «喜家港式茶餐厅(亚龙湾东榕美食广场店)» (независимое подтверждение координаты — заведение внутри той же площадки)", "url": "https://m.map.360.cn/m/search/detail/pid=6a25072b4def92e0" }
+      {
+        "title": "touch.go.qunar.com — «东榕美食广场»",
+        "url": "https://touch.go.qunar.com/poi/29461100"
+      },
+      {
+        "title": "m.map.360.cn — «东榕美食广场(亚龙湾店)» (координаты объекта)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=ebed4eed7b1a7e80"
+      },
+      {
+        "title": "m.map.360.cn — «喜家港式茶餐厅(亚龙湾东榕美食广场店)» (независимое подтверждение координаты — заведение внутри той же площадки)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=6a25072b4def92e0"
+      }
     ],
     "verifiedAt": "2026-09-18"
   },
   {
+    "id": "yalong-dongrong-yexiaoji",
+    "name": {
+      "ru": "«Е Сяоцзи» — кокосовая курица (Дунжун)",
+      "zh": "椰小鸡·椰子鸡(亚龙湾店)"
+    },
+    "addressZh": "海南省三亚市吉阳区湾月路1号东榕美食广场3楼",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.230332,
+      "lng": 109.62683
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 11:00–22:00 (по Trip.com, проверьте перед визитом)",
+    "note": "Кокосовая курица (椰子鸡) — местный хого на кокосовой воде; удобный вариант первого ужина. На 3-м этаже «Дунжун», рядом с пляжными отелями. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Trip.com — 椰小鸡·椰子鸡(亚龙湾店), адрес, часы и меню",
+        "url": "https://www.trip.com/restaurant/china/sanya/detail/restaurant-73334416/"
+      },
+      {
+        "title": "Ctrip — 2025/2026 обзор филиала в Дунжун",
+        "url": "https://www.sina.cn/news/detail/5233192410024594.html"
+      },
+      {
+        "title": "360地图 — комплекс 东榕美食广场, координата",
+        "url": "https://m.map.360.cn/m/search/detail/pid=ebed4eed7b1a7e80"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-dongrong-hongsha-seafood",
+    "name": {
+      "ru": "«Хунша» — морепродукты (Дунжун)",
+      "zh": "红沙·海鲜大排档(亚龙湾东榕美食广场店)"
+    },
+    "addressZh": "海南省三亚市吉阳区湾月路1号东榕美食广场2楼",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.230332,
+      "lng": 109.62683
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 11:00–21:30 (по Ctrip, проверьте)",
+    "note": "Морепродукты и хайнаньские блюда, включая курицу вэньчан и хайнаньскую лапшу. Ctrip указывает средний чек около 100 CNY/чел. За рыбу на вес попросите итоговую цену вместе с приготовлением. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Ctrip — 红沙海鲜大排档, адрес, средний чек и меню",
+        "url": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/136629359.html"
+      },
+      {
+        "title": "Amap — 红沙·海鲜大排档, подтверждение 2-го этажа",
+        "url": "https://www.amap.com/place/B0JAOR02P4"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-dongrong-xijia-cantonese",
+    "name": {
+      "ru": "«Дунжун Сицзя» — кантонская кухня (Дунжун)",
+      "zh": "東榕囍家港派粤菜海鲜(亚龙湾东榕美食广场店)"
+    },
+    "addressZh": "海南省三亚市吉阳区湾月路1号东榕美食广场1楼",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.230332,
+      "lng": 109.62683
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 11:00–21:30 (по Ctrip, проверьте)",
+    "note": "Кантонская кухня и морепродукты: утка, чар-сиу, димсамы и рыба. Ctrip указывает средний чек около 101 CNY/чел. Хороший вариант вместо острого хого. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Ctrip — 東榕囍家港派粤菜海鲜, меню и адрес",
+        "url": "https://gs.ctrip.com/html5/you/foods/sanya61/132064.html"
+      },
+      {
+        "title": "Amap — 東榕美食广场, территория комплекса",
+        "url": "https://www.amap.com/place/B0FFI3FA95"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-dongrong-qiongzhou-flavors",
+    "name": {
+      "ru": "«Цюнчжоу» — блюда Хайнаня (Дунжун)",
+      "zh": "琼州味道·海鲜加工餐厅(亚龙湾东榕美食广场店)"
+    },
+    "addressZh": "海南省三亚市吉阳区湾月路1号东榕美食广场1楼",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.230332,
+      "lng": 109.62683
+    },
+    "priceLevel": "unknown",
+    "note": "Кухня Хайнаня: курица вэньчан, рис в бамбуке, рыба и морепродукты с приготовлением. Ctrip указывает средний чек около 98 CNY/чел; доплаты за обработку и вес уточняйте отдельно. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Ctrip — 琼州味道, адрес, меню и средний чек",
+        "url": "https://you.ctrip.com/food/sanya61/144339076.html"
+      },
+      {
+        "title": "Ctrip — отзывы и подтверждение 1-го этажа",
+        "url": "https://you.ctrip.com/food/sanya61/144339076-dianping.html"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-baihuagu-taiqiong-sour-hotpot",
+    "name": {
+      "ru": "«Тайцюн» — кислый хого цзаопоцзу (Байхуагу)",
+      "zh": "太琼糟粕醋·海南酸汤火锅(亚龙湾店)"
+    },
+    "addressZh": "海南省三亚市吉阳区亚龙湾路112号百花谷商业街RT04二层D202",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.233167,
+      "lng": 109.63924
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 11:00–22:00 (по Ctrip, проверьте)",
+    "note": "海南ский кислый хого 糟粕醋: ароматный кисло-пряный бульон для мяса и морепродуктов. Ctrip указывает средний чек около 110 CNY/чел; уточните степень остроты. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Ctrip — 太琼糟粕醋亚龙湾店, адрес, меню и цена",
+        "url": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/131895214.html"
+      },
+      {
+        "title": "Amap — подтверждение адреса 百花谷 RT04 2F",
+        "url": "https://www.amap.com/place/B0HKBHX8QI"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-baihuagu-caidiexuan",
+    "name": {
+      "ru": "«Цайдесюань» — китайская кухня (Байхуагу)",
+      "zh": "采蝶轩·粤菜·海鲜·融合菜(亚龙湾百花谷商业中心店)"
+    },
+    "addressZh": "海南省三亚市吉阳区龙海路百花谷商业中心入口处（星巴克旁）",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.233167,
+      "lng": 109.63924
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 11:00–21:30 (по Ctrip, проверьте)",
+    "note": "Кантонская и хайнаньская кухня: хрустящая курица вэньчан, рис в кокосе, утка, овощные блюда. Средний чек Ctrip — около 94 CNY/чел, но отзывы по сервису неоднозначные. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Ctrip — 采蝶轩, меню, адрес и отзывы",
+        "url": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/6999239.html"
+      },
+      {
+        "title": "Sanya Tourism Board — Yalong Bay, Baihuagu dining",
+        "url": "https://www.visitsanya.com/destination/yalong-bay"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-baihuagu-yexiaoji",
+    "name": {
+      "ru": "«Е Сяоцзи» — кокосовая курица (Байхуагу)",
+      "zh": "椰小鸡·椰子鸡(亚龙湾百花谷店)"
+    },
+    "addressZh": "海南省三亚市吉阳区亚龙湾路百花谷商业街内3楼",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.233167,
+      "lng": 109.63924
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 11:00–22:00 (по Trip.com, проверьте)",
+    "note": "Отдельный филиал «Е Сяоцзи» в «Байхуагу», не путайте с филиалом в «Дунжун». Кокосовый хого с курицей вэньчан, блюда с манго и кокосом. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Trip.com — 椰小鸡百花谷店, адрес, часы, меню",
+        "url": "https://tw.trip.com/restaurant/china/sanya/detail/restaurant-142204264/"
+      },
+      {
+        "title": "Каталог — 椰小鸡百花谷店, 3-й этаж",
+        "url": "https://www.zhinanlvyou.com/local_detail.php?id=3914"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-baihuagu-hongsha-seafood",
+    "name": {
+      "ru": "«Хунша» — морепродукты (Байхуагу)",
+      "zh": "红沙大排档·不踩雷海鲜(亚龙湾百花谷店)"
+    },
+    "addressZh": "海南省三亚市吉阳区百花谷商业中心1楼",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.233167,
+      "lng": 109.63924
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 11:00–23:59 (по Ctrip, проверьте)",
+    "note": "Филиал «Хунша» в «Байхуагу», не путать с «Дунжун». Морепродукты, рис и традиционные блюда; Ctrip указывает около 109 CNY/чел. Цена рыбы и её приготовления зависит от выбора. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Ctrip — 红沙大排档百花谷, меню, адрес и цена",
+        "url": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/140932191.html"
+      },
+      {
+        "title": "Trip.com — рядом с рестораном 椰小鸡百花谷店",
+        "url": "https://tw.trip.com/restaurant/china/sanya/detail/restaurant-142204264/"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-yatai-diadia-coconut-chicken",
+    "name": {
+      "ru": "«Дядя дэ» — кокосовая курица (Ятай)",
+      "zh": "嗲嗲的椰子鸡(亚龙湾店)"
+    },
+    "addressZh": "海南省三亚市吉阳区亚龙湾路115号亚泰商业中心B4-1号铺位",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.2365,
+      "lng": 109.64087
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 11:00–22:00 (по Ctrip, проверьте)",
+    "note": "Филиал известной сети кокосового хого в комплексе «Ятай». В меню кокосовая курица, хайнаньская лапша и десерты; Ctrip указывает около 110 CNY/чел. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Ctrip — 嗲嗲的椰子鸡亚龙湾店, адрес и меню",
+        "url": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/148489830.html"
+      },
+      {
+        "title": "Mapcarta/OSM — 亚龙湾亚泰商业中心, координаты территории",
+        "url": "https://mapcarta.com/W1337866251"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-yatai-pinzhi-qingbuliang",
+    "name": {
+      "ru": "«Пинчжи» — хайнаньский десерт цинбулян (Ятай)",
+      "zh": "品致老海南正宗清补凉"
+    },
+    "addressZh": "海南省三亚市吉阳区亚龙湾路115号亚泰商业中心C6栋1层1号",
+    "area": "yalong",
+    "kind": "street-food",
+    "location": {
+      "lat": 18.2365,
+      "lng": 109.64087
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 09:00–23:00 (по каталогу, проверьте)",
+    "note": "Магазин холодного местного десерта 清补凉 — кокосовое молоко, бобы и фруктовые добавки. Подходит для перекуса после пляжа; уточните ингредиенты и цену на месте. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Местный каталог — 品致老海南正宗清补凉, адрес и часы",
+        "url": "https://www.zhinanlvyou.com/local_detail.php?id=4583"
+      },
+      {
+        "title": "Mapcarta/OSM — 亚龙湾亚泰商业中心, территория",
+        "url": "https://mapcarta.com/W1337866251"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "yalong-yatai-xiaohaitun-seafood",
+    "name": {
+      "ru": "«Маленький дельфин» — морепродукты (Ятай)",
+      "zh": "小海豚海鲜广场(亚龙湾店)"
+    },
+    "addressZh": "海南省三亚市吉阳区亚龙湾路115号亚泰商业中心湖边广场",
+    "area": "yalong",
+    "kind": "restaurant",
+    "location": {
+      "lat": 18.2365,
+      "lng": 109.64087
+    },
+    "priceLevel": "unknown",
+    "hours": "обычно 12:00–23:00 (по Ctrip, проверьте)",
+    "note": "Рыба, креветки, морепродукты и хайнаньский кокосовый рис в комплексе «Ятай». По Ctrip средний чек около 123 CNY/чел — сравните сумму заказа до приготовления. Координата ведёт к торговому комплексу, не к двери заведения.",
+    "sources": [
+      {
+        "title": "Ctrip — 小海豚亚龙湾店, адрес, меню, отзывы и цена",
+        "url": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/78606579.html"
+      },
+      {
+        "title": "Mapcarta/OSM — территория торгового комплекса",
+        "url": "https://mapcarta.com/W1337866251"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
     "id": "diadia-dadonghai",
     "status": "verified",
-    "name": { "ru": "Diadia Coconut Chicken (1号港湾城, Дадунхай)", "zh": "嗲嗲的椰子鸡·海南椰子鸡(大东海总店)" },
+    "name": {
+      "ru": "Diadia Coconut Chicken (1号港湾城, Дадунхай)",
+      "zh": "嗲嗲的椰子鸡·海南椰子鸡(大东海总店)"
+    },
     "addressZh": "海南省三亚市吉阳区榆亚路136号1号港湾城南区3楼",
     "area": "dadonghai",
     "kind": "restaurant",
-    "location": { "lat": 18.22276, "lng": 109.524362 },
+    "location": {
+      "lat": 18.22276,
+      "lng": 109.524362
+    },
     "priceLevel": "unknown",
     "note": "Головной филиал сети «嗲嗲的椰子鸡» (кокосовая курица) — на 3 этаже южной части комплекса 1号港湾城 в Дадунхае. Сам комплекс есть в базе мест отдельной карточкой.",
     "sources": [
-      { "title": "360地图 — «嗲嗲的椰子鸡大东海店», 榆亚路136号1号港湾城南区3楼 (координата приведена из GCJ-02 в WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=e2a2c09e051c3fe0" },
-      { "title": "360地图 — «1号港湾城南区», 榆亚路136号 (та же точка южной части комплекса)", "url": "https://m.map.360.cn/m/search/detail/pid=9fffa0dbf1917bd0" },
-      { "title": "Sanya Tourism Board — «No.1 HARBOUR CITY (Big Pineapple Shopping Mall)» (официальное подтверждение комплекса и его ресторанной зоны)", "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/no-1-harbour-city-big-pineapple-shopping-mall" }
+      {
+        "title": "360地图 — «嗲嗲的椰子鸡大东海店», 榆亚路136号1号港湾城南区3楼 (координата приведена из GCJ-02 в WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=e2a2c09e051c3fe0"
+      },
+      {
+        "title": "360地图 — «1号港湾城南区», 榆亚路136号 (та же точка южной части комплекса)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=9fffa0dbf1917bd0"
+      },
+      {
+        "title": "Sanya Tourism Board — «No.1 HARBOUR CITY (Big Pineapple Shopping Mall)» (официальное подтверждение комплекса и его ресторанной зоны)",
+        "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/no-1-harbour-city-big-pineapple-shopping-mall"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "diadia-sanya-bay",
     "status": "draft",
-    "name": { "ru": "Diadia Coconut Chicken (椰梦长廊, Санья Бэй)", "zh": "嗲嗲的椰子鸡·海南椰子鸡(椰梦长廊店)" },
+    "name": {
+      "ru": "Diadia Coconut Chicken (椰梦长廊, Санья Бэй)",
+      "zh": "嗲嗲的椰子鸡·海南椰子鸡(椰梦长廊店)"
+    },
     "addressZh": "海南省三亚市天涯区三亚湾路114号",
     "area": "sanya-bay",
     "kind": "restaurant",
@@ -44,300 +399,589 @@
     "priceLevel": "unknown",
     "note": "Филиал сети «嗲嗲的椰子鸡» у набережной Кокосовой аллеи. Черновик: адрес в источниках расходится (三亚湾路114号 против 三亚湾路167号 у 360地图), а в 400 м уже есть проверенная точка с той же кухней (sanya-bay-qionghaha-coconut-chicken) — запись не публикуется до уточнения адреса.",
     "sources": [
-      { "title": "360地图 — «嗲嗲的椰子鸡(椰梦长廊店)», 三亚湾路167号西南方向40米 (адрес расходится с прежним 三亚湾路114号)", "url": "https://m.map.360.cn/m/search/detail/pid=f0f994a0dd0defd9" }
+      {
+        "title": "360地图 — «嗲嗲的椰子鸡(椰梦长廊店)», 三亚湾路167号西南方向40米 (адрес расходится с прежним 三亚湾路114号)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=f0f994a0dd0defd9"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "diadia-luhuitou",
     "status": "verified",
-    "name": { "ru": "Diadia Coconut Chicken (у 宝宏大酒店, Дадунхай)", "zh": "嗲嗲的椰子鸡·海南椰子鸡(宝宏大酒店店)" },
+    "name": {
+      "ru": "Diadia Coconut Chicken (у 宝宏大酒店, Дадунхай)",
+      "zh": "嗲嗲的椰子鸡·海南椰子鸡(宝宏大酒店店)"
+    },
     "addressZh": "海南省三亚市吉阳区鹿岭路和海韵路交叉口东北80米",
     "area": "dadonghai",
     "kind": "restaurant",
-    "location": { "lat": 18.225534, "lng": 109.514305 },
+    "location": {
+      "lat": 18.225534,
+      "lng": 109.514305
+    },
     "priceLevel": "unknown",
     "note": "Филиал сети «嗲嗲的椰子鸡» у отеля 宝宏大酒店 (锦江宝宏大酒店, 海韵路18号), район Дадунхай.",
     "sources": [
-      { "title": "m.map.360.cn — «嗲嗲的椰子鸡(宝宏大酒店店)» (координаты объекта)", "url": "https://m.map.360.cn/m/search/detail/pid=e4abd718d510bb0f" },
-      { "title": "m.map.360.cn — «宝宏大酒店-海鲜烧烤自助餐厅» (независимое подтверждение координаты — ресторан того же отеля 锦江宝宏大酒店)", "url": "https://m.map.360.cn/m/search/detail/pid=778e135d0bc45dde" }
+      {
+        "title": "m.map.360.cn — «嗲嗲的椰子鸡(宝宏大酒店店)» (координаты объекта)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=e4abd718d510bb0f"
+      },
+      {
+        "title": "m.map.360.cn — «宝宏大酒店-海鲜烧烤自助餐厅» (независимое подтверждение координаты — ресторан того же отеля 锦江宝宏大酒店)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=778e135d0bc45dde"
+      }
     ],
     "verifiedAt": "2026-09-18"
   },
   {
     "id": "yalong-bay-baihuagu-food-street",
     "status": "verified",
-    "name": { "ru": "Фудкорт «Байхуагу» (Ялунвань)", "zh": "百花谷美食街" },
+    "name": {
+      "ru": "Фудкорт «Байхуагу» (Ялунвань)",
+      "zh": "百花谷美食街"
+    },
     "addressZh": "海南省三亚市吉阳区龙海路百花谷商业中心",
     "area": "yalong",
     "kind": "foodcourt",
-    "location": { "lat": 18.233167, "lng": 109.639240 },
+    "location": {
+      "lat": 18.233167,
+      "lng": 109.63924
+    },
     "priceLevel": "unknown",
     "note": "Торговая улица в центре Ялунваня, напротив отеля Тяньюй: несколько десятков ресторанов разных кухонь (сычуаньская, кантонская, хунаньская, морепродукты), международные сети (Starbucks, Pizza Hut, Häagen-Dazs) и магазины. Visit Sanya описывает её как место ужина, покупок и вечерней жизни бухты — вечером сюда можно дойти пешком, не выезжая из Ялунваня.",
     "sources": [
-      { "title": "360地图 — «百花谷美食街» (координаты объекта)", "url": "https://m.map.360.cn/m/search/detail/pid=b1070ab848cff68f" },
-      { "title": "360地图 — «百花谷商业中心» (независимое подтверждение координаты — торговый комплекс на той же площадке, с арендаторами внутри)", "url": "https://m.map.360.cn/m/search/detail/pid=8a1105bf3095356f" },
-      { "title": "什么值得买 / travel.qunar.com — описание состава ресторанов и брендов «百花谷商业街»", "url": "https://you.ctrip.com/food/sanya61/24993251.html" },
-      { "title": "Sanya Tourism Board — «Yalong Bay» (Hundred Flowers Valley Commercial Street: еда, покупки, вечерняя жизнь)", "url": "https://www.visitsanya.com/destination/yalong-bay" }
+      {
+        "title": "360地图 — «百花谷美食街» (координаты объекта)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=b1070ab848cff68f"
+      },
+      {
+        "title": "360地图 — «百花谷商业中心» (независимое подтверждение координаты — торговый комплекс на той же площадке, с арендаторами внутри)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=8a1105bf3095356f"
+      },
+      {
+        "title": "什么值得买 / travel.qunar.com — описание состава ресторанов и брендов «百花谷商业街»",
+        "url": "https://you.ctrip.com/food/sanya61/24993251.html"
+      },
+      {
+        "title": "Sanya Tourism Board — «Yalong Bay» (Hundred Flowers Valley Commercial Street: еда, покупки, вечерняя жизнь)",
+        "url": "https://www.visitsanya.com/destination/yalong-bay"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "yalong-bay-buzaike-seafood",
     "status": "verified",
-    "name": { "ru": "Морепродукты «Бу Цзыкэ» с видом на море (Ялунвань)", "zh": "不仔客海鲜海景餐厅(亚龙湾店)" },
+    "name": {
+      "ru": "Морепродукты «Бу Цзыкэ» с видом на море (Ялунвань)",
+      "zh": "不仔客海鲜海景餐厅(亚龙湾店)"
+    },
     "addressZh": "海南省三亚市吉阳区龙海路亚龙湾中心广场2楼G-07B号",
     "area": "yalong",
     "kind": "restaurant",
-    "location": { "lat": 18.231704, "lng": 109.641277 },
+    "location": {
+      "lat": 18.231704,
+      "lng": 109.641277
+    },
     "priceLevel": "unknown",
     "note": "Ресторан морепродуктов с собственным аквариумом — рыбу и морепродукты выбирают на месте; на 2 этаже Центральной площади Ялунваня, с видом на бухту.",
     "sources": [
-      { "title": "360地图 — «不仔客海鲜海景餐厅(亚龙湾店)» (координаты объекта)", "url": "https://m.map.360.cn/m/search/detail/pid=fe74ae6ee7c19d4a" },
-      { "title": "360地图 — «亚龙湾中心广场» (независимое подтверждение координаты — та же площадь, где указан адрес ресторана)", "url": "https://m.map.360.cn/m/search/detail/pid=4087bcafff226f74" },
-      { "title": "携程美食 — листинг «不仔客海鲜加工(亚龙湾店)» (часы, цена, тот же адрес)", "url": "https://you.ctrip.com/food/61/17626006.html" }
+      {
+        "title": "360地图 — «不仔客海鲜海景餐厅(亚龙湾店)» (координаты объекта)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=fe74ae6ee7c19d4a"
+      },
+      {
+        "title": "360地图 — «亚龙湾中心广场» (независимое подтверждение координаты — та же площадь, где указан адрес ресторана)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=4087bcafff226f74"
+      },
+      {
+        "title": "携程美食 — листинг «不仔客海鲜加工(亚龙湾店)» (часы, цена, тот же адрес)",
+        "url": "https://you.ctrip.com/food/61/17626006.html"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "yalong-bay-haidilao-hotpot",
     "status": "verified",
-    "name": { "ru": "Хого «Хайдилао» (Ялунвань)", "zh": "海底捞火锅(亚龙湾店)" },
+    "name": {
+      "ru": "Хого «Хайдилао» (Ялунвань)",
+      "zh": "海底捞火锅(亚龙湾店)"
+    },
     "addressZh": "海南省三亚市吉阳区龙海路亚龙湾滨海公园F5~F7",
     "area": "yalong",
     "kind": "restaurant",
-    "location": { "lat": 18.231755, "lng": 109.640055 },
+    "location": {
+      "lat": 18.231755,
+      "lng": 109.640055
+    },
     "priceLevel": "unknown",
     "note": "Филиал общенациональной сети хого (китайский суп-фондю) «Хайдилао» у пляжного парка Ялунваня — понятный формат для туриста без китайского языка, есть почти в любом крупном городе Китая.",
     "sources": [
-      { "title": "360地图 — «海底捞火锅(亚龙湾店)» (координаты объекта)", "url": "https://m.map.360.cn/m/search/detail/pid=62a23f9570025a75" },
-      { "title": "携程美食 — листинг «海底捞火锅(亚龙湾店)» (независимое подтверждение того же адреса, часы, цена)", "url": "https://you.ctrip.com/food/61/78863186.html" }
+      {
+        "title": "360地图 — «海底捞火锅(亚龙湾店)» (координаты объекта)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=62a23f9570025a75"
+      },
+      {
+        "title": "携程美食 — листинг «海底捞火锅(亚龙湾店)» (независимое подтверждение того же адреса, часы, цена)",
+        "url": "https://you.ctrip.com/food/61/78863186.html"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "yalong-bay-mengbao-coconut-chicken",
     "status": "verified",
-    "name": { "ru": "Кокосовая курица «Мэнбао» (Ялунвань)", "zh": "萌宝椰子鸡" },
+    "name": {
+      "ru": "Кокосовая курица «Мэнбао» (Ялунвань)",
+      "zh": "萌宝椰子鸡"
+    },
     "addressZh": "海南省三亚市吉阳区六盘路亚龙湾六盘村停车场旁海妹子海鲜广场",
     "area": "yalong",
     "kind": "restaurant",
-    "location": { "lat": 18.253118, "lng": 109.620729 },
+    "location": {
+      "lat": 18.253118,
+      "lng": 109.620729
+    },
     "priceLevel": "unknown",
     "note": "Ресторан хайнаньской кухни, специализация — кокосовая курица (椰子鸡); в кластере закусочных у деревни Любаньцунь, рядом с лесным парком «Тропический рай».",
     "sources": [
-      { "title": "360地图 — «萌宝椰子鸡» (координаты объекта, категория 中餐|海南菜)", "url": "https://m.map.360.cn/m/search/detail/pid=dc793d8528e14c89" },
-      { "title": "360地图 — «三只蟹糟粕醋·椰子鸡(亚龙湾森林公园店)» (независимое подтверждение координаты — другой ресторан кокосовой курицы в том же квартале, ~30 м)", "url": "https://m.map.360.cn/m/search/detail/pid=9506f3e0ff315439" }
+      {
+        "title": "360地图 — «萌宝椰子鸡» (координаты объекта, категория 中餐|海南菜)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=dc793d8528e14c89"
+      },
+      {
+        "title": "360地图 — «三只蟹糟粕醋·椰子鸡(亚龙湾森林公园店)» (независимое подтверждение координаты — другой ресторан кокосовой курицы в том же квартале, ~30 м)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=9506f3e0ff315439"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "dadonghai-donghai-longgong-seafood",
     "status": "verified",
-    "name": { "ru": "Морепродукты «Дунхай Лунгун» (Дадунхай)", "zh": "东海龙宫·海景餐厅(大东海店)" },
+    "name": {
+      "ru": "Морепродукты «Дунхай Лунгун» (Дадунхай)",
+      "zh": "东海龙宫·海景餐厅(大东海店)"
+    },
     "addressZh": "海南省三亚市吉阳区海花路21号",
     "area": "dadonghai",
     "kind": "restaurant",
-    "location": { "lat": 18.2225397, "lng": 109.5166307 },
+    "location": {
+      "lat": 18.2225397,
+      "lng": 109.5166307
+    },
     "priceLevel": "unknown",
     "note": "Ресторан морепродуктов с кантонской кухней на первой линии пляжа Дадунхай, перед отелем 银泰 (Иньтай).",
     "sources": [
-      { "title": "OpenStreetMap — узел «东海龙宫» (координаты объекта, WGS-84)", "url": "https://www.openstreetmap.org/node/6089054185" },
-      { "title": "360地图 — «东海龙宫(大东海店)», 海花路21号 (независимое подтверждение координаты: 4 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=a1bc0ea376177b0a" },
-      { "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (адрес 吉阳区海花路21号, заведение работает в 2026 году)", "url": "https://m.sohu.com/a/1043892361_121106994" },
-      { "title": "携程美食 — «东海龙宫·海景餐厅(大东海店)» (тот же адрес, кухня)", "url": "https://gs.ctrip.com/html5/you/foods/sanya61/132057.html" }
+      {
+        "title": "OpenStreetMap — узел «东海龙宫» (координаты объекта, WGS-84)",
+        "url": "https://www.openstreetmap.org/node/6089054185"
+      },
+      {
+        "title": "360地图 — «东海龙宫(大东海店)», 海花路21号 (независимое подтверждение координаты: 4 м после приведения GCJ-02 к WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=a1bc0ea376177b0a"
+      },
+      {
+        "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (адрес 吉阳区海花路21号, заведение работает в 2026 году)",
+        "url": "https://m.sohu.com/a/1043892361_121106994"
+      },
+      {
+        "title": "携程美食 — «东海龙宫·海景餐厅(大东海店)» (тот же адрес, кухня)",
+        "url": "https://gs.ctrip.com/html5/you/foods/sanya61/132057.html"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "dadonghai-jingxi-1981-roast-duck",
     "status": "verified",
-    "name": { "ru": "Пекинская утка «Цзинси 1981» (Дадунхай)", "zh": "京禧1981·荔枝木烤鸭(大东海店)" },
+    "name": {
+      "ru": "Пекинская утка «Цзинси 1981» (Дадунхай)",
+      "zh": "京禧1981·荔枝木烤鸭(大东海店)"
+    },
     "addressZh": "海南省三亚市吉阳区东海路1号珠江花园酒店1-2层1号",
     "area": "dadonghai",
     "kind": "restaurant",
-    "location": { "lat": 18.223552, "lng": 109.519694 },
+    "location": {
+      "lat": 18.223552,
+      "lng": 109.519694
+    },
     "priceLevel": "unknown",
     "hours": "11:00–14:30, 16:30–22:00",
     "note": "Ресторан пекинской утки, запечённой на дровах личи, в отеле 珠江花园 у пляжа Дадунхай. Адрес филиала подтверждён официальным списком ресторанов 三亚市商务局 от 30.06.2026.",
     "sources": [
-      { "title": "OpenStreetMap — узел «京禧1981» (независимое подтверждение координаты, 25 м)", "url": "https://www.openstreetmap.org/node/12367662501" },
-      { "title": "360地图 — «京禧1981荔枝木烤鸭(大东海店)» (независимое подтверждение координаты: 11 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=882446506c6acd8b" },
-      { "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (адрес филиала 吉阳区东海路1号珠江花园酒店1-2层1号)", "url": "https://m.sohu.com/a/1043892361_121106994" },
-      { "title": "Яндекс Карты — «1981 Утка по-пекински» (координаты объекта, WGS-84; часы работы)", "url": "https://yandex.com/maps/org/jingxi_1981/126891723283/" }
+      {
+        "title": "OpenStreetMap — узел «京禧1981» (независимое подтверждение координаты, 25 м)",
+        "url": "https://www.openstreetmap.org/node/12367662501"
+      },
+      {
+        "title": "360地图 — «京禧1981荔枝木烤鸭(大东海店)» (независимое подтверждение координаты: 11 м после приведения GCJ-02 к WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=882446506c6acd8b"
+      },
+      {
+        "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (адрес филиала 吉阳区东海路1号珠江花园酒店1-2层1号)",
+        "url": "https://m.sohu.com/a/1043892361_121106994"
+      },
+      {
+        "title": "Яндекс Карты — «1981 Утка по-пекински» (координаты объекта, WGS-84; часы работы)",
+        "url": "https://yandex.com/maps/org/jingxi_1981/126891723283/"
+      }
     ],
     "verifiedAt": "2026-09-18"
   },
   {
     "id": "city-alishan-food-street",
     "status": "verified",
-    "name": { "ru": "Гастроулица «Алишань» (центр)", "zh": "阿里山美食街" },
+    "name": {
+      "ru": "Гастроулица «Алишань» (центр)",
+      "zh": "阿里山美食街"
+    },
     "addressZh": "海南省三亚市天涯区解放路538号（人民医院对面）",
     "area": "city",
     "kind": "foodcourt",
-    "location": { "lat": 18.2545256, "lng": 109.4998398 },
+    "location": {
+      "lat": 18.2545256,
+      "lng": 109.4998398
+    },
     "priceLevel": "unknown",
     "note": "Гастроулица с закусочными местной и китайской кухни в центре города, на улице Цзефанлу напротив Народной больницы (人民医院).",
     "sources": [
-      { "title": "OpenStreetMap — узел «阿里山美食街» (координаты объекта, WGS-84; правка 2025 года)", "url": "https://www.openstreetmap.org/node/12813820201" },
-      { "title": "360地图 — «阿里山美食街» (независимое подтверждение координаты: 19 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=2cbf73447283904c" },
-      { "title": "360地图 — «三亚市阿里山风情美食街», 人民医院对面解放路538号 (адрес)", "url": "https://m.map.360.cn/m/search/detail/pid=b4b0806ab245f703" }
+      {
+        "title": "OpenStreetMap — узел «阿里山美食街» (координаты объекта, WGS-84; правка 2025 года)",
+        "url": "https://www.openstreetmap.org/node/12813820201"
+      },
+      {
+        "title": "360地图 — «阿里山美食街» (независимое подтверждение координаты: 19 м после приведения GCJ-02 к WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=2cbf73447283904c"
+      },
+      {
+        "title": "360地图 — «三亚市阿里山风情美食街», 人民医院对面解放路538号 (адрес)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=b4b0806ab245f703"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "city-tunchang-herbal-duck-hexi",
     "status": "verified",
-    "name": { "ru": "Травяная утка по-тунчански (центр, Хэси)", "zh": "屯昌枫木香草鸭(三亚河西路店)" },
+    "name": {
+      "ru": "Травяная утка по-тунчански (центр, Хэси)",
+      "zh": "屯昌枫木香草鸭(三亚河西路店)"
+    },
     "addressZh": "海南省三亚市天涯区三亚河西路231号",
     "area": "city",
     "kind": "restaurant",
-    "location": { "lat": 18.2584218, "lng": 109.5013188 },
+    "location": {
+      "lat": 18.2584218,
+      "lng": 109.5013188
+    },
     "priceLevel": "unknown",
     "note": "Ресторан хайнаньской кухни; специализация — «травяная утка» (香草鸭) из посёлка Фэнму уезда Тунчан, на набережной реки Санья.",
     "sources": [
-      { "title": "OpenStreetMap — узел «屯昌枫木香草鸭», 三亚河西路 (координаты объекта, WGS-84; правка декабря 2025)", "url": "https://www.openstreetmap.org/node/13397527001" },
-      { "title": "360地图 — «屯昌枫木香草鸭(三亚河西路店)», 三亚河西路231号 (независимое подтверждение координаты: 5 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=a4571acede3667e6" }
+      {
+        "title": "OpenStreetMap — узел «屯昌枫木香草鸭», 三亚河西路 (координаты объекта, WGS-84; правка декабря 2025)",
+        "url": "https://www.openstreetmap.org/node/13397527001"
+      },
+      {
+        "title": "360地图 — «屯昌枫木香草鸭(三亚河西路店)», 三亚河西路231号 (независимое подтверждение координаты: 5 м после приведения GCJ-02 к WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=a4571acede3667e6"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "city-xiaochen-houan-noodles",
     "status": "verified",
-    "name": { "ru": "Лапша хоуань «Сяо Чэнь» (центр)", "zh": "小陈后安粉(团结路店)" },
+    "name": {
+      "ru": "Лапша хоуань «Сяо Чэнь» (центр)",
+      "zh": "小陈后安粉(团结路店)"
+    },
     "addressZh": "海南省三亚市天涯区团结街108号",
     "area": "city",
     "kind": "restaurant",
-    "location": { "lat": 18.255499, "lng": 109.4981532 },
+    "location": {
+      "lat": 18.255499,
+      "lng": 109.4981532
+    },
     "priceLevel": "unknown",
     "note": "Небольшая закусочная хайнаньской лапши хоуань (后安粉): рисовая лапша в бульоне на свиных костях.",
     "sources": [
-      { "title": "OpenStreetMap — узел «小陈后安粉», 团结街108 (координаты объекта, WGS-84; правки 2025–2026)", "url": "https://www.openstreetmap.org/node/13395434301" },
-      { "title": "360地图 — «小陈后安粉(团结路店)», 团结路108号 (независимое подтверждение координаты: 7 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=a0cfab90c7d0ba24" }
+      {
+        "title": "OpenStreetMap — узел «小陈后安粉», 团结街108 (координаты объекта, WGS-84; правки 2025–2026)",
+        "url": "https://www.openstreetmap.org/node/13395434301"
+      },
+      {
+        "title": "360地图 — «小陈后安粉(团结路店)», 团结路108号 (независимое подтверждение координаты: 7 м после приведения GCJ-02 к WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=a0cfab90c7d0ba24"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "sanya-bay-xiaogongzhu-roast-chicken",
     "status": "verified",
-    "name": { "ru": "Курица-гриль и барбекю «Сяо Гунчжу» (Санья Бэй)", "zh": "小公主包鸡烤鸡·疍家烧烤(迎宾路店)" },
+    "name": {
+      "ru": "Курица-гриль и барбекю «Сяо Гунчжу» (Санья Бэй)",
+      "zh": "小公主包鸡烤鸡·疍家烧烤(迎宾路店)"
+    },
     "addressZh": "海南省三亚市天涯区迎宾路72号",
     "area": "sanya-bay",
     "kind": "restaurant",
-    "location": { "lat": 18.2640845, "lng": 109.4941453 },
+    "location": {
+      "lat": 18.2640845,
+      "lng": 109.4941453
+    },
     "priceLevel": "unknown",
     "hours": "18:00–03:00",
     "note": "Вечерний дайпайдон (大排档): курица, запечённая в медовом соусе, жареная курица и барбекю по-даньцзя (疍家), каша с морепродуктами в глиняном горшке.",
     "sources": [
-      { "title": "OpenStreetMap — узел «小公主包鸡烤鸡大排档», 迎宾路72 (координаты объекта, WGS-84; часы; правка декабря 2025)", "url": "https://www.openstreetmap.org/node/13399452301" },
-      { "title": "360地图 — «小公主包鸡烤鸡·疍家烧烤(迎宾路店)» (независимое подтверждение координаты: 6 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=eac7925ae646e210" },
-      { "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (адрес 迎宾路72号, фирменные блюда)", "url": "https://m.sohu.com/a/1043892361_121106994" }
+      {
+        "title": "OpenStreetMap — узел «小公主包鸡烤鸡大排档», 迎宾路72 (координаты объекта, WGS-84; часы; правка декабря 2025)",
+        "url": "https://www.openstreetmap.org/node/13399452301"
+      },
+      {
+        "title": "360地图 — «小公主包鸡烤鸡·疍家烧烤(迎宾路店)» (независимое подтверждение координаты: 6 м после приведения GCJ-02 к WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=eac7925ae646e210"
+      },
+      {
+        "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (адрес 迎宾路72号, фирменные блюда)",
+        "url": "https://m.sohu.com/a/1043892361_121106994"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "sanya-bay-youyi-road-seafood-plaza",
     "status": "verified",
-    "name": { "ru": "Площадка обработки морепродуктов на Юи-лу (Санья Бэй)", "zh": "友谊路下岗职工海鲜加工广场" },
+    "name": {
+      "ru": "Площадка обработки морепродуктов на Юи-лу (Санья Бэй)",
+      "zh": "友谊路下岗职工海鲜加工广场"
+    },
     "addressZh": "海南省三亚市天涯区友谊路下岗职工海鲜加工广场",
     "area": "sanya-bay",
     "kind": "foodcourt",
-    "location": { "lat": 18.266597, "lng": 109.491437 },
+    "location": {
+      "lat": 18.266597,
+      "lng": 109.491437
+    },
     "priceLevel": "unknown",
     "note": "Площадка из лавок, которые готовят морепродукты: их покупают на рынке и платят за приготовление, в том числе через хозяина лавки. В 2023 году рыночный надзор Саньи оштрафовал торговца площадки за недовес — в вес включали корзину.",
     "sources": [
-      { "title": "OpenStreetMap — полигон «河西友谊路下岗职工海鲜加工广场» (координаты объекта — центр площадки, WGS-84)", "url": "https://www.openstreetmap.org/way/545685473" },
-      { "title": "Яндекс Карты — «Рестораны с блюдами из морепродуктов» (независимое подтверждение координаты, 9 м; отзывы 2026 года)", "url": "https://yandex.com/maps/org/restorany_s_blyudami_iz_moreproduktov/140616296538/" },
-      { "title": "360地图 — «郑霞海鲜加工店(友谊路下岗职工广场店)», 友谊路下岗职工海鲜加工广场B栋7号 (лавка на площадке, 26 м; адрес)", "url": "https://m.map.360.cn/m/search/detail/pid=1e0156abef0b7649" },
-      { "title": "中国日报网 — штраф за недовес на площадке, 05.07.2023", "url": "http://hain.chinadaily.com.cn/a/202307/05/WS64a5651ca310ba94c5615047.html" }
+      {
+        "title": "OpenStreetMap — полигон «河西友谊路下岗职工海鲜加工广场» (координаты объекта — центр площадки, WGS-84)",
+        "url": "https://www.openstreetmap.org/way/545685473"
+      },
+      {
+        "title": "Яндекс Карты — «Рестораны с блюдами из морепродуктов» (независимое подтверждение координаты, 9 м; отзывы 2026 года)",
+        "url": "https://yandex.com/maps/org/restorany_s_blyudami_iz_moreproduktov/140616296538/"
+      },
+      {
+        "title": "360地图 — «郑霞海鲜加工店(友谊路下岗职工广场店)», 友谊路下岗职工海鲜加工广场B栋7号 (лавка на площадке, 26 м; адрес)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=1e0156abef0b7649"
+      },
+      {
+        "title": "中国日报网 — штраф за недовес на площадке, 05.07.2023",
+        "url": "http://hain.chinadaily.com.cn/a/202307/05/WS64a5651ca310ba94c5615047.html"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "sanya-bay-longxing-seafood-plaza",
     "status": "verified",
-    "name": { "ru": "Морепродуктовая площадка «Лунсин» (Санья Бэй)", "zh": "三亚湾·龙兴海鲜广场" },
+    "name": {
+      "ru": "Морепродуктовая площадка «Лунсин» (Санья Бэй)",
+      "zh": "三亚湾·龙兴海鲜广场"
+    },
     "addressZh": "海南省三亚市天涯区三亚湾路128号龙兴海鲜广场",
     "area": "sanya-bay",
     "kind": "foodcourt",
-    "location": { "lat": 18.275161, "lng": 109.474412 },
+    "location": {
+      "lat": 18.275161,
+      "lng": 109.474412
+    },
     "priceLevel": "unknown",
     "note": "Двухэтажное здание с кафе морепродуктов у Кокосовой аллеи: живые морепродукты можно купить и отдать в одно из кафе на приготовление. На втором этаже — ресторан хайнаньской кухни 虎婆香草鸭.",
     "sources": [
-      { "title": "Яндекс Карты — организация по адресу «ул. Саньяваньлу, 128» (координаты объекта, WGS-84; отзывы 2025–2026)", "url": "https://yandex.com/maps/org/restorany_s_blyudami_iz_moreproduktov/210306314030/" },
-      { "title": "360地图 — «三亚湾·龙兴海鲜广场», 三亚湾路128号 (независимое подтверждение координаты: 9 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=cb0aaca528375a35" },
-      { "title": "360地图 — «聚友味海鲜坊(三亚湾龙兴海鲜广场店)», 三亚湾路128号龙兴海鲜广场二楼 (заведение внутри площадки, адрес)", "url": "https://m.map.360.cn/m/search/detail/pid=bb40db2b0cf86783" },
-      { "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (虎婆香草鸭: 三亚湾路龙兴海鲜广场北区二楼5号)", "url": "https://m.sohu.com/a/1043892361_121106994" }
+      {
+        "title": "Яндекс Карты — организация по адресу «ул. Саньяваньлу, 128» (координаты объекта, WGS-84; отзывы 2025–2026)",
+        "url": "https://yandex.com/maps/org/restorany_s_blyudami_iz_moreproduktov/210306314030/"
+      },
+      {
+        "title": "360地图 — «三亚湾·龙兴海鲜广场», 三亚湾路128号 (независимое подтверждение координаты: 9 м после приведения GCJ-02 к WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=cb0aaca528375a35"
+      },
+      {
+        "title": "360地图 — «聚友味海鲜坊(三亚湾龙兴海鲜广场店)», 三亚湾路128号龙兴海鲜广场二楼 (заведение внутри площадки, адрес)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=bb40db2b0cf86783"
+      },
+      {
+        "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (虎婆香草鸭: 三亚湾路龙兴海鲜广场北区二楼5号)",
+        "url": "https://m.sohu.com/a/1043892361_121106994"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "sanya-bay-qionghaha-coconut-chicken",
     "status": "verified",
-    "name": { "ru": "Кокосовая курица «Цюн Хаха» (Санья Бэй)", "zh": "琼哈哈椰子鸡·糟粕醋(椰梦长廊店)" },
+    "name": {
+      "ru": "Кокосовая курица «Цюн Хаха» (Санья Бэй)",
+      "zh": "琼哈哈椰子鸡·糟粕醋(椰梦长廊店)"
+    },
     "addressZh": "海南省三亚市天涯区海声路162号",
     "area": "sanya-bay",
     "kind": "restaurant",
-    "location": { "lat": 18.287065, "lng": 109.445939 },
+    "location": {
+      "lat": 18.287065,
+      "lng": 109.445939
+    },
     "priceLevel": "unknown",
     "note": "Ресторан хайнаньской кухни у набережной Кокосовой аллеи (椰梦长廊): кокосовая курица (椰子鸡) и кислый суп-хого 糟粕醋.",
     "sources": [
-      { "title": "Яндекс Карты — «Qionghaha Coconut Chicken», улица Хайшэнлу (координаты объекта, WGS-84; отзывы 2025–2026)", "url": "https://yandex.com/maps/org/qionghaha_coconut_chicken/35223533213/" },
-      { "title": "360地图 — «琼哈哈椰子鸡(椰梦长廊店)», 海声路162号 (независимое подтверждение координаты: 11 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=29d05b833dfdbe75" },
-      { "title": "携程美食 — «琼哈哈椰子鸡·糟粕醋(椰梦长廊店)» (адрес указан как 三亚湾路161号 — угол с 海声路)", "url": "https://you.ctrip.com/food/sanya61/143232478.html" }
+      {
+        "title": "Яндекс Карты — «Qionghaha Coconut Chicken», улица Хайшэнлу (координаты объекта, WGS-84; отзывы 2025–2026)",
+        "url": "https://yandex.com/maps/org/qionghaha_coconut_chicken/35223533213/"
+      },
+      {
+        "title": "360地图 — «琼哈哈椰子鸡(椰梦长廊店)», 海声路162号 (независимое подтверждение координаты: 11 м после приведения GCJ-02 к WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=29d05b833dfdbe75"
+      },
+      {
+        "title": "携程美食 — «琼哈哈椰子鸡·糟粕醋(椰梦长廊店)» (адрес указан как 三亚湾路161号 — угол с 海声路)",
+        "url": "https://you.ctrip.com/food/sanya61/143232478.html"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
+    "id": "city-huajie-qingbuliang-desserts",
+    "name": {
+      "ru": "«Хуацзе» — традиционные сладости на Цюньчжун-цзе",
+      "zh": "海南特色小吃店花姐甜品(群众街店)"
+    },
+    "addressZh": "海南省三亚市群众街39号",
+    "area": "city",
+    "kind": "street-food",
+    "location": null,
+    "priceLevel": "unknown",
+    "note": "Небольшая лавка с хайнаньскими сладостями, рисовыми пирожками, 清补凉 и местными закусками. Ctrip указывает средний чек около 17 CNY/чел; удобно заглянуть во время прогулки по центру. Точной проверенной GPS-точки нет — используйте адрес на китайском.",
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — 2026 local snack guide, 花姐甜品 at 群众街39号",
+        "url": "https://www.visitsanya.com/zh/24737.html"
+      },
+      {
+        "title": "Ctrip — 花姐甜品, адрес и список блюд",
+        "url": "https://you.ctrip.com/food/61/18658584.html"
+      }
+    ],
+    "status": "verified",
+    "verifiedAt": "2026-11-09"
+  },
+  {
     "id": "haitang-68-food-street",
     "status": "verified",
-    "name": { "ru": "Гастроулица «Хайтан 68» (Хайтан)", "zh": "海棠68环球美食街" },
+    "name": {
+      "ru": "Гастроулица «Хайтан 68» (Хайтан)",
+      "zh": "海棠68环球美食街"
+    },
     "addressZh": "海南省三亚市海棠区海棠北路海棠68环球美食街（君悦酒店旁）",
     "area": "haitang",
     "kind": "foodcourt",
-    "location": { "lat": 18.3458424, "lng": 109.7334576 },
+    "location": {
+      "lat": 18.3458424,
+      "lng": 109.7334576
+    },
     "priceLevel": "unknown",
     "note": "Гастроулица рядом с отелем Grand Hyatt в полосе отелей бухты Хайтан: больше десятка ресторанов и кафе — хайнаньская кухня (в том числе кокосовая курица), юго-восточноазиатская, гонконгские закуски, площадка приготовления морепродуктов. Около 1,5 км от аквариума Atlantis.",
     "sources": [
-      { "title": "OpenStreetMap — полигон «海棠68环球美食街» / «Arena 68» (координаты объекта — центр полигона, WGS-84; контур 2020 года, название обновлено в 2026)", "url": "https://www.openstreetmap.org/way/840460636" },
-      { "title": "360地图 — «海棠68环球美食街(海棠68店)», 海棠北路 (независимое подтверждение координаты: 11 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=baa97c913bb7bc61" },
-      { "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (椰小鸡·椰子鸡: 海棠区海棠北路海棠68环球美食街1层 — работает в 2026 году)", "url": "https://m.sohu.com/a/1043892361_121106994" },
-      { "title": "Keyestone Group (девелопер) — «Haitang Bay Arena 68 Gourmet Street» (рядом с Grand Hyatt, больше десятка кухонь)", "url": "https://www.keyestonegroup.com/project/haitang-bay-arena-68-gourmet-street/" },
-      { "title": "携程美食 — «海棠68环球美食街» (адрес 海棠北路三亚海棠湾君悦酒店旁, состав кухонь)", "url": "https://you.ctrip.com/food/61/63377786.html" }
+      {
+        "title": "OpenStreetMap — полигон «海棠68环球美食街» / «Arena 68» (координаты объекта — центр полигона, WGS-84; контур 2020 года, название обновлено в 2026)",
+        "url": "https://www.openstreetmap.org/way/840460636"
+      },
+      {
+        "title": "360地图 — «海棠68环球美食街(海棠68店)», 海棠北路 (независимое подтверждение координаты: 11 м после приведения GCJ-02 к WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=baa97c913bb7bc61"
+      },
+      {
+        "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (椰小鸡·椰子鸡: 海棠区海棠北路海棠68环球美食街1层 — работает в 2026 году)",
+        "url": "https://m.sohu.com/a/1043892361_121106994"
+      },
+      {
+        "title": "Keyestone Group (девелопер) — «Haitang Bay Arena 68 Gourmet Street» (рядом с Grand Hyatt, больше десятка кухонь)",
+        "url": "https://www.keyestonegroup.com/project/haitang-bay-arena-68-gourmet-street/"
+      },
+      {
+        "title": "携程美食 — «海棠68环球美食街» (адрес 海棠北路三亚海棠湾君悦酒店旁, состав кухонь)",
+        "url": "https://you.ctrip.com/food/61/63377786.html"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "haitang-haichang-food-street",
     "status": "verified",
-    "name": { "ru": "Гастроулица «Хайчан» (Хайтан)", "zh": "海昌不夜城美食街" },
+    "name": {
+      "ru": "Гастроулица «Хайчан» (Хайтан)",
+      "zh": "海昌不夜城美食街"
+    },
     "addressZh": "海南省三亚市海棠区海岸大道168号（海昌梦幻不夜城美食街）",
     "area": "haitang",
     "kind": "foodcourt",
-    "location": { "lat": 18.315406, "lng": 109.723159 },
+    "location": {
+      "lat": 18.315406,
+      "lng": 109.723159
+    },
     "priceLevel": "unknown",
     "note": "Гастроулица внутри развлекательного комплекса «Хайчан» в Хайтане: хайнаньская кухня (кокосовая курица, «травяная утка», уксусный хого «цзаопоцу»), хого, морепродукты, пивные и кафе. Официальный список ресторанов 三亚市商务局 от 30.06.2026 подтверждает работу нескольких заведений именно на этой улице. Сам комплекс есть в базе мест отдельной карточкой.",
     "sources": [
-      { "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (официальное подтверждение работы заведения в 2026 году)", "url": "https://m.sohu.com/a/1043892361_121106994" },
-      { "title": "360地图 — «海昌不夜城美食街» (координата приведена из GCJ-02 в WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=ae02282f80464ce8" },
-      { "title": "OpenStreetMap — «海昌梦幻海洋不夜城» (независимое подтверждение комплекса, в котором находится улица)", "url": "https://www.openstreetmap.org/way/1336786447" },
-      { "title": "Sanya Tourism Board — «Haichang Fantasy Town»", "url": "https://www.visitsanya.com/destination/haichang-fantasy-town" }
+      {
+        "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (официальное подтверждение работы заведения в 2026 году)",
+        "url": "https://m.sohu.com/a/1043892361_121106994"
+      },
+      {
+        "title": "360地图 — «海昌不夜城美食街» (координата приведена из GCJ-02 в WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=ae02282f80464ce8"
+      },
+      {
+        "title": "OpenStreetMap — «海昌梦幻海洋不夜城» (независимое подтверждение комплекса, в котором находится улица)",
+        "url": "https://www.openstreetmap.org/way/1336786447"
+      },
+      {
+        "title": "Sanya Tourism Board — «Haichang Fantasy Town»",
+        "url": "https://www.visitsanya.com/destination/haichang-fantasy-town"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "dadonghai-chixie-crab",
     "status": "verified",
-    "name": { "ru": "«Чисе» — краб в соли (Дадунхай)", "zh": "痴蟹" },
+    "name": {
+      "ru": "«Чисе» — краб в соли (Дадунхай)",
+      "zh": "痴蟹"
+    },
     "addressZh": "海南省三亚市吉阳区榆亚路43号",
     "area": "dadonghai",
     "kind": "restaurant",
-    "location": { "lat": 18.229166, "lng": 109.515126 },
+    "location": {
+      "lat": 18.229166,
+      "lng": 109.515126
+    },
     "priceLevel": "unknown",
     "note": "Ресторан в Дадунхае, специализация — краб, запечённый в соли («盐焗蟹»). Адрес 榆亚路43号 совпадает с официальным списком ресторанов 三亚市商务局 от 30.06.2026.",
     "sources": [
-      { "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (официальное подтверждение работы заведения в 2026 году)", "url": "https://m.sohu.com/a/1043892361_121106994" },
-      { "title": "360地图 — «痴蟹餐厅», 榆亚路43号 (тот же адрес; координата приведена из GCJ-02 в WGS-84)", "url": "https://m.map.360.cn/m/search/detail/pid=ee1e0f6babb931c2" }
+      {
+        "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (официальное подтверждение работы заведения в 2026 году)",
+        "url": "https://m.sohu.com/a/1043892361_121106994"
+      },
+      {
+        "title": "360地图 — «痴蟹餐厅», 榆亚路43号 (тот же адрес; координата приведена из GCJ-02 в WGS-84)",
+        "url": "https://m.map.360.cn/m/search/detail/pid=ee1e0f6babb931c2"
+      }
     ],
     "verifiedAt": "2026-09-17"
   }
