@@ -5,7 +5,7 @@
 
 // ЕДИНСТВЕННАЯ версия кэша. При каждой публикации обновления меняйте это
 // значение (README.md, «Как выпустить новую версию»).
-const CACHE_VERSION = "v35";
+const CACHE_VERSION = "v36";
 
 // Префикс нужен, чтобы activate удалял только кэши этого приложения: у всех
 // репозиториев на <аккаунт>.github.io общий origin и общее хранилище кэшей.
@@ -25,6 +25,8 @@ const PRECACHE = [
   "./js/storage.js",
   "./js/logic/activity.js",
   "./js/logic/amap.js",
+  "./js/logic/travel-hub.js",
+  "./js/logic/minigames.js",
   "./js/logic/offline-map-detail.js",
   "./js/logic/backup.js",
   "./js/logic/checklist.js",
@@ -48,6 +50,9 @@ const PRECACHE = [
   "./js/views/backup.js",
   "./js/views/street-map.js",
   "./js/views/real-map.js",
+  "./js/views/offline-center.js",
+  "./js/views/games.js",
+  "./js/views/mini-arcade.js",
   "./js/views/adventure.js",
   "./js/views/welcome.js",
   "./js/views/discover.js",
