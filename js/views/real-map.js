@@ -2,14 +2,17 @@ import { loadPlaces, loadOfflineRoads, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 import { worldPoint, worldCoords } from "./street-map.js";
 import { buildAmapBetweenRouteUrl, buildYandexRouteUrl } from "../logic/amap.js";
+import { MAP_DETAIL_IDS, loadCachedMapDetail, downloadMapDetail, clearCachedMapDetails } from "../logic/offline-map-detail.js";
 
 // The offline network consists of real OSM ways, simplified at build time.
 // It is for geographic context, NOT for computing turn-by-turn directions.
 const TILE=256, MIN_Z=9, MAX_Z=16;
 const AREAS=[
- {title:"🌴 Ялунвань",lat:18.235,lng:109.639},
- {title:"🏙️ Санья",lat:18.252,lng:109.508},
- {title:"🌊 Хайтан",lat:18.360,lng:109.734},
+ {id:"yalong",title:"🌴 Ялунвань",lat:18.232,lng:109.641},
+ {id:"city",title:"🏙️ Центр",lat:18.252,lng:109.508},
+ {id:"dadonghai",title:"🏖️ Дадунхай",lat:18.223,lng:109.541},
+ {id:"haitang",title:"🌊 Хайтан",lat:18.360,lng:109.734},
+ {id:"tianya",title:"🌅 Тянья",lat:18.289,lng:109.352},
 ];
 const LABELS=[
  ["САНЬЯ",18.255,109.508],["ЯЛУНВАНЬ",18.230,109.641],
@@ -43,13 +46,13 @@ export async function renderRealMap(container,ctx){
  back.addEventListener("click",e=>{e.preventDefault();ctx.back("#/discover");});
  el(container,"h2","view-title","🗺️ Карта Саньи");
  el(container,"p","map-page__intro",
-  "Настоящие улицы без интернета, места и маршруты A → B. Удобно сначала выбрать точку, а затем открыть готовый маршрут в навигаторе.");
+  "Лёгкая карта дорог доступна сразу, даже без интернета. Здания, парки и пляжи отдельных районов можно сохранить по желанию. Выбери точку и открой маршрут в навигаторе.");
  const top=el(container,"div","map-page__top");
  const island=el(top,"a","btn btn--secondary","🏝️ Весь Хайнань");island.href="#/island";
  const audio=el(top,"a","btn btn--secondary","🎧 Аудиогиды");audio.href="#/audio";
  const panel=el(container,"section","map-panel");
  el(panel,"h3","map-panel__title","Улицы и ориентиры");
- el(panel,"p","map-panel__subtitle","Ниже — упрощённые реальные дороги OpenStreetMap. Уровень детализации зависит от масштаба.");
+ el(panel,"p","map-panel__subtitle","Реальные дороги OpenStreetMap. Дополнительные слои районов скачиваются отдельно, а не при каждом открытии.");
  const focus=el(panel,"div","map-page__focus");
  const frame=el(panel,"div","map-page__canvas-wrap");
  frame.setAttribute("aria-label","Интерактивная офлайн-карта дорог Саньи");
@@ -63,9 +66,24 @@ export async function renderRealMap(container,ctx){
  const pickNote=el(frame,"p","map-page__pick-note","Нажми на точку на карте, чтобы выбрать пункт B");
  pickNote.hidden=true;
  const selectedText=el(panel,"p","map-page__selection","Нажми на точку достопримечательности — появится её название.");
+ const scale=el(frame,"span","map-page__scale","");scale.setAttribute("aria-label","Масштаб карты");
+ const legend=el(panel,"div","map-page__legend","");
+ for(const [name,cls] of [["Здания","building"],["Парки","green"],["Пляжи","beach"],["Водоёмы","water"],["Дороги","road"]]){
+  const item=el(legend,"span","map-page__legend-item","");
+  el(item,"i","map-page__legend-swatch map-page__legend-swatch--"+cls,"");
+  el(item,"span","",name);
+ }
+ const pack=el(panel,"section","map-page__packs");
+ el(pack,"h4","map-page__packs-title","Офлайн-детализация районов");
+ const packInfo=el(pack,"p","map-page__pack-info","Базовые дороги уже доступны без сети. Загрузить более подробные слои можно отдельно.");
+ const packControls=el(pack,"div","map-page__pack-actions");
+ const loadZone=el(packControls,"button","btn btn--primary","⬇ Скачать текущий район");loadZone.type="button";
+ const loadAll=el(packControls,"button","btn btn--secondary","⬇ Все 5 районов");loadAll.type="button";
+ const removePacks=el(pack,"button","map-page__pack-remove","Удалить сохранённую детализацию");removePacks.type="button";
+ const packStatus=el(pack,"p","map-page__pack-status","");packStatus.setAttribute("role","status");
  const onlineBtn=el(panel,"button","btn btn--secondary map-page__online","🌐 Показать подробную онлайн-карту");
  onlineBtn.type="button";
- el(panel,"p","map-page__attribution","© OpenStreetMap contributors (ODbL). Дороги — обобщённый снимок данных, не навигатор. Онлайн-тайлы загружаются только после нажатия.");
+ el(panel,"p","map-page__attribution","© OpenStreetMap contributors (ODbL). Офлайн-геометрия — приближённый снимок объектов, не навигатор. Интернет используется только при явном скачивании района или включении онлайн-слоя.");
  const planner=el(container,"section","map-panel");
  el(planner,"h3","map-panel__title","📍 Маршрут от точки A до B");
  el(planner,"p","map-panel__subtitle","Укажи отправление и место назначения; Amap построит настоящий пеший или автомобильный маршрут через интернет.");
@@ -101,8 +119,10 @@ export async function renderRealMap(container,ctx){
  }
  el(planner,"p","map-page__note",
   "Для Китая рекомендуем Amap / 高德地图. Яндекс здесь — резервный вариант: маршруты в Китае не гарантируются. Точное время и повороты рассчитывает внешний навигатор с интернетом. Координаты GPS могут смещаться на китайских картах — проверяй китайское название и вход.");
- let zoom=12,center={lat:18.245,lng:109.617},online=false,picking=false;
- let target=null,selected=null,drag=null;
+ let zoom=13,center={lat:18.232,lng:109.641},selectedZone="yalong",online=false,picking=false;
+ let target=null,selected=null,drag=null,pinch=null;
+ const pointers=new Map(),details=new Map(),tileNodes=new Map();
+ let downloading=false;
  const catalog=new Map(places.filter(p=>good(p.location)).map(p=>[p.id,p]));
  const raw=roads.roads||[];
  const segments=raw.filter(r=>Array.isArray(r)&&Array.isArray(r[1])).map(([kind,points,name])=>({
@@ -110,6 +130,74 @@ export async function renderRealMap(container,ctx){
   minLng:Math.min(...points.map(p=>p[0])),maxLng:Math.max(...points.map(p=>p[0])),
   minLat:Math.min(...points.map(p=>p[1])),maxLat:Math.max(...points.map(p=>p[1]))
  }));
+ // Prepare polygon bounds once, not on every pan or zoom.
+ function prepareDetail(data){
+  const shape=(points)=>({
+   points,minLng:Math.min(...points.map(p=>p[0])),maxLng:Math.max(...points.map(p=>p[0])),
+   minLat:Math.min(...points.map(p=>p[1])),maxLat:Math.max(...points.map(p=>p[1]))
+  });
+  return{
+   land:data.land.filter(r=>Array.isArray(r[1])&&r[1].length>=4)
+    .map(([kind,points])=>({kind,...shape(points)})),
+   buildings:data.buildings.filter(p=>Array.isArray(p)&&p.length>=4).map(shape),
+   coast:data.coast.filter(p=>Array.isArray(p)&&p.length>=2).map(shape)
+  };
+ }
+ function updatePackInfo(){
+  const saved=AREAS.filter(a=>details.has(a.id)).map(a=>a.title);
+  const here=AREAS.find(a=>a.id===selectedZone);
+  packInfo.textContent="Сохранено районов: "+saved.length+" из 5. "+
+   (saved.length?"Есть: "+saved.join(", ")+". ":"")+"Сейчас: "+here.title+".";
+  loadZone.disabled=downloading||details.has(selectedZone);
+  loadZone.textContent=details.has(selectedZone)?"✓ Район доступен офлайн":"⬇ Скачать "+here.title;
+  loadAll.disabled=downloading||details.size===AREAS.length;
+  removePacks.hidden=!details.size||downloading;
+ }
+ async function restorePacks(){
+  try{
+   for(const a of AREAS){
+    const data=await loadCachedMapDetail(a.id);
+    if(data){details.set(a.id,prepareDetail(data));draw();}
+   }
+   updatePackInfo();
+  }catch(error){packStatus.textContent="Сохранённые подробности временно недоступны: "+error.message;}
+ }
+ async function downloadOne(id){
+  const data=await downloadMapDetail(id);
+  if(!ctx.isCurrent())return;
+  details.set(id,prepareDetail(data));draw();
+ }
+ loadZone.addEventListener("click",async()=>{
+  if(downloading||details.has(selectedZone))return;
+  downloading=true;updatePackInfo();
+  const id=selectedZone;
+  packStatus.textContent="Загружаем настоящий картографический слой: "+AREAS.find(a=>a.id===id).title;
+  try{await downloadOne(id);packStatus.textContent="Район сохранён. Отключи интернет — детали останутся на карте.";}
+  catch(error){packStatus.textContent="Не удалось сохранить район: "+error.message+". Проверь подключение и попробуй снова.";}
+  finally{downloading=false;updatePackInfo();}
+ });
+ loadAll.addEventListener("click",async()=>{
+  if(downloading||details.size===AREAS.length)return;
+  if(!window.confirm("Скачать детализацию всех пяти районов? Потребуется интернет и дополнительное место на телефоне."))return;
+  downloading=true;updatePackInfo();
+  try{
+   for(const [index,id] of MAP_DETAIL_IDS.entries()){
+    if(details.has(id))continue;
+    packStatus.textContent="Загрузка района "+(index+1)+" из 5…";
+    await downloadOne(id);
+   }
+   packStatus.textContent="Все районы сохранены для прогулок без интернета.";
+  }catch(error){packStatus.textContent="Скачивание остановлено: "+error.message+". Уже сохранённые районы останутся доступны.";}
+  finally{downloading=false;updatePackInfo();}
+ });
+ removePacks.addEventListener("click",async()=>{
+  if(downloading||!window.confirm("Удалить сохранённые подробности районов? Базовые дороги останутся."))return;
+  try{await clearCachedMapDetails();details.clear();draw();packStatus.textContent="Дополнительные слои удалены. Базовая карта работает.";}
+  catch(error){packStatus.textContent="Не удалось очистить детализацию: "+error.message;}
+  updatePackInfo();
+ });
+ updatePackInfo();
+ void restorePacks();
  function endpoint(value){
   if(value==="custom"&&target)return{location:target,name:"Выбранная точка"};
   const p=catalog.get(value);return p?{location:p.location,name:p.name.zh||p.name.ru}:null;
