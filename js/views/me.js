@@ -4,6 +4,7 @@ import { loadConfig, loadExplore, loadPassport, loadPlaces, loadChecklist } from
 import { storage } from "../storage.js";
 import { prepareContent, evaluatePassport } from "../logic/passport.js";
 import { evaluateExplore } from "../logic/explore.js";
+import { renderRankAwards } from "./rank-card.js";
 import { getTripState, getTodayIso, TRIP_STATE } from "../logic/trip.js";
 function el(parent, tag, cls, text) {
   const node = document.createElement(tag);
@@ -64,6 +65,7 @@ export async function renderMe(container, ctx) {
     el(stat, "strong", "", value);
     el(stat, "small", "", label);
   });
+  renderRankAwards(page, game, false);
   const tripCard = el(page, "section", "quest-me__trip");
   el(tripCard, "span", "quest-me__trip-icon", "✈️");
   const tripBody = el(tripCard, "div", "quest-me__trip-body");

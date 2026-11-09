@@ -17,6 +17,9 @@ import { appendBackLink, createConfirm, renderPlanError } from "./plan.js";
 import { CATEGORY_INK, PART_BADGES, createMapSvg, createStickerArt, el, tiltOf } from "./passport-art.js";
 import { renderStreetMap } from "./street-map.js";
 import { renderOfflineAtlas } from "./offline-atlas.js";
+import { renderRankAwards } from "./rank-card.js";
+import { evaluateExplore } from "../logic/explore.js";
+import { loadExplore, loadChecklist } from "../data.js";
 
 // «Паспорт исследователя» (EXPLORER-PASSPORT-SPEC.md): экран #/passport со
 // схемой побережья, экраны частей побережья #/passport/zone/<id>, альбом
@@ -137,6 +140,19 @@ export async function renderPassport(container, ctx) {
   const mapProgress = appendText(page, "div", "quest-map__progress",
     "🎨 Раскрашено " + result.reward.visited + " из " + result.reward.total + " мест · " + result.coastPartsVisited + " из " + result.coastParts.length + " частей побережья");
   mapProgress.setAttribute("role", "status");
+  // Значки вычисляются из XP — тот же результат, что в профиле «Моё».
+  // Ошибка данных наград не должна блокировать основной паспорт.
+  try {
+    const [exploreContent, checklist] = await Promise.all([loadExplore(), loadChecklist()]);
+    if (!ctx.isCurrent()) return;
+    const awards = evaluateExplore({ places, savedIds: storage.getSavedIds(),
+      myPlan: storage.getMyPlan(), passportResult: result, explore: storage.getExplore(),
+      expenses: storage.getExpenses(), activity: storage.getActivity(), checklist,
+      checklistState: storage.getChecklistState(),
+      chapters: exploreContent.chapters, lessons: exploreContent.lessons });
+    renderRankAwards(page, awards, true);
+  } catch (err) { console.warn("Награды временно недоступны", err); }
+  if (!ctx.isCurrent()) return;
   renderOfflineAtlas(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderStreetMap(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderOverview(page, { result, content, places, state });

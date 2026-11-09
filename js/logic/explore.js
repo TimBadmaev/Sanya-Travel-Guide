@@ -2,6 +2,7 @@
 // XP не хранится отдельно, чтобы не было накрутки и расхождения с паспортом.
 // Нет GPS, ежедневных серий, штрафов и наград за shopping.
 import { isRewardPlace } from "./passport.js";
+import { rankForLevel, nextRank } from "./ranks.js";
 
 export const EXPLORE_STATE_VERSION = 1;
 export const XP_RULES = Object.freeze({
@@ -35,10 +36,13 @@ export function withCompletedLesson(state, id, allowed = []) {
 export function getLevel(xp) {
   const score = Math.max(0, Math.floor(Number(xp) || 0));
   const level = Math.floor(score / 100) + 1;
-  const names = ["Новичок", "Любознательный", "Исследователь", "Следопыт", "Легенда побережья"];
+  const rank=rankForLevel(level);
   return {
     level,
-    name: names[Math.min(level - 1, names.length - 1)],
+    name: rank.name,
+    badge: rank.icon,
+    reward: rank.reward,
+    nextRank: nextRank(level),
     current: score % 100,
     next: 100,
     toNext: 100 - score % 100,
