@@ -297,22 +297,27 @@ export async function renderRealMap(container,ctx){
   }
  }
  function drawOnline(){
-  tiles.replaceChildren();
-  if(!online)return;
+  if(!online){tileNodes.clear();tiles.replaceChildren();return;}
   const {width,height}=frame.getBoundingClientRect();
+  if(!width||!height)return;
   const c=worldPoint(center.lat,center.lng,zoom),x0=c.x-width/2,y0=c.y-height/2;
   const minx=Math.floor(x0/TILE),maxx=Math.floor((x0+width)/TILE);
   const miny=Math.floor(y0/TILE),maxy=Math.floor((y0+height)/TILE);
-  const n=2**zoom;
-  const f=document.createDocumentFragment();
+  const count=2**zoom,visible=new Set();
   for(let y=miny;y<=maxy;y++)for(let x=minx;x<=maxx;x++){
-   if(y<0||y>=n)continue;
-   const img=document.createElement("img");img.className="map-page__tile";
-   img.src=`https://tile.openstreetmap.org/${zoom}/${((x%n)+n)%n}/${y}.png`;
+   if(y<0||y>=count)continue;
+   const wrapped=((x%count)+count)%count,key=zoom+"/"+wrapped+"/"+y;
+   visible.add(key);
+   let img=tileNodes.get(key);
+   if(!img){
+    img=document.createElement("img");img.className="map-page__tile";
+    img.src="https://tile.openstreetmap.org/"+key+".png";
+    img.alt="";img.decoding="async";img.draggable=false;
+    tileNodes.set(key,img);tiles.appendChild(img);
+   }
    img.style.left=(x*TILE-x0)+"px";img.style.top=(y*TILE-y0)+"px";
-   img.alt="";img.decoding="async";img.draggable=false;f.appendChild(img);
   }
-  tiles.appendChild(f);
+  for(const [key,img] of tileNodes)if(!visible.has(key)){img.remove();tileNodes.delete(key);}
  }
  function drawPins(){
   pins.replaceChildren();
@@ -342,12 +347,23 @@ export async function renderRealMap(container,ctx){
  function draw(){drawRoads();drawOnline();drawPins();}
  function z(delta){const next=Math.max(MIN_Z,Math.min(MAX_Z,zoom+delta));if(next!==zoom){zoom=next;draw();}}
  plus.addEventListener("click",()=>z(1));minus.addEventListener("click",()=>z(-1));
+ const focusButtons=[];
  for(const item of AREAS){
   const btn=el(focus,"button","btn btn--secondary",item.title);btn.type="button";
-  btn.addEventListener("click",()=>{center={lat:item.lat,lng:item.lng};zoom=12;draw();});
+  btn.addEventListener("click",()=>{
+   selectedZone=item.id;center={lat:item.lat,lng:item.lng};zoom=13;
+   focusButtons.forEach(([id,b])=>b.setAttribute("aria-pressed",String(id===item.id)));
+   updatePackInfo();draw();
+  });
+  focusButtons.push([item.id,btn]);
  }
+ focusButtons[0][1].setAttribute("aria-pressed","true");
  onlineBtn.addEventListener("click",()=>{
-  online=!online;onlineBtn.textContent=online?"🌿 Оставить только офлайн-дороги":"🌐 Показать подробную онлайн-карту";
+  online=!online;
+  onlineBtn.textContent=online?"🌿 Вернуться к офлайн-карте":"🌐 Показать подробную онлайн-карту";
+  packStatus.textContent=online?
+   "Онлайн-слой загружает только видимые тайлы. Для офлайна сохрани районы отдельно.":
+   "Офлайн-карта доступна без интернета.";
   draw();
  });
  pick.addEventListener("click",()=>{
