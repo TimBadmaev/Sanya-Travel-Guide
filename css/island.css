@@ -471,3 +471,98 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .quest-reset__delete:disabled { opacity: .45; cursor: not-allowed; }
 .quest-reset__status { font-size: 12px; font-weight: 750; }
 @media (prefers-reduced-motion:reduce) { .quest-preflight__bar span { transition: none; } }
+
+
+/* v26: zero-network geographic overview with native browser SVG interactions */
+.atlas { overflow:hidden; margin:12px 0 19px; border:2px solid #b7e1d4; border-radius:22px; background:#f4fefa; box-shadow:0 4px #d5efe4; }
+.atlas__heading { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:17px 15px 4px; }
+.atlas__heading h3 { margin:1px 0 0; font-size:21px; font-weight:950; letter-spacing:-.03em; color:#175e4d; }
+.atlas__eyebrow { margin:0;font-size:11px; color:#158166; font-weight:950; letter-spacing:.09em; }
+.atlas__offline { background:#d1f8db; color:#106b4d; padding:7px 10px; border-radius:10px; font-size:10px; font-weight:950; border:1px solid #99dbb9; }
+.atlas__intro { margin:6px 15px 12px; font-size:13px; line-height:1.44; color:#457866; }
+.atlas__filters { display:flex; overflow-x:auto; gap:7px; padding:0 12px 12px; scrollbar-width:thin; }
+.atlas__filter { flex:0 0 auto; background:#fff; color:#4f8270; border:1.5px solid #cce8dd; border-radius:13px; min-height:42px; padding:7px 12px; white-space:nowrap; font-size:13px; font-weight:850; }
+.atlas__filter[aria-pressed="true"] { color:#fff; background:#159b7b; border-color:#159b7b; box-shadow:inset 0 -3px #0c7f63; }
+.atlas__svg { display:block; width:100%; height:auto; background:#7fd9e7; border-top:1px solid #c5ecdf; border-bottom:1px solid #b9e3dc; }
+.atlas__land { filter:drop-shadow(1px 3px 4px rgba(13,108,90,.16)); }
+.atlas__coastline { stroke:#e5e9ac; stroke-width:11; stroke-linejoin:round; }
+.atlas__contour { fill:none; stroke:rgba(39,114,62,.19); stroke-width:10; stroke-linecap:round; }
+.atlas__wave { fill:none; stroke:rgba(255,255,255,.52); stroke-width:6; }
+.atlas__area-label { font-size:38px; font-weight:950; letter-spacing:1.2px; fill:#337455; stroke:rgba(232,255,220,.85); stroke-width:8; paint-order:stroke; }
+.atlas__bay-label { font-size:31px; font-weight:900; fill:#187ca4; stroke:rgba(235,255,255,.7); stroke-width:6; paint-order:stroke; }
+.atlas__water-title { font-size:23px; font-weight:950; fill:rgba(15,103,143,.73); letter-spacing:4px; }
+.atlas__point { cursor:pointer; }
+.atlas__point:focus-visible { outline:none; }
+.atlas__hit { fill:transparent; }
+.atlas__pin { fill:#fff; stroke:#428f7e; stroke-width:8; filter:drop-shadow(0 6px 5px rgba(0,69,78,.17)); }
+.atlas__point--visited .atlas__pin { fill:#ccffe2; stroke:#0d9b66; }
+.atlas__point--planned .atlas__pin { fill:#e0e3ff; stroke:#7d7cda; }
+.atlas__point--saved .atlas__pin { fill:#fff4d3; stroke:#e0ac32; }
+.atlas__point:focus-visible .atlas__pin { stroke:#ff9f37; stroke-width:13; }
+.atlas__pin-label { font-size:32px; font-weight:950; fill:#1c625c; pointer-events:none; user-select:none; }
+.atlas__point--visited .atlas__pin-label { fill:#087d51; }
+.atlas__reveal { fill:#29cf91; opacity:.22; stroke:#138b65; stroke-width:5; transform-box:fill-box; transform-origin:center; animation:atlas-reveal 2.3s ease-in-out infinite alternate; }
+.atlas__preview { padding:13px 15px; background:#e9fff0; border-top:2px solid #b9e5cb; }
+.atlas__preview[hidden] { display:none; }
+.atlas__preview > strong { font-size:15px; font-weight:950; color:#116d4f; }
+.atlas__preview-links { display:grid; gap:5px; margin-top:8px; }
+.atlas__preview-links a { display:flex; align-items:center; min-height:44px; padding:7px 10px; border-radius:10px; background:white; border:1px solid #d4eadf; font-weight:850; color:#1a6e53; text-decoration:none; }
+.atlas__count { margin:10px 15px 3px; font-size:12px; font-weight:950; color:#357660; }
+.atlas__footnote { margin:0; padding:3px 15px 15px; color:#628578; font-size:11px; line-height:1.5; }
+@keyframes atlas-reveal { from { opacity:.13; transform:scale(.88); } to { opacity:.37; transform:scale(1.15); } }
+/* Street tiles are strictly opt-in; hidden means no requests, not only invisible. */
+.street-map__load { display:block; width:calc(100% - 28px); margin:12px 14px 7px; padding:12px 14px; min-height:52px; border:0; border-radius:14px; background:#147f72; color:#fff; font-weight:950; font-size:14px; cursor:pointer; box-shadow:inset 0 -4px #0d5e51; }
+.street-map__load-hint { margin:0 14px 13px; color:#587d71; font-size:12px; line-height:1.45; }
+.street-map__frame[hidden], .street-map__filters[hidden] { display:none!important; }
+.street-map__head { padding-bottom:1px; }
+.street-map { margin-top:15px; margin-bottom:20px; }
+/* Six level rewards, purely from existing XP; no external badge assets. */
+.rank-card { border-radius:23px; border:2px solid #f4d99d; background:linear-gradient(135deg,#fff8dc,#fffef7 50%,#eaf7fa); padding:16px 13px 17px; margin:18px 0; box-shadow:0 4px #e9dfbf; }
+.rank-card__lead { display:flex; align-items:center; gap:12px; }
+.rank-card__emblem { flex:0 0 87px; height:87px; display:grid; place-items:center; border:5px solid #fff6d8; border-radius:50%; background:linear-gradient(135deg,#f9cd71,#e9a13f); box-shadow:0 5px 0 #d3974c,0 8px 16px rgba(93,55,20,.14); position:relative; }
+.rank-card__emblem--mint { background:linear-gradient(135deg,#a6efd5,#37b785); box-shadow:0 5px #208b72; }
+.rank-card__emblem--aqua { background:linear-gradient(135deg,#9de9ff,#3cb2dd); box-shadow:0 5px #1987b2; }
+.rank-card__emblem--forest { background:linear-gradient(135deg,#a1e67a,#5eb76c); box-shadow:0 5px #377f47; }
+.rank-card__emblem--gold { background:linear-gradient(135deg,#ffe993,#e9aa40); box-shadow:0 5px #b98534; }
+.rank-card__emblem--sunset { background:linear-gradient(135deg,#ffb4b0,#f57c5d); box-shadow:0 5px #c45b48; }
+.rank-card__emblem--royal { background:linear-gradient(135deg,#b4b5ff,#8455d4); box-shadow:0 5px #673cad; }
+.rank-card__symbol { position:relative; z-index:1; font-size:42px; animation:rank-wiggle 3s ease-in-out infinite; }
+.rank-card__spark { position:absolute; z-index:2; color:#fffbdc; text-shadow:0 0 7px #e6a642; font-weight:950; animation:rank-shine 1.7s ease-in-out infinite alternate; }
+.rank-card__spark--a { top:1px;right:-7px;font-size:20px; }
+.rank-card__spark--b { bottom:0;left:-5px;font-size:16px; animation-delay:.65s; }
+.rank-card__glow { position:absolute;inset:-7px;border-radius:inherit; border:2px dashed rgba(240,193,86,.7); animation:rank-turn 15s linear infinite; }
+.rank-card__details { min-width:0; flex:1; }
+.rank-card__eyebrow { margin:0 0 4px; font-size:10px; letter-spacing:.08em; color:#92723c; font-weight:950; }
+.rank-card__title { margin:0 0 4px; font-size:19px; line-height:1.2; letter-spacing:-.02em; font-weight:950; color:#554429; }
+.rank-card__subtitle { margin:0 0 5px; font-size:12px; line-height:1.35; color:#84724b; }
+.rank-card__gift { display:inline-flex; padding:5px 7px; font-size:11px; font-weight:900; border-radius:9px; background:#fff4c6; color:#85632d; }
+.rank-card__xp-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:17px 0 7px; font-size:12px; color:#81683c; }
+.rank-card__xp-row strong { white-space:nowrap; font-size:15px; }
+.rank-card__xp-row span { text-align:right; }
+.rank-card__xp-meter { height:13px; border-radius:30px; background:#e5dfc9; overflow:hidden; }
+.rank-card__xp-meter span { display:block; height:100%; border-radius:30px; background:linear-gradient(90deg,#13ad83,#ffbe4d); }
+.rank-card__collection-title { margin:17px 0 10px; font-size:16px; font-weight:950; color:#67502f; }
+.rank-card__collection { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
+.rank-card__badge { display:flex; align-items:center; flex-direction:column; gap:4px; min-height:100px; text-align:center; padding:9px 3px; background:#fff; border:2px solid #e9dcc1; border-radius:14px; }
+.rank-card__badge.is-earned { border-color:#ecc974; background:#fff7db; box-shadow:0 2px #e0c88a; }
+.rank-card__badge.is-locked { opacity:.55; filter:grayscale(.45); }
+.rank-card__badge-symbol { font-size:27px; }
+.rank-card__badge-level { font-size:11px; color:#8b642b; }
+.rank-card__badge-name { font-size:10px; line-height:1.25; font-weight:750; color:#826943; }
+.rank-card__fineprint { margin:14px 0 0; color:#927f60; font-size:11px; line-height:1.45; }
+.rank-card--compact { padding:14px 11px; }
+.rank-card--compact .rank-card__collection-title { font-size:14px; }
+.rank-card--compact .rank-card__emblem { flex-basis:68px; height:68px; }
+.rank-card--compact .rank-card__symbol { font-size:32px; }
+.quest-intro__rank { display:inline-flex; color:#725c1a; text-decoration:none; font-size:13px; font-weight:950; margin-top:9px; border-bottom:1px dashed #b1a365; }
+@keyframes rank-wiggle { 0%,85%,100% { transform:rotate(0deg); } 89% { transform:rotate(-9deg); } 95% { transform:rotate(9deg); } }
+@keyframes rank-shine { from { opacity:.5;transform:scale(.8); } to { opacity:1;transform:scale(1.18); } }
+@keyframes rank-turn { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce) { .atlas__reveal,.rank-card__symbol,.rank-card__spark,.rank-card__glow { animation:none!important; } }
+@media (max-width:359px) { .rank-card__lead { gap:9px; } .rank-card__emblem { flex-basis:72px; height:72px; } .rank-card__symbol { font-size:33px; } .rank-card__title { font-size:17px; } }
+
+/* v26 visual QA: labels do not compete with POI clusters */
+.atlas__area-label { font-size:31px; letter-spacing:.7px; stroke-width:7; }
+.atlas__bay-label { font-size:28px; }
+.atlas__leader { stroke:#1e9775; stroke-width:3.5; stroke-dasharray:8 7; opacity:.64; }
+.atlas__anchor { fill:#047a5a; opacity:.65; }

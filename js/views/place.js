@@ -264,7 +264,8 @@ export async function renderPlace(container, ctx) {
       figure.className = "place-photo";
       const img = document.createElement("img");
       img.className = "place-photo__img";
-      img.src = `assets/photos/${photo.file}`;
+      img.src = photo.file ? `assets/photos/${photo.file}` : photo.url;
+      img.loading = photo.file ? "eager" : "lazy";
       img.alt = photo.alt;
       // Файла нет или он повреждён (D-05): убираем всю фигуру вместе с
       // подписью — значок битой картинки и «висящий» копирайт хуже, чем

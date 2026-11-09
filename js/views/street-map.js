@@ -39,8 +39,13 @@ function node(parent, tag, cls, text) {
 export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [], myPlan = { days: {} } } = {}) {
   const section = node(parent, "section", "street-map");
   const head = node(section, "div", "street-map__head");
-  node(head, "h3", "", "🗺️ Настоящая карта мест");
-  node(head, "p", "", "Улицы, бухты и реальные точки. Перемещай карту пальцем, нажимай на значки.");
+  node(head, "h3", "", "🗺️ Карта улиц — по запросу");
+  node(head, "p", "", "Покажи подробные улицы, если нужен масштаб и перемещение. Без нажатия не загружается ни одного тайла.");
+  let online = false;
+  const gate = node(section, "button", "street-map__load", "🌐 Загрузить подробную онлайн-карту");
+  gate.type = "button";
+  gate.setAttribute("aria-expanded", "false");
+  const gateHint = node(section, "p", "street-map__load-hint", "Экономия трафика: стандартная карта загружается только по нажатию. Для ориентира достаточно офлайн-атласа выше.");
   const categories = node(section, "div", "street-map__filters");
   categories.setAttribute("role", "group");
   categories.setAttribute("aria-label", "Какие точки показать");
@@ -49,6 +54,7 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
     ["planned", "🗓️ В плане"], ["beach", "🏖️ Пляжи"], ["nature", "🌿 Природа"],
     ["culture", "🏯 Культура"], ["market", "🏮 Рынки"],
   ];
+  categories.hidden = true;
   let filter = "all";
   let zoom = 10, center = { ...CENTER };
   let selected = null;
@@ -66,6 +72,7 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
   });
 
   const frame = node(section, "div", "street-map__frame");
+  frame.hidden = true;
   frame.setAttribute("aria-label", "Интерактивная карта с реальными координатами мест");
   const tiles = node(frame, "div", "street-map__tiles");
   tiles.setAttribute("aria-hidden", "true");
@@ -81,10 +88,10 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
   preview.hidden = true;
   const note = node(section, "p", "street-map__note",
     "Карта улиц загружается с интернетом. Точки — ориентиры, не маршрут и не гарантия входа на территорию.");
-  const fallback = node(section, "button", "street-map__offline", "🏝️ Открыть схему побережья без интернета ↓");
+  const fallback = node(section, "button", "street-map__offline", "🏝️ Вернуться к офлайн-атласу ↑");
   fallback.type = "button";
   fallback.addEventListener("click", () => {
-    const schematic = parent.querySelector(".passport-map");
+    const schematic = parent.querySelector(".atlas");
     if (schematic) schematic.scrollIntoView({ behavior: "smooth", block: "start" });
   });
   const credit = node(section, "p", "street-map__credit");
@@ -111,7 +118,7 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
     const content = node(preview, "div", "street-map__preview-content");
     if (place.photos?.length) {
       const img = node(content, "img", "street-map__preview-img");
-      img.src = "assets/photos/" + place.photos[0].file;
+      img.src = place.photos[0].file ? "assets/photos/" + place.photos[0].file : place.photos[0].url;
       img.alt = place.photos[0].alt || place.name.ru;
       img.loading = "lazy";
     }
@@ -151,6 +158,7 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
   }
   function drawTiles() {
     tiles.replaceChildren();
+    if (!online) return;
     const { width, height } = frame.getBoundingClientRect();
     const c = worldPoint(center.lat, center.lng, zoom);
     const originX = c.x - width / 2, originY = c.y - height / 2;
@@ -209,6 +217,15 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
   }, { passive: false });
   // Clicking map background clears preview, not visits.
   frame.addEventListener("click", (e) => { if (!e.target.closest("button")) { selected = null; preview.hidden = true; drawPins(); } });
+  gate.addEventListener("click", () => {
+    online = !online;
+    frame.hidden = !online;
+    categories.hidden = !online;
+    gate.setAttribute("aria-expanded", String(online));
+    gate.textContent = online ? "🛑 Скрыть онлайн-карту" : "🌐 Загрузить подробную онлайн-карту";
+    gateHint.textContent = online ? "Улицы показаны. Передвигай пальцем и нажимай на точки. Тайлы загружаются только в видимой области." : "Онлайн-тайлы не загружаются. Пользуйся офлайн-атласом без трафика.";
+    draw();
+  });
   const count = node(section, "p", "street-map__count");
   // Rendering starts after CSS/layout. ResizeObserver keeps pins on the right POI.
   let lastWidth = 0;

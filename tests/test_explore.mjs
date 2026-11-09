@@ -26,8 +26,8 @@ function visits(data) {
   return evaluatePassport({ state: { v: 1, visits: data }, places, content });
 }
 
-test("База остаётся неизменной: 52 verified и 12 наклеек", () => {
-  assert.equal(places.length, 52);
+test("База расширена: 55 verified и сохранены 12 старых наклеек", () => {
+  assert.equal(places.length, 55);
   assert.equal(passportData.stickers.length, 12);
 });
 test("Контент уроков и заданий корректен, id уникальны, ссылки существуют", () => {

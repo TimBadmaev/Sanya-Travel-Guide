@@ -226,6 +226,8 @@ export async function renderAdventure(container, ctx) {
   el(intro, "p", "quest-intro__copy", "Исследуй красивые места, находи секреты и собирай собственную карту Хайнаня.");
   const subtitle = el(intro, "a", "quest-intro__travel", travelCaption(trip));
   subtitle.href = trip.start && trip.end ? "#/me" : "#/settings";
+  const badge = el(intro, "a", "quest-intro__rank", game.level.badge + " " + game.level.name + " · значки и звания ›");
+  badge.href = "#/me";
   const stats = el(intro, "div", "quest-intro__stats");
   el(stats, "strong", "", "Уровень " + game.level.level);
   const bar = el(stats, "div", "quest-intro__progress");

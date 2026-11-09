@@ -16,6 +16,10 @@ import { CATEGORY_ICONS, DEFAULT_ICON } from "./places.js";
 import { appendBackLink, createConfirm, renderPlanError } from "./plan.js";
 import { CATEGORY_INK, PART_BADGES, createMapSvg, createStickerArt, el, tiltOf } from "./passport-art.js";
 import { renderStreetMap } from "./street-map.js";
+import { renderOfflineAtlas } from "./offline-atlas.js";
+import { renderRankAwards } from "./rank-card.js";
+import { evaluateExplore } from "../logic/explore.js";
+import { loadExplore, loadChecklist } from "../data.js";
 
 // «Паспорт исследователя» (EXPLORER-PASSPORT-SPEC.md): экран #/passport со
 // схемой побережья, экраны частей побережья #/passport/zone/<id>, альбом
@@ -136,7 +140,12 @@ export async function renderPassport(container, ctx) {
   const mapProgress = appendText(page, "div", "quest-map__progress",
     "🎨 Раскрашено " + result.reward.visited + " из " + result.reward.total + " мест · " + result.coastPartsVisited + " из " + result.coastParts.length + " частей побережья");
   mapProgress.setAttribute("role", "status");
+  // Прогресс и карты появляются сразу: подгрузка значков их не блокирует.
+  const awardsSlot = document.createElement("div");
+  awardsSlot.className = "passport-awards-slot";
+  renderOfflineAtlas(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderStreetMap(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
+  page.appendChild(awardsSlot);
   renderOverview(page, { result, content, places, state });
   renderStats(page, result);
   const adventure = appendText(page, "a", "explore-passport-link", "🚀 Вернуться к игровому пути ›");
@@ -158,6 +167,19 @@ export async function renderPassport(container, ctx) {
   const backupLink = appendText(footer, "a", "home-link", "Сохранить копию ›");
   backupLink.href = "#/data";
   page.appendChild(footer);
+
+  // Значки вычисляются из XP, но не должны задерживать появление карты.
+  Promise.all([loadExplore(), loadChecklist()]).then(([exploreContent, checklist]) => {
+    if (!ctx.isCurrent() || !awardsSlot.isConnected) return;
+    const awards = evaluateExplore({
+      places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(),
+      passportResult: result, explore: storage.getExplore(),
+      expenses: storage.getExpenses(), activity: storage.getActivity(), checklist,
+      checklistState: storage.getChecklistState(),
+      chapters: exploreContent.chapters, lessons: exploreContent.lessons,
+    });
+    renderRankAwards(awardsSlot, awards, true);
+  }).catch((err) => { console.warn("Награды временно недоступны", err); });
 }
 
 function renderStats(page, result) {
@@ -209,7 +231,7 @@ function mapFigure(parent, svg, legendExtra) {
 function renderOverview(page, { result, content, places, state }) {
   const section = document.createElement("section");
   section.className = "settings-section";
-  appendText(section, "h3", "settings-section__title", "🏝️ Схема побережья без интернета");
+  appendText(section, "h3", "settings-section__title", "🏅 Семь игровых зон для наклеек");
   const svg = createMapSvg({
     viewBox: OVERVIEW_BOX,
     parts: content.coastParts,
