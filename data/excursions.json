@@ -2,14 +2,25 @@
   {
     "id": "nanshan-tianya-day",
     "status": "verified",
-    "title": { "ru": "Наньшань и Тяньяхайцзяо", "zh": "南山文化旅游区 · 天涯海角" },
+    "title": {
+      "ru": "Наньшань и Тяньяхайцзяо",
+      "zh": "南山文化旅游区 · 天涯海角"
+    },
     "summary": "Культурный выезд на западное побережье на целый день: буддийский комплекс со 108-метровой статуей Гуаньинь и скалы «края неба и угла моря» — на одной дороге.",
     "format": "full-day",
-    "durationHours": [6, 10],
+    "durationHours": [
+      6,
+      10
+    ],
     "effort": "low",
     "setting": "outdoor",
-    "tags": ["kids"],
-    "placeIds": ["nanshan-cultural-zone", "tianya-haijiao"],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "nanshan-cultural-zone",
+      "tianya-haijiao"
+    ],
     "whatToSee": [
       "Статуя Гуаньинь высотой 108 м, которая стоит прямо в море, — к ней ведёт дорожка над водой.",
       "Большая ухоженная территория Наньшаня с тремя тематическими парками; между зонами ходят электрокары.",
@@ -28,22 +39,40 @@
     ],
     "bestTime": "Будний день, выезд с утра",
     "sources": [
-      { "title": "Sanya Tourism Board — «Sanya Nanshan Cultural Tourism Zone»", "url": "https://www.visitsanya.com/destination/nanshan-culture-tourism-zone" },
-      { "title": "Sanya Tourism Board — «Tianya Haijiao»", "url": "https://www.visitsanya.com/destination/tianya-haijiao" },
-      { "title": "Синьхуа — «三亚天涯海角游览区6月1日起免费开放»", "url": "http://www.news.cn/2023-05/26/c_1129647888.htm" }
+      {
+        "title": "Sanya Tourism Board — «Sanya Nanshan Cultural Tourism Zone»",
+        "url": "https://www.visitsanya.com/destination/nanshan-culture-tourism-zone"
+      },
+      {
+        "title": "Sanya Tourism Board — «Tianya Haijiao»",
+        "url": "https://www.visitsanya.com/destination/tianya-haijiao"
+      },
+      {
+        "title": "Синьхуа — «三亚天涯海角游览区6月1日起免费开放»",
+        "url": "http://www.news.cn/2023-05/26/c_1129647888.htm"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "wuzhizhou-island-trip",
     "status": "verified",
-    "title": { "ru": "Остров Улучжичжоу", "zh": "蜈支洲岛" },
+    "title": {
+      "ru": "Остров Улучжичжоу",
+      "zh": "蜈支洲岛"
+    },
     "summary": "Главный морской выезд: коралловый остров в бухте Хайтан с прозрачной водой, пляжами, снорклингом и дайвингом. На остров — паром от причала у деревни Хоухай.",
     "format": "full-day",
-    "durationHours": [4, 7],
+    "durationHours": [
+      4,
+      7
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "placeIds": ["wuzhizhou-island", "houhai-village"],
+    "placeIds": [
+      "wuzhizhou-island",
+      "houhai-village"
+    ],
     "whatToSee": [
       "Пляжи и прозрачная вода вокруг острова.",
       "Один из наиболее сохранившихся коралловых рифов Китая: снорклинг, дайвинг и водные виды спорта.",
@@ -62,22 +91,39 @@
     ],
     "bestTime": "Будний день, выезд с утра",
     "sources": [
-      { "title": "Sanya Tourism Board — «Wuzhizhou Island»", "url": "https://www.visitsanya.com/destination/wuzhizhou-island" },
-      { "title": "Официальный сайт острова — «景区门票»", "url": "https://www.wuzhizhou.com/ticket/" },
-      { "title": "Sanya Tourism Board — «Houhai Village»", "url": "https://www.visitsanya.com/destination/houhai-village" }
+      {
+        "title": "Sanya Tourism Board — «Wuzhizhou Island»",
+        "url": "https://www.visitsanya.com/destination/wuzhizhou-island"
+      },
+      {
+        "title": "Официальный сайт острова — «景区门票»",
+        "url": "https://www.wuzhizhou.com/ticket/"
+      },
+      {
+        "title": "Sanya Tourism Board — «Houhai Village»",
+        "url": "https://www.visitsanya.com/destination/houhai-village"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "west-island-trip",
     "status": "verified",
-    "title": { "ru": "Западный остров (Сидао)", "zh": "西岛" },
+    "title": {
+      "ru": "Западный остров (Сидао)",
+      "zh": "西岛"
+    },
     "summary": "Остров с рыбацкой деревней к западу от центра Саньи — спокойнее и «местнее», чем курортный Улучжичжоу.",
     "format": "full-day",
-    "durationHours": [4, 6],
+    "durationHours": [
+      4,
+      6
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "placeIds": ["west-island"],
+    "placeIds": [
+      "west-island"
+    ],
     "whatToSee": [
       "Обжитая рыбацкая деревня с кафе и гостевыми домами.",
       "Дайвинг, велопрогулки и культурные активности на самом острове.",
@@ -94,21 +140,35 @@
     ],
     "bestTime": "Утро",
     "sources": [
-      { "title": "Sanya Tourism Board — «West Island»", "url": "https://www.visitsanya.com/destination/west-island" },
-      { "title": "Официальный сайт острова — «门船票»", "url": "http://www.syxidao.com/" }
+      {
+        "title": "Sanya Tourism Board — «West Island»",
+        "url": "https://www.visitsanya.com/destination/west-island"
+      },
+      {
+        "title": "Официальный сайт острова — «门船票»",
+        "url": "http://www.syxidao.com/"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "yalong-forest-park-trip",
     "status": "verified",
-    "title": { "ru": "Лесной парк над Ялунванем", "zh": "亚龙湾热带天堂森林公园" },
+    "title": {
+      "ru": "Лесной парк над Ялунванем",
+      "zh": "亚龙湾热带天堂森林公园"
+    },
     "summary": "Короткий природный выезд в горы над бухтой Ялонг Бэй: тропический лес, подъём на автобусе и смотровые площадки с видом на море.",
     "format": "half-day",
-    "durationHours": [3, 5],
+    "durationHours": [
+      3,
+      5
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "placeIds": ["yalong-tropical-forest-park"],
+    "placeIds": [
+      "yalong-tropical-forest-park"
+    ],
     "whatToSee": [
       "Панорама бухты Ялонг Бэй с высоты.",
       "Несколько маршрутов и аттракционов разного уровня активности.",
@@ -125,21 +185,35 @@
     ],
     "bestTime": "Утро",
     "sources": [
-      { "title": "Sanya Tourism Board — «Yalong Bay Tropical Paradise Forest Park»", "url": "https://www.visitsanya.com/destination/yalong-bay-tropical-paradise-forest-park" },
-      { "title": "Официальный сайт парка — «票价信息»", "url": "https://park.ylwpark.com/" }
+      {
+        "title": "Sanya Tourism Board — «Yalong Bay Tropical Paradise Forest Park»",
+        "url": "https://www.visitsanya.com/destination/yalong-bay-tropical-paradise-forest-park"
+      },
+      {
+        "title": "Официальный сайт парка — «票价信息»",
+        "url": "https://park.ylwpark.com/"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "houhai-surf",
     "status": "verified",
-    "title": { "ru": "Хоухай: сёрфинг для новичков", "zh": "后海村" },
+    "title": {
+      "ru": "Хоухай: сёрфинг для новичков",
+      "zh": "后海村"
+    },
     "summary": "Активный выезд в рыбацкую деревню в Хайтане — самое известное в Санье место для сёрфинга: пологая волна и песчаное дно без рифов удобны для первых занятий.",
     "format": "half-day",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "placeIds": ["houhai-village"],
+    "placeIds": [
+      "houhai-village"
+    ],
     "whatToSee": [
       "Пляж с пологой волной и песчаным дном.",
       "Несколько сёрф-школ и кафе в деревне.",
@@ -157,20 +231,32 @@
     ],
     "bestTime": "Утро",
     "sources": [
-      { "title": "Sanya Tourism Board — «Houhai Village»", "url": "https://www.visitsanya.com/destination/houhai-village" }
+      {
+        "title": "Sanya Tourism Board — «Houhai Village»",
+        "url": "https://www.visitsanya.com/destination/houhai-village"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "luhuitou-sunset-evening",
     "status": "verified",
-    "title": { "ru": "Закат на Лухуйтоу и вечер в Дадунхае", "zh": "鹿回头风景区 · 大东海" },
+    "title": {
+      "ru": "Закат на Лухуйтоу и вечер в Дадунхае",
+      "zh": "鹿回头风景区 · 大东海"
+    },
     "summary": "Лёгкий вечерний выезд в город: холм с видом сразу на три бухты и прогулка у моря в Дадунхае.",
     "format": "evening",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "placeIds": ["luhuitou-park", "dadonghai-beach"],
+    "placeIds": [
+      "luhuitou-park",
+      "dadonghai-beach"
+    ],
     "whatToSee": [
       "С вершины холма видно сразу три бухты — Санья Бэй, Дадунхай и Юйлинь.",
       "Скульптура оленя, обернувшегося назад, — символ легенды, от которой пошло название парка.",
@@ -188,21 +274,37 @@
     ],
     "bestTime": "Ближе к закату",
     "sources": [
-      { "title": "Sanya Tourism Board — «Luhuitou Scenic Area»", "url": "https://www.visitsanya.com/destination/luhuitou-park" },
-      { "title": "Sanya Tourism Board — «Dadonghai»", "url": "https://www.visitsanya.com/destination/dadonghai" }
+      {
+        "title": "Sanya Tourism Board — «Luhuitou Scenic Area»",
+        "url": "https://www.visitsanya.com/destination/luhuitou-park"
+      },
+      {
+        "title": "Sanya Tourism Board — «Dadonghai»",
+        "url": "https://www.visitsanya.com/destination/dadonghai"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "sanya-bay-sunset-first-market",
     "status": "verified",
-    "title": { "ru": "Закат на Кокосовой аллее и вечер у Первого рынка", "zh": "三亚湾 · 第一市场" },
+    "title": {
+      "ru": "Закат на Кокосовой аллее и вечер у Первого рынка",
+      "zh": "三亚湾 · 第一市场"
+    },
     "summary": "Спокойный городской вечер без дальней дороги: закат над бухтой Санья Бэй с набережной, затем ужин и местная жизнь у Первого рынка.",
     "format": "evening",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "low",
     "setting": "outdoor",
-    "placeIds": ["sanya-bay-beach", "sanya-first-market", "egret-park"],
+    "placeIds": [
+      "sanya-bay-beach",
+      "sanya-first-market",
+      "egret-park"
+    ],
     "whatToSee": [
       "Закат над бухтой Санья Бэй с набережной Кокосовой аллеи — пальмы тянутся вдоль моря на многие километры.",
       "Первый рынок: днём продуктовый рынок, вечером — место, куда идут ужинать; вокруг — лавки, где готовят купленные на рынке морепродукты, и недорогие закусочные.",
@@ -222,23 +324,44 @@
     ],
     "bestTime": "Ближе к закату",
     "sources": [
-      { "title": "Sanya Tourism Board — «Sanya Bay»", "url": "https://www.visitsanya.com/destination/sanya-bay" },
-      { "title": "Sanya Tourism Board — «First Market Night Market»", "url": "https://www.visitsanya.com/destination/first-market-night-market" },
-      { "title": "Sanya Tourism Board — «Egret Park»", "url": "https://www.visitsanya.com/destination/egret-park" }
+      {
+        "title": "Sanya Tourism Board — «Sanya Bay»",
+        "url": "https://www.visitsanya.com/destination/sanya-bay"
+      },
+      {
+        "title": "Sanya Tourism Board — «First Market Night Market»",
+        "url": "https://www.visitsanya.com/destination/first-market-night-market"
+      },
+      {
+        "title": "Sanya Tourism Board — «Egret Park»",
+        "url": "https://www.visitsanya.com/destination/egret-park"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "haitang-indoor-rainy-day",
     "status": "verified",
-    "title": { "ru": "Дождь или жара: аквариум Atlantis и CDF в Хайтане", "zh": "亚特兰蒂斯失落的空间水族馆 · 三亚国际免税城" },
+    "title": {
+      "ru": "Дождь или жара: аквариум Atlantis и CDF в Хайтане",
+      "zh": "亚特兰蒂斯失落的空间水族馆 · 三亚国际免税城"
+    },
     "summary": "Полдня под крышей, когда для пляжа идёт дождь или слишком жарко: аквариум с подводным тоннелем и большой комплекс беспошлинной торговли в бухте Хайтан — около 2 км друг от друга.",
     "format": "half-day",
-    "durationHours": [3, 6],
+    "durationHours": [
+      3,
+      6
+    ],
     "effort": "low",
     "setting": "indoor",
-    "tags": ["rain", "kids"],
-    "placeIds": ["atlantis-sanya-aquarium", "cdf-duty-free-city"],
+    "tags": [
+      "rain",
+      "kids"
+    ],
+    "placeIds": [
+      "atlantis-sanya-aquarium",
+      "cdf-duty-free-city"
+    ],
     "whatToSee": [
       "Аквариум «Затерянные покои» в комплексе Atlantis: сотни морских обитателей, большой аквариум с акулами, подводный тоннель и экспозиция кораллового рифа.",
       "Акулы, которые проплывают над головой, — через прозрачные панели тоннеля.",
@@ -256,23 +379,42 @@
     ],
     "bestTime": "Дождливый или жаркий день",
     "sources": [
-      { "title": "Sanya Tourism Board — «Atlantis Sanya»", "url": "https://www.visitsanya.com/destination/atlantis-sanya" },
-      { "title": "Sanya Tourism Board — «Sanya International Duty Free Shopping Complex»", "url": "https://www.visitsanya.com/destination/cdf-sanya-international-duty-free-city" },
-      { "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (рестораны во второй очереди CDF: 三亚国际免税城2期 L1-42, L229, L232)", "url": "https://m.sohu.com/a/1043892361_121106994" }
+      {
+        "title": "Sanya Tourism Board — «Atlantis Sanya»",
+        "url": "https://www.visitsanya.com/destination/atlantis-sanya"
+      },
+      {
+        "title": "Sanya Tourism Board — «Sanya International Duty Free Shopping Complex»",
+        "url": "https://www.visitsanya.com/destination/cdf-sanya-international-duty-free-city"
+      },
+      {
+        "title": "三亚市商务局 — список ресторанов Азиатских пляжных игр, 30.06.2026 (рестораны во второй очереди CDF: 三亚国际免税城2期 L1-42, L229, L232)",
+        "url": "https://m.sohu.com/a/1043892361_121106994"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "yanoda-rainforest",
     "status": "verified",
-    "title": { "ru": "Янода: тропический лес", "zh": "呀诺达雨林文化旅游区" },
+    "title": {
+      "ru": "Янода: тропический лес",
+      "zh": "呀诺达雨林文化旅游区"
+    },
     "summary": "Выезд в тропический лес в соседнем уезде Баотин: деревянные тропы и подвесные мосты среди огромных баньянов, долина водопадов и активные развлечения.",
     "format": "full-day",
-    "durationHours": [3, 5],
+    "durationHours": [
+      3,
+      5
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "tags": ["kids"],
-    "placeIds": [],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "yanoda-rainforest-park"
+    ],
     "whatToSee": [
       "Долина тропического леса (雨林谷): тропа из деревянных настилов, каменных ступеней и подвесных мостов длиной 3,5 км — есть большой, средний и малый круговые маршруты.",
       "Огромные баньяны, грибы линчжи, анчар и сахарные пальмы.",
@@ -292,24 +434,46 @@
     ],
     "bestTime": "С утра",
     "sources": [
-      { "title": "Официальный сайт — «海南呀诺达雨林文化旅游区»", "url": "https://www.yanoda.com/" },
-      { "title": "Официальный сайт — «乐游呀诺达 · 旅游攻略»", "url": "https://www.yanoda.com/enjoy/strategy/731778302812880896" },
-      { "title": "海口本地宝 — «海南呀诺达雨林文化旅游区游玩指南»", "url": "https://m.haikou.bendibao.com/tour/65304.shtm" },
-      { "title": "TravelChinaGuide — «Yanoda Rainforest Cultural Tourism Zone»", "url": "https://www.travelchinaguide.com/attraction/hainan/sanya/yanoda-rainforest.htm" }
+      {
+        "title": "Официальный сайт — «海南呀诺达雨林文化旅游区»",
+        "url": "https://www.yanoda.com/"
+      },
+      {
+        "title": "Официальный сайт — «乐游呀诺达 · 旅游攻略»",
+        "url": "https://www.yanoda.com/enjoy/strategy/731778302812880896"
+      },
+      {
+        "title": "海口本地宝 — «海南呀诺达雨林文化旅游区游玩指南»",
+        "url": "https://m.haikou.bendibao.com/tour/65304.shtm"
+      },
+      {
+        "title": "TravelChinaGuide — «Yanoda Rainforest Cultural Tourism Zone»",
+        "url": "https://www.travelchinaguide.com/attraction/hainan/sanya/yanoda-rainforest.htm"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "binglanggu-li-miao",
     "status": "verified",
-    "title": { "ru": "Бинлангу: культура народов Ли и Мяо", "zh": "槟榔谷黎苗文化旅游区" },
+    "title": {
+      "ru": "Бинлангу: культура народов Ли и Мяо",
+      "zh": "槟榔谷黎苗文化旅游区"
+    },
     "summary": "Культурный выезд в долину арековых пальм в уезде Баотин: традиционные дома, ремёсла и представления народов Ли и Мяо.",
     "format": "half-day",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "low",
     "setting": "mixed",
-    "tags": ["kids"],
-    "placeIds": [],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "binglanggu-heritage-park"
+    ],
     "whatToSee": [
       "Традиционные жилища народа Ли: дома в форме лодки и бамбуковые дома.",
       "Ремёсла: лийская парча, керамика, прядение и ткачество — есть возможность попробовать самому.",
@@ -327,23 +491,42 @@
     ],
     "bestTime": "Первая половина дня",
     "sources": [
-      { "title": "Sanya Tourism Board — «Bing Lang Gu»", "url": "https://www.visitsanya.com/destination/binglanggu-li-miao-cultural-heritage-park" },
-      { "title": "Sanya Tourism Board — «Echoes Between Mountains and Sea: A Cultural Chronicle of the Li and Miao in Sanya (Part I)»", "url": "https://www.visitsanya.com/26914.html" },
-      { "title": "海口本地宝 — «海南槟榔谷黎苗文化旅游区游玩指南»", "url": "https://m.haikou.bendibao.com/tour/65300.shtm" }
+      {
+        "title": "Sanya Tourism Board — «Bing Lang Gu»",
+        "url": "https://www.visitsanya.com/destination/binglanggu-li-miao-cultural-heritage-park"
+      },
+      {
+        "title": "Sanya Tourism Board — «Echoes Between Mountains and Sea: A Cultural Chronicle of the Li and Miao in Sanya (Part I)»",
+        "url": "https://www.visitsanya.com/26914.html"
+      },
+      {
+        "title": "海口本地宝 — «海南槟榔谷黎苗文化旅游区游玩指南»",
+        "url": "https://m.haikou.bendibao.com/tour/65300.shtm"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "nanwan-monkey-island",
     "status": "verified",
-    "title": { "ru": "Остров обезьян (Наньвань)", "zh": "南湾猴岛" },
+    "title": {
+      "ru": "Остров обезьян (Наньвань)",
+      "zh": "南湾猴岛"
+    },
     "summary": "Выезд в уезд Линшуй на полуостров Наньвань — единственный в Китае заповедник макак на тропическом острове. Туда едут по канатной дороге над морем или на пароме.",
     "format": "half-day",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "tags": ["kids"],
-    "placeIds": [],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "nanwan-monkey-island-park"
+    ],
     "whatToSee": [
       "Канатная дорога над морем длиной более 2 км — одна из самых длинных в Китае.",
       "Около 1500 диких макак — охраняемый в Китае вид.",
@@ -362,22 +545,39 @@
     ],
     "bestTime": "С утра — меньше очередей",
     "sources": [
-      { "title": "Официальный сайт — «南湾猴岛 · 景区简介»", "url": "http://www.monkeyisland.com.cn/cn/scenicoverview" },
-      { "title": "海口本地宝 — «海南陵水南湾猴岛景区官方游玩指南»", "url": "https://m.haikou.bendibao.com/tour/70478.shtm" },
-      { "title": "TravelChinaGuide — «Nanwan Monkey Island»", "url": "https://www.travelchinaguide.com/attraction/hainan/sanya/monkey_island.htm" }
+      {
+        "title": "Официальный сайт — «南湾猴岛 · 景区简介»",
+        "url": "http://www.monkeyisland.com.cn/cn/scenicoverview"
+      },
+      {
+        "title": "海口本地宝 — «海南陵水南湾猴岛景区官方游玩指南»",
+        "url": "https://m.haikou.bendibao.com/tour/70478.shtm"
+      },
+      {
+        "title": "TravelChinaGuide — «Nanwan Monkey Island»",
+        "url": "https://www.travelchinaguide.com/attraction/hainan/sanya/monkey_island.htm"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "daxiaodongtian",
     "status": "verified",
-    "title": { "ru": "Дасяодунтянь: даосский парк на скалистом берегу", "zh": "大小洞天景区" },
+    "title": {
+      "ru": "Дасяодунтянь: даосский парк на скалистом берегу",
+      "zh": "大小洞天景区"
+    },
     "summary": "Парк морских скал и даосской культуры в районе Ячжоу, на той же западной дороге, что и Наньшань.",
     "format": "half-day",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "placeIds": ["daxiaodongtian-scenic-area"],
+    "placeIds": [
+      "daxiaodongtian-scenic-area"
+    ],
     "whatToSee": [
       "Берег из огромных округлых валунов и морских ниш; у скал слышен только прибой.",
       "Экспозиция о даосской теме «дунтянь фуди» — «гроты-небеса и благословенная земля».",
@@ -398,21 +598,36 @@
     ],
     "bestTime": "Первая половина дня",
     "sources": [
-      { "title": "Sanya Tourism Board — «Sanya Dongtian Park Tourism Area»", "url": "https://www.visitsanya.com/destination/da-xiao-dong-tian-scenic-area" },
-      { "title": "三亚市旅游发展局 — «大小洞天景区» (адрес, часы 08:30–17:30, телефоны)", "url": "https://www.visitsanya.com/zh/destination/%E5%A4%A7%E5%B0%8F%E6%B4%9E%E5%A4%A9%E6%99%AF%E5%8C%BA" }
+      {
+        "title": "Sanya Tourism Board — «Sanya Dongtian Park Tourism Area»",
+        "url": "https://www.visitsanya.com/destination/da-xiao-dong-tian-scenic-area"
+      },
+      {
+        "title": "三亚市旅游发展局 — «大小洞天景区» (адрес, часы 08:30–17:30, телефоны)",
+        "url": "https://www.visitsanya.com/zh/destination/%E5%A4%A7%E5%B0%8F%E6%B4%9E%E5%A4%A9%E6%99%AF%E5%8C%BA"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "yazhou-ancient-city-day",
     "status": "verified",
-    "title": { "ru": "Ячжоу: древний город и скалы Дасяодунтянь", "zh": "崖州古城 · 大小洞天" },
+    "title": {
+      "ru": "Ячжоу: древний город и скалы Дасяодунтянь",
+      "zh": "崖州古城 · 大小洞天"
+    },
     "summary": "Целый день на западе округа для тех, кто уже видел главные пляжи: старейший уездный город Хайнаня и берег из валунов с даосскими «гротами-небесами».",
     "format": "full-day",
-    "durationHours": [5, 8],
+    "durationHours": [
+      5,
+      8
+    ],
     "effort": "medium",
     "setting": "mixed",
-    "placeIds": ["yazhou-ancient-city", "daxiaodongtian-scenic-area"],
+    "placeIds": [
+      "yazhou-ancient-city",
+      "daxiaodongtian-scenic-area"
+    ],
     "whatToSee": [
       "Старый город Ячжоу: остатки городских стен, узкие переулки, колодцы и каменные мостовые в планировке эпох Сун и Мин.",
       "Ворота Вэньминмэнь, храм Конфуция Ячжоу и храм городского бога — вместе они показывают устройство традиционного уездного центра.",
@@ -433,21 +648,36 @@
     ],
     "bestTime": "Первая половина дня — из-за раннего закрытия Дасяодунтянь",
     "sources": [
-      { "title": "Sanya Tourism Board — «Yazhou Ancient City»", "url": "https://www.visitsanya.com/destination/yazhou-ancient-city-yacheng-ancient-town" },
-      { "title": "Sanya Tourism Board — «Sanya Dongtian Park Tourism Area»", "url": "https://www.visitsanya.com/destination/da-xiao-dong-tian-scenic-area" }
+      {
+        "title": "Sanya Tourism Board — «Yazhou Ancient City»",
+        "url": "https://www.visitsanya.com/destination/yazhou-ancient-city-yacheng-ancient-town"
+      },
+      {
+        "title": "Sanya Tourism Board — «Sanya Dongtian Park Tourism Area»",
+        "url": "https://www.visitsanya.com/destination/da-xiao-dong-tian-scenic-area"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "city-two-hills-day",
     "status": "verified",
-    "title": { "ru": "Две городские горы: Линьчуньлин и Фэнхуанлин", "zh": "临春岭森林公园 · 凤凰岭海誓山盟景区" },
+    "title": {
+      "ru": "Две городские горы: Линьчуньлин и Фэнхуанлин",
+      "zh": "临春岭森林公园 · 凤凰岭海誓山盟景区"
+    },
     "summary": "Целый день на природе, не выезжая из Саньи: утром бесплатный лесопарк с подъёмом пешком, к вечеру — канатная дорога на смотровую гору и закат над четырьмя бухтами.",
     "format": "full-day",
-    "durationHours": [5, 8],
+    "durationHours": [
+      5,
+      8
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "placeIds": ["linchunling-forest-park", "fenghuangling-scenic-area"],
+    "placeIds": [
+      "linchunling-forest-park",
+      "fenghuangling-scenic-area"
+    ],
     "whatToSee": [
       "Линьчуньлин: городской лесопарк с дорожками в гору и видами на город и бухты.",
       "Фэнхуанлин: подъём на канатной дороге около 10 минут — идти в гору не нужно.",
@@ -468,23 +698,42 @@
     ],
     "bestTime": "Вторая половина дня с расчётом быть на Фэнхуанлин к закату",
     "sources": [
-      { "title": "Sanya Tourism Board — «Linchunling Forest Park»", "url": "https://www.visitsanya.com/destination/linchunling-forest-park" },
-      { "title": "Sanya Tourism Board — «Sanya Fenghuang Hill Pledge of Love Scenic Area»", "url": "https://www.visitsanya.com/destination/phoenix-hill" },
-      { "title": "海口本地宝 — «三亚凤凰岭海誓山盟景区游玩攻略» (независимое подтверждение часов и маршрута по вершине)", "url": "http://haikou.bendibao.com/tour/20241210/70443.shtm" }
+      {
+        "title": "Sanya Tourism Board — «Linchunling Forest Park»",
+        "url": "https://www.visitsanya.com/destination/linchunling-forest-park"
+      },
+      {
+        "title": "Sanya Tourism Board — «Sanya Fenghuang Hill Pledge of Love Scenic Area»",
+        "url": "https://www.visitsanya.com/destination/phoenix-hill"
+      },
+      {
+        "title": "海口本地宝 — «三亚凤凰岭海誓山盟景区游玩攻略» (независимое подтверждение часов и маршрута по вершине)",
+        "url": "http://haikou.bendibao.com/tour/20241210/70443.shtm"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "fenghuangling-sunset-night",
     "status": "verified",
-    "title": { "ru": "Фэнхуанлин: закат и световой лес", "zh": "凤凰岭海誓山盟景区" },
+    "title": {
+      "ru": "Фэнхуанлин: закат и световой лес",
+      "zh": "凤凰岭海誓山盟景区"
+    },
     "summary": "Вечер без выезда из города: канатная дорога на гору в центре Саньи, закат над четырьмя бухтами и световое шоу в лесу — парк работает до 23:00.",
     "format": "evening",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "tags": ["kids"],
-    "placeIds": ["fenghuangling-scenic-area"],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "fenghuangling-scenic-area"
+    ],
     "whatToSee": [
       "Подъём на канатной дороге, около 10 минут в одну сторону, над тропическим лесом.",
       "Панорама четырёх бухт и всего города с высоты около 400 м.",
@@ -506,21 +755,36 @@
     ],
     "bestTime": "За 1,5–2 часа до заката",
     "sources": [
-      { "title": "Sanya Tourism Board — «Sanya Fenghuang Hill Pledge of Love Scenic Area»", "url": "https://www.visitsanya.com/destination/phoenix-hill" },
-      { "title": "海口本地宝 — «三亚凤凰岭海誓山盟景区游玩攻略» (независимое подтверждение часов и маршрута по вершине)", "url": "http://haikou.bendibao.com/tour/20241210/70443.shtm" }
+      {
+        "title": "Sanya Tourism Board — «Sanya Fenghuang Hill Pledge of Love Scenic Area»",
+        "url": "https://www.visitsanya.com/destination/phoenix-hill"
+      },
+      {
+        "title": "海口本地宝 — «三亚凤凰岭海誓山盟景区游玩攻略» (независимое подтверждение часов и маршрута по вершине)",
+        "url": "http://haikou.bendibao.com/tour/20241210/70443.shtm"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "tianya-haijiao-blue-town",
     "status": "verified",
-    "title": { "ru": "Тяньяхайцзяо и бело-синий городок", "zh": "天涯海角 · 天涯小镇" },
+    "title": {
+      "ru": "Тяньяхайцзяо и бело-синий городок",
+      "zh": "天涯海角 · 天涯小镇"
+    },
     "summary": "Полдня на западном берегу: камни «края неба и угла моря», а рядом — рыбацкий поселок, целиком выкрашенный в белый и синий, с улицами к морю и закатом.",
     "format": "half-day",
-    "durationHours": [3, 5],
+    "durationHours": [
+      3,
+      5
+    ],
     "effort": "low",
     "setting": "outdoor",
-    "placeIds": ["tianya-haijiao", "tianya-town"],
+    "placeIds": [
+      "tianya-haijiao",
+      "tianya-town"
+    ],
     "whatToSee": [
       "Прибрежные валуны с надписями «Тянья», «Хайцзяо» и высокий камень «Наньтянь Ичжу».",
       "Плоская набережная вдоль моря, удобная для колясок.",
@@ -541,21 +805,36 @@
     ],
     "bestTime": "Со второй половины дня и до заката",
     "sources": [
-      { "title": "Sanya Tourism Board — «Tianya Haijiao»", "url": "https://www.visitsanya.com/destination/tianya-haijiao" },
-      { "title": "Sanya Tourism Board — «Tianya Town»", "url": "https://www.visitsanya.com/destination/tianya-town" }
+      {
+        "title": "Sanya Tourism Board — «Tianya Haijiao»",
+        "url": "https://www.visitsanya.com/destination/tianya-haijiao"
+      },
+      {
+        "title": "Sanya Tourism Board — «Tianya Town»",
+        "url": "https://www.visitsanya.com/destination/tianya-town"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "city-night-market-evening",
     "status": "verified",
-    "title": { "ru": "Вечер на городских рынках: Ганхуа и Первый рынок", "zh": "港华夜市 · 第一市场" },
+    "title": {
+      "ru": "Вечер на городских рынках: Ганхуа и Первый рынок",
+      "zh": "港华夜市 · 第一市场"
+    },
     "summary": "Вечер местной еды без выезда за город: рынок Ганхуа внутри жилого квартала, где выросли несколько поколений горожан, и Первый рынок в километре от него.",
     "format": "evening",
-    "durationHours": [2, 3],
+    "durationHours": [
+      2,
+      3
+    ],
     "effort": "low",
     "setting": "mixed",
-    "placeIds": ["ganghua-night-market", "sanya-first-market"],
+    "placeIds": [
+      "ganghua-night-market",
+      "sanya-first-market"
+    ],
     "whatToSee": [
       "Рынок Ганхуа: барбекю, «чжачжа» (местные фритюрные шпажки), лувэй и десятки видов уличных закусок на небольшой площади.",
       "Фруктовая улица внутри Ганхуа — сезонные тропические фрукты заметно дешевле, чем в туристических зонах.",
@@ -577,23 +856,43 @@
     ],
     "bestTime": "После 19:00",
     "sources": [
-      { "title": "三亚市旅游发展局 — «三亚夜市» (港华夜市: состав еды, адрес 商品街一巷16号)", "url": "https://www.visitsanya.com/zh/destination/%E4%B8%89%E4%BA%9A%E5%A4%9C%E5%B8%82" },
-      { "title": "Sanya Tourism Board — «First Market Night Market»", "url": "https://www.visitsanya.com/destination/first-market-night-market" },
-      { "title": "Sanya Tourism Board — «Seafood Consumption Tips» (правила цены, взвешивания и защиты прав)", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/seafood-consumption-tips" }
+      {
+        "title": "三亚市旅游发展局 — «三亚夜市» (港华夜市: состав еды, адрес 商品街一巷16号)",
+        "url": "https://www.visitsanya.com/zh/destination/%E4%B8%89%E4%BA%9A%E5%A4%9C%E5%B8%82"
+      },
+      {
+        "title": "Sanya Tourism Board — «First Market Night Market»",
+        "url": "https://www.visitsanya.com/destination/first-market-night-market"
+      },
+      {
+        "title": "Sanya Tourism Board — «Seafood Consumption Tips» (правила цены, взвешивания и защиты прав)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/seafood-consumption-tips"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "haitang-evening-linwang",
     "status": "verified",
-    "title": { "ru": "Вечер в Хайтане: экопарк и рынок Линван", "zh": "海棠河生态公园 · 林旺夜市" },
+    "title": {
+      "ru": "Вечер в Хайтане: экопарк и рынок Линван",
+      "zh": "海棠河生态公园 · 林旺夜市"
+    },
     "summary": "Вечер в бухте Хайтан за пределами отелей: прогулка по экопарку вдоль реки, потом единственный в бухте уличный рынок еды.",
     "format": "evening",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "low",
     "setting": "outdoor",
-    "tags": ["kids"],
-    "placeIds": ["haitang-river-eco-park", "linwang-night-market"],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "haitang-river-eco-park",
+      "linwang-night-market"
+    ],
     "whatToSee": [
       "Экотропы вдоль реки Хайтан через водно-болотные участки; по официальному описанию здесь живут больше 20 видов птиц.",
       "Четыре детские площадки на темы лийской культуры — лийская парча, рис, лодочный док и «Шаси».",
@@ -614,22 +913,39 @@
     ],
     "bestTime": "С 17:00 и до темноты, дальше — рынок",
     "sources": [
-      { "title": "Sanya Tourism Board — «Haitang River Ecological Park»", "url": "https://www.visitsanya.com/destination/haitang-river-ecological-park" },
-      { "title": "Sanya Tourism Board — «Haitang Bay» (рынки и старая улица Линван в бухте)", "url": "https://www.visitsanya.com/destination/haitang-bay" }
+      {
+        "title": "Sanya Tourism Board — «Haitang River Ecological Park»",
+        "url": "https://www.visitsanya.com/destination/haitang-river-ecological-park"
+      },
+      {
+        "title": "Sanya Tourism Board — «Haitang Bay» (рынки и старая улица Линван в бухте)",
+        "url": "https://www.visitsanya.com/destination/haitang-bay"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "haitang-kids-day",
     "status": "verified",
-    "title": { "ru": "Хайтан с детьми: экопарк и «Город мечты»", "zh": "海棠河生态公园 · 海昌梦幻不夜城" },
+    "title": {
+      "ru": "Хайтан с детьми: экопарк и «Город мечты»",
+      "zh": "海棠河生态公园 · 海昌梦幻不夜城"
+    },
     "summary": "Полдня с детьми в бухте Хайтан: сначала бесплатные тематические площадки в экопарке вдоль реки, потом развлекательный комплекс «Хайчан».",
     "format": "half-day",
-    "durationHours": [4, 6],
+    "durationHours": [
+      4,
+      6
+    ],
     "effort": "low",
     "setting": "mixed",
-    "tags": ["kids"],
-    "placeIds": ["haitang-river-eco-park", "haichang-fantasy-town"],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "haitang-river-eco-park",
+      "haichang-fantasy-town"
+    ],
     "whatToSee": [
       "Горки в виде рисовых колосьев, лазалки по мотивам лийской парчи и туннель из вулканического камня в экопарке.",
       "Скейт-площадка, футбольное поле и велодорожка вдоль реки.",
@@ -649,22 +965,39 @@
     ],
     "bestTime": "Утро в парке, вторая половина дня и вечер в «Хайчане»",
     "sources": [
-      { "title": "Sanya Tourism Board — «Haitang River Ecological Park»", "url": "https://www.visitsanya.com/destination/haitang-river-ecological-park" },
-      { "title": "Sanya Tourism Board — «Haichang Fantasy Town»", "url": "https://www.visitsanya.com/destination/haichang-fantasy-town" }
+      {
+        "title": "Sanya Tourism Board — «Haitang River Ecological Park»",
+        "url": "https://www.visitsanya.com/destination/haitang-river-ecological-park"
+      },
+      {
+        "title": "Sanya Tourism Board — «Haichang Fantasy Town»",
+        "url": "https://www.visitsanya.com/destination/haichang-fantasy-town"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "yingbin-road-duty-free",
     "status": "verified",
-    "title": { "ru": "Проспект Инбинь: беспошлинный комплекс и Joy City", "zh": "海旅免税城 · 三亚大悦城" },
+    "title": {
+      "ru": "Проспект Инбинь: беспошлинный комплекс и Joy City",
+      "zh": "海旅免税城 · 三亚大悦城"
+    },
     "summary": "Полдня покупок под крышей без поездки в Хайтан: беспошлинный комплекс «Хайлюй» и торговый центр Joy City на одном проспекте.",
     "format": "half-day",
-    "durationHours": [3, 5],
+    "durationHours": [
+      3,
+      5
+    ],
     "effort": "low",
     "setting": "indoor",
-    "tags": ["rain"],
-    "placeIds": ["htdf-hainan-tourism-duty-free", "sanya-joy-city"],
+    "tags": [
+      "rain"
+    ],
+    "placeIds": [
+      "htdf-hainan-tourism-duty-free",
+      "sanya-joy-city"
+    ],
     "whatToSee": [
       "«Хайлюй» — беспошлинный комплекс около 95 000 м² с примерно тысячей брендов, второй в городе после CDF в Хайтане.",
       "Joy City — торговый центр с обычными сетевыми магазинами, кафе и фудкортом.",
@@ -684,23 +1017,44 @@
     ],
     "bestTime": "В дождь или в самую жару",
     "sources": [
-      { "title": "Sanya Tourism Board — «Hainan Tourism Duty Free Shopping Complex»", "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/tax-free-shopping/htdf-sanya-duty-free" },
-      { "title": "Sanya Tourism Board — «Sanya Joy City»", "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/sanya-joy-city" },
-      { "title": "Госсовет КНР (gov.cn) — «关于调整海南离岛旅客免税购物政策的公告» (лимит, возраст, получение товара)", "url": "https://www.gov.cn/zhengce/zhengceku/202510/content_7044760.htm" }
+      {
+        "title": "Sanya Tourism Board — «Hainan Tourism Duty Free Shopping Complex»",
+        "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/tax-free-shopping/htdf-sanya-duty-free"
+      },
+      {
+        "title": "Sanya Tourism Board — «Sanya Joy City»",
+        "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/sanya-joy-city"
+      },
+      {
+        "title": "Госсовет КНР (gov.cn) — «关于调整海南离岛旅客免税购物政策的公告» (лимит, возраст, получение товара)",
+        "url": "https://www.gov.cn/zhengce/zhengceku/202510/content_7044760.htm"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "dadonghai-indoor-day",
     "status": "verified",
-    "title": { "ru": "Дадунхай под крышей: «Большой ананас» и «Сяжи»", "zh": "1号港湾城 · 夏日百货" },
+    "title": {
+      "ru": "Дадунхай под крышей: «Большой ананас» и «Сяжи»",
+      "zh": "1号港湾城 · 夏日百货"
+    },
     "summary": "Полдня в Дадунхае, когда идёт дождь или слишком жарко: комплекс «Большой ананас» с кинотеатром IMAX и торговый центр «Сяжи» в 600 м от него.",
     "format": "half-day",
-    "durationHours": [3, 5],
+    "durationHours": [
+      3,
+      5
+    ],
     "effort": "low",
     "setting": "indoor",
-    "tags": ["rain", "kids"],
-    "placeIds": ["no1-harbour-city-dadonghai", "sanya-summer-mall-dadonghai"],
+    "tags": [
+      "rain",
+      "kids"
+    ],
+    "placeIds": [
+      "no1-harbour-city-dadonghai",
+      "sanya-summer-mall-dadonghai"
+    ],
     "whatToSee": [
       "«Большой ананас»: кинотеатр IMAX, большой супермаркет, рестораны и детские развивающие зоны.",
       "Узнаваемая архитектура комплекса в форме ананаса — популярная городская точка для фото.",
@@ -721,21 +1075,37 @@
     ],
     "bestTime": "В дождь или с 10:00 до 16:00 в жару",
     "sources": [
-      { "title": "Sanya Tourism Board — «No.1 HARBOUR CITY (Big Pineapple Shopping Mall)»", "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/no-1-harbour-city-big-pineapple-shopping-mall" },
-      { "title": "Sanya Tourism Board — «Sanya Summer Mall»", "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/summer-department-store" }
+      {
+        "title": "Sanya Tourism Board — «No.1 HARBOUR CITY (Big Pineapple Shopping Mall)»",
+        "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/no-1-harbour-city-big-pineapple-shopping-mall"
+      },
+      {
+        "title": "Sanya Tourism Board — «Sanya Summer Mall»",
+        "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/summer-department-store"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "city-parks-recovery-day",
     "status": "verified",
-    "title": { "ru": "День без нагрузки: городские парки Саньи", "zh": "白鹭公园 · 东岸湿地公园 · 金鸡岭桥头公园" },
+    "title": {
+      "ru": "День без нагрузки: городские парки Саньи",
+      "zh": "白鹭公园 · 东岸湿地公园 · 金鸡岭桥头公园"
+    },
     "summary": "Сценарий на день после тяжёлого выезда: три бесплатных городских парка без билетов, очередей и подъёмов — можно взять один, два или все три.",
     "format": "half-day",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "low",
     "setting": "outdoor",
-    "placeIds": ["egret-park", "dongan-wetland-park", "jinjiling-bridgehead-park"],
+    "placeIds": [
+      "egret-park",
+      "dongan-wetland-park",
+      "jinjiling-bridgehead-park"
+    ],
     "whatToSee": [
       "Парк Белой цапли у реки в центре города — открыт круглосуточно.",
       "Парк Дунань: протоки, луга, помосты у воды и велодорожка в жилых кварталах.",
@@ -756,23 +1126,43 @@
     ],
     "bestTime": "До 09:00 или после 17:00",
     "sources": [
-      { "title": "Sanya Tourism Board — «Egret Park»", "url": "https://www.visitsanya.com/destination/egret-park" },
-      { "title": "Sanya Tourism Board — «East Bank Wetland Park»", "url": "https://www.visitsanya.com/destination/east-bank-wetland-park" },
-      { "title": "Sanya Tourism Board — «Jinjiling Bridgehead Park»", "url": "https://www.visitsanya.com/destination/jinjiling-bridgehead-park" }
+      {
+        "title": "Sanya Tourism Board — «Egret Park»",
+        "url": "https://www.visitsanya.com/destination/egret-park"
+      },
+      {
+        "title": "Sanya Tourism Board — «East Bank Wetland Park»",
+        "url": "https://www.visitsanya.com/destination/east-bank-wetland-park"
+      },
+      {
+        "title": "Sanya Tourism Board — «Jinjiling Bridgehead Park»",
+        "url": "https://www.visitsanya.com/destination/jinjiling-bridgehead-park"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "yalong-bay-rainy-day",
     "status": "verified",
-    "title": { "ru": "Ялунвань в дождь: «Подводный мир» и аутлет", "zh": "亚龙湾海底世界 · 亚龙湾壹号小镇奥特莱斯" },
+    "title": {
+      "ru": "Ялунвань в дождь: «Подводный мир» и аутлет",
+      "zh": "亚龙湾海底世界 · 亚龙湾壹号小镇奥特莱斯"
+    },
     "summary": "Полдня в Ялунване, когда купаться нельзя: морской парк «Подводный мир» и единственный в бухте аутлет — без выезда в город.",
     "format": "half-day",
-    "durationHours": [3, 5],
+    "durationHours": [
+      3,
+      5
+    ],
     "effort": "low",
     "setting": "mixed",
-    "tags": ["rain"],
-    "placeIds": ["yalong-bay-underwater-world", "yalong-bay-no1-town-outlets"],
+    "tags": [
+      "rain"
+    ],
+    "placeIds": [
+      "yalong-bay-underwater-world",
+      "yalong-bay-no1-town-outlets"
+    ],
     "whatToSee": [
       "«Подводный мир» Ялунваня: морская программа у самого пляжа бухты — подробности и часы в карточке места.",
       "Аутлет «Ялонг Бэй №1 Таун»: спортивные и одёжные бренды, кафе — крытая часть дня.",
@@ -791,21 +1181,36 @@
     ],
     "bestTime": "В дождь или в самые жаркие часы",
     "sources": [
-      { "title": "Sanya Tourism Board — «Yalong Bay Underwater World»", "url": "https://www.visitsanya.com/destination/yalong-bay-underwater-world" },
-      { "title": "OpenStreetMap — «亚龙湾壹号小镇·奥特莱斯»", "url": "https://www.openstreetmap.org/node/6388895585" }
+      {
+        "title": "Sanya Tourism Board — «Yalong Bay Underwater World»",
+        "url": "https://www.visitsanya.com/destination/yalong-bay-underwater-world"
+      },
+      {
+        "title": "OpenStreetMap — «亚龙湾壹号小镇·奥特莱斯»",
+        "url": "https://www.openstreetmap.org/node/6388895585"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "yalong-rose-valley-morning",
     "status": "verified",
-    "title": { "ru": "Утро в Долине роз и пляж Ялунваня", "zh": "亚龙湾玫瑰谷 · 亚龙湾" },
+    "title": {
+      "ru": "Утро в Долине роз и пляж Ялунваня",
+      "zh": "亚龙湾玫瑰谷 · 亚龙湾"
+    },
     "summary": "Полдня рядом с местом проживания: утро в цветочной долине за бухтой, вторая половина дня — на пляже Ялунваня.",
     "format": "half-day",
-    "durationHours": [3, 5],
+    "durationHours": [
+      3,
+      5
+    ],
     "effort": "low",
     "setting": "outdoor",
-    "placeIds": ["yalong-bay-rose-valley", "yalong-bay-beach"],
+    "placeIds": [
+      "yalong-bay-rose-valley",
+      "yalong-bay-beach"
+    ],
     "whatToSee": [
       "Долина роз: поля цветов в долине между горами — по официальному описанию место для прогулки и фотографий.",
       "Пляж Ялунваня: белый песок, пологий вход и прозрачность воды, которую официальный источник оценивает в 8–12 м.",
@@ -824,22 +1229,38 @@
     ],
     "bestTime": "Утро в Долине роз, после 16:00 — на пляже",
     "sources": [
-      { "title": "Sanya Tourism Board — «Yalong Bay Rose Valley Scenic Area»", "url": "https://www.visitsanya.com/destination/yalong-bay-rose-valley-scenic-area" },
-      { "title": "Sanya Tourism Board — «Yalong Bay»", "url": "https://www.visitsanya.com/destination/yalong-bay" }
+      {
+        "title": "Sanya Tourism Board — «Yalong Bay Rose Valley Scenic Area»",
+        "url": "https://www.visitsanya.com/destination/yalong-bay-rose-valley-scenic-area"
+      },
+      {
+        "title": "Sanya Tourism Board — «Yalong Bay»",
+        "url": "https://www.visitsanya.com/destination/yalong-bay"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
   {
     "id": "fenjiezhou-island-trip",
     "status": "verified",
-    "title": { "ru": "Остров Фэньцзечжоу", "zh": "分界洲岛旅游区" },
+    "title": {
+      "ru": "Остров Фэньцзечжоу",
+      "zh": "分界洲岛旅游区"
+    },
     "summary": "Второй большой островной выезд, если Улучжичжоу уже позади: остров-«граница» на стыке двух климатов Хайнаня, в 15 минутах на катере от материка.",
     "format": "full-day",
-    "durationHours": [4, 7],
+    "durationHours": [
+      4,
+      7
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "tags": ["kids"],
-    "placeIds": [],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "fenjiezhou-island"
+    ],
     "whatToSee": [
       "Остров лежит ровно на границе двух климатических зон Хайнаня — на севере может идти дождь, а на юге в это же время светит солнце; отсюда и название «остров-граница».",
       "Национальный уровень дайв-базы: вода у острова считается одной из самых удобных на Хайнане для погружений и снорклинга.",
@@ -855,27 +1276,43 @@
       "Остров в уезде Линшуй, к северо-востоку от Саньи, — это полноценный выезд на целый день, дорога в одну сторону порядка полутора часов.",
       "Билет на остров продаётся вместе с катером; переправа занимает около 15 минут.",
       "Последние катера с острова уходят вечером, но приезжать имеет смысл в первой половине дня: после 16:00 часть водных программ уже сворачивается.",
-      "Если сил на целый день нет — это плохой выбор: сократить такую поездку не получится, остров либо весь день, либо никак.",
-      "У этой экскурсии нет карточки места и экрана «Показать таксисту»: название 分界洲岛旅游区 под заголовком — то, что нужно показать водителю."
+      "Если сил на целый день нет — это плохой выбор: сократить такую поездку не получится, остров либо весь день, либо никак."
     ],
     "bestTime": "Будний день, выезд с утра; в штормовую погоду переправу закрывают",
     "sources": [
-      { "title": "海口本地宝 — «海南分界洲岛旅游区» (статус национального туристического района 5A, состав объекта, билет включает переправу, телефоны кассы)", "url": "https://m.haikou.bendibao.com/tour/70064.shtm" },
-      { "title": "海口本地宝 — «海南陵水旅游景区推荐» (расположение на границе уездов Линшуй и Ваньнин, климатическая граница, дайвинг)", "url": "https://m.haikou.bendibao.com/tour/60461.shtm" },
-      { "title": "携程攻略 — «陵水分界洲岛» (часы работы и расписание катеров: 08:30–17:30 в будни, посадка на остров и обратно)", "url": "https://gs.ctrip.com/html5/you/sight/lingshui1509/63528.html" }
+      {
+        "title": "海口本地宝 — «海南分界洲岛旅游区» (статус национального туристического района 5A, состав объекта, билет включает переправу, телефоны кассы)",
+        "url": "https://m.haikou.bendibao.com/tour/70064.shtm"
+      },
+      {
+        "title": "海口本地宝 — «海南陵水旅游景区推荐» (расположение на границе уездов Линшуй и Ваньнин, климатическая граница, дайвинг)",
+        "url": "https://m.haikou.bendibao.com/tour/60461.shtm"
+      },
+      {
+        "title": "携程攻略 — «陵水分界洲岛» (часы работы и расписание катеров: 08:30–17:30 в будни, посадка на остров и обратно)",
+        "url": "https://gs.ctrip.com/html5/you/sight/lingshui1509/63528.html"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "qixianling-rainforest-spa",
     "status": "verified",
-    "title": { "ru": "Семь фей: дождевой лес и горячие источники", "zh": "七仙岭温泉国家森林公园" },
+    "title": {
+      "ru": "Семь фей: дождевой лес и горячие источники",
+      "zh": "七仙岭温泉国家森林公园"
+    },
     "summary": "День восстановления в уезде Баотин: утром — тропа по тропическому лесу к смотровой площадке, после обеда — горячие источники под пологом леса.",
     "format": "full-day",
-    "durationHours": [4, 7],
+    "durationHours": [
+      4,
+      7
+    ],
     "effort": "medium",
     "setting": "mixed",
-    "placeIds": [],
+    "placeIds": [
+      "qixianling-national-forest-park"
+    ],
     "whatToSee": [
       "Национальный лесопарк «Цисяньлин» состоит из двух частей — термальной и лесной; именно сочетание источников и леса, а не что-то одно, делает поездку осмысленной.",
       "Лесная тропа с подъёмом: по дороге видно «цветение на старых стволах», «висячие сады» и деревья-душители — типичные явления тропического леса, которых нет в городских парках Саньи.",
@@ -891,27 +1328,43 @@
       "Баотин — соседний уезд, дорога из Саньи порядка полутора-двух часов в одну сторону. Это выезд на целый день.",
       "Порядок дня имеет значение: лес утром, пока не жарко, источники — после обеда.",
       "Купальный костюм, сменная одежда и обувь с нескользкой подошвой обязательны; на тропе пригодится репеллент.",
-      "Если хочется только источников без леса — поездка теряет смысл: ради одних купален ехать два часа не стоит.",
-      "У этой экскурсии нет карточки места и экрана «Показать таксисту»: название 七仙岭温泉国家森林公园 под заголовком — то, что нужно показать водителю."
+      "Если хочется только источников без леса — поездка теряет смысл: ради одних купален ехать два часа не стоит."
     ],
     "bestTime": "Будний день, выезд рано утром",
     "sources": [
-      { "title": "腾讯新闻 / публикация отдела пропаганды комитета КПК Баотин-Лиского-Мяоского автономного уезда — «2026年«雨林与您»保亭专属游玩攻略» (официальный маршрут «雨林温泉一日游»: 七仙岭温泉国家森林公园 + 七仙文化体育公园)", "url": "https://news.qq.com/rain/a/20260904A0B5S900" },
-      { "title": "海口本地宝 — «七仙岭温泉国家森林公园游玩指南» (состав парка: термальная и лесная зоны, тропа и смотровая площадка)", "url": "https://m.haikou.bendibao.com/tour/65310.shtm" },
-      { "title": "海口本地宝 — «保亭七仙岭温泉游玩攻略（酒店+交通+景点）» (дорога, температура источников)", "url": "https://m.haikou.bendibao.com/tour/70005.shtm" }
+      {
+        "title": "腾讯新闻 / публикация отдела пропаганды комитета КПК Баотин-Лиского-Мяоского автономного уезда — «2026年«雨林与您»保亭专属游玩攻略» (официальный маршрут «雨林温泉一日游»: 七仙岭温泉国家森林公园 + 七仙文化体育公园)",
+        "url": "https://news.qq.com/rain/a/20260904A0B5S900"
+      },
+      {
+        "title": "海口本地宝 — «七仙岭温泉国家森林公园游玩指南» (состав парка: термальная и лесная зоны, тропа и смотровая площадка)",
+        "url": "https://m.haikou.bendibao.com/tour/65310.shtm"
+      },
+      {
+        "title": "海口本地宝 — «保亭七仙岭温泉游玩攻略（酒店+交通+景点）» (дорога, температура источников)",
+        "url": "https://m.haikou.bendibao.com/tour/70005.shtm"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "lingshui-tanka-museum-day",
     "status": "verified",
-    "title": { "ru": "Музей даньцзя в Линшуе", "zh": "海南疍家博物馆" },
+    "title": {
+      "ru": "Музей даньцзя в Линшуе",
+      "zh": "海南疍家博物馆"
+    },
     "summary": "Полдня про «людей на воде»: первый в Китае музей культуры даньцзя — рыбаков, которые веками жили на лодках, — у рыбацкой гавани Синьцунь.",
     "format": "half-day",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "low",
     "setting": "indoor",
-    "tags": ["rain"],
+    "tags": [
+      "rain"
+    ],
     "placeIds": [],
     "whatToSee": [
       "Постоянная экспозиция «История и культура хайнаньских даньцзя» — о народе, который жил на лодках и до середины XX века почти не сходил на берег.",
@@ -932,23 +1385,43 @@
     ],
     "bestTime": "Вторник–воскресенье, первая половина дня",
     "sources": [
-      { "title": "海南疍家博物馆 — официальный сайт музея", "url": "https://www.tankamuseum.com/" },
-      { "title": "海南在线 — «海南疍家博物馆开放时间延长…» от 2026-07-16 (адрес 陵水黎族自治县新村镇疏港大道, часы и выходной понедельник, порядок записи онлайн и через терминал, состав экспозиций)", "url": "https://news.hainan.net/wenti/wentiliebiao/2026/07/16/4805856.shtml" },
-      { "title": "搜狐 / 新村镇 — «暑期延时开放！海南疍家博物馆…» (бесплатный вход, бесплатные экскурсии, летнее продление часов)", "url": "https://www.sohu.com/a/1050967027_121956422" }
+      {
+        "title": "海南疍家博物馆 — официальный сайт музея",
+        "url": "https://www.tankamuseum.com/"
+      },
+      {
+        "title": "海南在线 — «海南疍家博物馆开放时间延长…» от 2026-07-16 (адрес 陵水黎族自治县新村镇疏港大道, часы и выходной понедельник, порядок записи онлайн и через терминал, состав экспозиций)",
+        "url": "https://news.hainan.net/wenti/wentiliebiao/2026/07/16/4805856.shtml"
+      },
+      {
+        "title": "搜狐 / 新村镇 — «暑期延时开放！海南疍家博物馆…» (бесплатный вход, бесплатные экскурсии, летнее продление часов)",
+        "url": "https://www.sohu.com/a/1050967027_121956422"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "atlantis-water-day",
     "status": "verified",
-    "title": { "ru": "Аквапарк и океанариум «Атлантиды»", "zh": "三亚亚特兰蒂斯水世界 · 失落的空间水族馆" },
+    "title": {
+      "ru": "Аквапарк и океанариум «Атлантиды»",
+      "zh": "三亚亚特兰蒂斯水世界 · 失落的空间水族馆"
+    },
     "summary": "День на воде в Хайтане, когда море штормит или на пляже слишком жарко: большой аквапарк с горками и волновым бассейном плюс океанариум рядом.",
     "format": "half-day",
-    "durationHours": [4, 6],
+    "durationHours": [
+      4,
+      6
+    ],
     "effort": "medium",
     "setting": "outdoor",
-    "tags": ["kids"],
-    "placeIds": ["atlantis-aquaventure-waterpark", "atlantis-sanya-aquarium"],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "atlantis-aquaventure-waterpark",
+      "atlantis-sanya-aquarium"
+    ],
     "whatToSee": [
       "Аквапарк: 36 горок разной сложности, волновой бассейн с несколькими режимами волн и «быстрая река».",
       "Отдельная детская зона с мини-горками и водной крепостью — там можно оставить младших, пока старшие катаются.",
@@ -967,21 +1440,36 @@
     ],
     "bestTime": "Будний день; приезжайте к открытию — к полудню очереди на горки длиннее",
     "sources": [
-      { "title": "Atlantis Sanya — официальная страница «亚特兰蒂斯水世界» (состав аттракционов, часы, правила сопровождения детей)", "url": "https://www.atlantissanya.cn/marine-and-waterpark/aquaventure-waterpark" },
-      { "title": "海口本地宝 — «三亚亚特兰蒂斯景区游玩攻略» (адрес курорта, раздельные часы аквапарка и океанариума)", "url": "http://haikou.bendibao.com/tour/2024123/70303.shtm" }
+      {
+        "title": "Atlantis Sanya — официальная страница «亚特兰蒂斯水世界» (состав аттракционов, часы, правила сопровождения детей)",
+        "url": "https://www.atlantissanya.cn/marine-and-waterpark/aquaventure-waterpark"
+      },
+      {
+        "title": "海口本地宝 — «三亚亚特兰蒂斯景区游玩攻略» (адрес курорта, раздельные часы аквапарка и океанариума)",
+        "url": "http://haikou.bendibao.com/tour/2024123/70303.shtm"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "yalong-evening-bohou",
     "status": "verified",
-    "title": { "ru": "Вечер в Ялунване без выезда", "zh": "亚龙湾百花谷 · 博后村" },
+    "title": {
+      "ru": "Вечер в Ялунване без выезда",
+      "zh": "亚龙湾百花谷 · 博后村"
+    },
     "summary": "Вечерняя программа, которая целиком помещается в свою же бухту: торговая улица «Байхуагу» и лийская деревня Бохоу в 4 км от пляжа.",
     "format": "evening",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "low",
     "setting": "mixed",
-    "placeIds": ["yalong-bay-baihuagu", "bohou-village"],
+    "placeIds": [
+      "yalong-bay-baihuagu",
+      "bohou-village"
+    ],
     "whatToSee": [
       "«Байхуагу» — открытая торговая улица в середине бухты: магазины, кафе, супермаркет и десятки заведений под открытым небом.",
       "Деревня Бохоу — больше 70 гостевых домов, перестроенных из деревенских усадеб, каменные дорожки, росписи на стенах и дворы.",
@@ -1001,22 +1489,39 @@
     ],
     "bestTime": "После 18:00, когда спадает жара",
     "sources": [
-      { "title": "三亚市旅游发展局 — «亚龙湾» (百花谷商业街 как центр повседневной жизни курортной зоны)", "url": "https://www.visitsanya.com/zh/destination/%e4%ba%9a%e9%be%99%e6%b9%be-2" },
-      { "title": "三亚市旅游发展局 — «博后村» (70+ гостевых домов, лийская парча и керамика, озеро Айцзя, вечерняя жизнь бухты)", "url": "https://www.visitsanya.com/zh/destination/%e5%8d%9a%e5%90%8e%e6%9d%91" }
+      {
+        "title": "三亚市旅游发展局 — «亚龙湾» (百花谷商业街 как центр повседневной жизни курортной зоны)",
+        "url": "https://www.visitsanya.com/zh/destination/%e4%ba%9a%e9%be%99%e6%b9%be-2"
+      },
+      {
+        "title": "三亚市旅游发展局 — «博后村» (70+ гостевых домов, лийская парча и керамика, озеро Айцзя, вечерняя жизнь бухты)",
+        "url": "https://www.visitsanya.com/zh/destination/%e5%8d%9a%e5%90%8e%e6%9d%91"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "binglanghe-family-day",
     "status": "verified",
-    "title": { "ru": "Бинланхэ: аквапарк и парк «Шёлковый путь»", "zh": "梦幻水上乐园 · 丝路欢乐世界" },
+    "title": {
+      "ru": "Бинланхэ: аквапарк и парк «Шёлковый путь»",
+      "zh": "梦幻水上乐园 · 丝路欢乐世界"
+    },
     "summary": "Выезд за город в долину реки Бинланхэ: во второй половине дня — аквапарк, вечером — тематический парк с подсветкой и уличными шоу.",
     "format": "half-day",
-    "durationHours": [4, 6],
+    "durationHours": [
+      4,
+      6
+    ],
     "effort": "low",
     "setting": "outdoor",
-    "tags": ["kids"],
-    "placeIds": ["sanya-dream-water-park", "silk-road-paradise"],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "sanya-dream-water-park",
+      "silk-road-paradise"
+    ],
     "whatToSee": [
       "Аквапарк «Мэнхуань»: волновой бассейн площадью 16 000 м², сплав длиной 1350 м и около сотни спусков.",
       "Парк «Шёлковый путь»: тематические кварталы разных цивилизаций, аттракционы, уличные представления и вечерние парады.",
@@ -1035,21 +1540,35 @@
     ],
     "bestTime": "Вторая половина дня, чтобы застать вечернюю программу парка",
     "sources": [
-      { "title": "三亚市旅游发展局 — «三亚丝路欢乐世界» (адрес, часы 10:00–22:00, тематические кварталы, уличные шоу и парады)", "url": "https://www.visitsanya.com/zh/destination/%e4%b8%89%e4%ba%9a%e4%b8%9d%e8%b7%af%e6%ac%a2%e4%b9%90%e4%b8%96%e7%95%8c" },
-      { "title": "Extrabux — «三亚梦幻水上乐园游玩攻略» (часы 13:00–20:30, состав аттракционов, размеры волнового бассейна и сплава)", "url": "https://www.extrabux.com/chs/guide/1271104" }
+      {
+        "title": "三亚市旅游发展局 — «三亚丝路欢乐世界» (адрес, часы 10:00–22:00, тематические кварталы, уличные шоу и парады)",
+        "url": "https://www.visitsanya.com/zh/destination/%e4%b8%89%e4%ba%9a%e4%b8%9d%e8%b7%af%e6%ac%a2%e4%b9%90%e4%b8%96%e7%95%8c"
+      },
+      {
+        "title": "Extrabux — «三亚梦幻水上乐园游玩攻略» (часы 13:00–20:30, состав аттракционов, размеры волнового бассейна и сплава)",
+        "url": "https://www.extrabux.com/chs/guide/1271104"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "yiheng-night-market-evening",
     "status": "verified",
-    "title": { "ru": "Новый ночной рынок «Ихэн»", "zh": "亿恒夜市" },
+    "title": {
+      "ru": "Новый ночной рынок «Ихэн»",
+      "zh": "亿恒夜市"
+    },
     "summary": "Вечер на самом новом ночном рынке города: больше 10 000 м², около 500 лотков, обязательные ценники и единые меры веса.",
     "format": "evening",
-    "durationHours": [1, 3],
+    "durationHours": [
+      1,
+      3
+    ],
     "effort": "low",
     "setting": "outdoor",
-    "placeIds": ["yiheng-night-market"],
+    "placeIds": [
+      "yiheng-night-market"
+    ],
     "whatToSee": [
       "Зона товаров: тропические фрукты, хайнаньские специалитеты, ремёсла и сувениры.",
       "Зона еды: хайнаньская лапша, кокосовая курица, «цинбулян», уличное барбекю и морепродукты.",
@@ -1068,21 +1587,36 @@
     ],
     "bestTime": "Ранний вечер, после заката",
     "sources": [
-      { "title": "三亚市旅游发展局 — «三亚夜市» (亿恒夜市: адрес, площадь, число лотков, зонирование, «明码标价»)", "url": "https://www.visitsanya.com/zh/destination/%e4%b8%89%e4%ba%9a%e5%a4%9c%e5%b8%82" },
-      { "title": "中国日报网 (海南) — «三亚亿恒夜市迁址升级» (переезд и открытие 10.02.2026, состав зон A и B, единые меры и ценники, прослеживаемость морепродуктов)", "url": "https://hain.chinadaily.com.cn/a/202605/14/WS6a05bb92a310942cc49ac4b3.html" }
+      {
+        "title": "三亚市旅游发展局 — «三亚夜市» (亿恒夜市: адрес, площадь, число лотков, зонирование, «明码标价»)",
+        "url": "https://www.visitsanya.com/zh/destination/%e4%b8%89%e4%ba%9a%e5%a4%9c%e5%b8%82"
+      },
+      {
+        "title": "中国日报网 (海南) — «三亚亿恒夜市迁址升级» (переезд и открытие 10.02.2026, состав зон A и B, единые меры и ценники, прослеживаемость морепродуктов)",
+        "url": "https://hain.chinadaily.com.cn/a/202605/14/WS6a05bb92a310942cc49ac4b3.html"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "dongan-slow-morning",
     "status": "verified",
-    "title": { "ru": "Медленное утро на Восточном берегу", "zh": "东岸湿地公园 · 东岸麓洲" },
+    "title": {
+      "ru": "Медленное утро на Восточном берегу",
+      "zh": "东岸湿地公园 · 东岸麓洲"
+    },
     "summary": "Короткий выход для дня, когда ничего не хочется: большой парк на воде и квартал маленьких кофеен в 200 метрах от него.",
     "format": "half-day",
-    "durationHours": [2, 3],
+    "durationHours": [
+      2,
+      3
+    ],
     "effort": "low",
     "setting": "mixed",
-    "placeIds": ["dongan-wetland-park", "dongan-luzhou"],
+    "placeIds": [
+      "dongan-wetland-park",
+      "dongan-luzhou"
+    ],
     "whatToSee": [
       "Восточный водно-болотный парк: протоки, луга и дорожки у воды прямо посреди жилых кварталов — без касс и без туристов.",
       "Квартал «Дунань Лучжоу»: кофейни, лавки растений, винтажные украшения, независимый дизайн и музыкальные уголки.",
@@ -1102,22 +1636,40 @@
     ],
     "bestTime": "Утро до жары или вечер",
     "sources": [
-      { "title": "三亚市旅游发展局 — «东岸麓洲» (адрес и описание квартала)", "url": "https://www.visitsanya.com/zh/destination/%e4%b8%9c%e5%b2%b8%e9%ba%93%e6%b4%b2" },
-      { "title": "Sanya Tourism Board — «East Bank Wetland Park»", "url": "https://www.visitsanya.com/destination/east-bank-wetland-park" }
+      {
+        "title": "三亚市旅游发展局 — «东岸麓洲» (адрес и описание квартала)",
+        "url": "https://www.visitsanya.com/zh/destination/%e4%b8%9c%e5%b2%b8%e9%ba%93%e6%b4%b2"
+      },
+      {
+        "title": "Sanya Tourism Board — «East Bank Wetland Park»",
+        "url": "https://www.visitsanya.com/destination/east-bank-wetland-park"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "egret-park-library-rainy",
     "status": "verified",
-    "title": { "ru": "Дождь в центре: парк и библиотека", "zh": "白鹭公园 · 三亚市图书馆" },
+    "title": {
+      "ru": "Дождь в центре: парк и библиотека",
+      "zh": "白鹭公园 · 三亚市图书馆"
+    },
     "summary": "Бесплатный вариант на дождливый или слишком жаркий день в центре города: парк на реке и городская библиотека в 600 метрах от него.",
     "format": "half-day",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "low",
     "setting": "mixed",
-    "tags": ["rain", "kids"],
-    "placeIds": ["egret-park", "sanya-city-library"],
+    "tags": [
+      "rain",
+      "kids"
+    ],
+    "placeIds": [
+      "egret-park",
+      "sanya-city-library"
+    ],
     "whatToSee": [
       "Парк Белой цапли: дорожки вдоль реки, куда сезонно прилетают цапли; открыт круглосуточно и бесплатно.",
       "Городская библиотека: кондиционированные залы, детская читальня, газетный зал и места, где можно просто сидеть.",
@@ -1137,21 +1689,36 @@
     ],
     "bestTime": "Любой дождливый день, вторник–воскресенье",
     "sources": [
-      { "title": "三亚新闻网 — «三亚文化场馆开放时间全汇总» от 2026-08-04 (адрес библиотеки, часы вт–вс 08:00–21:00, бесплатный вход, детская читальня)", "url": "https://www.sanyarb.com.cn/sanyazonghe/2026/08/04/detail_20260804511663.html" },
-      { "title": "Sanya Tourism Board — «Egret Park»", "url": "https://www.visitsanya.com/destination/egret-park" }
+      {
+        "title": "三亚新闻网 — «三亚文化场馆开放时间全汇总» от 2026-08-04 (адрес библиотеки, часы вт–вс 08:00–21:00, бесплатный вход, детская читальня)",
+        "url": "https://www.sanyarb.com.cn/sanyazonghe/2026/08/04/detail_20260804511663.html"
+      },
+      {
+        "title": "Sanya Tourism Board — «Egret Park»",
+        "url": "https://www.visitsanya.com/destination/egret-park"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "yazhou-old-village-day",
     "status": "verified",
-    "title": { "ru": "Старый Ячжоу: город и деревня Баопин", "zh": "崖州古城 · 保平村" },
+    "title": {
+      "ru": "Старый Ячжоу: город и деревня Баопин",
+      "zh": "崖州古城 · 保平村"
+    },
     "summary": "Целый день про историю запада округа: уездный город с храмом Конфуция и деревня эпохи Тан, где сохранилось больше сотни домов эпох Мин и Цин.",
     "format": "full-day",
-    "durationHours": [4, 6],
+    "durationHours": [
+      4,
+      6
+    ],
     "effort": "medium",
     "setting": "mixed",
-    "placeIds": ["yazhou-ancient-city", "baoping-village"],
+    "placeIds": [
+      "yazhou-ancient-city",
+      "baoping-village"
+    ],
     "whatToSee": [
       "Древний город Ячжоу: остатки городской стены, храм Конфуция, узкие улицы и следы Морского шёлкового пути.",
       "Деревня Баопин: охранная зона площадью 0,25 км² со ста с лишним историческими постройками — трёхчастные усадьбы с воротами, главным залом и экраном-ширмой.",
@@ -1173,21 +1740,36 @@
     ],
     "bestTime": "Будний день, выезд с утра",
     "sources": [
-      { "title": "人民网 / «Жэньминь жибао» (зарубежное издание) от 2026-05-19 — «歇歇脚，听段民歌，看眼明清老宅» (Баопин: возраст деревни, охранная зона и число построек, усадьба Чжанов как бесплатный музей, «明经第», школа ячжоуских народных песен, «Книжный дом»)", "url": "http://hi.people.com.cn/BIG5/n2/2026/0519/c231190-41584345.html" },
-      { "title": "三亚市旅游发展局 — «崖州古城-崖城古镇» (адрес и состав древнего города)", "url": "https://www.visitsanya.com/zh/destination/%e5%b4%96%e5%b7%9e%e5%8f%a4%e5%9f%8e-%e5%b4%96%e5%9f%8e%e5%8f%a4%e9%95%87" }
+      {
+        "title": "人民网 / «Жэньминь жибао» (зарубежное издание) от 2026-05-19 — «歇歇脚，听段民歌，看眼明清老宅» (Баопин: возраст деревни, охранная зона и число построек, усадьба Чжанов как бесплатный музей, «明经第», школа ячжоуских народных песен, «Книжный дом»)",
+        "url": "http://hi.people.com.cn/BIG5/n2/2026/0519/c231190-41584345.html"
+      },
+      {
+        "title": "三亚市旅游发展局 — «崖州古城-崖城古镇» (адрес и состав древнего города)",
+        "url": "https://www.visitsanya.com/zh/destination/%e5%b4%96%e5%b7%9e%e5%8f%a4%e5%9f%8e-%e5%b4%96%e5%9f%8e%e5%8f%a4%e9%95%87"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "yalong-shopping-half-day",
     "status": "verified",
-    "title": { "ru": "Покупки, не выезжая из Ялунваня", "zh": "亚龙湾壹号小镇奥特莱斯 · 百花谷" },
+    "title": {
+      "ru": "Покупки, не выезжая из Ялунваня",
+      "zh": "亚龙湾壹号小镇奥特莱斯 · 百花谷"
+    },
     "summary": "Полдня на покупки без поездки в город: аутлет-центр у въезда в бухту и открытая торговая улица в её середине.",
     "format": "half-day",
-    "durationHours": [2, 4],
+    "durationHours": [
+      2,
+      4
+    ],
     "effort": "low",
     "setting": "mixed",
-    "placeIds": ["yalong-bay-no1-town-outlets", "yalong-bay-baihuagu"],
+    "placeIds": [
+      "yalong-bay-no1-town-outlets",
+      "yalong-bay-baihuagu"
+    ],
     "whatToSee": [
       "Аутлет-центр «壹号小镇» — крытый, то есть работает и в дождь, и в жару.",
       "Торговая улица «Байхуагу» — открытая: магазины, кафе, супермаркет и банк в одном месте.",
@@ -1206,22 +1788,39 @@
     ],
     "bestTime": "Вторая половина дня, когда с пляжа всё равно уходишь",
     "sources": [
-      { "title": "三亚市旅游发展局 — «亚龙湾» (百花谷商业街 как центр повседневной жизни курортной зоны)", "url": "https://www.visitsanya.com/zh/destination/%e4%ba%9a%e9%be%99%e6%b9%be-2" },
-      { "title": "OpenStreetMap — «亚龙湾百花谷商业中心» (расположение торговой улицы относительно бухты)", "url": "https://www.openstreetmap.org/way/241067181" }
+      {
+        "title": "三亚市旅游发展局 — «亚龙湾» (百花谷商业街 как центр повседневной жизни курортной зоны)",
+        "url": "https://www.visitsanya.com/zh/destination/%e4%ba%9a%e9%be%99%e6%b9%be-2"
+      },
+      {
+        "title": "OpenStreetMap — «亚龙湾百花谷商业中心» (расположение торговой улицы относительно бухты)",
+        "url": "https://www.openstreetmap.org/way/241067181"
+      }
     ],
     "verifiedAt": "2026-09-20"
   },
   {
     "id": "songcheng-show-evening",
     "status": "verified",
-    "title": { "ru": "Вечернее шоу и беспошлинный магазин", "zh": "三亚千古情 · 海旅免税城" },
+    "title": {
+      "ru": "Вечернее шоу и беспошлинный магазин",
+      "zh": "三亚千古情 · 海旅免税城"
+    },
     "summary": "Вечер на Инбинь-роуд: беспошлинный комплекс до заката и костюмированное шоу об истории Хайнаня после него — обе точки в 200 метрах друг от друга.",
     "format": "evening",
-    "durationHours": [3, 5],
+    "durationHours": [
+      3,
+      5
+    ],
     "effort": "low",
     "setting": "mixed",
-    "tags": ["kids"],
-    "placeIds": ["htdf-hainan-tourism-duty-free", "sanya-song-cheng"],
+    "tags": [
+      "kids"
+    ],
+    "placeIds": [
+      "htdf-hainan-tourism-duty-free",
+      "sanya-song-cheng"
+    ],
     "whatToSee": [
       "Беспошлинный комплекс «Хайлюй» — крытый, работает допоздна: покупки без поездки в Хайтан.",
       "Парк «Тысячелетняя любовь»: костюмированное шоу об истории и легендах Хайнаня, а до него — тематическая территория с уличными сценками.",
@@ -1240,8 +1839,14 @@
     ],
     "bestTime": "Вторая половина дня с переходом в вечер",
     "sources": [
-      { "title": "Sanya Tourism Board — «Sanya Romance of the Ages» (千古情)", "url": "https://www.visitsanya.com/destination/sanya-romance-of-the-ages" },
-      { "title": "三亚市旅游发展局 — «千古情景区» (часы работы 15:00–21:30 и состав парка)", "url": "https://www.visitsanya.com/zh/destination/%e5%8d%83%e5%8f%a4%e6%83%85%e6%99%af%e5%8c%ba" }
+      {
+        "title": "Sanya Tourism Board — «Sanya Romance of the Ages» (千古情)",
+        "url": "https://www.visitsanya.com/destination/sanya-romance-of-the-ages"
+      },
+      {
+        "title": "三亚市旅游发展局 — «千古情景区» (часы работы 15:00–21:30 и состав парка)",
+        "url": "https://www.visitsanya.com/zh/destination/%e5%8d%83%e5%8f%a4%e6%83%85%e6%99%af%e5%8c%ba"
+      }
     ],
     "verifiedAt": "2026-09-20"
   }

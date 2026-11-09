@@ -14,11 +14,26 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Государственное миграционное управление КНР — «Beware of Fraudulent Websites for Arrival Card Filling»", "url": "https://en.nia.gov.cn/n147418/n147463/c191530/content.html" },
-      { "title": "Официальная форма въездной карты — s.nia.gov.cn", "url": "https://s.nia.gov.cn/ArrivalCardFillingPC/" },
-      { "title": "Генеральное консульство КНР в Санкт-Петербурге — «关于实施外国人入境卡网上填报的通知»", "url": "https://saintpetersburg.china-consulate.gov.cn/zytz/202511/t20251125_11760042.htm" },
-      { "title": "Генеральное консульство КНР в Гамбурге — уведомление о въездной карте", "url": "https://hamburg.china-consulate.gov.cn/det/zttzs/202511/t20251128_11762822.htm" },
-      { "title": "Государственное миграционное управление КНР — русскоязычный сайт", "url": "https://ru.nia.gov.cn/" }
+      {
+        "title": "Государственное миграционное управление КНР — «Beware of Fraudulent Websites for Arrival Card Filling»",
+        "url": "https://en.nia.gov.cn/n147418/n147463/c191530/content.html"
+      },
+      {
+        "title": "Официальная форма въездной карты — s.nia.gov.cn",
+        "url": "https://s.nia.gov.cn/ArrivalCardFillingPC/"
+      },
+      {
+        "title": "Генеральное консульство КНР в Санкт-Петербурге — «关于实施外国人入境卡网上填报的通知»",
+        "url": "https://saintpetersburg.china-consulate.gov.cn/zytz/202511/t20251125_11760042.htm"
+      },
+      {
+        "title": "Генеральное консульство КНР в Гамбурге — уведомление о въездной карте",
+        "url": "https://hamburg.china-consulate.gov.cn/det/zttzs/202511/t20251128_11762822.htm"
+      },
+      {
+        "title": "Государственное миграционное управление КНР — русскоязычный сайт",
+        "url": "https://ru.nia.gov.cn/"
+      }
     ],
     "verifiedAt": "2026-09-13"
   },
@@ -38,9 +53,18 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Китайский консульский информационный сервис (МИД КНР) — «关于延长对俄罗斯单方面免签政策的通知», 20.05.2026", "url": "https://cs.mfa.gov.cn/gyls/lsgz/fwxx/202605/t20260520_11914502.shtml" },
-      { "title": "Государственное миграционное управление КНР — «Regional Visa-Free Entry Policies for Foreign Nationals», 20.08.2026 (Хайнань, 61 страна, 30 дней)", "url": "https://en.nia.gov.cn/n147418/n147463/c180637/content.html" },
-      { "title": "Sanya Tourism Board — «Visa & Entry Requirements»", "url": "https://www.visitsanya.com/planning/travel-guide/before-you-go/entry-exit-visa" }
+      {
+        "title": "Китайский консульский информационный сервис (МИД КНР) — «关于延长对俄罗斯单方面免签政策的通知», 20.05.2026",
+        "url": "https://cs.mfa.gov.cn/gyls/lsgz/fwxx/202605/t20260520_11914502.shtml"
+      },
+      {
+        "title": "Государственное миграционное управление КНР — «Regional Visa-Free Entry Policies for Foreign Nationals», 20.08.2026 (Хайнань, 61 страна, 30 дней)",
+        "url": "https://en.nia.gov.cn/n147418/n147463/c180637/content.html"
+      },
+      {
+        "title": "Sanya Tourism Board — «Visa & Entry Requirements»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/before-you-go/entry-exit-visa"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -60,13 +84,34 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Аэропорт Санья Феникс — «International Arrival Procedure»", "url": "https://en.sanyaairport.com/engjdd.jhtml" },
-      { "title": "Аэропорт Санья Феникс — «出租汽车» (стоянки по терминалам, тариф, чек, телефоны)", "url": "https://www.sanyaairport.com/czqc.jhtml" },
-      { "title": "Аэропорт Санья Феникс — «机场巴士» (китайская версия: расписание, тарифы, оговорка о справочном характере)", "url": "https://www.sanyaairport.com/jcbs" },
-      { "title": "Аэропорт Санья Феникс — «Enquiry» (круглосуточная справочная)", "url": "https://en.sanyaairport.com/enjcwx.jhtml" },
-      { "title": "Sanya Tourism Board — «Taxis/Ride-Hailing Services» (тариф, ночная надбавка, совет про ресепшен)", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/taxis-ride-hailing-services" },
-      { "title": "Sanya Tourism Board — «Currency and Payment»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/currency-and-payment" },
-      { "title": "Sanya Tourism Board — «Internet and Communication»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/internet-and-communication" }
+      {
+        "title": "Аэропорт Санья Феникс — «International Arrival Procedure»",
+        "url": "https://en.sanyaairport.com/engjdd.jhtml"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «出租汽车» (стоянки по терминалам, тариф, чек, телефоны)",
+        "url": "https://www.sanyaairport.com/czqc.jhtml"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «机场巴士» (китайская версия: расписание, тарифы, оговорка о справочном характере)",
+        "url": "https://www.sanyaairport.com/jcbs"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «Enquiry» (круглосуточная справочная)",
+        "url": "https://en.sanyaairport.com/enjcwx.jhtml"
+      },
+      {
+        "title": "Sanya Tourism Board — «Taxis/Ride-Hailing Services» (тариф, ночная надбавка, совет про ресепшен)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/taxis-ride-hailing-services"
+      },
+      {
+        "title": "Sanya Tourism Board — «Currency and Payment»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/currency-and-payment"
+      },
+      {
+        "title": "Sanya Tourism Board — «Internet and Communication»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/internet-and-communication"
+      }
     ],
     "verifiedAt": "2026-10-10"
   },
@@ -86,15 +131,42 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Аэропорт Санья Феникс — официальная страница «Airport Bus» (линии, рейсы, цена, место посадки)", "url": "https://en.sanyaairport.com/enjcbs" },
-      { "title": "Аэропорт Санья Феникс — «机场巴士» (китайская версия: расписание, тарифы, оговорка о справочном характере)", "url": "https://www.sanyaairport.com/jcbs" },
-      { "title": "Аэропорт Санья Феникс — «出租汽车» (стоянки по терминалам, тариф, чек, телефоны)", "url": "https://www.sanyaairport.com/czqc.jhtml" },
-      { "title": "Аэропорт Санья Феникс — «Taxis» (стоянка, тариф, памятка пассажиру)", "url": "https://en.sanyaairport.com/enczqc.jhtml" },
-      { "title": "Аэропорт Санья Феникс — «网约乘车» (точки посадки в машины из приложений)", "url": "https://www.sanyaairport.com/wycc.jhtml" },
-      { "title": "Аэропорт Санья Феникс — «机场摆渡» (шаттл между терминалами)", "url": "https://www.sanyaairport.com/jcbd.jhtml" },
-      { "title": "Аэропорт Санья Феникс — «Enquiry» (круглосуточная справочная)", "url": "https://en.sanyaairport.com/enjcwx.jhtml" },
-      { "title": "Sanya Tourism Board — «By Plane»", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/by-plane" },
-      { "title": "Sanya Tourism Board — «Public Transportation» (кассы автобусов, отельные трансферы)", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/public-transportation" }
+      {
+        "title": "Аэропорт Санья Феникс — официальная страница «Airport Bus» (линии, рейсы, цена, место посадки)",
+        "url": "https://en.sanyaairport.com/enjcbs"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «机场巴士» (китайская версия: расписание, тарифы, оговорка о справочном характере)",
+        "url": "https://www.sanyaairport.com/jcbs"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «出租汽车» (стоянки по терминалам, тариф, чек, телефоны)",
+        "url": "https://www.sanyaairport.com/czqc.jhtml"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «Taxis» (стоянка, тариф, памятка пассажиру)",
+        "url": "https://en.sanyaairport.com/enczqc.jhtml"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «网约乘车» (точки посадки в машины из приложений)",
+        "url": "https://www.sanyaairport.com/wycc.jhtml"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «机场摆渡» (шаттл между терминалами)",
+        "url": "https://www.sanyaairport.com/jcbd.jhtml"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «Enquiry» (круглосуточная справочная)",
+        "url": "https://en.sanyaairport.com/enjcwx.jhtml"
+      },
+      {
+        "title": "Sanya Tourism Board — «By Plane»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/by-plane"
+      },
+      {
+        "title": "Sanya Tourism Board — «Public Transportation» (кассы автобусов, отельные трансферы)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/public-transportation"
+      }
     ],
     "verifiedAt": "2026-10-10"
   },
@@ -114,10 +186,22 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Currency and Payment»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/currency-and-payment" },
-      { "title": "Sanya Tourism Board — «Taxis/Ride-Hailing Services»", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/taxis-ride-hailing-services" },
-      { "title": "vc.ru — «Какие российские карты работают в Китае 2026»", "url": "https://vc.ru/travel/2964975-rossijskie-karty-v-kitae" },
-      { "title": "Синьхуа, на портале района Лунган (Шэньчжэнь), 03.04.2024 — руководящие указания об оплате для иностранцев: карты, наличные, обмен валюты", "url": "https://www.lg.gov.cn/english/services/usefulInfo/content/post_11226261.html" }
+      {
+        "title": "Sanya Tourism Board — «Currency and Payment»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/currency-and-payment"
+      },
+      {
+        "title": "Sanya Tourism Board — «Taxis/Ride-Hailing Services»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/taxis-ride-hailing-services"
+      },
+      {
+        "title": "vc.ru — «Какие российские карты работают в Китае 2026»",
+        "url": "https://vc.ru/travel/2964975-rossijskie-karty-v-kitae"
+      },
+      {
+        "title": "Синьхуа, на портале района Лунган (Шэньчжэнь), 03.04.2024 — руководящие указания об оплате для иностранцев: карты, наличные, обмен валюты",
+        "url": "https://www.lg.gov.cn/english/services/usefulInfo/content/post_11226261.html"
+      }
     ],
     "verifiedAt": "2026-10-10"
   },
@@ -137,9 +221,18 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Internet and Communication»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/internet-and-communication" },
-      { "title": "«Living Behind the Great Firewall» — VPN and Internet Reality for Expats in China", "url": "https://migaku.com/blog/language-fun/living-behind-the-great-firewall-vpn-and-internet-reality-for-expats-in-china" },
-      { "title": "Wikivoyage — «China», раздел «Connect» (версия от 07.10.2026)", "url": "https://en.wikivoyage.org/wiki/China#Connect" }
+      {
+        "title": "Sanya Tourism Board — «Internet and Communication»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/internet-and-communication"
+      },
+      {
+        "title": "«Living Behind the Great Firewall» — VPN and Internet Reality for Expats in China",
+        "url": "https://migaku.com/blog/language-fun/living-behind-the-great-firewall-vpn-and-internet-reality-for-expats-in-china"
+      },
+      {
+        "title": "Wikivoyage — «China», раздел «Connect» (версия от 07.10.2026)",
+        "url": "https://en.wikivoyage.org/wiki/China#Connect"
+      }
     ],
     "verifiedAt": "2026-10-10"
   },
@@ -159,10 +252,22 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Правительство Шанхая — «AMap на русском языке»", "url": "https://russian.shanghai.gov.cn/ru-UsefulApps/20260610/34a0fc56ffea46a1add7c0f1aca4d81a.html" },
-      { "title": "Malay Mail — анонс многоязычной карты Amap (14 языков), 2025-07-11", "url": "https://www.malaymail.com/news/money/mediaoutreach/2025/07/11/alibabas-amap-launches-chinas-first-multilingual-map-with-14-new-languages-for-overseas-users/394781" },
-      { "title": "Live Learn China — гид по Amap для иностранцев, 2026", "url": "https://livelearnchina.com/how-to-use-amap-gaode-maps-in-china-as-a-foreigner-2026-guide/" },
-      { "title": "«DiDi for Foreigners in China 2026»", "url": "https://chinafortravelers.com/guides/didi-for-foreigners-china/" }
+      {
+        "title": "Правительство Шанхая — «AMap на русском языке»",
+        "url": "https://russian.shanghai.gov.cn/ru-UsefulApps/20260610/34a0fc56ffea46a1add7c0f1aca4d81a.html"
+      },
+      {
+        "title": "Malay Mail — анонс многоязычной карты Amap (14 языков), 2025-07-11",
+        "url": "https://www.malaymail.com/news/money/mediaoutreach/2025/07/11/alibabas-amap-launches-chinas-first-multilingual-map-with-14-new-languages-for-overseas-users/394781"
+      },
+      {
+        "title": "Live Learn China — гид по Amap для иностранцев, 2026",
+        "url": "https://livelearnchina.com/how-to-use-amap-gaode-maps-in-china-as-a-foreigner-2026-guide/"
+      },
+      {
+        "title": "«DiDi for Foreigners in China 2026»",
+        "url": "https://chinafortravelers.com/guides/didi-for-foreigners-china/"
+      }
     ],
     "verifiedAt": "2026-09-11"
   },
@@ -181,9 +286,18 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Аэропорт Санья Феникс — «出租汽车» (стоянки по терминалам, тариф, чек, телефоны)", "url": "https://www.sanyaairport.com/czqc.jhtml" },
-      { "title": "Аэропорт Санья Феникс — «Taxis» (стоянка, тариф, памятка пассажиру)", "url": "https://en.sanyaairport.com/enczqc.jhtml" },
-      { "title": "Sanya Tourism Board — «Taxis/Ride-Hailing Services» (тариф, ночная надбавка, совет про ресепшен)", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/taxis-ride-hailing-services" }
+      {
+        "title": "Аэропорт Санья Феникс — «出租汽车» (стоянки по терминалам, тариф, чек, телефоны)",
+        "url": "https://www.sanyaairport.com/czqc.jhtml"
+      },
+      {
+        "title": "Аэропорт Санья Феникс — «Taxis» (стоянка, тариф, памятка пассажиру)",
+        "url": "https://en.sanyaairport.com/enczqc.jhtml"
+      },
+      {
+        "title": "Sanya Tourism Board — «Taxis/Ride-Hailing Services» (тариф, ночная надбавка, совет про ресепшен)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/taxis-ride-hailing-services"
+      }
     ],
     "verifiedAt": "2026-10-10"
   },
@@ -203,9 +317,18 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "U.S. Embassy & Consulates in China — «Emergency Contacts»", "url": "https://china.usembassy-china.org.cn/services/emergency-contact/" },
-      { "title": "Sanya Tourism Board — «Essential Contacts & Support»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support" },
-      { "title": "Генеральное консульство России в Гуанчжоу — официальный сайт", "url": "https://guangzhou.mid.ru/" }
+      {
+        "title": "U.S. Embassy & Consulates in China — «Emergency Contacts»",
+        "url": "https://china.usembassy-china.org.cn/services/emergency-contact/"
+      },
+      {
+        "title": "Sanya Tourism Board — «Essential Contacts & Support»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/essential-contacts-support"
+      },
+      {
+        "title": "Генеральное консульство России в Гуанчжоу — официальный сайт",
+        "url": "https://guangzhou.mid.ru/"
+      }
     ],
     "verifiedAt": "2026-09-11"
   },
@@ -225,8 +348,14 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Geography and Climate»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/geography-and-climate" },
-      { "title": "TropicalHainan.com — «Typhoon Season 2026 Forecast»", "url": "https://www.tropicalhainan.com/typhoon-season-2026-what-hainan-residents-can-expect-in-the-coming-months/" }
+      {
+        "title": "Sanya Tourism Board — «Geography and Climate»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/geography-and-climate"
+      },
+      {
+        "title": "TropicalHainan.com — «Typhoon Season 2026 Forecast»",
+        "url": "https://www.tropicalhainan.com/typhoon-season-2026-what-hainan-residents-can-expect-in-the-coming-months/"
+      }
     ],
     "verifiedAt": "2026-09-11"
   },
@@ -244,7 +373,10 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Госсовет КНР (gov.cn) — «Закон КНР об охране военных объектов» (中华人民共和国军事设施保护法, ред. 2014)", "url": "https://www.gov.cn/" }
+      {
+        "title": "Госсовет КНР (gov.cn) — «Закон КНР об охране военных объектов» (中华人民共和国军事设施保护法, ред. 2014)",
+        "url": "https://www.gov.cn/"
+      }
     ],
     "verifiedAt": "2026-09-16"
   },
@@ -261,8 +393,14 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Главное управление гражданской авиации Китая (CAAC, caac.gov.cn) — «Временное положение об управлении полётами беспилотных летательных аппаратов» (无人驾驶航空器飞行管理暂行条例)", "url": "https://www.caac.gov.cn/" },
-      { "title": "Правительство провинции Хайнань (hainan.gov.cn) — карта разрешённых зон полёта беспилотников («适飞空域»), действует с 2026-05-14", "url": "https://www.hainan.gov.cn/" }
+      {
+        "title": "Главное управление гражданской авиации Китая (CAAC, caac.gov.cn) — «Временное положение об управлении полётами беспилотных летательных аппаратов» (无人驾驶航空器飞行管理暂行条例)",
+        "url": "https://www.caac.gov.cn/"
+      },
+      {
+        "title": "Правительство провинции Хайнань (hainan.gov.cn) — карта разрешённых зон полёта беспилотников («适飞空域»), действует с 2026-05-14",
+        "url": "https://www.hainan.gov.cn/"
+      }
     ],
     "verifiedAt": "2026-09-16"
   },
@@ -280,7 +418,10 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Реестр нормативных актов Министерства коммерции КНР (policy.mofcom.gov.cn) — «海南省珊瑚礁和砗磲保护规定» (Положение провинции Хайнань об охране коралловых рифов и тридакн, действует с 2017-01-01)", "url": "https://policy.mofcom.gov.cn/" }
+      {
+        "title": "Реестр нормативных актов Министерства коммерции КНР (policy.mofcom.gov.cn) — «海南省珊瑚礁和砗磲保护规定» (Положение провинции Хайнань об охране коралловых рифов и тридакн, действует с 2017-01-01)",
+        "url": "https://policy.mofcom.gov.cn/"
+      }
     ],
     "verifiedAt": "2026-09-16"
   },
@@ -297,8 +438,14 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Положение провинции Хайнань о поощрении цивилизованного поведения (海南省文明行为促进条例)", "url": "https://en.hainan.gov.cn/hainan/dfxfg/202010/f1b33b168d744898a71cad70eb364ee1.shtml" },
-      { "title": "Меры управления контролем курения в общественных местах города Санья, 2018 (三亚市公共场所控制吸烟管理办法)", "url": "" }
+      {
+        "title": "Положение провинции Хайнань о поощрении цивилизованного поведения (海南省文明行为促进条例)",
+        "url": "https://en.hainan.gov.cn/hainan/dfxfg/202010/f1b33b168d744898a71cad70eb364ee1.shtml"
+      },
+      {
+        "title": "Меры управления контролем курения в общественных местах города Санья, 2018 (三亚市公共场所控制吸烟管理办法)",
+        "url": ""
+      }
     ],
     "verifiedAt": "2026-09-16"
   },
@@ -318,7 +465,10 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Public Transportation» (маршруты, цены, часы, способы оплаты, трамвай)", "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/public-transportation" }
+      {
+        "title": "Sanya Tourism Board — «Public Transportation» (маршруты, цены, часы, способы оплаты, трамвай)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/getting-there-around/public-transportation"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -337,8 +487,14 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Госсовет КНР (gov.cn) — «关于调整海南离岛旅客免税购物政策的公告» (Минфин, ГТУ и ГНУ, № 9 от 2025 г.; в силе с 01.11.2025)", "url": "https://www.gov.cn/zhengce/zhengceku/202510/content_7044760.htm" },
-      { "title": "Налоговая служба Хайнаня — текст того же объявления", "url": "https://hainan.chinatax.gov.cn/ssxc_3_5_1/17161591.html" }
+      {
+        "title": "Госсовет КНР (gov.cn) — «关于调整海南离岛旅客免税购物政策的公告» (Минфин, ГТУ и ГНУ, № 9 от 2025 г.; в силе с 01.11.2025)",
+        "url": "https://www.gov.cn/zhengce/zhengceku/202510/content_7044760.htm"
+      },
+      {
+        "title": "Налоговая служба Хайнаня — текст того же объявления",
+        "url": "https://hainan.chinatax.gov.cn/ssxc_3_5_1/17161591.html"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -358,8 +514,14 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Tax Refund» (условия, порядок, «мгновенный возврат»)", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/tax-refund" },
-      { "title": "Sanya Tourism Board — «Sanya Summer Mall» (первый в Санье магазин системы возврата НДС)", "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/summer-department-store" }
+      {
+        "title": "Sanya Tourism Board — «Tax Refund» (условия, порядок, «мгновенный возврат»)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/tax-refund"
+      },
+      {
+        "title": "Sanya Tourism Board — «Sanya Summer Mall» (первый в Санье магазин системы возврата НДС)",
+        "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/summer-department-store"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -379,10 +541,22 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Tianya Haijiao»", "url": "https://www.visitsanya.com/destination/tianya-haijiao" },
-      { "title": "Синьхуа — «三亚天涯海角游览区6月1日起免费开放» (бесплатный вход по записи, документ на входе)", "url": "http://www.news.cn/2023-05/26/c_1129647888.htm" },
-      { "title": "Sanya Tourism Board — обзор музеев Саньи, 13.11.2025 (работа музея раковин по записи)", "url": "https://www.visitsanya.com/24777.html" },
-      { "title": "Учжичжоу — официальный сайт, «景区门票» (правила посадки на катер)", "url": "https://www.wuzhizhou.com/ticket/" }
+      {
+        "title": "Sanya Tourism Board — «Tianya Haijiao»",
+        "url": "https://www.visitsanya.com/destination/tianya-haijiao"
+      },
+      {
+        "title": "Синьхуа — «三亚天涯海角游览区6月1日起免费开放» (бесплатный вход по записи, документ на входе)",
+        "url": "http://www.news.cn/2023-05/26/c_1129647888.htm"
+      },
+      {
+        "title": "Sanya Tourism Board — обзор музеев Саньи, 13.11.2025 (работа музея раковин по записи)",
+        "url": "https://www.visitsanya.com/24777.html"
+      },
+      {
+        "title": "Учжичжоу — официальный сайт, «景区门票» (правила посадки на катер)",
+        "url": "https://www.wuzhizhou.com/ticket/"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -402,8 +576,14 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Tide and Beachcombing Guide»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/tide-and-beachcombing-guide" },
-      { "title": "Sanya Tourism Board — «Extreme Weather» (поведение при грозе и штормовом предупреждении)", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/extreme-weather" }
+      {
+        "title": "Sanya Tourism Board — «Tide and Beachcombing Guide»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/tide-and-beachcombing-guide"
+      },
+      {
+        "title": "Sanya Tourism Board — «Extreme Weather» (поведение при грозе и штормовом предупреждении)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/extreme-weather"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -423,7 +603,10 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Seafood Consumption Tips» (прайс, предельная цена, взвешивание, защита прав)", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/seafood-consumption-tips" }
+      {
+        "title": "Sanya Tourism Board — «Seafood Consumption Tips» (прайс, предельная цена, взвешивание, защита прав)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/seafood-consumption-tips"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -443,7 +626,10 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Extreme Weather» (официальные рекомендации при тайфуне, ливне, грозе и жаре)", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/extreme-weather" }
+      {
+        "title": "Sanya Tourism Board — «Extreme Weather» (официальные рекомендации при тайфуне, ливне, грозе и жаре)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/extreme-weather"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -463,7 +649,10 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Mosquito Prevention and Health Precautions»", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/mosquito-prevention-and-health-precautions" }
+      {
+        "title": "Sanya Tourism Board — «Mosquito Prevention and Health Precautions»",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/mosquito-prevention-and-health-precautions"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -483,7 +672,10 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Passport Friendly Initiative» (сроки, условия, состав участников)", "url": "https://www.visitsanya.com/passport-friendly-initiative" }
+      {
+        "title": "Sanya Tourism Board — «Passport Friendly Initiative» (сроки, условия, состав участников)",
+        "url": "https://www.visitsanya.com/passport-friendly-initiative"
+      }
     ],
     "verifiedAt": "2026-09-17"
   },
@@ -503,8 +695,219 @@
     ],
     "volatile": true,
     "sources": [
-      { "title": "Sanya Tourism Board — «Luggage Storage & Delivery» (охват, порядок, тарифные уровни; официальный сайт ведёт эту статью по старому адресу safety-guidelines)", "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/safety-guidelines" }
+      {
+        "title": "Sanya Tourism Board — «Luggage Storage & Delivery» (охват, порядок, тарифные уровни; официальный сайт ведёт эту статью по старому адресу safety-guidelines)",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/safety-guidelines"
+      }
     ],
     "verifiedAt": "2026-09-17"
+  },
+  {
+    "id": "hainan-food-guide",
+    "title": "Что попробовать на Хайнане",
+    "summary": "Пять местных вкусов: кокосовая курица, вэньчанская курица, кислые супы, лапша и холодный десерт цинбулян.",
+    "points": [
+      "椰子鸡 — кокосовая курица: мясо готовят в ароматном бульоне с кокосовой водой; удобный вариант для первого ужина.",
+      "文昌鸡 — вэньчанская курица: знаменитое хайнаньское блюдо, обычно подают с соусом и рисом.",
+      "糟粕醋 — цзаопоцзу: кисло-пряный суп или хого с ферментированным вкусом; заказывайте осторожно, если не любите остроту.",
+      "陵水酸粉 — кислая рисовая лапша Линшуя; часто содержит морепродукты и острый соус.",
+      "清补凉 — цинбулян: прохладный десерт с кокосом, фруктами, бобами и другими добавками.",
+      "老爸茶 — лаоба-чай: формат местного чаепития с небольшими закусками; хорош для спокойного дневного перерыва."
+    ],
+    "volatile": false,
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — Local Flavours",
+        "url": "https://www.visitsanya.com/56559.html"
+      },
+      {
+        "title": "Sanya Tourism Board — Sanya on a Budget",
+        "url": "https://www.visitsanya.com/29428.html"
+      }
+    ],
+    "verifiedAt": "2026-11-09",
+    "status": "verified"
+  },
+  {
+    "id": "restaurant-ordering",
+    "title": "Как заказывать еду без китайского",
+    "summary": "Показывайте фото блюда и проверяйте цену до приготовления — особенно для морепродуктов.",
+    "points": [
+      "Перед заказом откройте меню с фотографиями или переводчиком камеры; название блюда лучше показать на китайском.",
+      "Не острое — 不辣 (bù là); немного острое — 微辣 (wēi là); без кориандра — 不要香菜 (bú yào xiāng cài).",
+      "Если блюдо продают по весу, уточните единицу: 斤 (цзинь) = 500 г; это не то же самое, что килограмм.",
+      "Для свежих морепродуктов спросите общую цену вместе с приготовлением и доплатами, прежде чем отдавать продукт на кухню.",
+      "Сохраните чек и фото ценника, если расчёт кажется неправильным; в туристической справке уже есть отдельная карточка о правах покупателей морепродуктов.",
+      "Туристические гастроулицы удобны, но сравните цены с соседними заведениями прежде, чем садиться."
+    ],
+    "volatile": false,
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — Seafood Consumption Tips",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/seafood-consumption-tips"
+      },
+      {
+        "title": "Sanya Tourism Board — local food experiences",
+        "url": "https://www.visitsanya.com/56559.html"
+      }
+    ],
+    "verifiedAt": "2026-11-09",
+    "status": "verified"
+  },
+  {
+    "id": "yalong-nearby-plans",
+    "title": "Ялунвань: куда выбраться без большого переезда",
+    "summary": "Четыре сценария рядом с бухтой — пляж, лесной парк, цветочная долина и вечерняя прогулка.",
+    "points": [
+      "Море и отдых: общественная часть пляжа Ялунваня, прогулка по песку и перерыв в тени.",
+      "Зелёные горы: лесной парк «Тропический рай» с видами на бухту; заложите отдельную половину дня.",
+      "Спокойные фотографии: Долина роз Ялунваня; интереснее в хорошую погоду и при цветении.",
+      "Близкий вечер: торговая улица Байхуагу или фудкорт Дунжун — простой ужин без поездки в центр.",
+      "Если хочется моря с активностями, посмотрите «Подводный мир Ялунваня»: при ветре и сильной волне развлечения могут не работать.",
+      "Не планируйте все точки на один день: удобнее чередовать пляжный и экскурсионный дни."
+    ],
+    "volatile": false,
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — Yalong Bay",
+        "url": "https://www.visitsanya.com/destination/yalong-bay"
+      },
+      {
+        "title": "Sanya Tourism Board — Rose Valley",
+        "url": "https://www.visitsanya.com/destination/yalong-bay-rose-valley-scenic-area"
+      }
+    ],
+    "verifiedAt": "2026-11-09",
+    "status": "verified"
+  },
+  {
+    "id": "sanya-bays-compare",
+    "title": "Как выбрать бухту под настроение",
+    "summary": "Ялунвань — пляжный отдых; Дадунхай — городская жизнь; Санья-Бэй — закаты; Хайтан — большие курорты.",
+    "points": [
+      "Ялунвань (亚龙湾): курортный пляж и просторная бухта, удобно проводить спокойные дни у моря.",
+      "Дадунхай (大东海): больше магазинов, кафе и городской жизни в пешей доступности.",
+      "Санья-Бэй (三亚湾): длинная береговая прогулка и западный обзор — популярное направление на закат.",
+      "Хайтан-Бэй (海棠湾): крупные отели, торговые центры и близость к острову Учжичжоу; море здесь не везде подходит для купания.",
+      "Не обещайте себе спокойное купание в любой бухте: ориентируйтесь на флаги спасателей, фактическое волнение и разрешённые зоны.",
+      "Одну и ту же бухту приятно посетить в разное время: утром ради пляжа, вечером — ради прогулки."
+    ],
+    "volatile": false,
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — Bays and Islands",
+        "url": "https://www.visitsanya.com/destination-category/bays-islands"
+      },
+      {
+        "title": "Sanya Tourism Board — budget guide to bay selection",
+        "url": "https://www.visitsanya.com/29428.html"
+      }
+    ],
+    "verifiedAt": "2026-11-09",
+    "status": "verified"
+  },
+  {
+    "id": "rainy-day-ideas",
+    "title": "Если идёт дождь: чем заняться",
+    "summary": "Держите запасной план: аквариум, торговые центры, музей или спокойный гастрономический вечер.",
+    "points": [
+      "В Хайтане можно рассмотреть крытый аквариум Atlantis и торговый комплекс CDF: но поездку оправдывает только интерес к этим местам.",
+      "В Дадунхае — «Большой ананас» и другие торговые центры, кафе и ресторанные этажи.",
+      "В центре Саньи — городские выставочные пространства; сверяйте часы и дневные перерывы.",
+      "Если ливень слабый, прогулка по торговой улице или фудкорту рядом с Ялунванем может быть удобнее дальней дороги.",
+      "Не путайте обычный дождь со штормовым предупреждением: при сильной грозе и ветре лучше остаться в безопасном помещении.",
+      "Не покупайте билеты на остров и водные аттракционы, не уточнив погоду и движение катеров."
+    ],
+    "volatile": true,
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — Atlantis Sanya",
+        "url": "https://www.visitsanya.com/destination/atlantis-sanya"
+      },
+      {
+        "title": "Sanya Tourism Board — shopping",
+        "url": "https://www.visitsanya.com/destination/cdf-sanya-international-duty-free-city"
+      },
+      {
+        "title": "Sanya Tourism Board — extreme weather guide",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/extreme-weather-travel-advice"
+      }
+    ],
+    "verifiedAt": "2026-11-09",
+    "status": "verified"
+  },
+  {
+    "id": "daily-amenities",
+    "title": "Быт в Санье: вода, стирка и магазины",
+    "summary": "Где искать бытовые мелочи, прачечную, аптеку и как пользоваться повседневными сервисами.",
+    "points": [
+      "Небольшие магазины и супермаркеты удобны для воды, перекусов, средств гигиены и солнцезащиты.",
+      "Стиральные машины есть не в каждом отеле: спросите о платной прачечной или самообслуживании на ресепшене.",
+      "Аптеки ищите в Amap по слову 药店, а супермаркеты — по 超市.",
+      "Воду для питья удобнее покупать бутилированную; не рассчитывайте, что везде можно бесплатно наполнить бутылку.",
+      "Уточняйте условия услуги заранее: цену стирки, дату готовности вещей и способ оплаты.",
+      "Сохраняйте адрес отеля на китайском и номер комнаты отдельно от телефона — это помогает при обращении за помощью."
+    ],
+    "volatile": false,
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — Everyday Amenities and Services",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/everyday-amenities-and-services"
+      }
+    ],
+    "verifiedAt": "2026-11-09",
+    "status": "verified"
+  },
+  {
+    "id": "charging-and-powerbanks",
+    "title": "Зарядки и пауэрбанки",
+    "summary": "Розетки 220 В; в кафе и ТЦ часто встречаются арендные батареи с оплатой по QR-коду.",
+    "points": [
+      "В Китае используется сеть 220 В; для нестандартной вилки понадобится универсальный переходник.",
+      "Перед зарядкой проверьте маркировку блока питания: современные телефонные зарядки обычно поддерживают 100–240 В.",
+      "Арендные пауэрбанки встречаются в отелях, торговых центрах, кафе и ресторанах.",
+      "Для аренды часто нужен Alipay или WeChat; перед подтверждением проверьте стоимость, залог и совместимость кабеля.",
+      "Возвращать батарею нужно в совместимую станцию сети; убедитесь, что приложение завершило аренду.",
+      "Перед долгой экскурсией лучше взять собственный пауэрбанк, заранее уточнив у авиакомпании правила провоза литиевых батарей."
+    ],
+    "volatile": true,
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — Internet and Communication",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/internet-and-communication"
+      },
+      {
+        "title": "Sanya Tourism Board — Daily Amenities",
+        "url": "https://www.visitsanya.com/planning/travel-guide/travel-tips/everyday-amenities-and-services"
+      }
+    ],
+    "verifiedAt": "2026-11-09",
+    "status": "verified"
+  },
+  {
+    "id": "li-miao-heritage",
+    "title": "Народы ли и мяо: что увидеть",
+    "summary": "Хайнань — не только море: в парках и культурных центрах знакомят с местными традициями и ремёслами.",
+    "points": [
+      "Народ ли — одна из коренных этнических общностей Хайнаня; известен искусством окрашивания и ткачества тканей.",
+      "В Бинлангу показывают традиционные дома, обработку тканей, гончарное ремесло и музыкально-танцевальные представления.",
+      "Мяоские элементы культуры в туристических программах представлены музыкой, костюмами и танцами с бамбуковыми шестами.",
+      "Выбирайте мастерские и экспозиции ради истории и знаний, а не только постановочных фотографий.",
+      "В культурном центре Саньи можно увидеть часть ремесленного наследия без дальнего выезда в уезд Баотин.",
+      "Перед съёмкой местных жителей и мастеров спрашивайте разрешение; не считайте традиционный костюм обязательным для фотографии."
+    ],
+    "volatile": false,
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — Bing Lang Gu",
+        "url": "https://www.visitsanya.com/destination/binglanggu-li-miao-cultural-heritage-park"
+      },
+      {
+        "title": "Sanya Tourism Board — Echoes of Li and Miao",
+        "url": "https://www.visitsanya.com/26914.html"
+      }
+    ],
+    "verifiedAt": "2026-11-09",
+    "status": "verified"
   }
 ]

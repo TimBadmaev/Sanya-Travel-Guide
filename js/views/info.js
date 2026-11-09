@@ -30,6 +30,9 @@ const INFO_GROUPS = [
   ["Связь и транспорт", ["connectivity", "taxi-amap", "taxi-rules", "city-transport"]],
   ["Деньги, билеты и покупки", ["payment", "attraction-booking", "duty-free-shopping", "tax-refund", "seafood-buying", "passport-friendly"]],
   ["Погода, здоровье и помощь", ["emergency", "extreme-weather", "climate", "beach-safety", "health-mosquitoes"]],
+  ["Бухты и идеи для отдыха", ["yalong-nearby-plans", "sanya-bays-compare", "rainy-day-ideas"]],
+  ["Местная еда и повседневный быт", ["hainan-food-guide", "restaurant-ordering", "daily-amenities", "charging-and-powerbanks"]],
+  ["Культура Хайнаня", ["li-miao-heritage"]],
   ["Правила и запреты", ["military-photography", "drones", "coral-marine-protection", "smoking"]],
 ];
 const OTHER_GROUP_LABEL = "Другое";
