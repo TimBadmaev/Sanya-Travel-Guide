@@ -19,6 +19,30 @@ test("real ODbL street paths are sourced and cover key tourist areas",()=>{
   }
 });
 
+
+test("v35 high-detail OSM layers are real opt-in regional packs",()=>{
+  const sw=readFileSync(new URL("../sw.js",import.meta.url),"utf8");
+  assert.match(sw,/CACHE_VERSION = "v35"/);
+  assert.match(sw,/offline-map-detail\.js/);
+  assert.doesNotMatch(sw,/["']\.\/data\/sanya-detail-[a-z]+\.json["']/);
+  for(const area of ["yalong","city","dadonghai","haitang","tianya"]){
+    const raw=readFileSync(new URL("../data/sanya-detail-"+area+".json",import.meta.url),"utf8");
+    assert.ok(Buffer.byteLength(raw)<1_200_000,area+" must remain lightweight");
+    const pack=JSON.parse(raw);
+    assert.equal(pack.version,1);
+    assert.equal(pack.area,area);
+    assert.match(pack.source,/OpenStreetMap/);
+    assert.ok(pack.land.length>0,area+" should have sourced land-use polygons");
+    assert.ok(Array.isArray(pack.buildings));
+    assert.ok(Array.isArray(pack.coast));
+    for(const [kind,ring] of pack.land){
+      assert.ok(kind>=0&&kind<=6);
+      assert.ok(ring.length>=4);
+      assert.deepEqual(ring[0],ring.at(-1),area+" polygons must close");
+    }
+  }
+});
+
 test("Amap H5 route links accept two known places or device position",()=>{
  const a={lat:18.232,lng:109.64},b={lat:18.253,lng:109.508};
  const both=buildAmapBetweenRouteUrl(a,b,"Ялунвань","Санья","walk");
