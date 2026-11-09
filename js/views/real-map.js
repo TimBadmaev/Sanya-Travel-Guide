@@ -372,13 +372,31 @@ export async function renderRealMap(container,ctx){
   if(picking)frame.scrollIntoView({block:"center",behavior:"smooth"});
  });
  for(const select of [start,finish,mode])select.addEventListener("change",directions);
+ let suppressClick=false;
  frame.addEventListener("pointerdown",e=>{
   if(e.target.closest("button"))return;
-  drag={id:e.pointerId,x:e.clientX,y:e.clientY,
-    center:worldPoint(center.lat,center.lng,zoom),moved:false};
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   frame.setPointerCapture(e.pointerId);
+  if(pointers.size===1){
+   drag={id:e.pointerId,x:e.clientX,y:e.clientY,
+    center:worldPoint(center.lat,center.lng,zoom),moved:false};
+  }else if(pointers.size===2){
+   const [a,b]=[...pointers.values()];
+   pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom};
+   drag=null;suppressClick=true;
+  }
  });
  frame.addEventListener("pointermove",e=>{
+  if(!pointers.has(e.pointerId))return;
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===2&&pinch){
+   const [a,b]=[...pointers.values()];
+   const distance=Math.max(1,Math.hypot(a.x-b.x,a.y-b.y));
+   const next=Math.max(MIN_Z,Math.min(MAX_Z,
+    Math.round(pinch.zoom+Math.log2(distance/Math.max(1,pinch.distance)))));
+   if(next!==zoom){zoom=next;draw();}
+   return;
+  }
   if(!drag||e.pointerId!==drag.id)return;
   const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
   if(Math.hypot(dx,dy)>6)drag.moved=true;
@@ -386,12 +404,20 @@ export async function renderRealMap(container,ctx){
   const point=worldCoords(drag.center.x-dx,drag.center.y-dy,zoom);
   if(Number.isFinite(point.lat)&&Number.isFinite(point.lng)){center=point;draw();}
  });
- let suppressClick=false;
- frame.addEventListener("pointerup",e=>{
-  if(!drag)return;
-  suppressClick=drag.moved;drag=null;
- });
- frame.addEventListener("pointercancel",()=>{drag=null;});
+ function release(e){
+  pointers.delete(e.pointerId);
+  if(pointers.size<2)pinch=null;
+  if(drag){suppressClick=drag.moved||suppressClick;drag=null;}
+  if(pointers.size===1){
+   const [id,p]=[...pointers.entries()][0];
+   drag={id,x:p.x,y:p.y,center:worldPoint(center.lat,center.lng,zoom),moved:true};
+  }
+ }
+ frame.addEventListener("pointerup",release);
+ frame.addEventListener("pointercancel",release);
+ frame.addEventListener("wheel",e=>{
+  e.preventDefault();z(e.deltaY<0?1:-1);
+ },{passive:false});
  frame.addEventListener("click",e=>{
   if(e.target.closest("button")||!picking||suppressClick){suppressClick=false;return;}
   const rect=frame.getBoundingClientRect();
