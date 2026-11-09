@@ -82,6 +82,19 @@ export async function renderWelcome(container, ctx) {
       el(panel, "p", "welcome__lead", "Исследуй пляжи, находи необычные места, узнавай истории острова и раскрашивай свою карту открытий.");
       const reasons = el(panel, "div", "welcome__benefits");
       ["🗺️ Открывай места", "⭐ Выполняй задания", "🏝️ Собирай воспоминания"].forEach((name) => el(reasons, "span", "", name));
+      const joke=el(panel,"button","welcome__joke-button","🦀 Услышать совет краба");
+      joke.type="button";
+      const punchline=el(panel,"p","welcome__joke","У меня для тебя 10 идей отдыха. Ни одна не требует сидеть в офисе.");
+      const lines=[
+       "Если тебя спросили, зачем ты на Хайнане, отвечай: научное исследование кокосов.",
+       "Главное правило отпуска: в рюкзаке должна быть вода, а в расписании — место для ничего.",
+       "Островных открытий много. Но начать можно с завтрака без будильника.",
+       "Краб напоминает: лучший маршрут иногда ведёт к морю и обратно."
+      ];
+      let jokeIndex=0;
+      joke.addEventListener("click",()=>{
+       punchline.textContent=lines[jokeIndex++%lines.length];
+      });
     } else if (step === 1) {
       el(panel, "div", "welcome__symbol", "✈️");
       el(panel, "p", "welcome__kicker", "ПЛАН ТВОЕГО ПРИКЛЮЧЕНИЯ");
