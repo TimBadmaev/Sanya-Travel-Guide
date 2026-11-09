@@ -16,6 +16,7 @@ import { CATEGORY_ICONS, DEFAULT_ICON } from "./places.js";
 import { appendBackLink, createConfirm, renderPlanError } from "./plan.js";
 import { CATEGORY_INK, PART_BADGES, createMapSvg, createStickerArt, el, tiltOf } from "./passport-art.js";
 import { renderStreetMap } from "./street-map.js";
+import { renderOfflineAtlas } from "./offline-atlas.js";
 
 // «Паспорт исследователя» (EXPLORER-PASSPORT-SPEC.md): экран #/passport со
 // схемой побережья, экраны частей побережья #/passport/zone/<id>, альбом
@@ -136,6 +137,7 @@ export async function renderPassport(container, ctx) {
   const mapProgress = appendText(page, "div", "quest-map__progress",
     "🎨 Раскрашено " + result.reward.visited + " из " + result.reward.total + " мест · " + result.coastPartsVisited + " из " + result.coastParts.length + " частей побережья");
   mapProgress.setAttribute("role", "status");
+  renderOfflineAtlas(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderStreetMap(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderOverview(page, { result, content, places, state });
   renderStats(page, result);
@@ -209,7 +211,7 @@ function mapFigure(parent, svg, legendExtra) {
 function renderOverview(page, { result, content, places, state }) {
   const section = document.createElement("section");
   section.className = "settings-section";
-  appendText(section, "h3", "settings-section__title", "🏝️ Схема побережья без интернета");
+  appendText(section, "h3", "settings-section__title", "🏅 Семь игровых зон для наклеек");
   const svg = createMapSvg({
     viewBox: OVERVIEW_BOX,
     parts: content.coastParts,
