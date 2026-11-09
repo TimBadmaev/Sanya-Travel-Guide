@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v37: retro games, marked must-do list, dark reset contrast and airplane mode."""
+"""v38: retro and multiplayer games, marked must-do list, dark reset contrast and airplane mode."""
 import os,socket,sys
 sys.path.insert(0,os.path.dirname(__file__))
 from cdp import Browser,serve
@@ -19,7 +19,7 @@ def main():
   b.go(base,"#/games",cold=True)
   if not b.wait_for("document.querySelectorAll('.game-hub__card').length===5",20):
    raise AssertionError(f"Game hub missing: {b.exceptions}")
-  check("only snake fish and memory are featured","[...document.querySelectorAll('.game-hub__card')].map(x=>x.getAttribute('href')).join(',')","#/games/snake,#/games/fish,#/games/memory,#/games/four,#/games/hockey")
+  check("five solo and multiplayer games are featured","[...document.querySelectorAll('.game-hub__card')].map(x=>x.getAttribute('href')).join(',')","#/games/snake,#/games/fish,#/games/memory,#/games/four,#/games/hockey")
   check("game hub fits 320px","document.documentElement.scrollWidth<=innerWidth")
   b.go(base,"#/games/snake",cold=True)
   if not b.wait_for("document.querySelectorAll('.snake-grid__cell').length===324",20):
@@ -84,7 +84,7 @@ def main():
    raise AssertionError("PWA not controlled yet")
   b.send("Network.emulateNetworkConditions",{"offline":True,"latency":0,"downloadThroughput":0,"uploadThroughput":0})
   b.go(base,"#/games",cold=True)
-  if not b.wait_for("document.querySelectorAll('.game-hub__card').length===3",20):
+  if not b.wait_for("document.querySelectorAll('.game-hub__card').length===5",20):
    raise AssertionError(f"Games offline failed: {b.exceptions}")
   b.go(base,"#/games/snake",cold=True)
   if not b.wait_for("document.querySelectorAll('.snake-grid__cell').length===324",20):
