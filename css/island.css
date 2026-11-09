@@ -1223,3 +1223,58 @@ button.naval-game__cell:not(:disabled):active{background:#74d5d7;}
  .island-atlas__toolbar .island-atlas__pin-toggle{grid-column:3;}
  .island-atlas__toolbar .island-atlas__filter{grid-column:1/-1;}
 }
+
+/* v38 — accessible shared-phone multiplayer games. */
+.game-hub__group{
+ margin:22px 0 7px;color:#def8f1;font-size:16px;font-weight:950;
+}
+.duo-game{
+ background:#142e4b;border:1px solid #537b91;
+ border-radius:18px;padding:13px;margin:14px 0;
+ color:#f2fcff;
+}
+.duo-game__status{
+ color:#f1fbff;font-size:16px;font-weight:950;
+ text-align:center;line-height:1.45;margin:4px 0 12px;
+}
+.duo-game__hint{
+ color:#cee4f3;font-size:12px;line-height:1.5;margin:12px 0;
+ text-align:center;
+}
+.duo-game__reset{width:100%;min-height:48px;}
+.duo-four__columns,.duo-four__board{
+ display:grid;grid-template-columns:repeat(7,minmax(0,1fr));
+ gap:4px;width:100%;max-width:390px;margin:0 auto;
+}
+.duo-four__columns{margin-bottom:7px;}
+.duo-four__drop{
+ min-height:49px;min-width:0;border:1px solid #609bb2;
+ border-radius:10px;background:#2a5974;color:#e8fdff;
+ font-size:23px;font-weight:900;
+}
+.duo-four__drop:disabled{opacity:.4;}
+.duo-four__cell{
+ display:grid;place-items:center;min-width:0;aspect-ratio:1;
+ border-radius:50%;border:2px solid #3f738a;
+ background:#071d33;color:transparent;font-size:27px;
+ box-shadow:inset 0 1px 5px rgba(0,0,0,.35);
+}
+.duo-four__cell.is-yellow{color:#fff1a0;background:#e5b849;border-color:#ffe88a;}
+.duo-four__cell.is-coral{color:#ffd5db;background:#d65a6a;border-color:#faa8b3;}
+.duo-hockey__canvas{
+ display:block;width:100%;max-width:390px;height:auto;
+ aspect-ratio:360/520;margin:0 auto;border:2px solid #608da7;
+ border-radius:15px;touch-action:none;
+}
+.duo-game__actions{
+ display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px;
+}
+.duo-game__actions button{min-height:49px;min-width:0;padding:8px;font-size:13px;}
+.duo-four__drop:focus-visible,.duo-game__actions button:focus-visible{
+ outline:3px solid #a1f6ec;outline-offset:3px;
+}
+@media(max-width:360px){
+ .duo-game{padding:9px;}
+ .duo-four__columns,.duo-four__board{gap:2px;}
+ .duo-four__cell{border-width:1px;font-size:21px;}
+}
