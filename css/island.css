@@ -519,3 +519,155 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .place-feature__tip {padding:12px;background:white;border-radius:13px;}
 .place-feature__source {display:inline-flex;align-items:center;min-height:44px;font-weight:900;font-size:13px;}
 @media (prefers-reduced-motion:reduce){.quest-app .passport-map .pp-reveal,.rank-mascot{animation:none!important}}
+
+
+/* ===================== v32 · MIDNIGHT ISLAND ===================== */
+/* Dark navy by default: readable text on #142542 and teal/indigo accents.
+   Legacy light-only illustrations (passport stamps) retain their pigments. */
+:root {
+  color-scheme: dark;
+  --color-bg: #091326;
+  --color-surface: #14223d;
+  --color-surface-alt: #1c2e4e;
+  --color-border: #354969;
+  --color-text: #f2f6ff;
+  --color-text-muted: #bacbe3;
+  --color-primary: #70dce4;
+  --color-primary-dark: #34b2c2;
+  --color-critical: #ffca7b;
+  --color-critical-bg: #3a2b25;
+}
+html,body { background: #091326; color:var(--color-text); }
+a { color:var(--color-primary); }
+:focus-visible { outline-color:#89eaf6; }
+.quest-app { background:linear-gradient(180deg,#0b1b37 0%,#091326 44%,#101c35 100%); color:var(--color-text); }
+.quest-app .app-header {
+  background:rgba(10,22,44,.96);
+  border-bottom:1px solid #2b4364;
+  box-shadow:0 4px 28px rgba(0,0,0,.2);
+}
+.app-header__brand { color:#a0eef0; }
+.app-header__brand-icon { background:#284d69; }
+.app-header__profile { background:#1e3558;border-color:#426584; }
+.quest-app .bottom-nav {
+  background:rgba(14,26,49,.98);
+  box-shadow:0 -7px 24px rgba(0,0,0,.3);
+  border-top:1px solid #344a69;
+}
+.quest-app .bottom-nav__item {color:#b5c7df;}
+.quest-app .bottom-nav__item.is-active {background:#29486a;color:#a1eff1;}
+.quest-app .btn--primary,.quest-app .welcome__primary {
+  color:#072a38;background:#7adee0;border-color:#60d2dc;
+  box-shadow:inset 0 -3px rgba(0,35,50,.15);
+}
+.quest-app .btn--primary:hover {background:#9aedf0;}
+.quest-app .btn--secondary {
+  color:#e9f4ff;background:#1b3152;border:2px solid #426284;box-shadow:none;
+}
+.quest-app .chip {border-color:#3e567a;color:#dceaff;background:#182b49;}
+.quest-app .chip[aria-pressed="true"] {background:#236e83;color:#f5fdff;border-color:#69d8e3;}
+.quest-app .search-bar__input, .quest-app .audio-filter,
+.quest-app select,.quest-app textarea,.quest-app input:not([type="checkbox"]):not([type="range"]):not([type="radio"]) {
+  background:#162a49;color:#f0f7ff;border-color:#3c597c;
+}
+.quest-app input::placeholder,.quest-app textarea::placeholder {color:#a9bcd4;opacity:1;}
+.quest-app .discover__hero {background:linear-gradient(142deg,#203f6b,#19294d 65%,#3a326d);color:#f6f7ff;border:1px solid #425b81;}
+.quest-app .discover__hero h2,.quest-app .discover__hero p,.quest-app .discover__hero .discover__eyebrow {color:#f2f7ff;}
+.quest-app .discover__search {background:#173455;color:#d8f8fb;border-color:#51738e;}
+.quest-app .discover__shortcut,.quest-app .discover__place,
+.quest-app .quest-me__link,.quest-app .quest-me__trip,
+.quest-app .quest-quick__item,.quest-app .quest-hud__xp,
+.quest-app .quest-hud__visited,.quest-app .quest-current,
+.quest-app .quest-world,.quest-app .quest-world__stage,
+.quest-app .rank-collection,.quest-app .rank-medal,
+.quest-app .place-feature,.quest-app .street-map,
+.quest-app .quest-home-rank,.quest-app .passport-rank-link,
+.quest-app .welcome__benefits span {
+  background:#152744;color:#f1f6ff;border-color:#344d6d;
+  box-shadow:0 4px 14px rgba(0,0,0,.10);
+}
+.quest-app .quest-world__stage {
+  background:radial-gradient(ellipse at 45% 18%,#1c4262,#162840 72%);
+}
+.quest-app .quest-intro {background:linear-gradient(135deg,#1c4161 0%,#182b48 62%,#403c63 100%);color:#f2f6ff;}
+.quest-app .quest-intro__travel,.quest-app .quest-step__callout,
+.quest-app .quest-world__badge {background:#223d63;color:#e8f8ff;border-color:#42648a;}
+.quest-app .quest-hud__name {color:#83e3dc;}
+.quest-app .quest-me__link,.quest-app .quest-me__link strong,
+.quest-app .quest-quick__item,.quest-app .quest-current,
+.quest-app .quest-current strong {color:#f0f6ff;}
+.quest-app .quest-me__link-icon,.quest-app .discover__shortcut-icon {background:#294568;}
+.quest-app .quest-hud__xp {color:#ffd586;}
+.quest-app .quest-hud__visited {color:#bdeeea;}
+.quest-app .rank-collection__desc,.quest-app .rank-medal small {color:#bfcee2;}
+.quest-app .rank-medal.is-earned {background:#393451;border-color:#bf9ed2;}
+.quest-app .rank-medal.is-locked {background:#14213a;opacity:.85;}
+.quest-app .place-feature {background:linear-gradient(150deg,#153a4e,#292747);color:#f6f7ff;}
+.quest-app .place-feature__label {color:#8ce4dd;}
+.quest-app .place-feature p,.quest-app .place-feature__moments {color:#d1e2ee;}
+.quest-app .place-feature__tip {background:#25415a;}
+.quest-app .street-map__hint {color:#bccee3;}
+.quest-app .settings-section,.quest-app .info-card,
+.quest-app .food-card,.quest-app .excursion-card,.quest-app .passport-stat,
+.quest-app .phase,.quest-app .plan-day-card,
+.quest-app .audio-guide,.quest-app .audio-catalog__item {
+  background:var(--color-surface);border-color:var(--color-border);color:var(--color-text);
+}
+.quest-app .audio-guide__status,.quest-app .audio-catalog__status {color:#b9cde2;}
+.quest-app .audio-guide__eyebrow {color:#9fe1ef;}
+.quest-app .food-card__meta,.quest-app .food-card__price {color:#d0e4fa;}
+.quest-app .audio-guide__script p {color:#edf5ff;}
+/* Meaningful prominence for an opt-in download, never an auto-download. */
+.excursion-audio-banner,.audio-catalog__pack {
+ display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+ padding:17px;margin:12px 0 16px;
+ border:1px solid #5483a7;border-radius:18px;
+ background:linear-gradient(125deg,#193e5d,#28294e);
+ color:#f2f8ff;text-decoration:none;
+}
+.excursion-audio-banner__icon {font-size:28px;}
+.excursion-audio-banner__copy {display:flex;flex:1;min-width:190px;flex-direction:column;gap:4px;}
+.excursion-audio-banner__copy small {color:#c4dfed;font-size:13px;}
+.excursion-atlas-link {display:flex;align-items:center;min-height:44px;margin:5px 0 16px;font-weight:750;text-decoration:none;}
+.audio-catalog__eyebrow {font-size:12px;letter-spacing:.14em;font-weight:850;color:#9de1e9;}
+.audio-catalog__pack {display:block;}
+.audio-catalog__pack h3 {margin:0 0 5px;font-size:19px;color:#f3fbff;}
+.audio-catalog__pack p {margin:0 0 13px;font-size:14px;color:#c6dbea;line-height:1.45;}
+.audio-catalog__all {display:block;width:100%;min-height:52px;}
+.audio-catalog__confirm {
+ border:1px solid #b9a9ef;border-radius:15px;padding:14px;
+ margin:0 0 15px;background:#242e52;
+ display:flex;flex-wrap:wrap;gap:9px;
+}
+.audio-catalog__confirm[hidden],.audio-catalog__legacy[hidden],.audio-catalog__actions button[hidden] {display:none!important;}
+.audio-catalog__confirm p {flex:0 0 100%;margin:0 0 4px;line-height:1.5;font-size:14px;}
+.audio-catalog__confirm button {flex:1 1 auto;}
+.audio-catalog__legacy {padding:14px;margin:12px 0;border:1px solid #826e56;background:#342b33;border-radius:15px;}
+.audio-catalog__legacy p {margin:0 0 8px;font-size:14px;}
+.audio-guide__video {display:flex;align-items:center;min-height:48px;font-weight:800;margin:10px 0 3px;text-decoration:underline;}
+.audio-guide__video-note {display:block;font-size:12px;color:#b9cde2;margin-bottom:8px;}
+/* True offline geographic overview: land shape is actual 1:50m coastline. */
+.island-atlas__intro {color:#d3e2f1;line-height:1.5;}
+.island-atlas__toolbar {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;}
+.island-atlas__filter {grid-column:1/-1;}
+.island-atlas {overflow:hidden;border:1px solid #436c90;border-radius:20px;background:#081d34;box-shadow:0 8px 25px rgba(0,0,0,.25);}
+.island-atlas__svg {display:block;width:100%;aspect-ratio:1.3/1;}
+.island-atlas__land {stroke:#a3e4c1;stroke-width:1.5;}
+.island-atlas__shore-shadow {fill:#081b30;stroke:#50b1ba;stroke-width:5;opacity:.85;}
+.island-atlas__contour {fill:none;stroke:#b8f0b4;stroke-width:1.5;opacity:.17;stroke-linecap:round;}
+.island-atlas__island-text {fill:#d5eecb;letter-spacing:.25em;font-size:18px;font-weight:900;opacity:.7;}
+.island-atlas__city-dot {fill:#ffe5ab;stroke:#092a3e;stroke-width:2;}
+.island-atlas__city-text {fill:#fff0d4;font-size:12px;font-weight:800;letter-spacing:.08em;}
+.island-atlas__pin {cursor:pointer;outline:none;}
+.island-atlas__pin-halo {fill:rgba(102,231,236,.18);stroke:#a9f9fc;stroke-width:1;}
+.island-atlas__pin-core {fill:#a6f0f0;}
+.island-atlas__pin:focus-visible .island-atlas__pin-halo {stroke:#ffd17c;stroke-width:3;}
+.island-atlas__caption {font-size:12px;color:#aebfd1;line-height:1.5;}
+.island-atlas__list-head {font-size:17px;margin:18px 0 10px;}
+.island-atlas__list {display:grid;gap:8px;margin:0 0 20px;}
+.island-atlas__item {display:flex;align-items:center;min-height:48px;padding:10px 13px;border:1px solid #3a5474;border-radius:12px;background:#152744;color:#e4f6ff;text-decoration:none;}
+@media (min-width:620px){
+ .island-atlas__toolbar {grid-template-columns:1fr 1fr 2fr;}
+ .island-atlas__filter {grid-column:auto;}
+ .island-atlas__list {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
