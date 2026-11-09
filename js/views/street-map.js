@@ -39,8 +39,12 @@ function node(parent, tag, cls, text) {
 export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [], myPlan = { days: {} } } = {}) {
   const section = node(parent, "section", "street-map");
   const head = node(section, "div", "street-map__head");
-  node(head, "h3", "", "🗺️ Настоящая карта мест");
-  node(head, "p", "", "Улицы, бухты и реальные точки. Перемещай карту пальцем, нажимай на значки.");
+  node(head, "h3", "", "🗺️ Карта улиц — по желанию");
+  node(head, "p", "", "Офлайн-карта выше работает без трафика. Улицы загружай, только когда нужны.");
+  const consent = node(section, "div", "street-map__consent");
+  const activate = node(consent, "button", "street-map__activate", "🌐 Загрузить карту улиц");
+  activate.type = "button";
+  node(consent, "p", "street-map__hint", "Использует интернет · только видимый участок · в Китае возможны ограничения");
   const categories = node(section, "div", "street-map__filters");
   categories.setAttribute("role", "group");
   categories.setAttribute("aria-label", "Какие точки показать");
@@ -49,6 +53,7 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
     ["planned", "🗓️ В плане"], ["beach", "🏖️ Пляжи"], ["nature", "🌿 Природа"],
     ["culture", "🏯 Культура"], ["market", "🏮 Рынки"],
   ];
+  let active = false;
   let filter = "all";
   let zoom = 10, center = { ...CENTER };
   let selected = null;
@@ -66,6 +71,14 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
   });
 
   const frame = node(section, "div", "street-map__frame");
+  frame.hidden = true;
+  activate.addEventListener("click", () => {
+    if (active) return;
+    active = true;
+    frame.hidden = false;
+    activate.hidden = true;
+    draw();
+  });
   frame.setAttribute("aria-label", "Интерактивная карта с реальными координатами мест");
   const tiles = node(frame, "div", "street-map__tiles");
   tiles.setAttribute("aria-hidden", "true");
@@ -150,6 +163,7 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
     if (count) count.textContent = visible.length + " точек в категории";
   }
   function drawTiles() {
+    if (!active) return;
     tiles.replaceChildren();
     const { width, height } = frame.getBoundingClientRect();
     const c = worldPoint(center.lat, center.lng, zoom);
@@ -173,7 +187,7 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
     }
     tiles.appendChild(frag);
   }
-  function draw() { drawTiles(); drawPins(); }
+  function draw() { if (!active) return; drawTiles(); drawPins(); }
   function changeZoom(delta) {
     const z = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom + delta));
     if (z === zoom) return;
@@ -210,6 +224,8 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
   // Clicking map background clears preview, not visits.
   frame.addEventListener("click", (e) => { if (!e.target.closest("button")) { selected = null; preview.hidden = true; drawPins(); } });
   const count = node(section, "p", "street-map__count");
+  count.hidden = true;
+  activate.addEventListener("click", () => { count.hidden = false; });
   // Rendering starts after CSS/layout. ResizeObserver keeps pins on the right POI.
   let lastWidth = 0;
   const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => {
