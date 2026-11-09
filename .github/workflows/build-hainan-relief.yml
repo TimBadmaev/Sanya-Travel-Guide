@@ -1,8 +1,8 @@
-name: Build accurate offline shaded relief for Hainan
+name: Build natural-color satellite-derived terrain for Hainan
 
 on:
   push:
-    branches: [feature/audio-atlas-polish-v33]
+    branches: [feature/terrain-fish-duo-v38]
     paths:
       - 'scripts/build_hainan_relief.py'
       - '.github/workflows/build-hainan-relief.yml'
@@ -18,14 +18,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: feature/audio-atlas-polish-v33
+          ref: feature/terrain-fish-duo-v38
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Install geospatial image decoder
         run: python -m pip install 'Pillow==11.3.0'
-      - name: Crop real Natural Earth shaded relief and generate lightweight WebP
+      - name: Crop natural-color land cover and relief into tiny aligned Hainan WebP
         run: python scripts/build_hainan_relief.py
       - name: Commit only derived public-domain regional illustration
         run: |
@@ -35,8 +35,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "No change to local map"
           else
-            git commit -m "assets(map): public-domain Hainan terrain shading"
-            git fetch origin feature/audio-atlas-polish-v33
-            git rebase origin/feature/audio-atlas-polish-v33
-            git push origin HEAD:feature/audio-atlas-polish-v33
+            git commit -m "assets(v38): real natural-color Hainan terrain"
+            git fetch origin feature/terrain-fish-duo-v38
+            git rebase origin/feature/terrain-fish-duo-v38
+            git push origin HEAD:feature/terrain-fish-duo-v38
           fi
