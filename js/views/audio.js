@@ -196,7 +196,7 @@ export async function renderAudioCatalog(container, ctx) {
   back.addEventListener("click", e => {e.preventDefault();ctx.back("#/");});
   container.append(back, el("h2", "view-title", "🎧 Аудиогиды Хайнаня"));
   container.appendChild(el("p", "audio-catalog__intro",
-    `${entries.length} историй на русском, примерно по 1–5 минут. Слушайте в карточке места. Перед поездкой можно сохранить нужные записи для офлайна.`));
+    `${entries.length} историй на русском, примерно по 1–5 минут. Все записи вместе занимают около 25 МБ. По умолчанию показан Ялунвань — скачивайте нужный район, а не всю коллекцию.`));
 
   const tools = el("div", "audio-catalog__tools");
   const areaControl = document.createElement("select");
@@ -206,6 +206,7 @@ export async function renderAudioCatalog(container, ctx) {
     .concat([...areas].filter(([id])=>id!=="yalong").map(([id,name])=>({id,name})))
     .filter(x=>x.id==="any"||entries.some(([,g])=>g.area===x.id))
     .forEach(({id,name})=>{const o=document.createElement("option");o.value=id;o.textContent=name;areaControl.appendChild(o);});
+  areaControl.value = "yalong";
   const search=document.createElement("input");
   search.type="search";search.className="audio-filter";
   search.placeholder="Поиск по названию";search.setAttribute("aria-label","Поиск аудиогида");
