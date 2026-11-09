@@ -1,11 +1,12 @@
 // Island Quest v23: главный экран — путь открытий вместо старой ленты «Сейчас».
 // Данные мест и игровой прогресс читаем из существующих источников.
 // Штампы — вручную; настоящая навигация и экстренная помощь доступны отдельно.
-import { loadConfig, loadExplore, loadPassport, loadPlaces, loadErrorMessage } from "../data.js";
+import { loadConfig, loadExplore, loadPassport, loadPlaces, loadChecklist, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 import { prepareContent, evaluatePassport } from "../logic/passport.js";
 import { evaluateExplore } from "../logic/explore.js";
 import { getTripState, getTodayIso, TRIP_STATE, pluralizeRu } from "../logic/trip.js";
+import { summarizePreflight } from "../logic/prep-focus.js";
 
 function el(parent, tag, cls, text) {
   const node = document.createElement(tag);
@@ -29,6 +30,74 @@ function travelCaption(trip) {
   if (state.state === TRIP_STATE.BEFORE) return "✈️ До поездки " + state.daysUntil + " " + pluralizeRu(state.daysUntil, ["день", "дня", "дней"]);
   if (state.state === TRIP_STATE.AFTER) return "🏆 Путешествие завершено";
   return "✈️ Добавь даты путешествия";
+}
+
+// До вылета показываем реальные задачи подготовки раньше игрового пути.
+// Пункты можно отмечать прямо с главной; статус общий с #/prepare.
+function renderPreflight(parent, checklist, trip) {
+  const state = getTripState(trip, getTodayIso());
+  if (state.state !== TRIP_STATE.BEFORE && state.state !== TRIP_STATE.NO_DATES) return;
+  const days = state.state === TRIP_STATE.BEFORE ? state.daysUntil : null;
+  const info = summarizePreflight(checklist, storage.getChecklistState(), days);
+  const card = el(parent, "section", "quest-preflight");
+  const top = el(card, "div", "quest-preflight__top");
+  el(top, "span", "quest-preflight__eyebrow", "🧳 ПОДГОТОВКА К ПУТЕШЕСТВИЮ");
+  el(card, "h2", "quest-preflight__title", days === null ? "Сначала подготовимся!" :
+    "До вылета " + days + " " + pluralizeRu(days, ["день", "дня", "дней"]));
+  el(card, "p", "quest-preflight__subtitle", "Проверь документы, собери вещи и отметь готовое. За каждый выполненный пункт — +4 XP.");
+  const row = el(card, "div", "quest-preflight__meter");
+  const progress = el(row, "strong", "", "Готово " + info.done + " из " + info.total);
+  const pending = el(row, "span", "", info.remaining + " осталось");
+  const track = el(card, "div", "quest-preflight__bar");
+  track.setAttribute("role", "progressbar");
+  track.setAttribute("aria-label", "Подготовка до вылета");
+  track.setAttribute("aria-valuemin", "0");
+  track.setAttribute("aria-valuemax", String(info.total));
+  track.setAttribute("aria-valuenow", String(info.done));
+  const fill = el(track, "span", "");
+  fill.style.width = (info.total ? Math.round(100 * info.done / info.total) : 0) + "%";
+  if (info.remaining) {
+    el(card, "h3", "quest-preflight__tasks-title", days !== null && days <= 3 ? "Важно сделать сейчас" : "Что сделать дальше");
+    const tasks = el(card, "div", "quest-preflight__tasks");
+    info.tasks.forEach((task) => {
+      const label = el(tasks, "label", "quest-preflight__task");
+      const input = el(label, "input", "");
+      input.type = "checkbox";
+      input.checked = Boolean(storage.getChecklistState()[task.id]);
+      input.dataset.taskId = task.id;
+      el(label, "span", "quest-preflight__task-check", "✓").setAttribute("aria-hidden", "true");
+      const body = el(label, "span", "quest-preflight__task-body");
+      el(body, "strong", "", task.title);
+      el(body, "small", "", task.phase === "packing" ? "🧳 Чемодан" :
+        task.topic === "documents" ? "📄 Документы" : task.critical ? "⚠️ Важно" : "✓ Подготовка");
+      input.addEventListener("change", () => {
+        if (!storage.setChecklistItemDone(task.id, input.checked)) {
+          input.checked = !input.checked;
+          const message = el(card, "p", "quest-preflight__error", "Не удалось сохранить отметку.");
+          message.setAttribute("role", "status");
+          return;
+        }
+        label.classList.toggle("is-done", input.checked);
+        const changed = summarizePreflight(checklist, storage.getChecklistState(), days);
+        progress.textContent = "Готово " + changed.done + " из " + changed.total;
+        pending.textContent = changed.remaining + " осталось";
+        track.setAttribute("aria-valuenow", String(changed.done));
+        fill.style.width = Math.round(100 * changed.done / changed.total) + "%";
+      });
+    });
+  } else {
+    el(card, "p", "quest-preflight__complete", "🎉 Всё готово к вылету! Можно переходить к приключениям.");
+  }
+  const actions = el(card, "div", "quest-preflight__actions");
+  const all = el(actions, "a", "quest-preflight__primary", "Открыть весь чек-лист →");
+  all.href = "#/prepare";
+  if (days === null) {
+    const dates = el(actions, "a", "quest-preflight__secondary", "✈️ Указать даты поездки");
+    dates.href = "#/settings";
+  } else {
+    const docs = el(actions, "a", "quest-preflight__secondary", "📄 Документы и вещи");
+    docs.href = "#/prepare";
+  }
 }
 
 function makeTrail(parent) {
@@ -100,10 +169,10 @@ export async function renderAdventure(container, ctx) {
     return;
   }
   container.innerHTML = '<p class="loading">Открываем новые приключения…</p>';
-  let places, config, passportRaw, exploreRaw;
+  let places, config, passportRaw, exploreRaw, checklist;
   try {
-    [places, config, passportRaw, exploreRaw] = await Promise.all([
-      loadPlaces(), loadConfig(), loadPassport(), loadExplore(),
+    [places, config, passportRaw, exploreRaw, checklist] = await Promise.all([
+      loadPlaces(), loadConfig(), loadPassport(), loadExplore(), loadChecklist(),
     ]);
   } catch (err) {
     if (!ctx.isCurrent()) return;
@@ -117,6 +186,7 @@ export async function renderAdventure(container, ctx) {
   const game = evaluateExplore({
     places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(), passportResult: p,
     explore: storage.getExplore(), expenses: storage.getExpenses(), activity: storage.getActivity(),
+    checklist, checklistState: storage.getChecklistState(),
     chapters: exploreRaw.chapters, lessons: exploreRaw.lessons,
   });
   const next = game.chapters.flatMap((c) => c.nodes).find((n) => !n.done);
@@ -134,12 +204,14 @@ export async function renderAdventure(container, ctx) {
   el(points, "span", "quest-hud__visited", "🏅 " + p.reward.visited);
 
 
+  renderPreflight(page, checklist, trip);
+
   const intro = el(page, "section", "quest-intro");
   const daily = el(intro, "p", "quest-intro__daily", "🎁 +3 XP за первый запуск приложения каждый день · без серий и штрафов");
   daily.setAttribute("aria-label", "Три очка опыта за каждый уникальный день использования");
   const eyebrow = el(intro, "div", "quest-intro__eyebrow", "ТВОЯ ИСТОРИЯ НА ОСТРОВЕ");
   eyebrow.setAttribute("role", "heading"); eyebrow.setAttribute("aria-level", "3");
-  el(intro, "h2", "quest-intro__title", "Готов к открытиям?");
+  el(intro, "h2", "quest-intro__title", getTripState(trip, getTodayIso()).state === TRIP_STATE.BEFORE ? "Приключение уже близко!" : "Готов к открытиям?");
   el(intro, "p", "quest-intro__copy", "Исследуй красивые места, находи секреты и собирай собственную карту Хайнаня.");
   const subtitle = el(intro, "a", "quest-intro__travel", travelCaption(trip));
   subtitle.href = trip.start && trip.end ? "#/me" : "#/settings";

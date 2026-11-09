@@ -1,6 +1,6 @@
 // Профиль исследователя и доступ ко всем полезным функциям прошлого продукта.
 // Отдельного аккаунта нет: всё хранится на устройстве и входит в копию.
-import { loadConfig, loadExplore, loadPassport, loadPlaces } from "../data.js";
+import { loadConfig, loadExplore, loadPassport, loadPlaces, loadChecklist } from "../data.js";
 import { storage } from "../storage.js";
 import { prepareContent, evaluatePassport } from "../logic/passport.js";
 import { evaluateExplore } from "../logic/explore.js";
@@ -30,9 +30,9 @@ function section(parent, title, items) {
 
 export async function renderMe(container, ctx) {
   container.innerHTML = '<p class="loading">Собираем твои достижения…</p>';
-  let places, config, passportRaw, exploreRaw;
+  let places, config, passportRaw, exploreRaw, checklist;
   try {
-    [places, config, passportRaw, exploreRaw] = await Promise.all([loadPlaces(), loadConfig(), loadPassport(), loadExplore()]);
+    [places, config, passportRaw, exploreRaw, checklist] = await Promise.all([loadPlaces(), loadConfig(), loadPassport(), loadExplore(), loadChecklist()]);
   } catch (err) {
     if (!ctx.isCurrent()) return;
     container.replaceChildren();
@@ -46,7 +46,8 @@ export async function renderMe(container, ctx) {
   const status = getTripState(trip, getTodayIso());
   const passport = evaluatePassport({ state: storage.getPassport(), places, content: prepareContent(passportRaw, config) });
   const game = evaluateExplore({ places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(), passportResult: passport,
-    explore: storage.getExplore(), expenses: storage.getExpenses(), activity: storage.getActivity(), chapters: exploreRaw.chapters, lessons: exploreRaw.lessons });
+    explore: storage.getExplore(), expenses: storage.getExpenses(), activity: storage.getActivity(), checklist, checklistState: storage.getChecklistState(),
+    chapters: exploreRaw.chapters, lessons: exploreRaw.lessons });
 
   container.replaceChildren();
   const page = el(container, "div", "quest-me");
