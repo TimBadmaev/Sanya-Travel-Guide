@@ -6,6 +6,11 @@ on:
     paths:
       - 'scripts/build_hainan_relief.py'
       - '.github/workflows/build-hainan-relief.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/build_hainan_relief.py'
+      - '.github/workflows/build-hainan-relief.yml'
   workflow_dispatch:
 
 permissions:
