@@ -55,5 +55,7 @@ jobs:
             echo "Audio already up to date"
           else
             git commit -m "build(audio): narrate 57 original Russian guides"
+            git fetch origin feature/audio-guides-v31
+            git rebase origin/feature/audio-guides-v31
             git push origin HEAD:feature/audio-guides-v31
           fi
