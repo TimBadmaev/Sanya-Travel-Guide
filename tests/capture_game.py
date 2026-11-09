@@ -74,6 +74,7 @@ def run(root, prefix, output):
         else:
             pages = [
                 ("welcome", "#/welcome", ".welcome__title"),
+                ("preflight", "#/", ".quest-preflight"),
                 ("home", "#/", ".quest-world"),
                 ("discover", "#/discover", ".discover__categories"),
                 ("passport", "#/passport", ".passport-map"),
@@ -84,6 +85,11 @@ def run(root, prefix, output):
                 ("expenses", "#/expenses", ".expense-xp-tip"),
             ]
         for name, path, element in pages:
+            if prefix == "after" and name == "preflight":
+                # Для отдельного кадра используем дату поездки, которая ещё впереди.
+                b.js("localStorage.setItem(\'stg:trip\', JSON.stringify({start:\'2026-11-23\',end:\'2026-12-06\',area:\'yalong\',stay:null,home:null})); true")
+            elif prefix == "after" and name == "home":
+                b.js("localStorage.setItem(\'stg:trip\', JSON.stringify({start:\'2026-11-13\',end:\'2026-11-26\',area:\'yalong\',stay:null,home:null})); true")
             b.go(base, path, cold=True)
             if not b.wait_for(f"!!document.querySelector({json.dumps(element)}) && !document.querySelector('.loading')", 20):
                 raise RuntimeError(f"{prefix} {path} did not render: {b.exceptions}")
