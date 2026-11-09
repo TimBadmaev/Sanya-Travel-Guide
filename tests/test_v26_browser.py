@@ -57,7 +57,7 @@ def main():
         go("#/me",".rank-card")
         check("same profile and passport level","document.querySelector('.rank-card__title').textContent.includes('Первопроходец')")
         check("six milestones in profile","document.querySelectorAll('.quest-me .rank-card__badge').length",6)
-        check("profile still offers backup and reset","!!document.querySelector('.quest-reset__trigger') && !!document.querySelector('.quest-me__link[href='#/data']')")
+        check("profile still offers backup and reset","!!document.querySelector('.quest-reset__trigger') && !!document.querySelector('.quest-me__link[href=\"#/data\"]')")
         go("#/excursions",".excursion-card")
         check("38 excursion cards","document.querySelectorAll('.excursion-card').length",38)
         go("#/excursion/phoenix-haiyue-sunset",".excursion-story")
