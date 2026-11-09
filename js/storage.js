@@ -6,6 +6,7 @@ import { normalizePassportState, withNote, withRestoredVisit, withVisit, without
 import { normalizeExploreState, withCompletedLesson } from "./logic/explore.js";
 import { normalizeActivity, withOpenedDay } from "./logic/activity.js";
 import { normalizeGameData } from "./logic/minigames.js";
+import { normalizeMustDo } from "./logic/must-do.js";
 
 const SCHEMA_VERSION = 1;
 
@@ -48,12 +49,13 @@ export const KEYS = {
   explore: "stg:explore",
   activity: "stg:activity",
   games: "stg:games",
+  mustdo: "stg:mustdo",
 };
 
 // Данные пользователя, которые переносит копия (Iteration 9, экспорт/импорт):
 // только то, что нельзя восстановить из контента. Служебные флаги
 // (stg:schema, подсказка установки) и аварийные копии (…:backup) не входят.
-export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget, KEYS.passport, KEYS.explore, KEYS.activity, KEYS.games];
+export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget, KEYS.passport, KEYS.explore, KEYS.activity, KEYS.games, KEYS.mustdo];
 
 // Сырые копии повреждённых значений: перед записью поверх неразбираемого
 // значения (в том числе при импорте) оно один раз сохраняется сюда.
@@ -691,6 +693,8 @@ function normalizeSection(key, value) {
       return value && typeof value === "object" && !Array.isArray(value) ? normalizeActivity(value) : null;
     case KEYS.games:
       return value && typeof value === "object" && !Array.isArray(value) ? normalizeGameData(value) : null;
+    case KEYS.mustdo:
+      return value && typeof value === "object" && !Array.isArray(value) ? normalizeMustDo(value) : null;
     default:
       return null;
   }
@@ -778,6 +782,18 @@ function clearImportBackup() {
   }
 }
 
+function getMustDo(){
+ if(!storageAvailable)return normalizeMustDo(null);
+ try{const raw=window.localStorage.getItem(KEYS.mustdo);
+  return normalizeMustDo(raw?JSON.parse(raw):null);
+ }catch{return normalizeMustDo(null);}
+}
+function setMustDo(value){
+ if(!storageAvailable)return false;
+ try{window.localStorage.setItem(KEYS.mustdo,JSON.stringify(normalizeMustDo(value)));return true;}
+ catch(error){console.error("Не удалось сохранить впечатления",error);return false;}
+}
+
 // Игры входят в пользовательский экспорт и очищаются общим сбросом.
 function getGameData(){
  if(!storageAvailable)return normalizeGameData(null);
@@ -823,6 +839,8 @@ export const storage = {
   resetAllUserData,
   getGameData,
   setGameData,
+  getMustDo,
+  setMustDo,
   isAvailable: () => storageAvailable,
   getPlanDone,
   setPlanItemDone,
