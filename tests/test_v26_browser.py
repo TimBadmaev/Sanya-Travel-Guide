@@ -46,6 +46,8 @@ def main():
         check("atlas group expands into place links","!document.querySelector('.atlas__preview').hidden")
         check("atlas group always points to real place","document.querySelector('.atlas__preview-links a').getAttribute('href').startsWith('#/place/')")
         check("old seven-area game map still present","document.querySelectorAll('.pp-badge').length",7)
+        if not b.wait_for("!!document.querySelector('.passport .rank-card')", 15):
+            raise AssertionError("Awards did not render in passport")
         check("rank awards embedded in passport","!!document.querySelector('.passport .rank-card')")
         check("milestone collection has six badges","document.querySelectorAll('.passport .rank-card__badge').length",6)
         check("only first milestone initially earned","document.querySelectorAll('.passport .rank-card__badge.is-earned').length",1)

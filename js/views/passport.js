@@ -140,19 +140,10 @@ export async function renderPassport(container, ctx) {
   const mapProgress = appendText(page, "div", "quest-map__progress",
     "🎨 Раскрашено " + result.reward.visited + " из " + result.reward.total + " мест · " + result.coastPartsVisited + " из " + result.coastParts.length + " частей побережья");
   mapProgress.setAttribute("role", "status");
-  // Значки вычисляются из XP — тот же результат, что в профиле «Моё».
-  // Ошибка данных наград не должна блокировать основной паспорт.
-  try {
-    const [exploreContent, checklist] = await Promise.all([loadExplore(), loadChecklist()]);
-    if (!ctx.isCurrent()) return;
-    const awards = evaluateExplore({ places, savedIds: storage.getSavedIds(),
-      myPlan: storage.getMyPlan(), passportResult: result, explore: storage.getExplore(),
-      expenses: storage.getExpenses(), activity: storage.getActivity(), checklist,
-      checklistState: storage.getChecklistState(),
-      chapters: exploreContent.chapters, lessons: exploreContent.lessons });
-    renderRankAwards(page, awards, true);
-  } catch (err) { console.warn("Награды временно недоступны", err); }
-  if (!ctx.isCurrent()) return;
+  // Прогресс и карты появляются сразу: подгрузка значков их не блокирует.
+  const awardsSlot = document.createElement("div");
+  awardsSlot.className = "passport-awards-slot";
+  page.appendChild(awardsSlot);
   renderOfflineAtlas(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderStreetMap(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderOverview(page, { result, content, places, state });
@@ -176,6 +167,19 @@ export async function renderPassport(container, ctx) {
   const backupLink = appendText(footer, "a", "home-link", "Сохранить копию ›");
   backupLink.href = "#/data";
   page.appendChild(footer);
+
+  // Значки вычисляются из XP, но не должны задерживать появление карты.
+  Promise.all([loadExplore(), loadChecklist()]).then(([exploreContent, checklist]) => {
+    if (!ctx.isCurrent() || !awardsSlot.isConnected) return;
+    const awards = evaluateExplore({
+      places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(),
+      passportResult: result, explore: storage.getExplore(),
+      expenses: storage.getExpenses(), activity: storage.getActivity(), checklist,
+      checklistState: storage.getChecklistState(),
+      chapters: exploreContent.chapters, lessons: exploreContent.lessons,
+    });
+    renderRankAwards(awardsSlot, awards, true);
+  }).catch((err) => { console.warn("Награды временно недоступны", err); });
 }
 
 function renderStats(page, result) {
