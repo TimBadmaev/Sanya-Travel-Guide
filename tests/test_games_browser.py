@@ -17,9 +17,9 @@ def main():
   print("PASS",label,flush=True);done+=1
  try:
   b.go(base,"#/games",cold=True)
-  if not b.wait_for("document.querySelectorAll('.game-hub__card').length===3",20):
+  if not b.wait_for("document.querySelectorAll('.game-hub__card').length===5",20):
    raise AssertionError(f"Game hub missing: {b.exceptions}")
-  check("only snake fish and memory are featured","[...document.querySelectorAll('.game-hub__card')].map(x=>x.getAttribute('href')).join(',')","#/games/snake,#/games/fish,#/games/memory")
+  check("only snake fish and memory are featured","[...document.querySelectorAll('.game-hub__card')].map(x=>x.getAttribute('href')).join(',')","#/games/snake,#/games/fish,#/games/memory,#/games/four,#/games/hockey")
   check("game hub fits 320px","document.documentElement.scrollWidth<=innerWidth")
   b.go(base,"#/games/snake",cold=True)
   if not b.wait_for("document.querySelectorAll('.snake-grid__cell').length===324",20):
