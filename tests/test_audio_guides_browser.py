@@ -22,7 +22,10 @@ def main():
         print("PASS",name,flush=True);done+=1
     try:
         go("#/audio",".audio-catalog__item")
-        check("every verified place has audio catalog entry","document.querySelectorAll('.audio-catalog__item').length",57)
+        check("Yalong Bay is the default lightweight subset",
+              "document.querySelectorAll('.audio-catalog__item').length>0&&document.querySelectorAll('.audio-catalog__item').length<57")
+        b.js("document.querySelector('.audio-filter').value='any';document.querySelector('.audio-filter').dispatchEvent(new Event('change'));true")
+        check("every verified place is available in all-areas view","document.querySelectorAll('.audio-catalog__item').length",57)
         check("no MP3 auto-requested","performance.getEntriesByType('resource').filter(e=>e.name.endsWith('.mp3')).length",0)
         check("catalog search and area are accessible","document.querySelectorAll('.audio-filter').length",2)
         check("mobile has no horizontal overflow","document.documentElement.scrollWidth<=innerWidth")
