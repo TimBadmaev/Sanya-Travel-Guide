@@ -8,3 +8,9 @@
 - Audio files use MPEG-4 AAC-LC in .m4a containers, mono 24kHz / ~24kbit/s, compatible with iPhone/Safari. Exact total size is verified by CI, not estimated in code.
 - Audio narration is prepared at build time only, and remains an explicit download, not a mandatory Service Worker precache. Users who previously saved .mp3 files can clear retired files via the UI; do not silently delete their cache.
 - Test the actual voice character and Chinese names on a phone before relying on background/lock-screen behavior: passing browser tests cannot ensure subjective naturalness. A more expressive model is not necessarily indistinguishable from professional human voice actors.
+
+## Выпуск v34 — голос по пожеланию владельца
+
+Вместо женского `ru_ekaterina` подготовлен более ровный мужской Piper `ru_RU-denis-medium` в новых AAC/M4A файлах. Используется прежняя тихая оригинальная музыкальная подложка; ничего не копируется из видеообзоров. Офлайн-файлы старых голосов удаляются **только после подтверждения владельца**.
+
+Фактический путь для v34: `assets/audio-v3/<id>.m4a`. Модель `ru_RU-denis-medium` (Piper, см. `scripts/render_audio_v3.py`) используется только при сборке в GitHub Actions, а в браузере работает обычный плеер. Реальный объём указан в `data/audio-sizes-v3.json`.

@@ -18,10 +18,10 @@ export function renderAudioPlayer(container, place, guide) {
   if (!guide) return;
   const section = el("section", "audio-guide");
   section.setAttribute("aria-label", "Аудиогид по месту");
-  section.appendChild(el("p", "audio-guide__eyebrow", "🎧 ИСТОРИЯ МЕСТА · ЖИВОЙ РАССКАЗ"));
+  section.appendChild(el("p", "audio-guide__eyebrow", "🎧 ИСТОРИЯ МЕСТА · РОВНЫЙ ГОЛОС"));
   section.appendChild(el("h3", "audio-guide__title", guide.title));
   section.appendChild(el("p", "audio-guide__subtitle",
-    `≈${guide.minutes} мин · русский голос · негромкая авторская музыка`));
+    `≈${guide.minutes} мин · мужской голос · негромкая авторская музыка`));
 
   const media = document.createElement("audio");
   media.preload = "none";
@@ -277,8 +277,8 @@ export async function renderAudioCatalog(container,ctx){
       legacy.hidden=!old.count;
       if(!old.count)return;
       const p=el("p","",
-        `Найдены старые MP3 из прошлой версии: ${old.count} шт., ${fmtBytes(old.bytes)}. Новые записи работают отдельно.`);
-      const clear=el("button","btn btn--secondary","Удалить только старые MP3");
+        `Найдены старые записи предыдущих версий: ${old.count} шт., ${fmtBytes(old.bytes)}. Новые записи работают отдельно.`);
+      const clear=el("button","btn btn--secondary","Удалить старые аудиофайлы");
       clear.type="button";
       clear.addEventListener("click",async()=>{
         if(!window.confirm("Удалить старые записи предыдущей версии? Новые аудиогиды останутся."))return;

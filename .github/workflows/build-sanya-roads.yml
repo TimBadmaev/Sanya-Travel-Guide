@@ -1,0 +1,36 @@
+name: Build offline Sanya street network (OSM ODbL)
+on:
+  push:
+    branches: [feature/bright-maps-voice-v34]
+    paths:
+      - 'scripts/build_sanya_roads.py'
+      - '.github/workflows/build-sanya-roads.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/bright-maps-voice-v34
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Extract and simplify genuine OSM street data
+        run: python -u scripts/build_sanya_roads.py
+      - name: Commit offline road vectors without proprietary tiles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/sanya-roads.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "assets(map): independently hosted Sanya OSM streets"
+          git fetch origin feature/bright-maps-voice-v34
+          git rebase origin/feature/bright-maps-voice-v34
+          git push origin HEAD:feature/bright-maps-voice-v34

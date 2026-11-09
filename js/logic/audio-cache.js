@@ -4,7 +4,7 @@ export const AUDIO_CACHE = "sanya-audio-offline-v1";
 export const AUDIO_MIN_BYTES = 10000;
 
 export function guideAudioUrl(guide) {
-  if (!guide || !/^assets\/audio-v2\/[a-z0-9-]+\.m4a$/.test(guide.audio || "")) {
+  if (!guide || !/^assets\/audio-v3\/[a-z0-9-]+\.m4a$/.test(guide.audio || "")) {
     throw new Error("Некорректный путь к аудиогиду");
   }
   return new URL(guide.audio, document.baseURI).href;
@@ -72,7 +72,7 @@ export async function removeAudio(guide) {
 export async function legacyAudioCacheInfo() {
   if (!audioCacheAvailable()) return {count:0,bytes:0};
   const cache=await caches.open(AUDIO_CACHE);
-  const entries=(await cache.keys()).filter(req=>/\/assets\/audio\/[a-z0-9-]+\.mp3$/.test(new URL(req.url).pathname));
+  const entries=(await cache.keys()).filter(req=>/\/assets\/audio(?:-v2)?\/[a-z0-9-]+\.(?:mp3|m4a)$/.test(new URL(req.url).pathname));
   let bytes=0;
   for(const req of entries) {
     const r=await cache.match(req);
@@ -83,7 +83,7 @@ export async function legacyAudioCacheInfo() {
 export async function clearLegacyAudioCache() {
   if (!audioCacheAvailable()) return 0;
   const cache=await caches.open(AUDIO_CACHE);
-  const entries=(await cache.keys()).filter(req=>/\/assets\/audio\/[a-z0-9-]+\.mp3$/.test(new URL(req.url).pathname));
+  const entries=(await cache.keys()).filter(req=>/\/assets\/audio(?:-v2)?\/[a-z0-9-]+\.(?:mp3|m4a)$/.test(new URL(req.url).pathname));
   for(const req of entries)await cache.delete(req);
   return entries.length;
 }

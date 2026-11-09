@@ -39,8 +39,10 @@ export async function renderIslandAtlas(container,ctx) {
  container.innerHTML="";
  const back=el("a","place-detail__back","← К открытиям");
  back.href="#/discover";back.addEventListener("click",e=>{e.preventDefault();ctx.back("#/discover");});
- container.append(back,el("h2","view-title","🗺️ Хайнань без интернета"),
-  el("p","island-atlas__intro","Настоящая форма острова, места с аудиогидами и два масштаба. Открывается без картографических серверов."));
+ container.append(back,el("h2","view-title","🏝️ Обзор острова Хайнань"),
+  el("p","island-atlas__intro","Это схема всего острова: она не показывает детально дороги. Для настоящей карты улиц и маршрутов откройте карту Саньи."));
+ const streets=el("a","btn btn--primary island-atlas__streets","🗺️ Настоящая карта улиц и маршруты ›");
+ streets.href="#/map";container.appendChild(streets);
  const toolbar=el("div","island-atlas__toolbar");
  const southBtn=el("button","btn btn--secondary","📍 Санья и юг");
  const islandBtn=el("button","btn btn--secondary","🏝️ Весь остров");
