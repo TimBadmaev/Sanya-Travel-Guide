@@ -4,7 +4,7 @@ export const AUDIO_CACHE = "sanya-audio-offline-v1";
 export const AUDIO_MIN_BYTES = 10000;
 
 export function guideAudioUrl(guide) {
-  if (!guide || !/^assets\/audio\/[a-z0-9-]+\.mp3$/.test(guide.audio || "")) {
+  if (!guide || !/^assets\/audio-v2\/[a-z0-9-]+\.m4a$/.test(guide.audio || "")) {
     throw new Error("Некорректный путь к аудиогиду");
   }
   return new URL(guide.audio, document.baseURI).href;
@@ -46,14 +46,14 @@ export async function saveAudio(guide, { signal } = {}) {
   const response = await fetch(url, { signal, cache: "no-store" });
   if (!response.ok) throw new Error(`Аудиофайл не найден (HTTP ${response.status}).`);
   const blob = await response.blob();
-  // GitHub Pages serves the prerecorded MP3s. Reject an HTML error page.
+  // GitHub Pages serves original recorded M4A files. Reject HTML error pages.
   if (blob.size < AUDIO_MIN_BYTES || /text\/html|application\/json/i.test(blob.type)) {
     throw new Error("Вместо аудиофайла пришёл неверный ответ.");
   }
   try {
     await cache.put(url, new Response(blob, {
       status: 200,
-      headers: { "Content-Type": "audio/mpeg", "Content-Length": String(blob.size) }
+      headers: { "Content-Type": "audio/mp4", "Content-Length": String(blob.size) }
     }));
   } catch {
     throw new Error("Недостаточно свободного места для сохранения аудио.");
@@ -65,4 +65,25 @@ export async function removeAudio(guide) {
   if (!audioCacheAvailable()) return false;
   const cache = await caches.open(AUDIO_CACHE);
   return cache.delete(guideAudioUrl(guide));
+}
+
+// Retired v31 recordings are NEVER erased silently. The user can choose to
+// reclaim their storage from the audio-guide catalog when online and ready.
+export async function legacyAudioCacheInfo() {
+  if (!audioCacheAvailable()) return {count:0,bytes:0};
+  const cache=await caches.open(AUDIO_CACHE);
+  const entries=(await cache.keys()).filter(req=>/\/assets\/audio\/[a-z0-9-]+\.mp3$/.test(new URL(req.url).pathname));
+  let bytes=0;
+  for(const req of entries) {
+    const r=await cache.match(req);
+    if(r)bytes+=(await r.blob()).size;
+  }
+  return {count:entries.length,bytes};
+}
+export async function clearLegacyAudioCache() {
+  if (!audioCacheAvailable()) return 0;
+  const cache=await caches.open(AUDIO_CACHE);
+  const entries=(await cache.keys()).filter(req=>/\/assets\/audio\/[a-z0-9-]+\.mp3$/.test(new URL(req.url).pathname));
+  for(const req of entries)await cache.delete(req);
+  return entries.length;
 }

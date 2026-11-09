@@ -96,7 +96,7 @@ function renderQuickActions(container, { hasOrigin, trip, nearbyHref }) {
     ["📍", "Места рядом", hasOrigin ? nearbyHref : "#/settings", hasOrigin ? "Найти места рядом с отелем" : "Указать район проживания"],
     ["🈶", "Адрес таксисту", trip.home ? "#/handy/taxi" : "#/settings?section=home", trip.home ? "Показать адрес отеля по-китайски" : "Сначала указать адрес отеля"],
     ["☎️", "Под рукой", "#/handy", "Телефоны, фразы и адрес для таксиста"],
-    ["🎧", "Аудиогиды", "#/audio", "Истории 57 достопримечательностей с офлайн-загрузкой"],
+    ["🎧", "Аудиогиды", "#/audio", "33 интересные истории: легенды, природа и культура — можно скачать все"],
   ];
   actions.forEach(([icon, label, href, accessible]) => {
     const link = document.createElement("a");

@@ -6,6 +6,7 @@ import { renderPlaces } from "./views/places.js";
 import { renderPlace, renderPlaceTaxi } from "./views/place.js";
 import { renderFoodTaxi } from "./views/food.js";
 import { renderAudioCatalog } from "./views/audio.js";
+import { renderIslandAtlas } from "./views/island-atlas.js";
 import { renderPrepare } from "./views/prepare.js";
 import { renderSettings } from "./views/settings.js";
 import { renderInfo, renderInfoDetail } from "./views/info.js";
@@ -33,6 +34,7 @@ const routes = [
   { pattern: /^\/me$/, render: renderMe, nav: "/me" },
   { pattern: /^\/places$/, render: renderPlaces, nav: "/discover" },
   { pattern: /^\/audio$/, render: renderAudioCatalog, nav: "/discover" },
+  { pattern: /^\/island$/, render: renderIslandAtlas, nav: "/discover" },
   { pattern: /^\/place\/(?<id>[^/]+)$/, render: renderPlace, nav: "/discover" },
   { pattern: /^\/place\/(?<id>[^/]+)\/taxi$/, render: renderPlaceTaxi, nav: "/discover", fullscreen: true },
   // Еда (режим #/places?mode=food, ITERATION-8-CONTENT-ARCHITECTURE.md Batch

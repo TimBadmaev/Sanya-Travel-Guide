@@ -206,7 +206,19 @@ export async function renderExcursions(container, ctx) {
   container.innerHTML = "";
   appendText(container, "p", "excursion-list__eyebrow", "ВЫБИРАЙ ПРИКЛЮЧЕНИЕ");
   appendText(container, "h2", "view-title", "Куда отправимся?");
-  appendText(container, "p", "plan-subtitle", "36 проверенных идей: фотографии, истории, реальные советы и видео там, где удалось проверить источник.");
+  appendText(container, "p", "plan-subtitle", "36 проверенных идей: фотографии, истории, советы и видеообзоры.");
+  // One clear entry from excursions to the exact-size downloadable offline tour.
+  const audioBanner = document.createElement("a");
+  audioBanner.className = "excursion-audio-banner";
+  audioBanner.href = "#/audio?download=all";
+  const audioIcon = appendText(audioBanner, "span", "excursion-audio-banner__icon", "🎧");
+  audioIcon.setAttribute("aria-hidden", "true");
+  const audioCopy = appendText(audioBanner, "span", "excursion-audio-banner__copy");
+  appendText(audioCopy, "strong", "", "Скачать весь аудиогид перед поездкой");
+  appendText(audioCopy, "small", "", "33 истории · ~7,9 МБ · доступно без интернета");
+  container.appendChild(audioBanner);
+  const mapLink = appendText(container, "a", "excursion-atlas-link", "🗺️ Карта Хайнаня без интернета ›");
+  mapLink.href = "#/island";
 
   if (!excursions.length) {
     appendText(container, "p", "empty-state", "Пока нет проверенных экскурсий. Загляните позже.");

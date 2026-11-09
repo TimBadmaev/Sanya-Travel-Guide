@@ -64,6 +64,8 @@ export async function renderDiscover(container, ctx) {
   const links = el(page, "div", "discover__shortcut-grid");
   [
     ["🎟️", "Экскурсии", "Идеи для целого дня", "#/excursions"],
+    ["🗺️", "Карта острова", "Настоящий контур Хайнаня офлайн", "#/island"],
+    ["🎧", "Аудиогиды", "33 истории и сохранение перед поездкой", "#/audio"],
     ["🍜", "Где поесть", "Кафе и местные блюда", "#/places?mode=food"],
     ["⭐", "Избранное", "Твои сохранённые места", "#/places?f=saved"],
     ["🧭", "Рядом", "Места около тебя", "#/places?near=1"],
