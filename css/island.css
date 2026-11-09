@@ -976,3 +976,189 @@ button.naval-game__cell:not(:disabled):active{background:#74d5d7;}
 @media(prefers-reduced-motion:reduce){
  .game-hub__card,.travel-hub__primary,.travel-hub__action{transition:none;}
 }
+
+
+/* v37 — all reset-confirmation colors explicit. The light v25 panel inherited
+   pale text from the v32 dark root; never use inherited foreground here. */
+.quest-app .quest-reset{
+ background:#182b48;border:2px solid #4e6986;color:#f1f7ff;
+}
+.quest-app .quest-reset__title{color:#f5d8bc;}
+.quest-app .quest-reset__description{color:#d0dfef;}
+.quest-app .quest-reset__backup{color:#9becdd;}
+.quest-app .quest-reset__trigger{
+ background:#29405e;border-color:#8c6270;color:#ffd6c4;
+}
+.quest-app .quest-reset__confirm{
+ background:#302c3e;border:2px solid #b47767;color:#f9f4ef;
+}
+.quest-app .quest-reset__confirm > strong{color:#ffd6c2;}
+.quest-app .quest-reset__confirm > p{color:#f1d7cc;}
+.quest-app .quest-reset__ack,
+.quest-app .quest-reset__ack span{
+ color:#ffffff !important;
+}
+.quest-app .quest-reset__ack input{
+ accent-color:#93e6e4;
+ width:24px;height:24px;flex:0 0 24px;
+}
+.quest-app .quest-reset__cancel{
+ color:#ffffff;background:#39465c;border:2px solid #7689a3;
+}
+.quest-app .quest-reset__delete{
+ color:#ffffff;background:#b94e37;border:2px solid #d18a78;
+}
+.quest-app .quest-reset__delete:disabled{
+ opacity:1;background:#644a51;color:#f0d7d8;
+ border-color:#856c70;
+}
+.quest-app .quest-reset__status{color:#f7dcd1;min-height:10px;}
+.quest-app .quest-reset :focus-visible{
+ outline:3px solid #9bf3e8;outline-offset:3px;
+}
+.quest-app .welcome__joke-button{
+ display:block;width:100%;margin:13px 0 4px;min-height:45px;
+ border-radius:13px;background:#244966;color:#e3faff;
+ border:1px solid #65a9c0;font-weight:800;font-size:13px;
+}
+.quest-app .welcome__joke{
+ color:#d3e8fa;font-size:12px;line-height:1.55;margin:7px 0 0;
+}
+.quest-mustdo,.game-hub__bucket-link{
+ display:block;border-radius:15px;background:#29435d;border:1px solid #6c96a1;
+ color:#d9fff4;text-decoration:none;font-size:13px;font-weight:900;
+ padding:13px 12px;margin:10px 0 17px;line-height:1.5;
+}
+.quest-mustdo:focus-visible,.game-hub__bucket-link:focus-visible{
+ outline:3px solid #9cf3e3;outline-offset:3px;
+}
+/* A retro game is a functional touchscreen: 48px arrow targets, clear labels. */
+.retro-game{
+ margin:14px 0;background:#132f4d;border:2px solid #476d86;
+ border-radius:19px;padding:12px;color:#f6faff;
+}
+.retro-game__stats{
+ margin:3px 0 11px;color:#dcf8f4;font-weight:900;
+ font-size:13px;line-height:1.55;text-align:center;
+}
+.retro-game__status{
+ min-height:23px;color:#c9e6f3;text-align:center;
+ font-size:12px;line-height:1.5;margin:9px 0;
+}
+.retro-game__actions{
+ display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:9px 0 12px;
+}
+.retro-game__actions button{min-height:48px;font-size:13px;padding:8px 9px;}
+.snake-grid{
+ display:grid;grid-template-columns:repeat(18,minmax(0,1fr));
+ gap:2px;background:#08192c;border:5px solid #417b80;
+ max-width:380px;margin:0 auto;padding:4px;border-radius:9px;
+ touch-action:none;user-select:none;-webkit-user-select:none;
+}
+.snake-grid__cell{
+ display:grid;place-items:center;aspect-ratio:1;min-width:0;
+ background:#1d4050;border-radius:2px;
+ font-size:clamp(7px,2.2vw,12px);
+}
+.snake-grid__cell.is-body{background:#48b79d;box-shadow:inset 0 0 0 1px #7de2bd;}
+.snake-grid__cell.is-head{background:#a5f6b9;box-shadow:inset 0 0 0 2px #357c71;}
+.snake-grid__cell.is-food{background:#375c57;}
+.ocean-canvas{
+ display:block;width:100%;max-width:380px;height:auto;
+ margin:0 auto;aspect-ratio:360/420;background:#082344;
+ border-radius:11px;border:3px solid #4b9eab;touch-action:none;
+}
+.retro-controls{
+ display:grid;grid-template-columns:repeat(3,minmax(0,64px));
+ grid-template-rows:repeat(2,54px);gap:6px;
+ justify-content:center;max-width:220px;margin:13px auto 3px;
+}
+.retro-controls__up{grid-column:2;grid-row:1;}
+.retro-controls__left{grid-column:1;grid-row:2;}
+.retro-controls__down{grid-column:2;grid-row:2;}
+.retro-controls__right{grid-column:3;grid-row:2;}
+.retro-controls__button{
+ background:#284e6e;border:2px solid #729cb8;border-radius:12px;
+ color:#f1faff;font-weight:900;font-size:22px;min-width:52px;min-height:52px;
+ cursor:pointer;touch-action:manipulation;user-select:none;
+}
+.retro-controls__button:active{background:#397e87;}
+.retro-controls__button:focus-visible,.retro-game__actions button:focus-visible{
+ outline:3px solid #bcffec;outline-offset:2px;
+}
+/* Officially sourced bucket list; the jokes are optional descriptive copy. */
+.mustdo-hero{
+ background:linear-gradient(150deg,#204865,#18294f);
+ border:1px solid #4d849a;border-radius:21px;padding:17px;
+ margin:12px 0 18px;color:#f8fcff;
+}
+.mustdo-hero__kicker{color:#8ae4d9;letter-spacing:.12em;font-size:11px;font-weight:900;}
+.mustdo-hero__title{font-size:22px;line-height:1.2;margin:9px 0;font-weight:950;color:#fff;}
+.mustdo-hero__subtitle{color:#d9e9f3;line-height:1.6;font-size:13px;}
+.mustdo-hero__summary{
+ display:grid;gap:7px;margin:14px 0 8px;
+}
+.mustdo-hero__summary strong{color:#e0fff7;font-size:14px;}
+.mustdo-hero__bar{
+ height:11px;background:#102d45;border:1px solid #6a9bac;
+ overflow:hidden;border-radius:30px;
+}
+.mustdo-hero__bar > span{
+ display:block;width:0;height:100%;background:#77e8c3;
+ transition:width .25s ease;border-radius:30px;
+}
+.mustdo-hero__slogan{color:#c2e4f5;font-size:12px;margin:10px 0 0;}
+.mustdo-list{display:grid;gap:11px;}
+.mustdo-card{
+ background:#18314e;border:1px solid #4d6f91;
+ padding:15px;border-radius:17px;color:#eaf7ff;
+}
+.mustdo-card.is-done{border-color:#73dcb9;background:#1c3e48;}
+.mustdo-card__top{display:flex;gap:11px;align-items:center;}
+.mustdo-card__emoji{
+ display:grid;place-items:center;width:52px;height:52px;
+ border-radius:15px;background:#2c5971;font-size:27px;flex-shrink:0;
+}
+.mustdo-card__heading{min-width:0;flex:1;}
+.mustdo-card__category{font-size:10px;color:#a8d7e8;font-weight:800;}
+.mustdo-card__title{font-size:16px;line-height:1.35;margin:3px 0;color:#fff;font-weight:900;}
+.mustdo-card__check{
+ display:flex;align-items:center;gap:11px;min-height:49px;
+ margin:12px 0 7px;font-weight:850;font-size:13px;
+ color:#e7fffa;cursor:pointer;
+}
+.mustdo-card__check input{
+ width:23px;height:23px;flex:0 0 23px;accent-color:#7be6c8;
+}
+.mustdo-card__check span{color:#e9fff9;}
+.mustdo-card__description{font-size:13px;line-height:1.6;color:#e1edf9;margin:7px 0;}
+.mustdo-card__effort{color:#9fe7d4;font-size:12px;font-weight:850;margin:7px 0;}
+.mustdo-card__tip{
+ color:#c6e1ed;font-size:12px;line-height:1.55;margin:8px 0;
+}
+.mustdo-card__joke{
+ color:#b3d8fb;font-size:12px;line-height:1.5;font-style:italic;margin:8px 0;
+}
+.mustdo-card__detail{
+ display:inline-flex;align-items:center;min-height:43px;
+ color:#a8f8de;text-decoration:underline;font-size:13px;font-weight:900;
+}
+.mustdo-footer{
+ background:#142b46;border:1px solid #44617e;border-radius:16px;
+ padding:14px;margin:15px 0;color:#daeaf5;
+ font-size:12px;line-height:1.6;
+}
+.mustdo-footer__source{color:#95f2df;text-decoration:underline;}
+.mustdo-footer__actions{display:grid;grid-template-columns:1fr;gap:8px;margin:14px 0 8px;}
+.mustdo-footer__actions button{min-height:49px;}
+.mustdo-footer__notice{color:#f1f9ff;font-size:12px;}
+@media(min-width:460px){.mustdo-footer__actions{grid-template-columns:1fr 1fr;}}
+@media(max-width:340px){
+ .retro-game{padding:8px;}
+ .snake-grid{gap:1px;padding:2px;border-width:3px;}
+ .mustdo-card{padding:11px;}
+ .mustdo-card__emoji{width:43px;height:43px;font-size:24px;}
+}
+@media(prefers-reduced-motion:reduce){
+ .mustdo-hero__bar > span{transition:none;}
+}
