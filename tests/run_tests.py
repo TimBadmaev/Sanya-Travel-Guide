@@ -106,7 +106,9 @@ def run_static():
     data_files = re.findall(r'loadJSON\("([^"]+)"\)', data_src)
     check("все data/*.json, которые грузит data.js, в PRECACHE", all(f in precache for f in data_files),
           [f for f in data_files if f not in precache])
-    photos = ["assets/photos/" + ph["file"] for p in PLACES for ph in p.get("photos", [])]
+    photos = ["assets/photos/" + ph["file"] for p in PLACES for ph in p.get("photos", []) if ph.get("file")]
+    external_photos = [ph for p in PLACES for ph in p.get("photos", []) if ph.get("url")]
+    check("фото Wikimedia Commons: источник и лицензия", all(ph["url"].startswith("https://commons.wikimedia.org/wiki/Special:FilePath/") and ph.get("sourceUrl", "").startswith("https://commons.wikimedia.org/") and ph.get("author") and ph.get("license") for ph in external_photos))
     check("все фото verified-мест в PRECACHE", all(f in precache for f in photos))
     for f in ("js/logic/passport.js", "js/views/passport.js", "data/passport.json", "js/logic/passport-map.js", "js/views/passport-art.js"):
         check(f"файл паспорта {f} в PRECACHE", f in precache)

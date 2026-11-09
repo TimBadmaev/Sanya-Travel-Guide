@@ -84,11 +84,11 @@ function excursionsHash(tokens) {
 function excursionPhotos(excursion, places, story = null) {
   const linked = (excursion.placeIds || []).map((id) => places.find((p) => p.id === id)).filter(Boolean);
   const local = linked.flatMap((p) => (p.photos || []).map((photo) => ({
-    url: "assets/photos/" + photo.file,
+    url: photo.file ? "assets/photos/" + photo.file : photo.url,
     alt: photo.alt || p.name.ru,
     credit: [photo.author, photo.license].filter(Boolean).join(" · "),
     source: photo.sourceUrl || null,
-    offline: true,
+    offline: Boolean(photo.file),
   })));
   const remote = Array.isArray(story?.photos) ? story.photos.filter((photo) =>
     photo.url.startsWith("https://commons.wikimedia.org/wiki/Special:FilePath/") && photo.source.startsWith("https://commons.wikimedia.org/")) : [];

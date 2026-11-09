@@ -118,7 +118,7 @@ export function renderStreetMap(parent, { places = [], visits = {}, savedIds = [
     const content = node(preview, "div", "street-map__preview-content");
     if (place.photos?.length) {
       const img = node(content, "img", "street-map__preview-img");
-      img.src = "assets/photos/" + place.photos[0].file;
+      img.src = place.photos[0].file ? "assets/photos/" + place.photos[0].file : place.photos[0].url;
       img.alt = place.photos[0].alt || place.name.ru;
       img.loading = "lazy";
     }
