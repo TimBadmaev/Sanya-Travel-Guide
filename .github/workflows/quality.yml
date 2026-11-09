@@ -31,6 +31,11 @@ jobs:
           node --experimental-default-type=module --test tests/test_audio_guides.mjs
           node --experimental-default-type=module --test tests/test_map_routes.mjs
           node --experimental-default-type=module --test tests/test_minigames.mjs
+          node --experimental-default-type=module --test tests/test_arcade.mjs
+      - name: Check dark-mode contrast across key screens
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_dark_contrast_browser.py
       - name: Test offline games, mobile boards and travel readiness
         env:
           CHROME: /usr/bin/google-chrome

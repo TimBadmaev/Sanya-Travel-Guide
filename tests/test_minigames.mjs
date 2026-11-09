@@ -75,13 +75,14 @@ test("contextual home actions remain grounded in actual trip state",()=>{
 test("new UX and games are explicitly offline-cached, optional map packs remain optional",()=>{
  const app=readFileSync(new URL("../js/app.js",import.meta.url),"utf8");
  const sw=readFileSync(new URL("../sw.js",import.meta.url),"utf8");
- for(const renderer of ["renderOfflineCenter","renderGames","renderBattleship","renderPhraseGame","renderMemoryGame"]){
+ for(const renderer of ["renderOfflineCenter","renderGames","renderSnake","renderOcean","renderMemoryGame","renderMustDo"]){
   assert.ok(app.includes("render: "+renderer),renderer);
  }
  for(const path of ["./js/views/games.js","./js/views/mini-arcade.js",
+  "./js/logic/arcade.js","./js/views/retro-arcade.js",
   "./js/views/offline-center.js","./js/logic/minigames.js","./js/logic/travel-hub.js"]){
   assert.ok(sw.includes(JSON.stringify(path)),path);
  }
- assert.match(sw,/CACHE_VERSION = "v36"/);
+ assert.match(sw,/CACHE_VERSION = "v37"/);
  assert.doesNotMatch(sw,/"\.\/data\/sanya-detail-yalong\.json"/);
 });

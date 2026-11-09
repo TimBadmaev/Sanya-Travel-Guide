@@ -116,6 +116,7 @@ export function normalizeGameData(data){
  const clamp=n=>Number.isInteger(n)&&n>=0?Math.min(9999,n):0;
  return {v:1,stats:{
   soloWins:clamp(stats.soloWins),passGames:clamp(stats.passGames),
-  quizBest:Math.min(10,clamp(stats.quizBest)),memoryBest:clamp(stats.memoryBest)},
+  quizBest:Math.min(10,clamp(stats.quizBest)),memoryBest:clamp(stats.memoryBest),
+  snakeBest:clamp(stats.snakeBest),fishBest:clamp(stats.fishBest)},
   match:validMatch(raw.match)?raw.match:null};
 }
