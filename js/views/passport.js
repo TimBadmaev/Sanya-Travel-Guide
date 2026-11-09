@@ -142,15 +142,19 @@ export async function renderPassport(container, ctx) {
   renderOverview(page, { result, content, places, state });
   renderStreetMap(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderStats(page, result);
-  const [checklist, exploreRaw] = await Promise.all([loadChecklist(), loadExplore()]);
-  if (!ctx.isCurrent()) return;
-  const game = evaluateExplore({ places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(),
-    passportResult: result, explore: storage.getExplore(), expenses: storage.getExpenses(),
-    activity: storage.getActivity(), checklist, checklistState: storage.getChecklistState(),
-    chapters: exploreRaw.chapters, lessons: exploreRaw.lessons });
-  const rank = rankForXp(game.xp);
-  const rankCard = appendText(page, "a", "passport-rank-link", "🏆 " + rank.icon + " " + rank.title + " · " + game.xp + " XP · Награды в «Моё» ›");
+  // Профильный ранг — дополнение, не причина блокировать отрисовку карты.
+  // Даже если данные игры повреждены, паспорт, заметки и офлайн-схема готовы.
+  const rankCard = appendText(page, "a", "passport-rank-link", "🏆 Посмотреть звания и награды в «Моё» ›");
   rankCard.href = "#/me";
+  Promise.all([loadChecklist(), loadExplore()]).then(([checklist, exploreRaw]) => {
+    if (!ctx.isCurrent() || !rankCard.isConnected) return;
+    const game = evaluateExplore({ places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(),
+      passportResult: result, explore: storage.getExplore(), expenses: storage.getExpenses(),
+      activity: storage.getActivity(), checklist, checklistState: storage.getChecklistState(),
+      chapters: exploreRaw.chapters, lessons: exploreRaw.lessons });
+    const rank = rankForXp(game.xp);
+    rankCard.textContent = "🏆 " + rank.icon + " " + rank.title + " · " + game.xp + " XP · Награды в «Моё» ›";
+  }).catch((error) => console.warn("Не удалось загрузить игровое звание", error));
   const adventure = appendText(page, "a", "explore-passport-link", "🚀 Вернуться к игровому пути ›");
   adventure.href = "#/explore";
   // Найти конкретное место: схема и части побережья подсказывают, где оно, но
