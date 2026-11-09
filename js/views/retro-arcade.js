@@ -170,9 +170,9 @@ export function renderOcean(container,ctx){
   if(state.phase==="over"){
    stop();saveBest("fishBest",state.score);draw();return;
   }
-  frameId=requestAnimationFrame(loop);
+  frameId=requestAnimationFrame(heldLoop);
  }
- function resume(){stop();state={...state,phase:"playing"};frameId=requestAnimationFrame(loop);draw();}
+ function resume(){stop();state={...state,phase:"playing"};frameId=requestAnimationFrame(heldLoop);draw();}
  function startNew(){
   state=newOcean();target={x:state.player.x,y:state.player.y};resume();
  }
