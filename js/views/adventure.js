@@ -4,7 +4,7 @@
 import { loadConfig, loadExplore, loadPassport, loadPlaces, loadChecklist, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 import { prepareContent, evaluatePassport } from "../logic/passport.js";
-import { evaluateExplore } from "../logic/explore.js";
+import { evaluateExplore, getLevel } from "../logic/explore.js";
 import { getTripState, getTodayIso, TRIP_STATE, pluralizeRu } from "../logic/trip.js";
 import { summarizePreflight } from "../logic/prep-focus.js";
 
@@ -34,7 +34,7 @@ function travelCaption(trip) {
 
 // До вылета показываем реальные задачи подготовки раньше игрового пути.
 // Пункты можно отмечать прямо с главной; статус общий с #/prepare.
-function renderPreflight(parent, checklist, trip) {
+function renderPreflight(parent, checklist, trip, initialXp) {
   const state = getTripState(trip, getTodayIso());
   if (state.state !== TRIP_STATE.BEFORE && state.state !== TRIP_STATE.NO_DATES) return;
   const days = state.state === TRIP_STATE.BEFORE ? state.daysUntil : null;
@@ -83,6 +83,17 @@ function renderPreflight(parent, checklist, trip) {
         pending.textContent = changed.remaining + " осталось";
         track.setAttribute("aria-valuenow", String(changed.done));
         fill.style.width = Math.round(100 * changed.done / changed.total) + "%";
+        // XP на главной обновляется сразу, без лишнего перехода.
+        const newXp = initialXp + (changed.done - info.done) * 4;
+        const hud = parent.querySelector(".quest-hud__xp");
+        if (hud) hud.textContent = "⭐ " + newXp + " XP";
+        const level = getLevel(newXp);
+        const levelTitle = parent.querySelector(".quest-intro__stats strong");
+        const levelBar = parent.querySelector(".quest-intro__progress");
+        const levelNext = parent.querySelector(".quest-intro__stats > span:last-child");
+        if (levelTitle) levelTitle.textContent = "Уровень " + level.level;
+        if (levelBar) { levelBar.setAttribute("aria-valuenow", String(level.current)); levelBar.firstElementChild.style.width = level.current + "%"; }
+        if (levelNext) levelNext.textContent = level.toNext + " XP до следующего";
       });
     });
   } else {
@@ -204,7 +215,7 @@ export async function renderAdventure(container, ctx) {
   el(points, "span", "quest-hud__visited", "🏅 " + p.reward.visited);
 
 
-  renderPreflight(page, checklist, trip);
+  renderPreflight(page, checklist, trip, game.xp);
 
   const intro = el(page, "section", "quest-intro");
   const daily = el(intro, "p", "quest-intro__daily", "🎁 +3 XP за первый запуск приложения каждый день · без серий и штрафов");

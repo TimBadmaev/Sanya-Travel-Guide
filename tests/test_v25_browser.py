@@ -98,8 +98,11 @@ def main():
         check("all user data keys removed, no accidental localStorage.clear",
               "(async()=>{ const S=await import('./js/storage.js'); return S.USER_DATA_KEYS.every(k=>localStorage.getItem(k)===null) })()")
         check("no old user trip or XP", "!localStorage.getItem('stg:trip') && !localStorage.getItem('stg:activity')")
-        go("#/", ".welcome")
-        check("start from scratch re-enters welcome", "location.hash","#/welcome")
+        b.go(base, "#/", cold=True)
+        if not b.wait_for("location.hash === \'#/welcome\' && !!document.querySelector(\'.welcome\')", 20):
+            raise AssertionError("start from scratch does not return to welcome")
+        count += 1
+        print("PASS start from scratch re-enters welcome", flush=True)
         # Previously completed items are erased along with user data, not the content.
         b.js("document.querySelector('.welcome__secondary').click();true")
         if not b.wait_for("location.hash === '#/' && !!document.querySelector('.quest-preflight')",20):
