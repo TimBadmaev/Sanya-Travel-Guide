@@ -44,7 +44,7 @@ def main():
         check("atlas has cluster buttons","document.querySelectorAll('.atlas__point').length > 0")
         b.js("document.querySelector('.atlas__point').dispatchEvent(new Event('click',{bubbles:true}));true")
         check("atlas group expands into place links","!document.querySelector('.atlas__preview').hidden")
-        check("atlas group always points to real place","#/place/".length>0 and "document.querySelector('.atlas__preview-links a').getAttribute('href').startsWith('#/place/')")
+        check("atlas group always points to real place","document.querySelector('.atlas__preview-links a').getAttribute('href').startsWith('#/place/')")
         check("old seven-area game map still present","document.querySelectorAll('.pp-badge').length",7)
         check("rank awards embedded in passport","!!document.querySelector('.passport .rank-card')")
         check("milestone collection has six badges","document.querySelectorAll('.passport .rank-card__badge').length",6)
