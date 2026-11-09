@@ -1,10 +1,5 @@
 name: Build offline Sanya map features (OSM ODbL)
 on:
-  push:
-    branches: [feature/offline-map-v35]
-    paths:
-      - 'scripts/build_sanya_roads.py'
-      - '.github/workflows/build-sanya-roads.yml'
   workflow_dispatch:
 
 permissions:
@@ -17,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: feature/offline-map-v35
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
@@ -31,6 +26,6 @@ jobs:
           git add data/sanya-roads.json data/sanya-detail-*.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "assets(v35): refresh local OSM map features"
-          git fetch origin feature/offline-map-v35
-          git rebase origin/feature/offline-map-v35
-          git push origin HEAD:feature/offline-map-v35
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
