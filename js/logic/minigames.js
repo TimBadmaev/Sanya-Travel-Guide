@@ -1,3 +1,4 @@
+import { normalizeFour } from "./duo-games.js";
 // Pure 8x8 naval game logic. No browser, network, GPS or hidden timers.
 export const BOARD_SIZE = 8;
 export const FLEET = Object.freeze([4,3,2,2]);
@@ -117,6 +118,9 @@ export function normalizeGameData(data){
  return {v:1,stats:{
   soloWins:clamp(stats.soloWins),passGames:clamp(stats.passGames),
   quizBest:Math.min(10,clamp(stats.quizBest)),memoryBest:clamp(stats.memoryBest),
-  snakeBest:clamp(stats.snakeBest),fishBest:clamp(stats.fishBest)},
-  match:validMatch(raw.match)?raw.match:null};
+  snakeBest:clamp(stats.snakeBest),fishBest:clamp(stats.fishBest),
+  fourWinsA:clamp(stats.fourWinsA),fourWinsB:clamp(stats.fourWinsB),fourDraws:clamp(stats.fourDraws),
+  hockeyWinsA:clamp(stats.hockeyWinsA),hockeyWinsB:clamp(stats.hockeyWinsB)},
+  match:validMatch(raw.match)?raw.match:null,
+  fourMatch:normalizeFour(raw.fourMatch)};
 }
