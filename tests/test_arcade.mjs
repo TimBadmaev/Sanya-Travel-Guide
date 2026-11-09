@@ -92,7 +92,7 @@ test("v37 routes and all game sources are in offline precache",()=>{
   "./js/views/retro-arcade.js","./js/views/must-do.js"]){
   assert.ok(sw.includes(JSON.stringify(path)),path);
  }
- assert.match(sw,/CACHE_VERSION = "v37"/);
+ assert.match(sw,/CACHE_VERSION = "v38"/);
  assert.doesNotMatch(sw,/"\.\/data\/sanya-detail-yalong\.json"/);
  const backup=readFileSync(new URL("../js/logic/backup.js",import.meta.url),"utf8");
  assert.match(backup,/"stg:mustdo"/);
