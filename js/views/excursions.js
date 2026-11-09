@@ -81,6 +81,22 @@ function excursionsHash(tokens) {
 
 // Photos are either existing licensed local place photos or explicitly credited
 // Wikimedia Commons images. Nothing is generated/mislabelled as a real place.
+function storyFor(excursion, stories) {
+  if (stories?.[excursion.id]) return stories[excursion.id];
+  // All tours have a readable structure even if a bespoke story has not yet
+  // been written. Only verified existing text is reused, never invented facts.
+  const points = (excursion.whatToSee || []).slice(0,4);
+  const moments = points.length >= 3 ? points : [...points,
+    "Проверьте актуальные условия работы остановок из карточек мест.",
+    "Оставьте запас времени на дорогу и отдых между точками."].slice(0,3);
+  return {
+    lead: excursion.summary,
+    moments,
+    editorNote: (excursion.tips || [])[0] || "Проверьте условия посещения и погоду перед выездом.",
+    references: (excursion.sources || []).slice(0,2),
+    basic: true,
+  };
+}
 function excursionPhotos(excursion, places, story = null) {
   const linked = (excursion.placeIds || []).map((id) => places.find((p) => p.id === id)).filter(Boolean);
   const local = linked.flatMap((p) => (p.photos || []).map((photo) => ({
@@ -128,7 +144,7 @@ function renderStory(parent, story) {
   const block = document.createElement("section");
   block.className = "excursion-story";
   appendText(block, "p", "excursion-story__eyebrow", "📖 ИСТОРИЯ ПРИКЛЮЧЕНИЯ");
-  appendText(block, "h3", "excursion-story__title", "Как может пройти твой день");
+  appendText(block, "h3", "excursion-story__title", story.basic ? "Что вас ждёт в этой поездке" : "Как может пройти твой день");
   const list = document.createElement("ol");
   list.className = "excursion-story__steps";
   (story.moments || []).forEach((moment) => appendText(list, "li", "", moment));
@@ -206,7 +222,7 @@ export async function renderExcursions(container, ctx) {
   container.innerHTML = "";
   appendText(container, "p", "excursion-list__eyebrow", "ВЫБИРАЙ ПРИКЛЮЧЕНИЕ");
   appendText(container, "h2", "view-title", "Куда отправимся?");
-  appendText(container, "p", "plan-subtitle", "36 проверенных идей: фотографии, истории, реальные советы и видео там, где удалось проверить источник.");
+  appendText(container, "p", "plan-subtitle", excursions.length + " проверенных идей: фотографии, истории, реальные советы и видео там, где удалось проверить источник.");
 
   if (!excursions.length) {
     appendText(container, "p", "empty-state", "Пока нет проверенных экскурсий. Загляните позже.");
@@ -264,7 +280,7 @@ export async function renderExcursions(container, ctx) {
     if (found.length) {
       const list = document.createElement("div");
       list.className = "info-list";
-      found.forEach((excursion, i) => list.appendChild(renderExcursionRow(excursion, excursionPhotos(excursion, places, stories[excursion.id]), stories[excursion.id], i < 2)));
+      found.forEach((excursion, i) => { const story = storyFor(excursion, stories); list.appendChild(renderExcursionRow(excursion, excursionPhotos(excursion, places, story), story, i < 2)); });
       results.appendChild(list);
       return;
     }
@@ -370,7 +386,7 @@ export async function renderExcursion(container, ctx) {
   }
 
   // Фотографии с сохранением авторства и оригинальный редакционный текст.
-  const story = stories[excursion.id] || null;
+  const story = storyFor(excursion, stories);
   renderGallery(container, excursionPhotos(excursion, places, story));
   if (story) appendText(container, "p", "excursion-detail__lead", story.lead);
   else appendText(container, "p", "place-detail__summary", excursion.summary);
