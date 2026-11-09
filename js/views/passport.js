@@ -16,6 +16,9 @@ import { CATEGORY_ICONS, DEFAULT_ICON } from "./places.js";
 import { appendBackLink, createConfirm, renderPlanError } from "./plan.js";
 import { CATEGORY_INK, PART_BADGES, createMapSvg, createStickerArt, el, tiltOf } from "./passport-art.js";
 import { renderStreetMap } from "./street-map.js";
+import { rankForXp } from "../logic/ranks.js";
+import { loadChecklist, loadExplore } from "../data.js";
+import { evaluateExplore } from "../logic/explore.js";
 
 // «Паспорт исследователя» (EXPLORER-PASSPORT-SPEC.md): экран #/passport со
 // схемой побережья, экраны частей побережья #/passport/zone/<id>, альбом
@@ -139,6 +142,15 @@ export async function renderPassport(container, ctx) {
   renderOverview(page, { result, content, places, state });
   renderStreetMap(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderStats(page, result);
+  const [checklist, exploreRaw] = await Promise.all([loadChecklist(), loadExplore()]);
+  if (!ctx.isCurrent()) return;
+  const game = evaluateExplore({ places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(),
+    passportResult: result, explore: storage.getExplore(), expenses: storage.getExpenses(),
+    activity: storage.getActivity(), checklist, checklistState: storage.getChecklistState(),
+    chapters: exploreRaw.chapters, lessons: exploreRaw.lessons });
+  const rank = rankForXp(game.xp);
+  const rankCard = appendText(page, "a", "passport-rank-link", "🏆 " + rank.icon + " " + rank.title + " · " + game.xp + " XP · Награды в «Моё» ›");
+  rankCard.href = "#/me";
   const adventure = appendText(page, "a", "explore-passport-link", "🚀 Вернуться к игровому пути ›");
   adventure.href = "#/explore";
   // Найти конкретное место: схема и части побережья подсказывают, где оно, но

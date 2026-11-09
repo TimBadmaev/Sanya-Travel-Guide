@@ -4,6 +4,7 @@ import { loadConfig, loadExplore, loadPassport, loadPlaces, loadChecklist } from
 import { storage } from "../storage.js";
 import { prepareContent, evaluatePassport } from "../logic/passport.js";
 import { evaluateExplore } from "../logic/explore.js";
+import { RANKS, rankForXp } from "../logic/ranks.js";
 import { getTripState, getTodayIso, TRIP_STATE } from "../logic/trip.js";
 function el(parent, tag, cls, text) {
   const node = document.createElement(tag);
@@ -52,7 +53,12 @@ export async function renderMe(container, ctx) {
   container.replaceChildren();
   const page = el(container, "div", "quest-me");
   const hero = el(page, "section", "quest-me__hero");
-  el(hero, "div", "quest-me__avatar", "🌴");
+  const rank = rankForXp(game.xp);
+  const mascot = el(hero, "div", "quest-me__avatar rank-mascot", "🦀");
+  mascot.setAttribute("role", "img");
+  mascot.setAttribute("aria-label", "Талисман путешествия — краб Хайнаня");
+  const crown = el(hero, "div", "quest-me__rank", rank.icon + " " + rank.title);
+  crown.setAttribute("aria-label", "Звание: " + rank.title);
   el(hero, "p", "quest-me__kicker", "ПАСПОРТ ПУТЕШЕСТВЕННИКА");
   el(hero, "h2", "", "Мой остров");
   el(hero, "p", "quest-me__subtitle", "Каждая прогулка — новая история.");
@@ -63,6 +69,26 @@ export async function renderMe(container, ctx) {
     el(stat, "span", "", icon);
     el(stat, "strong", "", value);
     el(stat, "small", "", label);
+  });
+  const medals = el(page, "section", "rank-collection");
+  el(medals, "h3", "", "🏆 Звания и награды");
+  el(medals, "p", "rank-collection__desc", "За настоящие открытия, выполненную подготовку и историю поездки. Не нужно тратить деньги ради очков.");
+  const next = el(medals, "div", "rank-collection__next");
+  el(next, "strong", "", rank.next ? "Следующий приз: " + rank.next.prize : "Все звания открыты!");
+  el(next, "span", "", rank.next ? "Ещё " + rank.remaining + " XP" : "Ты — легенда острова!");
+  const track = el(medals, "div", "rank-collection__bar");
+  track.setAttribute("role", "progressbar");
+  track.setAttribute("aria-label", "Прогресс к следующему званию");
+  track.setAttribute("aria-valuemin", "0"); track.setAttribute("aria-valuemax", "100");
+  track.setAttribute("aria-valuenow", String(rank.percent));
+  el(track, "span", "").style.width = rank.percent + "%";
+  const collection = el(medals, "div", "rank-collection__grid");
+  RANKS.forEach((r, i) => {
+    const unlocked = game.xp >= r.min;
+    const item = el(collection, "div", "rank-medal" + (unlocked ? " is-earned" : " is-locked"));
+    el(item, "span", "rank-medal__icon", unlocked ? r.icon : "🔒");
+    el(item, "strong", "", r.title);
+    el(item, "small", "", unlocked ? "✓ " + r.prize : "Откроется за " + r.min + " XP");
   });
   const tripCard = el(page, "section", "quest-me__trip");
   el(tripCard, "span", "quest-me__trip-icon", "✈️");
