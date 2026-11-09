@@ -35,7 +35,9 @@ def main():
         trip={"start":"2026-11-13","end":"2026-11-26","area":"yalong","stay":None,"home":None}
         b.js("localStorage.setItem('stg:trip',"+json.dumps(json.dumps(trip))+");true")
         go("#/passport",".street-map__frame")
-        check("real map has tile viewport","document.querySelectorAll('.street-map__tile').length > 0")
+        check("zero network tiles before tap","document.querySelectorAll('.street-map__tile').length",0)
+        b.js("document.querySelector('.street-map__activate').click();true")
+        check("real map loads on demand","document.querySelectorAll('.street-map__tile').length > 0")
         check("tile source is openstreetmap.org","[...document.querySelectorAll('.street-map__tile')].every(x=>x.src.startsWith('https://tile.openstreetmap.org/'))")
         check("correct street map attribution","document.querySelector('.street-map__credit').textContent.includes('OpenStreetMap')")
         check("actual markers on street map","document.querySelectorAll('.street-map__pin').length >= 4")
@@ -70,6 +72,7 @@ def main():
         b.send("Network.emulateNetworkConditions",{"offline":True,"latency":0,"downloadThroughput":0,"uploadThroughput":0})
         go("#/passport",".street-map__frame")
         check("offline real-map controls present","document.querySelectorAll('.street-map__controls button').length",3)
+        check("offline no tile downloads","document.querySelectorAll('.street-map__tile').length",0)
         check("offline legacy map still usable","!!document.querySelector('.passport-map .pp-map__svg')")
         go("#/excursion/nanshan-tianya-day",".excursion-story")
         check("editorial content available offline","document.querySelector('.excursion-story__steps').textContent.length>100")

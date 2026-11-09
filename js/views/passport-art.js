@@ -128,13 +128,20 @@ export function createMapSvg({ viewBox, parts, currentPart = null, label }) {
   const grain = el("pattern", { id: "pp-grain", width: 26, height: 26, patternUnits: "userSpaceOnUse" }, defs);
   el("circle", { cx: 6, cy: 7, r: 1.6, class: "pp-grain" }, grain);
   el("circle", { cx: 19, cy: 19, r: 1.2, class: "pp-grain" }, grain);
+  const landShade = el("linearGradient", { id: "pp-land-shade", x1: "10%", y1: "0%", x2: "90%", y2: "100%" }, defs);
+  el("stop", { offset: "0%", "stop-color": "#c9eac1" }, landShade);
+  el("stop", { offset: "55%", "stop-color": "#dff4ce" }, landShade);
+  el("stop", { offset: "100%", "stop-color": "#f6e0ac" }, landShade);
+  const waterShade = el("linearGradient", { id: "pp-water-shade", x1: "0%", y1: "0%", x2: "55%", y2: "100%" }, defs);
+  el("stop", { offset: "0%", "stop-color": "#d6f5f3" }, waterShade);
+  el("stop", { offset: "100%", "stop-color": "#78cfd8" }, waterShade);
   const clip = el("clipPath", { id: "pp-land-clip" }, defs);
   el("path", { d: LAND }, clip);
 
-  el("rect", { x: -600, y: -600, width: MAP_SIZE + 1200, height: MAP_SIZE + 1200, class: "pp-sea" }, svg);
+  el("rect", { x: -600, y: -600, width: MAP_SIZE + 1200, height: MAP_SIZE + 1200, class: "pp-sea", fill: "url(#pp-water-shade)" }, svg);
   el("rect", { x: -600, y: -600, width: MAP_SIZE + 1200, height: MAP_SIZE + 1200, fill: "url(#pp-waves)" }, svg);
   el("path", { d: COAST_LINE, class: "pp-shallow" }, svg);
-  el("path", { d: LAND, class: "pp-land", id: "pp-land" }, svg);
+  el("path", { d: LAND, class: "pp-land", id: "pp-land", fill: "url(#pp-land-shade)" }, svg);
 
   // Части побережья — мягкие чередующиеся оттенки суши; на экране части
   // остальные приглушены.
@@ -150,6 +157,11 @@ export function createMapSvg({ viewBox, parts, currentPart = null, label }) {
   el("rect", { x: -600, y: -600, width: MAP_SIZE + 1200, height: MAP_SIZE + 1200, fill: "url(#pp-grain)", "clip-path": "url(#pp-land-clip)" }, svg);
   const decor = el("g", { class: "pp-decor", "aria-hidden": "true" }, svg);
   HILLS.forEach(([x, y, s]) => drawHill(decor, x, y, s));
+  // Лёгкие декоративные «тропические» штрихи. Не геоданные о рельефе.
+  const details = el("g", { class: "pp-terrain", "clip-path": "url(#pp-land-clip)" }, svg);
+  [190, 315, 450, 585, 720].forEach((y, index) => {
+    el("path", { d: `M80,${y} C260,${y-95} 410,${y+70} 600,${y-20} S850,${y+45} 1050,${y-10}`, class: "pp-terrain__contour", opacity: 0.16 + index * 0.025 }, details);
+  });
   PALMS.forEach(([x, y]) => drawPalm(decor, x, y));
   el("path", { d: COAST_LINE, class: "pp-surf", id: "pp-coast" }, svg);
   drawCompass(decor, 110, 800);

@@ -7,6 +7,7 @@ import { prepareContent, evaluatePassport } from "../logic/passport.js";
 import { evaluateExplore, getLevel } from "../logic/explore.js";
 import { getTripState, getTodayIso, TRIP_STATE, pluralizeRu } from "../logic/trip.js";
 import { summarizePreflight } from "../logic/prep-focus.js";
+import { rankForXp } from "../logic/ranks.js";
 
 function el(parent, tag, cls, text) {
   const node = document.createElement(tag);
@@ -213,6 +214,9 @@ export async function renderAdventure(container, ctx) {
   const xp = el(points, "span", "quest-hud__xp", "⭐ " + game.xp + " XP");
   xp.setAttribute("aria-label", "Опыт " + game.xp);
   el(points, "span", "quest-hud__visited", "🏅 " + p.reward.visited);
+  const rank = rankForXp(game.xp);
+  const rankLink = el(page, "a", "quest-home-rank", rank.icon + " " + rank.title + " · " + (rank.next ? rank.remaining + " XP до следующей награды" : "Все награды открыты") + " ›");
+  rankLink.href = "#/me";
 
 
   renderPreflight(page, checklist, trip, game.xp);

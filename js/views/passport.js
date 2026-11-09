@@ -16,6 +16,9 @@ import { CATEGORY_ICONS, DEFAULT_ICON } from "./places.js";
 import { appendBackLink, createConfirm, renderPlanError } from "./plan.js";
 import { CATEGORY_INK, PART_BADGES, createMapSvg, createStickerArt, el, tiltOf } from "./passport-art.js";
 import { renderStreetMap } from "./street-map.js";
+import { rankForXp } from "../logic/ranks.js";
+import { loadChecklist, loadExplore } from "../data.js";
+import { evaluateExplore } from "../logic/explore.js";
 
 // «Паспорт исследователя» (EXPLORER-PASSPORT-SPEC.md): экран #/passport со
 // схемой побережья, экраны частей побережья #/passport/zone/<id>, альбом
@@ -136,9 +139,22 @@ export async function renderPassport(container, ctx) {
   const mapProgress = appendText(page, "div", "quest-map__progress",
     "🎨 Раскрашено " + result.reward.visited + " из " + result.reward.total + " мест · " + result.coastPartsVisited + " из " + result.coastParts.length + " частей побережья");
   mapProgress.setAttribute("role", "status");
-  renderStreetMap(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderOverview(page, { result, content, places, state });
+  renderStreetMap(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderStats(page, result);
+  // Профильный ранг — дополнение, не причина блокировать отрисовку карты.
+  // Даже если данные игры повреждены, паспорт, заметки и офлайн-схема готовы.
+  const rankCard = appendText(page, "a", "passport-rank-link", "🏆 Посмотреть звания и награды в «Моё» ›");
+  rankCard.href = "#/me";
+  Promise.all([loadChecklist(), loadExplore()]).then(([checklist, exploreRaw]) => {
+    if (!ctx.isCurrent() || !rankCard.isConnected) return;
+    const game = evaluateExplore({ places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(),
+      passportResult: result, explore: storage.getExplore(), expenses: storage.getExpenses(),
+      activity: storage.getActivity(), checklist, checklistState: storage.getChecklistState(),
+      chapters: exploreRaw.chapters, lessons: exploreRaw.lessons });
+    const rank = rankForXp(game.xp);
+    rankCard.textContent = "🏆 " + rank.icon + " " + rank.title + " · " + game.xp + " XP · Награды в «Моё» ›";
+  }).catch((error) => console.warn("Не удалось загрузить игровое звание", error));
   const adventure = appendText(page, "a", "explore-passport-link", "🚀 Вернуться к игровому пути ›");
   adventure.href = "#/explore";
   // Найти конкретное место: схема и части побережья подсказывают, где оно, но
@@ -209,7 +225,8 @@ function mapFigure(parent, svg, legendExtra) {
 function renderOverview(page, { result, content, places, state }) {
   const section = document.createElement("section");
   section.className = "settings-section";
-  appendText(section, "h3", "settings-section__title", "🏝️ Схема побережья без интернета");
+  appendText(section, "h3", "settings-section__title", "🏝️ Твой остров — офлайн");
+  appendText(section, "p", "passport-map__intro", "Места, бухты и открытия доступны сразу, без сети.");
   const svg = createMapSvg({
     viewBox: OVERVIEW_BOX,
     parts: content.coastParts,
