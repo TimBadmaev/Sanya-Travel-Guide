@@ -20,10 +20,15 @@ export function renderMustDo(container,ctx){
  bar.setAttribute("aria-valuemax","10");bar.setAttribute("aria-label","Впечатления Хайнаня");
  const fill=el(bar,"span","","");
  const slogan=el(hero,"p","mustdo-hero__slogan","");
+ const picker=el(hero,"button","btn btn--secondary mustdo-hero__picker","🎲 Подкинь идею на сегодня");
+ picker.type="button";
+ const filter=el(hero,"label","mustdo-hero__filter");
+ const filterInput=el(filter,"input","");filterInput.type="checkbox";
+ el(filter,"span","","Показывать только невыполненное");
  const list=el(container,"div","mustdo-list");
  const rows=[];
  MUST_DO_ITEMS.forEach((item,index)=>{
-  const card=el(list,"article","mustdo-card");
+  const card=el(list,"article","mustdo-card");card.tabIndex=-1;
   const top=el(card,"div","mustdo-card__top");
   const marker=el(top,"span","mustdo-card__emoji",item.icon);
   const h=el(top,"div","mustdo-card__heading");
@@ -66,6 +71,17 @@ export function renderMustDo(container,ctx){
    notice.textContent="Список скопирован — можно отправить попутчику.";
   }catch{notice.textContent="Копирование недоступно. Попробуй открыть страницу через HTTPS.";}
  });
+ picker.addEventListener("click",()=>{
+  const undone=rows.filter(row=>!storage.getMustDo().done.includes(row.item.id));
+  const choices=undone.length?undone:rows;
+  const chosen=choices[Math.floor(Math.random()*choices.length)];
+  rows.forEach(row=>row.card.classList.toggle("is-featured",row===chosen));
+  chosen.card.hidden=false;
+  chosen.card.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"center"});
+  chosen.card.focus({preventScroll:true});
+  notice.textContent="Подсказка от краба: "+chosen.item.title+". Но отдыхать тоже можно!";
+ });
+ filterInput.addEventListener("change",refresh);
  clear.addEventListener("click",()=>{
   if(!storage.getMustDo().done.length)return;
   if(!window.confirm("Снять все отметки в списке впечатлений?"))return;
@@ -85,6 +101,7 @@ export function renderMustDo(container,ctx){
   for(const row of rows){
    row.input.checked=done.has(row.item.id);
    row.card.classList.toggle("is-done",row.input.checked);
+   row.card.hidden=filterInput.checked&&row.input.checked;
   }
   clear.disabled=progress.done===0;
  }
