@@ -1,4 +1,3 @@
-import { loadPhrases, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 const el=(parent,tag,cls,text)=>{
  const node=document.createElement(tag);if(cls)node.className=cls;
@@ -15,68 +14,6 @@ function shuffle(items){
  }
  return arr;
 }
-export async function renderPhraseGame(container,ctx){
- container.innerHTML='<p class="loading">Готовим китайские фразы…</p>';
- let phrases;
- try{phrases=await loadPhrases();}
- catch(error){if(ctx.isCurrent())container.textContent=loadErrorMessage(error);return;}
- if(!ctx.isCurrent())return;
- container.replaceChildren();back(container,ctx);
- el(container,"h2","view-title","🀄 Китайский экспресс");
- el(container,"p","game-hub__lead","10 вопросов из настоящего разговорника. Выбери русский перевод китайской фразы. Подсказки появятся после ответа.");
- const root=el(container,"section","phrase-game");
- const all=phrases.filter(p=>p.ru&&p.zh);
- const pool=shuffle(all).slice(0,Math.min(10,all.length));
- let index=0,score=0,finished=false;
- function render(){
-  root.replaceChildren();
-  if(index>=pool.length){
-   finished=true;
-   el(root,"h3","phrase-game__title","🏆 "+score+" из "+pool.length);
-   el(root,"p","",score>=8?"Отличный результат!": "Можно повторить и запомнить ещё несколько фраз.");
-   const saved=storage.getGameData();
-   saved.stats.quizBest=Math.max(saved.stats.quizBest,score);
-   storage.setGameData(saved);
-   const a=el(root,"a","btn btn--secondary","📖 Открыть разговорник");a.href="#/handy";
-   const again=el(root,"button","btn btn--primary","Ещё 10 вопросов");
-   again.addEventListener("click",()=>renderPhraseGame(container,ctx));
-   return;
-  }
-  const current=pool[index],choices=shuffle([
-   current,...shuffle(all.filter(p=>p.ru!==current.ru&&p.id!==current.id)).slice(0,3)
-  ]);
-  el(root,"p","phrase-game__progress","Вопрос "+(index+1)+" из "+pool.length+" · верно "+score);
-  const card=el(root,"div","phrase-game__question");
-  el(card,"strong","phrase-game__zh",current.zh).lang="zh-CN";
-  el(card,"span","phrase-game__hint","Как это сказать по-русски?");
-  const buttons=el(root,"div","phrase-game__options");
-  const feedback=el(root,"div","phrase-game__feedback","");
-  feedback.setAttribute("role","status");
-  const next=el(root,"button","btn btn--primary phrase-game__next",index===pool.length-1?"Результат":"Следующий вопрос");
-  next.type="button";next.hidden=true;
-  let answered=false;
-  for(const phrase of choices){
-   const button=el(buttons,"button","phrase-game__option",phrase.ru);
-   button.type="button";
-   button.addEventListener("click",()=>{
-    if(answered)return;
-    answered=true;const right=phrase.id===current.id;
-    if(right)score++;
-    for(const b of buttons.children){
-     b.disabled=true;
-     if(b.textContent===current.ru)b.classList.add("is-correct");
-     else if(b===button)b.classList.add("is-wrong");
-    }
-    feedback.textContent=(right?"✓ Верно! ":"✕ Правильно: "+current.ru+". ")+
-     (current.pinyin?"Произношение: "+current.pinyin+". ":"")+(current.context||"");
-    next.hidden=false;next.focus();
-   });
-  }
-  next.addEventListener("click",()=>{index++;render();});
- }
- render();
-}
-
 const PICTURES=["🐠","🐢","🦀","🌴","🥥","🪸","🐬","🏝️"];
 export function renderMemoryGame(container,ctx){
  container.replaceChildren();back(container,ctx);
