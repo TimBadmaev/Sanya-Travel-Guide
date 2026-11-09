@@ -156,7 +156,7 @@ function drawChapter(parent, chapter, index, nextId) {
   const section = el(parent, "section", "quest-world quest-world--" + chapter.color);
   section.id = "quest-chapter-" + chapter.id;
   const banner = el(section, "div", "quest-world__banner");
-  banner.style.backgroundImage = "linear-gradient(90deg,rgba(7,45,43,.85),rgba(7,45,43,.32)),url('assets/photos/" +
+  banner.style.backgroundImage = "linear-gradient(90deg,rgba(5,22,41,.62),rgba(5,22,41,.04)),url('assets/photos/" +
     (chapterPhotos[chapter.id] || chapterPhotos.start) + "')";
   el(banner, "span", "quest-world__index", "МИР " + (index + 1));
   el(banner, "h3", "quest-world__title", chapter.icon + " " + chapter.title);

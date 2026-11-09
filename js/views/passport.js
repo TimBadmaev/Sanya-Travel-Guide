@@ -229,8 +229,8 @@ function renderOverview(page, { result, content, places, state }) {
   appendText(section, "p", "passport-map__intro", "Это игровая схема для наклеек, а не географическая карта.");
   const realAtlas = document.createElement("a");
   realAtlas.className = "passport-real-atlas-link";
-  realAtlas.href = "#/island";
-  realAtlas.textContent = "🗺️ Открыть настоящую карту Хайнаня с рельефом ›";
+  realAtlas.href = "#/map";
+  realAtlas.textContent = "🗺️ Настоящая карта улиц и маршруты ›";
   section.appendChild(realAtlas);
   const svg = createMapSvg({
     viewBox: OVERVIEW_BOX,

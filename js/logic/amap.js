@@ -52,6 +52,20 @@ const ROUTE_MODE_IDS = ROUTE_MODES.map((mode) => mode.id);
 // наличия приложения не требуется). Название кодируется целиком
 // (encodeURIComponent): запятая в нём не ломает тройку lon,lat,name, а
 // иероглифы и «&» не ломают строку запроса.
+// Official Amap H5 URI API supports origin/destination and walk/car:
+ // https://lbs.amap.com/api/uri-api/guide/travel/route
+export function buildAmapBetweenRouteUrl(from, to, fromName = "Начало", toName = "Конец", mode = "walk") {
+  if (!isValidLocation(to) || (from && !isValidLocation(from))) throw new Error("Некорректные координаты");
+  const fmt = (p,n) => p ? `${p.lng},${p.lat},${encodeURIComponent(n)}` : "";
+  const safeMode = ROUTE_MODE_IDS.includes(mode) ? mode : "walk";
+  return `https://uri.amap.com/navigation?from=${fmt(from,fromName)}&to=${fmt(to,toName)}&mode=${safeMode}&callnative=1&src=SanyaTravelGuide`;
+}
+export function buildYandexRouteUrl(from,to,mode="walk") {
+  if (!isValidLocation(to) || (from && !isValidLocation(from))) throw new Error("Некорректные координаты");
+  const fmt = (p) => p ? `${p.lat},${p.lng}` : "";
+  return `https://yandex.ru/maps/?mode=routes&rtext=${encodeURIComponent(fmt(from)+"~"+fmt(to))}&rtt=${mode==="car"?"auto":"pd"}`;
+}
+
 export function buildAmapRouteUrl(location, name, mode) {
   const safeMode = ROUTE_MODE_IDS.includes(mode) ? mode : ROUTE_MODE_IDS[0];
   const to = `${location.lng},${location.lat},${encodeURIComponent(name)}`;

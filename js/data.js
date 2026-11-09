@@ -85,6 +85,12 @@ export async function loadAudioSizes() {
   return data && data.version === 2 ? data : { totalBytes: 0, items: {} };
 }
 
+export async function loadOfflineRoads() {
+  const data = await loadJSON("data/sanya-roads.json");
+  if (!Array.isArray(data?.roads)) throw new Error("Офлайн-дороги недоступны");
+  return data;
+}
+
 export async function loadIslandShape() {
   return loadJSON("data/hainan-coast.json");
 }
