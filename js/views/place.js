@@ -1,4 +1,5 @@
-import { loadPlaces, loadConfig, loadExcursions, loadPassport, loadErrorMessage, loadPlaceStories } from "../data.js";
+import { loadPlaces, loadConfig, loadExcursions, loadPassport, loadErrorMessage, loadPlaceStories, loadAudioGuides } from "../data.js";
+import { renderAudioPlayer } from "./audio.js";
 import { storage } from "../storage.js";
 import { EFFORT_LABELS, SETTING_LABELS, PRICE_LABELS, formatDuration } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
@@ -100,17 +101,19 @@ export async function renderPlace(container, ctx) {
   // «Паспорт»; без него карточка и отметка работают как обычно.
   let passportContent = null;
   let editorialStories = {};
+  let audioGuides = {};
   try {
     // Геолокацию здесь НЕ ждём (D-02 REAL-DEVICE-QA-2026-09.md): при выданном
     // разрешении и медленном GPS ожидание primeCurrentPosition() держало
     // карточку на «Загрузка места…» до 10 с. Контент рисуется сразу, строка
     // «N км от вас» дорисовывается позже — см. блок 3a.
-    [places, config, excursions, passportContent, editorialStories] = await Promise.all([
+    [places, config, excursions, passportContent, editorialStories, audioGuides] = await Promise.all([
       loadPlaces(),
       loadConfig(),
       addTo ? loadExcursions().catch(() => []) : [],
       addTo ? null : loadPassport().catch(() => null),
       loadPlaceStories().catch(() => ({})),
+      loadAudioGuides().catch(() => ({})),
     ]);
   } catch (e) {
     console.error(e);
@@ -148,7 +151,7 @@ export async function renderPlace(container, ctx) {
     /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath) ||
     /^\/passport(\/zone\/[^/]+|\/album|\/journey)?$/.test(fromPath) ||
     fromPath === "/" ||
-    fromPath === "/now";
+    fromPath === "/now" || fromPath === "/audio";
   const parentHash = fromDay ? fromHash : addTo ? `#/places?addTo=${addTo}` : "#/places";
   const backLink = document.createElement("a");
   backLink.href = parentHash;
@@ -301,6 +304,7 @@ export async function renderPlace(container, ctx) {
 
   // 4. Описание и «Почему стоит».
   appendParagraph(container, "place-detail__summary", place.summary);
+  if (!addTo && audioGuides[place.id]) renderAudioPlayer(container, place, audioGuides[place.id]);
   appendPoints(container, "Почему стоит", place.why);
   const editorial = editorialStories[place.id];
   if (editorial && editorial.headline && editorial.lead) {

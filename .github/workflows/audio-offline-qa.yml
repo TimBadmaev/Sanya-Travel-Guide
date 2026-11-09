@@ -1,0 +1,39 @@
+name: Audio guide offline QA
+
+on:
+  push:
+    branches: [feature/audio-guides-v31]
+    paths:
+      - '.github/workflows/audio-offline-qa.yml'
+      - 'tests/test_audio_offline_browser.py'
+      - 'tests/test_audio_guides.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install ffprobe to validate actual audio duration
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+      - name: Validate all 57 MP3 assets and narration metadata
+        run: |
+          node --experimental-default-type=module --test tests/test_audio_guides.mjs
+          python3 scripts/verify_audio.py
+      - name: Test saved MP3 with real network disabled
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_audio_offline_browser.py
+      - name: Test guide catalog and mobile player
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_audio_guides_browser.py
