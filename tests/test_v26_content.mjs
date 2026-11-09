@@ -6,7 +6,7 @@ const places=JSON.parse(readFileSync(new URL("../data/places.json",import.meta.u
 test("only existing verified places get new editorial stories",()=>{
   const ids=new Set(places.filter(p=>p.status==="verified").map(p=>p.id));
   const stories=Object.entries(source.items);
-  assert.equal(stories.length,10);
+  assert.equal(stories.length,20);
   for(const [id,s] of stories){
     assert.ok(ids.has(id),id);
     assert.ok(s.headline.length>=20&&s.lead.length>=65,id);
