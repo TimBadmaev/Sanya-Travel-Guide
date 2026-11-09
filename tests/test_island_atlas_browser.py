@@ -32,7 +32,7 @@ def main():
   if not b.wait_for("navigator.serviceWorker.controller!==null",20):raise AssertionError("SW not active")
   b.send("Network.emulateNetworkConditions",{"offline":True,"latency":0,"downloadThroughput":0,"uploadThroughput":0})
   b.go(base,"#/island",cold=True)
-  if not b.wait_for("document.querySelector('.island-atlas__svg')",20):
+  if not b.wait_for("!!document.querySelector('.island-atlas__svg')",20):
    diagnostics=b.js("""(async()=>({
       hash:location.hash,ready:document.readyState,ctrl:!!navigator.serviceWorker.controller,
       html:document.querySelector('#view')?.innerText?.slice(0,500),
