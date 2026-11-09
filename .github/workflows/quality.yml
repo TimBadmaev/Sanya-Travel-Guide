@@ -29,6 +29,10 @@ jobs:
           node --experimental-default-type=module --test tests/test_v26_content.mjs
           node --experimental-default-type=module --test tests/test_food_filters.mjs
           node --experimental-default-type=module --test tests/test_audio_guides.mjs
+      - name: Test real MP3 download and playback from offline cache
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_audio_offline_browser.py
       - name: Test audio guide catalog, player and lazy fetching
         env:
           CHROME: /usr/bin/google-chrome
