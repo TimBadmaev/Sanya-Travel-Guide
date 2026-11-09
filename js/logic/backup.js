@@ -29,6 +29,7 @@ export const SECTION_LABELS = {
   "stg:explore": "Познавательные открытия",
   "stg:activity": "Дни знакомства с островом",
   "stg:games": "Мини-игры и результаты",
+  "stg:mustdo": "10 впечатлений Хайнаня",
   "stg:saved": "Избранные места",
   "stg:checklist": "Отметки подготовки",
   "stg:trip": "Даты, район и адрес проживания",
@@ -41,6 +42,7 @@ const SECTION_SINCE = {
   "stg:explore": 22,
   "stg:activity": 24,
   "stg:games": 36,
+  "stg:mustdo": 37,
 };
 
 function versionNumber(appVersion) {
@@ -173,6 +175,8 @@ export function countSection(key, value) {
       return Array.isArray(value.days) ? value.days.length : 0;
     case "stg:games":
       return (value.match ? 1 : 0) + Object.values(value.stats || {}).filter(Number.isFinite).length;
+    case "stg:mustdo":
+      return Array.isArray(value.done) ? value.done.length : 0;
     default:
       return 0;
   }
