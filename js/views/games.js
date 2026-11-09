@@ -5,9 +5,9 @@ const el=(parent,tag,cls,text)=>{
  const node=document.createElement(tag);if(cls)node.className=cls;
  if(text!==undefined)node.textContent=text;parent.appendChild(node);return node;
 };
-function back(parent,ctx,label="← К играм"){
- const a=el(parent,"a","place-detail__back",label);a.href="#/games";
- a.addEventListener("click",e=>{e.preventDefault();ctx.back("#/games");});
+function back(parent,ctx,label="← К играм",to="#/games"){
+ const a=el(parent,"a","place-detail__back",label);a.href=to;
+ a.addEventListener("click",e=>{e.preventDefault();ctx.back(to);});
 }
 function card(parent,emoji,title,description,href){
  const a=el(parent,"a","game-hub__card");a.href=href;
@@ -17,7 +17,7 @@ function card(parent,emoji,title,description,href){
  el(a,"span","game-hub__arrow","›");
 }
 export function renderGames(container,ctx){
- container.replaceChildren();back(container,ctx,"← На главную");
+ container.replaceChildren();back(container,ctx,"← На главную","#/");
  el(container,"h2","view-title","🎮 Игровая бухта");
  el(container,"p","game-hub__lead","Небольшие офлайн-игры: в дороге, вечером или вдвоём. Без рекламы, входа в аккаунт и обязательных ежедневных заданий.");
  const progress=storage.getGameData(),main=el(container,"div","game-hub__list");
@@ -63,6 +63,7 @@ export function renderBattleship(container,ctx){
   const restart=el(toolbar,"button","btn btn--secondary","↻ Новая партия");restart.type="button";
   restart.addEventListener("click",()=>{
    if(game&&game.phase!=="finished"&&!window.confirm("Завершить текущую партию и начать заново?"))return;
+   if(!storage.setGameData({...storage.getGameData(),match:null}))return;
    game=null;draw();
   });
  }
@@ -124,7 +125,7 @@ export function renderBattleship(container,ctx){
    el(root,"h3","naval-game__winner","🏆 Победил "+winner+"!");
    el(root,"p","","Все корабли соперника потоплены.");
    const again=el(root,"button","btn btn--primary","Новая партия");
-   again.addEventListener("click",()=>{game=null;draw();});
+   again.addEventListener("click",()=>{if(storage.setGameData({...storage.getGameData(),match:null})){game=null;draw();}});
    return;
   }
   const player=game.turn;
