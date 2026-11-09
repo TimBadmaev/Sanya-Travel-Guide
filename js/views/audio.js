@@ -1,5 +1,5 @@
-import { loadAudioGuides, loadPlaces, loadConfig, loadErrorMessage } from "../data.js";
-import { guideAudioUrl, audioCacheAvailable, isAudioSaved, savedAudioBlob, saveAudio, removeAudio, offlineGuideIds } from "../logic/audio-cache.js";
+import { loadAudioGuides, loadAudioSizes, loadPlaces, loadConfig, loadErrorMessage } from "../data.js";
+import { guideAudioUrl, audioCacheAvailable, savedAudioBlob, saveAudio, removeAudio, offlineGuideIds, legacyAudioCacheInfo, clearLegacyAudioCache } from "../logic/audio-cache.js";
 
 const formatTime = (seconds) => {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -18,10 +18,10 @@ export function renderAudioPlayer(container, place, guide) {
   if (!guide) return;
   const section = el("section", "audio-guide");
   section.setAttribute("aria-label", "Аудиогид по месту");
-  section.appendChild(el("p", "audio-guide__eyebrow", "🎧 АУДИОГИД · НА РУССКОМ"));
+  section.appendChild(el("p", "audio-guide__eyebrow", "🎧 ИСТОРИЯ МЕСТА · ЖИВОЙ РАССКАЗ"));
   section.appendChild(el("h3", "audio-guide__title", guide.title));
   section.appendChild(el("p", "audio-guide__subtitle",
-    `История места · около ${guide.minutes} мин · слушайте прямо здесь`));
+    `≈${guide.minutes} мин · русский голос · негромкая авторская музыка`));
 
   const media = document.createElement("audio");
   media.preload = "none";
@@ -64,7 +64,16 @@ export function renderAudioPlayer(container, place, guide) {
   guide.text.split(/\n+/).map(p => p.trim()).filter(Boolean).forEach((paragraph) =>
     copy.appendChild(el("p", "", paragraph)));
   text.append(summary, copy);
-  section.append(controls, seek, times, download, status, text, media);
+  section.append(controls, seek, times, download, status, text);
+  if (guide.video && /^https:\/\/www\.youtube\.com\/watch\?v=/.test(guide.video.url)) {
+    const video = el("a", "audio-guide__video", "▶ Видеообзор: " + guide.video.title);
+    video.href = guide.video.url;
+    video.rel = "noopener noreferrer";
+    video.target = "_blank";
+    const explanation = el("span", "audio-guide__video-note", "YouTube откроется отдельно, потребуется интернет.");
+    section.append(video, explanation);
+  }
+  section.appendChild(media);
   container.appendChild(section);
 
   let saved = false;
@@ -175,100 +184,173 @@ export function renderAudioPlayer(container, place, guide) {
   }
 }
 
-export async function renderAudioCatalog(container, ctx) {
-  container.innerHTML = '<p class="loading">Загружаем аудиогиды…</p>';
-  let guides, places, config;
+export async function renderAudioCatalog(container,ctx){
+  container.innerHTML='<p class="loading">Загружаем коллекцию историй…</p>';
+  let guides,places,config,sizes;
   try {
-    [guides, places, config] = await Promise.all([loadAudioGuides(), loadPlaces(), loadConfig()]);
-  } catch (error) {
-    if (!ctx.isCurrent()) return;
-    container.textContent = loadErrorMessage(error);
+    [guides,places,config,sizes]=await Promise.all([
+      loadAudioGuides(),loadPlaces(),loadConfig(),loadAudioSizes()
+    ]);
+  }catch(e){
+    if(ctx.isCurrent())container.textContent=loadErrorMessage(e);
     return;
   }
-  if (!ctx.isCurrent()) return;
-  const byId = new Map(places.map(p => [p.id, p]));
-  const areas = new Map(config.areas.map(a => [a.id, a.name]));
-  const entries = Object.entries(guides).filter(([id]) => byId.has(id))
-    .sort((a,b) => ((a[1].area === "yalong") ? -1 : 0)-((b[1].area === "yalong") ? -1 : 0));
-  container.innerHTML = "";
-  const back = el("a", "place-detail__back", "← На главную");
-  back.href = "#/";
-  back.addEventListener("click", e => {e.preventDefault();ctx.back("#/");});
-  container.append(back, el("h2", "view-title", "🎧 Аудиогиды Хайнаня"));
-  container.appendChild(el("p", "audio-catalog__intro",
-    `${entries.length} историй на русском, примерно по 1–5 минут. Все записи вместе занимают около 25 МБ. По умолчанию показан Ялунвань — скачивайте нужный район, а не всю коллекцию.`));
+  if(!ctx.isCurrent())return;
+  const areaNames=new Map(config.areas.map(a=>[a.id,a.name]));
+  const byId=new Map(places.map(p=>[p.id,p]));
+  const entries=Object.entries(guides).filter(([id])=>byId.has(id))
+    .sort((a,b)=>((a[1].area==="yalong")?-1:0)-((b[1].area==="yalong")?-1:0));
+  const fmtBytes=bytes=>(Math.max(0,bytes)/1048576).toFixed(1).replace(".",",")+" МБ";
+  const fullBytes=sizes.totalBytes||0;
+  container.innerHTML="";
+  const parent=ctx.from&&ctx.from.startsWith("#/excursions")?"#/excursions":"#/";
+  const back=el("a","place-detail__back",parent==="#/"?"← На главную":"← К экскурсиям");
+  back.href=parent;
+  back.addEventListener("click",e=>{e.preventDefault();ctx.back(parent);});
+  const eyebrow=el("p","audio-catalog__eyebrow","НАСТОЯЩИЕ ИСТОРИИ ОСТРОВА");
+  const title=el("h2","view-title","🎧 Аудиогид по Хайнаню");
+  const intro=el("p","audio-catalog__intro",
+    `${entries.length} историй: легенды, исторические города, природа и рынки. Без рассказов об обычных магазинах. Всё вместе — ${fmtBytes(fullBytes)}.`);
+  container.append(back,eyebrow,title,intro);
 
-  const tools = el("div", "audio-catalog__tools");
-  const areaControl = document.createElement("select");
-  areaControl.className = "audio-filter";
-  areaControl.setAttribute("aria-label", "Район аудиогидов");
-  [{id:"any",name:"Все районы"},{id:"yalong",name:areas.get("yalong")}]
-    .concat([...areas].filter(([id])=>id!=="yalong").map(([id,name])=>({id,name})))
-    .filter(x=>x.id==="any"||entries.some(([,g])=>g.area===x.id))
-    .forEach(({id,name})=>{const o=document.createElement("option");o.value=id;o.textContent=name;areaControl.appendChild(o);});
-  areaControl.value = "yalong";
-  const search=document.createElement("input");
-  search.type="search";search.className="audio-filter";
-  search.placeholder="Поиск по названию";search.setAttribute("aria-label","Поиск аудиогида");
-  tools.append(areaControl,search);
+  const pack=el("section","audio-catalog__pack");
+  const packHeading=el("h3","","Вся коллекция для офлайна");
+  const packCopy=el("p","","Один раз сохраните истории перед экскурсиями. Интернет для дальнейшего прослушивания не понадобится. Файлы могут быть удалены браузером при нехватке памяти.");
+  const downloadAll=el("button","btn btn--primary audio-catalog__all",
+    `↓ Скачать все ${entries.length} историй · ${fmtBytes(fullBytes)}`);
+  downloadAll.type="button";downloadAll.disabled=!audioCacheAvailable();
+  pack.append(packHeading,packCopy,downloadAll);container.appendChild(pack);
+
+  const confirmBox=el("div","audio-catalog__confirm");
+  confirmBox.hidden=true;
+  confirmBox.setAttribute("role","group");
+  confirmBox.setAttribute("aria-label","Подтверждение загрузки всех аудиогидов");
+  confirmBox.appendChild(el("p","",
+    `Будет загружено до ${fmtBytes(fullBytes)} (${entries.length} записей). Используйте Wi-Fi и оставьте эту страницу открытой до завершения.`));
+  const confirmStart=el("button","btn btn--primary","Начать загрузку всех");
+  confirmStart.type="button";
+  const confirmNo=el("button","btn btn--secondary","Не сейчас");
+  confirmNo.type="button";
+  confirmBox.append(confirmStart,confirmNo);
+  container.appendChild(confirmBox);
+
+  const toolbar=el("div","audio-catalog__tools");
+  const region=el("select","audio-filter");
+  region.setAttribute("aria-label","Район аудиогидов");
+  const opts=[{id:"any",name:"Все районы"},{id:"yalong",name:areaNames.get("yalong")||"Ялунвань"},
+    ...[...areaNames].filter(([id])=>id!=="yalong").map(([id,name])=>({id,name}))];
+  for(const o of opts){
+    if(o.id!=="any"&&!entries.some(([,g])=>g.area===o.id))continue;
+    const option=el("option","",o.name);option.value=o.id;region.appendChild(option);
+  }
+  region.value="yalong";
+  const search=el("input","audio-filter");
+  search.type="search";search.placeholder="Найти историю по названию";
+  search.setAttribute("aria-label","Поиск аудиогида");
+  toolbar.append(region,search);
+  container.appendChild(toolbar);
+
   const actions=el("div","audio-catalog__actions");
-  const download=el("button","btn btn--primary","↓ Скачать выбранные");
+  const download=el("button","btn btn--secondary","↓ Скачать выбранный район");
   download.type="button";download.disabled=!audioCacheAvailable();
-  const cancel=el("button","btn btn--secondary","Отмена");cancel.type="button";cancel.hidden=true;
-  const message=el("p","audio-catalog__status","Аудио скачивается только по вашему выбору, не при открытии приложения.");
-  message.setAttribute("role","status");message.setAttribute("aria-live","polite");
+  const cancel=el("button","btn btn--secondary","Остановить");
+  cancel.type="button";cancel.hidden=true;
   actions.append(download,cancel);
+  const status=el("p","audio-catalog__status",
+    "Все истории доступны текстом без сети; записи загружаются по вашему выбору.");
+  status.setAttribute("aria-live","polite");
+  status.setAttribute("role","status");
   const list=el("div","audio-catalog__list");
-  container.append(tools,actions,message,list);
-  let saved=new Set();
-  let abort=null;
-  try { saved=await offlineGuideIds(guides); } catch {}
-  const filtered=() => entries.filter(([id,g])=>
-    (areaControl.value==="any"||g.area===areaControl.value) &&
+  const legacy=el("div","audio-catalog__legacy");legacy.hidden=true;
+  container.append(actions,status,legacy,list);
+
+  let saved=new Set(),controller=null;
+  try{saved=await offlineGuideIds(guides);}catch{}
+  if(!ctx.isCurrent())return;
+  async function discoverOld(){
+    try{
+      const old=await legacyAudioCacheInfo();
+      if(!ctx.isCurrent())return;
+      legacy.innerHTML="";
+      legacy.hidden=!old.count;
+      if(!old.count)return;
+      const p=el("p","",
+        `Найдены старые MP3 из прошлой версии: ${old.count} шт., ${fmtBytes(old.bytes)}. Новые записи работают отдельно.`);
+      const clear=el("button","btn btn--secondary","Удалить только старые MP3");
+      clear.type="button";
+      clear.addEventListener("click",async()=>{
+        if(!window.confirm("Удалить старые записи предыдущей версии? Новые аудиогиды останутся."))return;
+        const count=await clearLegacyAudioCache();
+        legacy.hidden=true;
+        status.textContent=`Удалено устаревших записей: ${count}. Новая коллекция сохранена.`;
+      });
+      legacy.append(p,clear);
+    }catch{/* Some private modes cannot inspect Cache Storage. */}
+  }
+  discoverOld();
+  const filtered=()=>entries.filter(([id,g])=>
+    (region.value==="any"||g.area===region.value)&&
     (!search.value.trim()||`${g.title} ${byId.get(id).name.zh}`.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())));
-  function draw() {
-    if (!ctx.isCurrent()) return;
+  function draw(){
+    if(!ctx.isCurrent())return;
+    const current=filtered();
+    download.textContent=`↓ Скачать показанные (${current.length})`;
+    downloadAll.textContent=`↓ Скачать все ${entries.length} · ${fmtBytes(fullBytes)}`;
     list.innerHTML="";
-    const view=filtered();
-    download.textContent=`↓ Скачать выбранные (${view.length})`;
-    if (!view.length) {list.appendChild(el("p","empty-state","По этим условиям ничего не найдено."));return;}
-    for(const [id,g] of view) {
-      const card=el("a","audio-catalog__item");
-      card.href=`#/place/${id}`;
-      card.append(el("span","audio-catalog__item-icon","🎧"));
-      const content=el("span","audio-catalog__item-text");
-      content.append(el("strong","",g.title),el("small","",`${areas.get(g.area)||"Другой район"} · ~${g.minutes} мин`));
-      card.append(content,el("span","audio-catalog__item-save",saved.has(id)?"✓ офлайн":"▶"));
+    for(const [id,g] of current){
+      const card=el("a","audio-catalog__item");card.href=`#/place/${id}`;
+      const info=el("span","audio-catalog__item-text");
+      info.append(el("strong","",g.title),
+        el("small","",`${areaNames.get(g.area)||"Другое"} · ${g.minutes} мин`));
+      card.append(el("span","audio-catalog__item-icon","🎧"),info,
+        el("span","audio-catalog__item-save",saved.has(id)?"✓ офлайн":"▶"));
       list.appendChild(card);
     }
+    if(!current.length)list.appendChild(el("p","empty-state","Ничего не найдено."));
   }
-  areaControl.addEventListener("change",draw);
-  search.addEventListener("input",draw);
-  cancel.addEventListener("click",()=>abort?.abort());
-  download.addEventListener("click",async()=>{
-    const selection=filtered();
-    if (!selection.length||abort) return;
-    abort=new AbortController();
-    download.disabled=true;cancel.hidden=false;
-    let done=0,errors=0,skipped=0;
-    for (const [id,g] of selection) {
-      if (!ctx.isCurrent()||abort.signal.aborted) break;
-      message.textContent=`Сохраняем ${done+skipped+errors+1} из ${selection.length}: ${g.title}`;
-      try {
-        if (saved.has(id)) skipped++;
-        else { await saveAudio(g,{signal:abort.signal});saved.add(id);done++; }
-      } catch(e) {
-        if(abort.signal.aborted)break;
+  async function downloadSelection(selection){
+    if(controller||!selection.length)return;
+    confirmBox.hidden=true;
+    controller=new AbortController();
+    const signal=controller.signal;
+    download.disabled=true;downloadAll.disabled=true;cancel.hidden=false;
+    let done=0,skipped=0,errors=0;
+    for(const [id,g] of selection){
+      if(!ctx.isCurrent()||signal.aborted)break;
+      status.textContent=`Загружаем ${done+skipped+errors+1} из ${selection.length}: ${g.title}…`;
+      try{
+        if(saved.has(id))skipped++;
+        else{await saveAudio(g,{signal});saved.add(id);done++;}
+      }catch(e){
+        if(signal.aborted)break;
         errors++;
-        message.textContent=`Не удалось сохранить: ${g.title}. ${e?.message||"Ошибка"}`;
+        status.textContent=`Не удалось загрузить ${g.title}: ${e?.message||"ошибка"}`;
       }
       draw();
     }
-    if (ctx.isCurrent()) {
-      message.textContent=`Сохранено: ${done}; уже было: ${skipped}; ошибок: ${errors}.` +
-        (abort.signal.aborted?" Загрузка остановлена.":"");
-      abort=null;cancel.hidden=true;download.disabled=!audioCacheAvailable();draw();
+    if(ctx.isCurrent()){
+      status.textContent=`Сохранено новых: ${done}. Уже было: ${skipped}. Ошибок: ${errors}.`+
+        (signal.aborted?" Загрузка остановлена.":"");
+      controller=null;
+      download.disabled=!audioCacheAvailable();
+      downloadAll.disabled=!audioCacheAvailable();
+      cancel.hidden=true;
+      draw();
     }
+  }
+  region.addEventListener("change",draw);
+  search.addEventListener("input",draw);
+  download.addEventListener("click",()=>downloadSelection(filtered()));
+  cancel.addEventListener("click",()=>controller?.abort());
+  downloadAll.addEventListener("click",()=>{
+    if(controller)return;
+    confirmBox.hidden=false;
+    confirmStart.focus();
   });
+  confirmNo.addEventListener("click",()=>{confirmBox.hidden=true;downloadAll.focus();});
+  confirmStart.addEventListener("click",()=>downloadSelection(entries));
   draw();
+  if(ctx.query.get("download")==="all"){
+    confirmBox.hidden=false; // Show consent on incoming excursions link, never download automatically.
+  }
 }

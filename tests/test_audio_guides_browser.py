@@ -25,11 +25,18 @@ def main():
         check("Yalong Bay is the default lightweight subset",
               "document.querySelectorAll('.audio-catalog__item').length>0&&document.querySelectorAll('.audio-catalog__item').length<57")
         b.js("document.querySelector('.audio-filter').value='any';document.querySelector('.audio-filter').dispatchEvent(new Event('change'));true")
-        check("every verified place is available in all-areas view","document.querySelectorAll('.audio-catalog__item').length",57)
-        check("no MP3 auto-requested","performance.getEntriesByType('resource').filter(e=>e.name.endsWith('.mp3')).length",0)
+        check("every curated place is available in all-areas view","document.querySelectorAll('.audio-catalog__item').length",33)
+        check("no M4A auto-requested","performance.getEntriesByType('resource').filter(e=>e.name.endsWith('.m4a')).length",0)
         check("catalog search and area are accessible","document.querySelectorAll('.audio-filter').length",2)
         check("mobile has no horizontal overflow","document.documentElement.scrollWidth<=innerWidth")
         check("bulk download requires user click","!!document.querySelector('.audio-catalog__actions button')")
+        check("download all button includes exact size","document.querySelector('.audio-catalog__all').textContent.includes('7,9 МБ')")
+        b.js("document.querySelector('.audio-catalog__all').click();true")
+        check("download all requires explicit confirmation","!document.querySelector('.audio-catalog__confirm').hidden")
+        check("confirm has not started network downloads","performance.getEntriesByType('resource').filter(e=>e.name.endsWith('.m4a')).length",0)
+        b.js("document.querySelector('.audio-catalog__confirm .btn--secondary').click();true")
+        check("confirm can be cancelled","document.querySelector('.audio-catalog__confirm').hidden")
+
         b.js("document.querySelector('.audio-filter').value='yalong';document.querySelector('.audio-filter').dispatchEvent(new Event('change'));true")
         check("Yalong filter shows subset","document.querySelectorAll('.audio-catalog__item').length>0&&document.querySelectorAll('.audio-catalog__item').length<57")
         go("#/place/luhuitou-park",".audio-guide")
@@ -40,6 +47,7 @@ def main():
         go("#/place/yalong-bay-beach",".audio-guide")
         check("Yalong has own guide","document.querySelector('.audio-guide__title').textContent.includes('Ялонг')")
         check("player buttons have min 44px touch targets","[...document.querySelectorAll('.audio-guide__controls button')].every(x=>x.getBoundingClientRect().height>=44)")
+        check("dark navy background", "getComputedStyle(document.body).backgroundColor", "rgb(9, 19, 38)")
         check("no JavaScript errors","true" if not b.exceptions else "false")
         print(f"v31 {done} audio tests passed",flush=True)
     finally:

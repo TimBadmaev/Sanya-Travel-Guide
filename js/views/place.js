@@ -151,7 +151,7 @@ export async function renderPlace(container, ctx) {
     /^\/(plan|recommended|excursion)\/[^/]+$/.test(fromPath) ||
     /^\/passport(\/zone\/[^/]+|\/album|\/journey)?$/.test(fromPath) ||
     fromPath === "/" ||
-    fromPath === "/now" || fromPath === "/audio";
+    fromPath === "/now" || fromPath === "/audio" || fromPath === "/island";
   const parentHash = fromDay ? fromHash : addTo ? `#/places?addTo=${addTo}` : "#/places";
   const backLink = document.createElement("a");
   backLink.href = parentHash;

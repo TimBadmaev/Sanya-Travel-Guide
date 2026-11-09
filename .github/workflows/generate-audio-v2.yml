@@ -1,0 +1,47 @@
+name: Generate v32 vivid Russian audio with Silero and original ambience
+
+on:
+  push:
+    branches: [feature/audio-l2-v32]
+    paths:
+      - 'data/audio-guides.json'
+      - 'scripts/render_audio_v2.py'
+      - '.github/workflows/generate-audio-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  narrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/audio-l2-v32
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install offline production tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'torch>=2.2,<3' 'numpy>=1.24,<3' 'silero>=0.4,<1'
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+      - name: Produce 33 Russian voiceover episodes
+        run: |
+          python -u scripts/render_audio_v2.py
+          python scripts/verify_audio_v2.py
+      - name: Replace legacy recordings, commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/audio-v2/*.m4a
+          git rm -f assets/audio/*.mp3
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "build(audio): replace 57 robot voices with 33 narrated compact AAC episodes"
+          git fetch origin feature/audio-l2-v32
+          git rebase origin/feature/audio-l2-v32
+          git push origin HEAD:feature/audio-l2-v32

@@ -33,6 +33,10 @@ jobs:
         env:
           CHROME: /usr/bin/google-chrome
         run: python3 -u tests/test_audio_offline_browser.py
+      - name: Verify georeferenced offline Hainan atlas
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_island_atlas_browser.py
       - name: Test audio guide catalog, player and lazy fetching
         env:
           CHROME: /usr/bin/google-chrome
