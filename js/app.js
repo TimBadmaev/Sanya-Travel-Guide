@@ -9,8 +9,10 @@ import { renderAudioCatalog } from "./views/audio.js";
 import { renderIslandAtlas } from "./views/island-atlas.js";
 import { renderRealMap } from "./views/real-map.js";
 import { renderOfflineCenter } from "./views/offline-center.js";
-import { renderGames, renderBattleship } from "./views/games.js";
-import { renderPhraseGame, renderMemoryGame } from "./views/mini-arcade.js";
+import { renderGames } from "./views/games.js";
+import { renderSnake, renderOcean } from "./views/retro-arcade.js";
+import { renderMustDo } from "./views/must-do.js";
+import { renderMemoryGame } from "./views/mini-arcade.js";
 import { renderPrepare } from "./views/prepare.js";
 import { renderSettings } from "./views/settings.js";
 import { renderInfo, renderInfoDetail } from "./views/info.js";
@@ -42,8 +44,11 @@ const routes = [
   { pattern: /^\/map$/, render: renderRealMap, nav: "/discover" },
   { pattern: /^\/offline$/, render: renderOfflineCenter, nav: "/me" },
   { pattern: /^\/games$/, render: renderGames, nav: "/" },
-  { pattern: /^\/games\/sea$/, render: renderBattleship, nav: "/" },
-  { pattern: /^\/games\/phrases$/, render: renderPhraseGame, nav: "/" },
+  { pattern: /^\/games\/snake$/, render: renderSnake, nav: "/" },
+  { pattern: /^\/games\/fish$/, render: renderOcean, nav: "/" },
+  { pattern: /^\/games\/sea$/, render: () => window.location.replace("#/games"), nav: "/" },
+  { pattern: /^\/games\/phrases$/, render: () => window.location.replace("#/games"), nav: "/" },
+  { pattern: /^\/must-do$/, render: renderMustDo, nav: "/discover" },
   { pattern: /^\/games\/memory$/, render: renderMemoryGame, nav: "/" },
   { pattern: /^\/place\/(?<id>[^/]+)$/, render: renderPlace, nav: "/discover" },
   { pattern: /^\/place\/(?<id>[^/]+)\/taxi$/, render: renderPlaceTaxi, nav: "/discover", fullscreen: true },
