@@ -75,8 +75,8 @@ test("contextual home actions remain grounded in actual trip state",()=>{
 test("new UX and games are explicitly offline-cached, optional map packs remain optional",()=>{
  const app=readFileSync(new URL("../js/app.js",import.meta.url),"utf8");
  const sw=readFileSync(new URL("../sw.js",import.meta.url),"utf8");
- for(const route of ["/offline","/games","/games/sea","/games/phrases","/games/memory"]){
-  assert.ok(app.includes(route),route);
+ for(const renderer of ["renderOfflineCenter","renderGames","renderBattleship","renderPhraseGame","renderMemoryGame"]){
+  assert.ok(app.includes("render: "+renderer),renderer);
  }
  for(const path of ["./js/views/games.js","./js/views/mini-arcade.js",
   "./js/views/offline-center.js","./js/logic/minigames.js","./js/logic/travel-hub.js"]){
