@@ -75,11 +75,13 @@ export async function renderIslandAtlas(container,ctx) {
  svgEl("path",{d:path,class:"island-atlas__land",fill:"url(#atlas-land)"},svg);
  const clip=svgEl("clipPath",{id:"atlas-land-clip"},defs);
  svgEl("path",{d:path},clip);
- const contours=svgEl("g",{"clip-path":"url(#atlas-land-clip)","aria-hidden":"true"},svg);
- for(let i=0;i<7;i++){
-  let y=190+i*61;
-  svgEl("path",{d:`M140 ${y} C320 ${y-52} 540 ${y+55} 770 ${y-24}`,class:"island-atlas__contour"},contours);
- }
+ // Real Natural Earth grayscale shaded relief, locally colorized and clipped
+ // to the actual coastline. Never claim the decorative scene is a DEM.
+ svgEl("image",{href:"assets/maps/hainan-relief.webp",x:0,y:0,
+   width:GEO.w,height:GEO.h,preserveAspectRatio:"none",
+   "clip-path":"url(#atlas-land-clip)",class:"island-atlas__relief",
+   "aria-hidden":"true"},svg);
+ svgEl("path",{d:path,class:"island-atlas__coast-highlight","aria-hidden":"true"},svg);
  const islandText=svgEl("text",{x:project([109.7,19.3]).x,y:project([109.7,19.3]).y,class:"island-atlas__island-text"},svg);
  islandText.textContent="ХАЙНАНЬ";
  const sanyaPoint=project([109.508,18.252]);
@@ -103,7 +105,7 @@ export async function renderIslandAtlas(container,ctx) {
  });
  container.appendChild(frame);
  container.appendChild(el("p","island-atlas__caption",
-  "Форма берега — Natural Earth 1:50m. Точки — координаты карточек, иногда причалы островных экскурсий. Масштаб обобщён; для маршрута используйте карту по ссылке в карточке. Данные доступны офлайн."));
+  "Берег — Natural Earth 1:50m; рельеф — Natural Earth 10m, условная цветная затенённая поверхность. Точки взяты из карточек (для островов иногда показаны причалы). Масштаб обобщён, для маршрута откройте карту из карточки. Работает офлайн."));
  const title=el("h3","island-atlas__list-head","Достопримечательности");
  const list=el("div","island-atlas__list");
  container.append(title,list);
