@@ -50,7 +50,7 @@ def main():
   b.go(base,"#/map",cold=True)
   if not b.wait_for("!!document.querySelector('.map-page__canvas')&&document.querySelector('.map-page__canvas').width>0",20):
    raise AssertionError(f"Offline street map cannot load: {b.exceptions}")
-  check("raw road vectors remain usable offline","(async()=>{const c=(await caches.keys()).find(x=>x.startsWith('sanya-guide-v35'));return !!c&&!!await(await caches.open(c)).match(new URL('data/sanya-roads.json',document.baseURI))})()")
+  check("raw road vectors remain usable offline","(async()=>{const c=(await caches.keys()).find(x=>x.startsWith('sanya-guide-v36'));return !!c&&!!await(await caches.open(c)).match(new URL('data/sanya-roads.json',document.baseURI))})()")
   check("offline map remains interactive","document.querySelectorAll('.map-page__focus button').length",5)
   if not b.wait_for("document.querySelector('.map-page__pack-actions button').textContent.includes('✓')",20):
    raise AssertionError(f"Optional district not restored offline: {b.exceptions}")
