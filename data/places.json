@@ -2076,5 +2076,210 @@
       { "title": "360地图 — POI «三亚市群众艺术馆» по адресу 迎宾路436号 (независимое подтверждение координаты: 28 м после приведения GCJ-02 к WGS-84)", "url": "https://m.map.360.cn/m/search/list/?keyword=%E8%BF%8E%E5%AE%BE%E8%B7%AF436%E5%8F%B7&city=%E4%B8%89%E4%BA%9A" }
     ],
     "verifiedAt": "2026-09-20"
+  },
+  {
+    "id": "phoenix-island-sanya",
+    "status": "verified",
+    "name": {
+      "ru": "Остров Феникс и вечерние огни",
+      "en": "Phoenix Island Sanya",
+      "zh": "凤凰岛"
+    },
+    "addressZh": "海南省三亚市天涯区三亚湾凤凰岛",
+    "area": "sanya-bay",
+    "category": "culture",
+    "tags": [
+      "view",
+      "sunset",
+      "photo"
+    ],
+    "location": {
+      "lat": 18.2419,
+      "lng": 109.4898
+    },
+    "summary": "Искусственный остров у городского берега Саньи, известный подсветкой высотных зданий. Хорошая идея для вечерних фотографий с набережной Санья Бэй — когда остров начинает светиться над морем.",
+    "why": [
+      "Одна из самых узнаваемых городских панорам, особенно вечером, когда включается архитектурная подсветка.",
+      "С берега Санья Бэй можно увидеть весь силуэт острова, море и город — не обязательно выходить на территорию комплекса.",
+      "Легко совместить с прогулкой по Кокосовой аллее, ужином или остановкой у моря."
+    ],
+    "durationHours": [
+      0.5,
+      2
+    ],
+    "effort": "low",
+    "setting": "outdoor",
+    "price": {
+      "type": "unknown",
+      "note": "Прогулка по общедоступной набережной бесплатна; доступ на отдельные объекты острова и смотровые площадки зависит от действующих правил."
+    },
+    "bestTime": "Закат и первые часы после включения подсветки",
+    "tips": [
+      "Для красивого общего кадра начните с набережной материковой части: сам остров может иметь ограничения доступа.",
+      "Подсветка зависит от погоды и расписания — не обещаем конкретное время шоу.",
+      "Если нужен точный вход, предварительно проверьте его по ссылке и в Amap."
+    ],
+    "photos": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Phoenix_Island_in_Sanya.jpg?width=760",
+        "alt": "Реальный вид на остров Феникс в бухте Санья, фото 2013 года",
+        "author": "Zhangmoon618",
+        "license": "CC BY-SA 3.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Phoenix_Island_in_Sanya.jpg"
+      }
+    ],
+    "more": {
+      "title": "Visit Sanya — Phoenix Island",
+      "url": "https://www.visitsanya.com/destination/fenghuang-island"
+    },
+    "sources": [
+      {
+        "title": "Sanya Tourism Board — Phoenix Island",
+        "url": "https://www.visitsanya.com/destination/fenghuang-island"
+      },
+      {
+        "title": "OpenStreetMap/Mapcarta — WGS84 координаты",
+        "url": "https://mapcarta.com/W89355728"
+      },
+      {
+        "title": "Wikimedia Commons — фото и лицензия",
+        "url": "https://commons.wikimedia.org/wiki/File:Phoenix_Island_in_Sanya.jpg"
+      }
+    ],
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "xiaodonghai-shore",
+    "status": "verified",
+    "name": {
+      "ru": "Сяодунхай — маленькая бухта за полуостровом",
+      "en": "Xiaodonghai Beach",
+      "zh": "小东海"
+    },
+    "addressZh": "海南省三亚市吉阳区小东海旅游度假区",
+    "area": "dadonghai",
+    "category": "beach",
+    "tags": [
+      "photo",
+      "view",
+      "local"
+    ],
+    "location": {
+      "lat": 18.21213,
+      "lng": 109.49756
+    },
+    "summary": "Более тихий уголок на полуострове Лухуйтоу: каменистые участки берега, пальмы, море и меньше городской суеты, чем на большом пляже Дадунхай.",
+    "why": [
+      "Другой характер побережья: вместо широкого городского пляжа — небольшая бухта с живописными валунами.",
+      "Можно совместить с Лухуйтоу и вечерним видом на бухты.",
+      "Подходит для неспешной прогулки и фотографий без плотного экскурсионного графика."
+    ],
+    "durationHours": [
+      1,
+      2
+    ],
+    "effort": "low",
+    "setting": "outdoor",
+    "price": {
+      "type": "unknown",
+      "note": "Условия доступа к отдельным участкам берега зависят от расположенных рядом отелей; доступ и безопасность купания уточняйте на месте."
+    },
+    "bestTime": "Утро или вторая половина дня",
+    "tips": [
+      "Берег местами каменистый: обувь для воды полезнее пляжных тапочек.",
+      "Не считайте купание безопасным по умолчанию: смотрите флаги, волны и разрешённые зоны.",
+      "В Amap ищите китайское название 小东海; точка каталога ориентировочная, не вход на пляж."
+    ],
+    "photos": [],
+    "more": {
+      "title": "Amap — 小东海",
+      "url": "https://www.amap.com/place/B03830MO65"
+    },
+    "sources": [
+      {
+        "title": "Amap — географический объект и китайский адрес",
+        "url": "https://www.amap.com/place/B03830MO65"
+      },
+      {
+        "title": "WorldPlaces — географические координаты бухты (WGS84)",
+        "url": "https://china.worldplaces.me/review/212066291-xiadonghai-beach.html"
+      },
+      {
+        "title": "Putivator — описание побережья и условия купания",
+        "url": "https://putivator.com/en/beaches/xiaodonghai-beach-sanya"
+      }
+    ],
+    "verifiedAt": "2026-11-09"
+  },
+  {
+    "id": "haiyue-square-view",
+    "status": "verified",
+    "name": {
+      "ru": "Площадь Хайюэ — закат на набережной",
+      "en": "Haiyue Square",
+      "zh": "海月广场"
+    },
+    "addressZh": "海南省三亚市天涯区三亚湾路海月广场",
+    "area": "sanya-bay",
+    "category": "nature",
+    "tags": [
+      "sunset",
+      "photo",
+      "local"
+    ],
+    "location": {
+      "lat": 18.26123,
+      "lng": 109.49005
+    },
+    "summary": "Удобная остановка на длинной набережной Санья Бэй: просторный вид на море, пальмовую аллею и силуэт Феникса. Для короткого вечернего выхода без экскурсионной суеты.",
+    "why": [
+      "Закат над Санья Бэй и вечерняя жизнь местных жителей — без обязательной покупки билетов.",
+      "Площадь можно использовать как ясную точку встречи или отправную точку для прогулки вдоль моря.",
+      "Отсюда интересно наблюдать, как город загорается огнями после заката."
+    ],
+    "durationHours": [
+      0.5,
+      1.5
+    ],
+    "effort": "low",
+    "setting": "outdoor",
+    "price": {
+      "type": "free",
+      "note": "Общественная площадь и набережная; кафе и развлечения оплачиваются отдельно."
+    },
+    "bestTime": "За 30–60 минут до заката",
+    "tips": [
+      "Береговая линия длинная: удобно отмечать конкретную точку встречи — 海月广场.",
+      "В ветреную погоду лучше смотреть закат с суши, без захода в воду.",
+      "В праздничные вечера может быть многолюдно."
+    ],
+    "photos": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/%E6%B5%B7%E6%9C%88%E5%BB%A3%E5%A0%B4_Haiyue_Plaza_-_panoramio.jpg?width=760",
+        "alt": "Площадь Хайюэ в Санье, историческая фотография 2013 года",
+        "author": "lienyuan lee",
+        "license": "CC BY 3.0",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%E6%B5%B7%E6%9C%88%E5%BB%A3%E5%A0%B4_Haiyue_Plaza_-_panoramio.jpg"
+      }
+    ],
+    "more": {
+      "title": "OpenStreetMap — местоположение",
+      "url": "https://www.openstreetmap.org/node/2050879681"
+    },
+    "sources": [
+      {
+        "title": "OpenStreetMap/Mapcarta — Haiyue Square",
+        "url": "https://mapcarta.com/N2050879681"
+      },
+      {
+        "title": "Sanya Tourism Board — Sanya Bay",
+        "url": "https://www.visitsanya.com/destination/sanya-bay"
+      },
+      {
+        "title": "Wikimedia Commons — фото, автор и лицензия",
+        "url": "https://commons.wikimedia.org/wiki/File:%E6%B5%B7%E6%9C%88%E5%BB%A3%E5%A0%B4_Haiyue_Plaza_-_panoramio.jpg"
+      }
+    ],
+    "verifiedAt": "2026-11-09"
   }
 ]
