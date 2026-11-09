@@ -1162,3 +1162,20 @@ button.naval-game__cell:not(:disabled):active{background:#74d5d7;}
 @media(prefers-reduced-motion:reduce){
  .mustdo-hero__bar > span{transition:none;}
 }
+
+.mustdo-hero__picker{
+ display:block;width:100%;min-height:47px;margin:12px 0;
+ color:#effaff;background:#254d67;border:2px solid #79b2c5;
+}
+.mustdo-hero__filter{
+ display:flex;align-items:center;gap:10px;color:#e5faf5;
+ min-height:42px;font-size:12px;font-weight:800;
+}
+.mustdo-hero__filter input{
+ width:21px;height:21px;accent-color:#72e3ba;
+}
+.mustdo-card.is-featured{
+ border:2px solid #a5f5d1;box-shadow:0 0 0 2px #315f5c;
+}
+.mustdo-card[hidden]{display:none;}
+.mustdo-card:focus{outline:2px solid #98f1dc;outline-offset:3px;}
