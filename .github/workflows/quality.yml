@@ -30,6 +30,11 @@ jobs:
           node --experimental-default-type=module --test tests/test_food_filters.mjs
           node --experimental-default-type=module --test tests/test_audio_guides.mjs
           node --experimental-default-type=module --test tests/test_map_routes.mjs
+          node --experimental-default-type=module --test tests/test_minigames.mjs
+      - name: Test offline games, mobile boards and travel readiness
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_games_browser.py
       - name: Test real MP3 download and playback from offline cache
         env:
           CHROME: /usr/bin/google-chrome

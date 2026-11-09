@@ -8,6 +8,7 @@ import { evaluateExplore, getLevel } from "../logic/explore.js";
 import { getTripState, getTodayIso, TRIP_STATE, pluralizeRu } from "../logic/trip.js";
 import { summarizePreflight } from "../logic/prep-focus.js";
 import { rankForXp } from "../logic/ranks.js";
+import { travelActions } from "../logic/travel-hub.js";
 
 function el(parent, tag, cls, text) {
   const node = document.createElement(tag);
@@ -110,6 +111,26 @@ function renderPreflight(parent, checklist, trip, initialXp) {
     const docs = el(actions, "a", "quest-preflight__secondary", "📄 Документы и вещи");
     docs.href = "#/prepare";
   }
+}
+
+function renderTravelHub(parent,trip){
+ const today=getTodayIso(),state=getTripState(trip,today);
+ const day=storage.getMyPlan()?.days?.[today];
+ const plannedToday=Boolean(day&&(day.placeIds?.length||day.excursionIds?.length));
+ const data=travelActions(state,{today,plannedToday,hasHotel:Boolean(trip.home?.addressZh)});
+ const card=el(parent,"section","travel-hub");
+ el(card,"span","travel-hub__kicker",data.kicker);
+ el(card,"h2","travel-hub__title",data.title);
+ el(card,"p","travel-hub__subtitle",data.subtitle);
+ const primary=el(card,"a","travel-hub__primary",data.primary.icon+" "+data.primary.label+" ›");
+ primary.href=data.primary.href;
+ const grid=el(card,"div","travel-hub__actions");
+ for(const action of data.actions){
+  const link=el(grid,"a","travel-hub__action");
+  link.href=action.href;
+  el(link,"span","travel-hub__icon",action.icon);
+  el(link,"span","",action.label);
+ }
 }
 
 function makeTrail(parent) {
@@ -220,6 +241,7 @@ export async function renderAdventure(container, ctx) {
 
 
   renderPreflight(page, checklist, trip, game.xp);
+  renderTravelHub(page,trip);
 
   const intro = el(page, "section", "quest-intro");
   const daily = el(intro, "p", "quest-intro__daily", "🎁 +3 XP за первый запуск приложения каждый день · без серий и штрафов");
@@ -240,19 +262,6 @@ export async function renderAdventure(container, ctx) {
   bar.setAttribute("aria-valuenow", String(game.level.current));
   el(bar, "span", "").style.width = game.level.current + "%";
   el(stats, "span", "", game.level.toNext + " XP до следующего");
-
-  // Короткий быстрый доступ без конкуренции с главной игровой дорожкой.
-  const quick = el(page, "div", "quest-quick");
-  [
-    ["☀️", "Сегодня", "#/now"],
-    ["🍜", "Поесть", "#/places?mode=food&near=1"],
-    ["💰", "Расходы", "#/expenses"],
-  ].forEach(([icon, label, href]) => {
-    const a = el(quick, "a", "quest-quick__item");
-    a.href = href;
-    el(a, "span", "", icon);
-    el(a, "span", "", label);
-  });
 
   const title = el(page, "div", "quest-section-title");
   el(title, "h2", "", "Твой путь");

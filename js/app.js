@@ -8,6 +8,9 @@ import { renderFoodTaxi } from "./views/food.js";
 import { renderAudioCatalog } from "./views/audio.js";
 import { renderIslandAtlas } from "./views/island-atlas.js";
 import { renderRealMap } from "./views/real-map.js";
+import { renderOfflineCenter } from "./views/offline-center.js";
+import { renderGames, renderBattleship } from "./views/games.js";
+import { renderPhraseGame, renderMemoryGame } from "./views/mini-arcade.js";
 import { renderPrepare } from "./views/prepare.js";
 import { renderSettings } from "./views/settings.js";
 import { renderInfo, renderInfoDetail } from "./views/info.js";
@@ -37,6 +40,11 @@ const routes = [
   { pattern: /^\/audio$/, render: renderAudioCatalog, nav: "/discover" },
   { pattern: /^\/island$/, render: renderIslandAtlas, nav: "/discover" },
   { pattern: /^\/map$/, render: renderRealMap, nav: "/discover" },
+  { pattern: /^\/offline$/, render: renderOfflineCenter, nav: "/me" },
+  { pattern: /^\/games$/, render: renderGames, nav: "/" },
+  { pattern: /^\/games\/sea$/, render: renderBattleship, nav: "/" },
+  { pattern: /^\/games\/phrases$/, render: renderPhraseGame, nav: "/" },
+  { pattern: /^\/games\/memory$/, render: renderMemoryGame, nav: "/" },
   { pattern: /^\/place\/(?<id>[^/]+)$/, render: renderPlace, nav: "/discover" },
   { pattern: /^\/place\/(?<id>[^/]+)\/taxi$/, render: renderPlaceTaxi, nav: "/discover", fullscreen: true },
   // Еда (режим #/places?mode=food, ITERATION-8-CONTENT-ARCHITECTURE.md Batch

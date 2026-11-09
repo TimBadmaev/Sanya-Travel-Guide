@@ -245,4 +245,9 @@ export async function renderPrepare(container, ctx) {
 
   updateProgress();
   renderOfflineCheck(container, ctx);
+  const readiness = document.createElement("a");
+  readiness.href="#/offline";
+  readiness.className="btn btn--secondary offline-center__entry";
+  readiness.textContent="📶 Проверить карты, аудио и адрес отеля";
+  container.appendChild(readiness);
 }
