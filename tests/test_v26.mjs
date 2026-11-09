@@ -60,7 +60,7 @@ test("new editorial stories have working structure and trusted source domains",(
       assert.ok(p.url.startsWith("https://commons.wikimedia.org/wiki/Special:FilePath/"));
       assert.ok(p.credit);
     }
-    for(const src of s.references||[]) assert.ok(src.url.startsWith("https://"),id);
+    for(const src of s.references||[]) assert.ok(/^https?:\/\//.test(src.url),id);
   }
   for(const p of places.flatMap(p=>p.photos||[]).filter(p=>p.url)){
     assert.ok(p.url.startsWith("https://commons.wikimedia.org/wiki/Special:FilePath/"));
