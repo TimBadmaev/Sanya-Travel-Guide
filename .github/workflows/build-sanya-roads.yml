@@ -33,4 +33,4 @@ jobs:
           git commit -m "assets(v35): refresh local OSM map features"
           git fetch origin feature/offline-map-v35
           git rebase origin/feature/offline-map-v35
-          git push origin HEAD:feature/bright-maps-voice-v34
+          git push origin HEAD:feature/offline-map-v35
