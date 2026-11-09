@@ -242,6 +242,8 @@ export async function renderAdventure(container, ctx) {
 
   renderPreflight(page, checklist, trip, game.xp);
   renderTravelHub(page,trip);
+  const mustdo=el(page,"a","quest-mustdo","🌴 Топ-10 впечатлений Хайнаня · отмечай выполненное ›");
+  mustdo.href="#/must-do";
 
   const intro = el(page, "section", "quest-intro");
   const daily = el(intro, "p", "quest-intro__daily", "🎁 +3 XP за первый запуск приложения каждый день · без серий и штрафов");
