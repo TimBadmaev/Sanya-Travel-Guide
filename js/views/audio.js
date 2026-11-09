@@ -203,8 +203,10 @@ export async function renderAudioCatalog(container,ctx){
   const fmtBytes=bytes=>(Math.max(0,bytes)/1048576).toFixed(1).replace(".",",")+" МБ";
   const fullBytes=sizes.totalBytes||0;
   container.innerHTML="";
-  const parent=ctx.from&&ctx.from.startsWith("#/excursions")?"#/excursions":"#/";
-  const back=el("a","place-detail__back",parent==="#/"?"← На главную":"← К экскурсиям");
+  const parent=ctx.from&&ctx.from.startsWith("#/excursions")?"#/excursions":
+    ctx.from&&ctx.from.startsWith("#/me")?"#/me":"#/";
+  const back=el("a","place-detail__back",parent==="#/"?"← На главную":
+    parent==="#/me"?"← В моё":"← К экскурсиям");
   back.href=parent;
   back.addEventListener("click",e=>{e.preventDefault();ctx.back(parent);});
   const eyebrow=el("p","audio-catalog__eyebrow","НАСТОЯЩИЕ ИСТОРИИ ОСТРОВА");

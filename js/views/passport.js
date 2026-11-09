@@ -226,7 +226,12 @@ function renderOverview(page, { result, content, places, state }) {
   const section = document.createElement("section");
   section.className = "settings-section";
   appendText(section, "h3", "settings-section__title", "🏝️ Твой остров — офлайн");
-  appendText(section, "p", "passport-map__intro", "Места, бухты и открытия доступны сразу, без сети.");
+  appendText(section, "p", "passport-map__intro", "Это игровая схема для наклеек, а не географическая карта.");
+  const realAtlas = document.createElement("a");
+  realAtlas.className = "passport-real-atlas-link";
+  realAtlas.href = "#/island";
+  realAtlas.textContent = "🗺️ Открыть настоящую карту Хайнаня с рельефом ›";
+  section.appendChild(realAtlas);
   const svg = createMapSvg({
     viewBox: OVERVIEW_BOX,
     parts: content.coastParts,

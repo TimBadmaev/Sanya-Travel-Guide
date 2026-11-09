@@ -20,6 +20,10 @@ def main():
   if not b.wait_for("document.querySelector('.island-atlas__svg')&&!document.querySelector('.loading')",20):
    raise AssertionError(f"atlas never loaded: {b.exceptions}")
   check("actual 1:50m path is present","document.querySelectorAll('.island-atlas__land').length",1)
+  check("true local shaded relief is overlaid","document.querySelectorAll('.island-atlas__relief').length",1)
+  check("fake decorative contour paths removed","document.querySelectorAll('.island-atlas__contour').length",0)
+  if not b.wait_for("performance.getEntriesByType('resource').some(r=>r.name.endsWith('/assets/maps/hainan-relief.webp'))",20):
+   raise AssertionError("local relief never loaded")
   check("island has curated place markers","document.querySelectorAll('.island-atlas__pin').length>=28")
   check("two geographic map scales","document.querySelectorAll('.island-atlas__toolbar button').length",2)
   check("no online tile requests","performance.getEntriesByType('resource').filter(x=>/tile[.]openstreetmap|[.]png[?]tile/.test(x.name)).length",0)
@@ -44,8 +48,9 @@ def main():
    }))()""")
    raise AssertionError(f"atlas did not load offline: {b.exceptions}, diagnostics={diagnostics}")
   check("natural-earth polygon cached offline","document.querySelector('.island-atlas__land').getAttribute('d').length>100")
+  check("relief image is in the offline app cache","(async()=>{const n=(await caches.keys()).find(n=>n.startsWith('sanya-guide-v33'));return !!n&&!!await(await caches.open(n)).match(new URL('assets/maps/hainan-relief.webp',document.baseURI))})()")
   check("no JS errors offline","true" if not b.exceptions else "false")
-  print(f"v32 {done} geographic map checks passed",flush=True)
+  print(f"v33 {done} geographic map checks passed",flush=True)
  finally:
   b.close();server.shutdown();server.server_close()
 if __name__=="__main__":main()
