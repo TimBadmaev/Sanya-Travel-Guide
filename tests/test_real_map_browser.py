@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v34: real offline road canvas, correct route links, zoom and photo contrast."""
+"""v35: optional OSM district downloads, true offline reload, routes and viewport."""
 import json,os,socket,sys
 sys.path.insert(0,os.path.dirname(__file__))
 from cdp import Browser,serve
@@ -36,16 +36,27 @@ def main():
   b.js("document.querySelector('.map-page__pick').click();true")
   check("manual map-point mode visible","!document.querySelector('.map-page__pick-note').hidden")
   check("offline map can zoom","document.querySelectorAll('.map-page__zoom button').length",2)
+  check("all five areas accessible","document.querySelectorAll('.map-page__focus button').length",5)
+  check("manual detail download controls present","document.querySelectorAll('.map-page__pack-actions button').length",2)
+  check("map renders scale","document.querySelector('.map-page__scale').textContent.length>0")
+  check("detail is NOT downloaded without consent","performance.getEntriesByType('resource').filter(x=>x.name.includes('sanya-detail-')).length",0)
+  b.js("document.querySelector('.map-page__pack-actions button').click();true")
+  if not b.wait_for("document.querySelector('.map-page__pack-actions button').textContent.includes('✓')",20):
+   raise AssertionError(f"Optional area did not download: {b.exceptions}")
+  check("explicit pack stored in independent offline cache","(async()=>{const c=await caches.open('sanya-detail-v35');return !!await c.match(new URL('data/sanya-detail-yalong.json',document.baseURI))})()")
   if not b.wait_for("navigator.serviceWorker.controller!==null",20):
    raise AssertionError("SW not controlling page")
   b.send("Network.emulateNetworkConditions",{"offline":True,"latency":0,"downloadThroughput":0,"uploadThroughput":0})
   b.go(base,"#/map",cold=True)
   if not b.wait_for("!!document.querySelector('.map-page__canvas')&&document.querySelector('.map-page__canvas').width>0",20):
    raise AssertionError(f"Offline street map cannot load: {b.exceptions}")
-  check("raw road vectors remain usable offline","(async()=>{const c=(await caches.keys()).find(x=>x.startsWith('sanya-guide-v34'));return !!c&&!!await(await caches.open(c)).match(new URL('data/sanya-roads.json',document.baseURI))})()")
-  check("offline map remains interactive","document.querySelectorAll('.map-page__focus button').length",3)
+  check("raw road vectors remain usable offline","(async()=>{const c=(await caches.keys()).find(x=>x.startsWith('sanya-guide-v35'));return !!c&&!!await(await caches.open(c)).match(new URL('data/sanya-roads.json',document.baseURI))})()")
+  check("offline map remains interactive","document.querySelectorAll('.map-page__focus button').length",5)
+  if not b.wait_for("document.querySelector('.map-page__pack-actions button').textContent.includes('✓')",20):
+   raise AssertionError(f"Optional district not restored offline: {b.exceptions}")
+  check("optional offline layer recovered after cold reload","document.querySelector('.map-page__pack-info').textContent.includes('1 из 5')")
   check("no browser errors", "true" if not b.exceptions else "false")
-  print(f"v34 {done} road-map/route tests passed",flush=True)
+  print(f"v35 {done} area-map/route tests passed",flush=True)
  finally:
   try:b.send("Network.emulateNetworkConditions",{"offline":False,"latency":0,"downloadThroughput":-1,"uploadThroughput":-1})
   except Exception:pass

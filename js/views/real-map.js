@@ -2,14 +2,17 @@ import { loadPlaces, loadOfflineRoads, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 import { worldPoint, worldCoords } from "./street-map.js";
 import { buildAmapBetweenRouteUrl, buildYandexRouteUrl } from "../logic/amap.js";
+import { MAP_DETAIL_IDS, loadCachedMapDetail, downloadMapDetail, clearCachedMapDetails } from "../logic/offline-map-detail.js";
 
 // The offline network consists of real OSM ways, simplified at build time.
 // It is for geographic context, NOT for computing turn-by-turn directions.
 const TILE=256, MIN_Z=9, MAX_Z=16;
 const AREAS=[
- {title:"🌴 Ялунвань",lat:18.235,lng:109.639},
- {title:"🏙️ Санья",lat:18.252,lng:109.508},
- {title:"🌊 Хайтан",lat:18.360,lng:109.734},
+ {id:"yalong",title:"🌴 Ялунвань",lat:18.232,lng:109.641},
+ {id:"city",title:"🏙️ Центр",lat:18.252,lng:109.508},
+ {id:"dadonghai",title:"🏖️ Дадунхай",lat:18.223,lng:109.541},
+ {id:"haitang",title:"🌊 Хайтан",lat:18.360,lng:109.734},
+ {id:"tianya",title:"🌅 Тянья",lat:18.289,lng:109.352},
 ];
 const LABELS=[
  ["САНЬЯ",18.255,109.508],["ЯЛУНВАНЬ",18.230,109.641],
@@ -43,13 +46,13 @@ export async function renderRealMap(container,ctx){
  back.addEventListener("click",e=>{e.preventDefault();ctx.back("#/discover");});
  el(container,"h2","view-title","🗺️ Карта Саньи");
  el(container,"p","map-page__intro",
-  "Настоящие улицы без интернета, места и маршруты A → B. Удобно сначала выбрать точку, а затем открыть готовый маршрут в навигаторе.");
+  "Лёгкая карта дорог доступна сразу, даже без интернета. Здания, парки и пляжи отдельных районов можно сохранить по желанию. Выбери точку и открой маршрут в навигаторе.");
  const top=el(container,"div","map-page__top");
  const island=el(top,"a","btn btn--secondary","🏝️ Весь Хайнань");island.href="#/island";
  const audio=el(top,"a","btn btn--secondary","🎧 Аудиогиды");audio.href="#/audio";
  const panel=el(container,"section","map-panel");
  el(panel,"h3","map-panel__title","Улицы и ориентиры");
- el(panel,"p","map-panel__subtitle","Ниже — упрощённые реальные дороги OpenStreetMap. Уровень детализации зависит от масштаба.");
+ el(panel,"p","map-panel__subtitle","Реальные дороги OpenStreetMap. Дополнительные слои районов скачиваются отдельно, а не при каждом открытии.");
  const focus=el(panel,"div","map-page__focus");
  const frame=el(panel,"div","map-page__canvas-wrap");
  frame.setAttribute("aria-label","Интерактивная офлайн-карта дорог Саньи");
@@ -63,9 +66,24 @@ export async function renderRealMap(container,ctx){
  const pickNote=el(frame,"p","map-page__pick-note","Нажми на точку на карте, чтобы выбрать пункт B");
  pickNote.hidden=true;
  const selectedText=el(panel,"p","map-page__selection","Нажми на точку достопримечательности — появится её название.");
+ const scale=el(frame,"span","map-page__scale","");scale.setAttribute("aria-label","Масштаб карты");
+ const legend=el(panel,"div","map-page__legend","");
+ for(const [name,cls] of [["Здания","building"],["Парки","green"],["Пляжи","beach"],["Водоёмы","water"],["Дороги","road"]]){
+  const item=el(legend,"span","map-page__legend-item","");
+  el(item,"i","map-page__legend-swatch map-page__legend-swatch--"+cls,"");
+  el(item,"span","",name);
+ }
+ const pack=el(panel,"section","map-page__packs");
+ el(pack,"h4","map-page__packs-title","Офлайн-детализация районов");
+ const packInfo=el(pack,"p","map-page__pack-info","Базовые дороги уже доступны без сети. Загрузить более подробные слои можно отдельно.");
+ const packControls=el(pack,"div","map-page__pack-actions");
+ const loadZone=el(packControls,"button","btn btn--primary","⬇ Скачать текущий район");loadZone.type="button";
+ const loadAll=el(packControls,"button","btn btn--secondary","⬇ Все 5 районов");loadAll.type="button";
+ const removePacks=el(pack,"button","map-page__pack-remove","Удалить сохранённую детализацию");removePacks.type="button";
+ const packStatus=el(pack,"p","map-page__pack-status","");packStatus.setAttribute("role","status");
  const onlineBtn=el(panel,"button","btn btn--secondary map-page__online","🌐 Показать подробную онлайн-карту");
  onlineBtn.type="button";
- el(panel,"p","map-page__attribution","© OpenStreetMap contributors (ODbL). Дороги — обобщённый снимок данных, не навигатор. Онлайн-тайлы загружаются только после нажатия.");
+ el(panel,"p","map-page__attribution","© OpenStreetMap contributors (ODbL). Офлайн-геометрия — приближённый снимок объектов, не навигатор. Интернет используется только при явном скачивании района или включении онлайн-слоя.");
  const planner=el(container,"section","map-panel");
  el(planner,"h3","map-panel__title","📍 Маршрут от точки A до B");
  el(planner,"p","map-panel__subtitle","Укажи отправление и место назначения; Amap построит настоящий пеший или автомобильный маршрут через интернет.");
@@ -101,8 +119,10 @@ export async function renderRealMap(container,ctx){
  }
  el(planner,"p","map-page__note",
   "Для Китая рекомендуем Amap / 高德地图. Яндекс здесь — резервный вариант: маршруты в Китае не гарантируются. Точное время и повороты рассчитывает внешний навигатор с интернетом. Координаты GPS могут смещаться на китайских картах — проверяй китайское название и вход.");
- let zoom=12,center={lat:18.245,lng:109.617},online=false,picking=false;
- let target=null,selected=null,drag=null;
+ let zoom=13,center={lat:18.232,lng:109.641},selectedZone="yalong",online=false,picking=false;
+ let target=null,selected=null,drag=null,pinch=null;
+ const pointers=new Map(),details=new Map(),tileNodes=new Map();
+ let downloading=false;
  const catalog=new Map(places.filter(p=>good(p.location)).map(p=>[p.id,p]));
  const raw=roads.roads||[];
  const segments=raw.filter(r=>Array.isArray(r)&&Array.isArray(r[1])).map(([kind,points,name])=>({
@@ -110,6 +130,74 @@ export async function renderRealMap(container,ctx){
   minLng:Math.min(...points.map(p=>p[0])),maxLng:Math.max(...points.map(p=>p[0])),
   minLat:Math.min(...points.map(p=>p[1])),maxLat:Math.max(...points.map(p=>p[1]))
  }));
+ // Prepare polygon bounds once, not on every pan or zoom.
+ function prepareDetail(data){
+  const shape=(points)=>({
+   points,minLng:Math.min(...points.map(p=>p[0])),maxLng:Math.max(...points.map(p=>p[0])),
+   minLat:Math.min(...points.map(p=>p[1])),maxLat:Math.max(...points.map(p=>p[1]))
+  });
+  return{
+   land:data.land.filter(r=>Array.isArray(r[1])&&r[1].length>=4)
+    .map(([kind,points])=>({kind,...shape(points)})),
+   buildings:data.buildings.filter(p=>Array.isArray(p)&&p.length>=4).map(shape),
+   coast:data.coast.filter(p=>Array.isArray(p)&&p.length>=2).map(shape)
+  };
+ }
+ function updatePackInfo(){
+  const saved=AREAS.filter(a=>details.has(a.id)).map(a=>a.title);
+  const here=AREAS.find(a=>a.id===selectedZone);
+  packInfo.textContent="Сохранено районов: "+saved.length+" из 5. "+
+   (saved.length?"Есть: "+saved.join(", ")+". ":"")+"Сейчас: "+here.title+".";
+  loadZone.disabled=downloading||details.has(selectedZone);
+  loadZone.textContent=details.has(selectedZone)?"✓ Район доступен офлайн":"⬇ Скачать "+here.title;
+  loadAll.disabled=downloading||details.size===AREAS.length;
+  removePacks.hidden=!details.size||downloading;
+ }
+ async function restorePacks(){
+  try{
+   for(const a of AREAS){
+    const data=await loadCachedMapDetail(a.id);
+    if(data){details.set(a.id,prepareDetail(data));draw();}
+   }
+   updatePackInfo();
+  }catch(error){packStatus.textContent="Сохранённые подробности временно недоступны: "+error.message;}
+ }
+ async function downloadOne(id){
+  const data=await downloadMapDetail(id);
+  if(!ctx.isCurrent())return;
+  details.set(id,prepareDetail(data));draw();
+ }
+ loadZone.addEventListener("click",async()=>{
+  if(downloading||details.has(selectedZone))return;
+  downloading=true;updatePackInfo();
+  const id=selectedZone;
+  packStatus.textContent="Загружаем настоящий картографический слой: "+AREAS.find(a=>a.id===id).title;
+  try{await downloadOne(id);packStatus.textContent="Район сохранён. Отключи интернет — детали останутся на карте.";}
+  catch(error){packStatus.textContent="Не удалось сохранить район: "+error.message+". Проверь подключение и попробуй снова.";}
+  finally{downloading=false;updatePackInfo();}
+ });
+ loadAll.addEventListener("click",async()=>{
+  if(downloading||details.size===AREAS.length)return;
+  if(!window.confirm("Скачать детализацию всех пяти районов? Потребуется интернет и дополнительное место на телефоне."))return;
+  downloading=true;updatePackInfo();
+  try{
+   for(const [index,id] of MAP_DETAIL_IDS.entries()){
+    if(details.has(id))continue;
+    packStatus.textContent="Загрузка района "+(index+1)+" из 5…";
+    await downloadOne(id);
+   }
+   packStatus.textContent="Все районы сохранены для прогулок без интернета.";
+  }catch(error){packStatus.textContent="Скачивание остановлено: "+error.message+". Уже сохранённые районы останутся доступны.";}
+  finally{downloading=false;updatePackInfo();}
+ });
+ removePacks.addEventListener("click",async()=>{
+  if(downloading||!window.confirm("Удалить сохранённые подробности районов? Базовые дороги останутся."))return;
+  try{await clearCachedMapDetails();details.clear();draw();packStatus.textContent="Дополнительные слои удалены. Базовая карта работает.";}
+  catch(error){packStatus.textContent="Не удалось очистить детализацию: "+error.message;}
+  updatePackInfo();
+ });
+ updatePackInfo();
+ void restorePacks();
  function endpoint(value){
   if(value==="custom"&&target)return{location:target,name:"Выбранная точка"};
   const p=catalog.get(value);return p?{location:p.location,name:p.name.zh||p.name.ru}:null;
@@ -135,6 +223,33 @@ export async function renderRealMap(container,ctx){
   g.fillStyle=bg;g.fillRect(0,0,width,height);
   const wc=worldPoint(center.lat,center.lng,zoom);
   const ll=worldCoords(wc.x-width/2,wc.y-height/2,zoom),br=worldCoords(wc.x+width/2,wc.y+height/2,zoom);
+  // The optional OSM geometry is drawn only where the visitor has saved it.
+  const onscreen=r=>r.maxLng>=ll.lng&&r.minLng<=br.lng&&r.maxLat>=br.lat&&r.minLat<=ll.lat;
+  const project=(lat,lng)=>{const p=worldPoint(lat,lng,zoom);return{x:p.x-wc.x+width/2,y:p.y-wc.y+height/2};};
+  function shapePath(points,close){
+   g.beginPath();
+   points.forEach(([lng,lat],i)=>{const p=project(lat,lng);i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y);});
+   if(close)g.closePath();
+  }
+  const fills=["#e8e8df","#e3d9c9","#bad7b6","#cde5b8","#f7e3ae","#b9e0ee","#dbd8cf"];
+  const polygons=[...details.values()].flatMap(d=>d.land).filter(onscreen);
+  for(const kind of [0,1,6,2,3,4,5]){
+   g.fillStyle=fills[kind];g.strokeStyle=fills[kind];g.lineWidth=.7;
+   for(const area of polygons)if(area.kind===kind){
+    shapePath(area.points,true);g.fill();g.stroke();
+   }
+  }
+  if(zoom>=14){
+   g.fillStyle="#d9d1c4";g.strokeStyle="#b7b1a8";g.lineWidth=.6;
+   for(const area of details.values())for(const building of area.buildings){
+    if(!onscreen(building))continue;
+    shapePath(building.points,true);g.fill();if(zoom>=15)g.stroke();
+   }
+  }
+  g.strokeStyle="#74b4c9";g.lineWidth=1.8;
+  for(const area of details.values())for(const coast of area.coast){
+   if(onscreen(coast)){shapePath(coast.points,false);g.stroke();}
+  }
   const limit=zoom<11?1:zoom<12?2:zoom<13?3:zoom<14?4:5;
   const visible=segments.filter(r=>(r.kind<=limit||r.kind===6)
    &&r.maxLng>=ll.lng&&r.minLng<=br.lng&&r.maxLat>=br.lat&&r.minLat<=ll.lat);
@@ -172,27 +287,37 @@ export async function renderRealMap(container,ctx){
    g.strokeStyle="#eef5e6";g.strokeText(text,p.x,p.y);
    g.fillStyle="#285669";g.fillText(text,p.x,p.y);
   }
+  const metersPerPixel=156543.03392*Math.cos(center.lat*Math.PI/180)/2**zoom;
+  const lengths=[50,100,200,500,1000,2000,5000,10000,20000];
+  const length=lengths.filter(v=>v/metersPerPixel<=100).pop()||50;
+  scale.style.width=Math.max(34,length/metersPerPixel)+"px";
+  scale.textContent=length<1000?length+" м":length/1000+" км";
   if(!segments.length){
    g.textAlign="center";g.fillStyle="#375665";g.fillText("Улицы временно недоступны",width/2,height/2);
   }
  }
  function drawOnline(){
-  tiles.replaceChildren();
-  if(!online)return;
+  if(!online){tileNodes.clear();tiles.replaceChildren();return;}
   const {width,height}=frame.getBoundingClientRect();
+  if(!width||!height)return;
   const c=worldPoint(center.lat,center.lng,zoom),x0=c.x-width/2,y0=c.y-height/2;
   const minx=Math.floor(x0/TILE),maxx=Math.floor((x0+width)/TILE);
   const miny=Math.floor(y0/TILE),maxy=Math.floor((y0+height)/TILE);
-  const n=2**zoom;
-  const f=document.createDocumentFragment();
+  const count=2**zoom,visible=new Set();
   for(let y=miny;y<=maxy;y++)for(let x=minx;x<=maxx;x++){
-   if(y<0||y>=n)continue;
-   const img=document.createElement("img");img.className="map-page__tile";
-   img.src=`https://tile.openstreetmap.org/${zoom}/${((x%n)+n)%n}/${y}.png`;
+   if(y<0||y>=count)continue;
+   const wrapped=((x%count)+count)%count,key=zoom+"/"+wrapped+"/"+y;
+   visible.add(key);
+   let img=tileNodes.get(key);
+   if(!img){
+    img=document.createElement("img");img.className="map-page__tile";
+    img.src="https://tile.openstreetmap.org/"+key+".png";
+    img.alt="";img.decoding="async";img.draggable=false;
+    tileNodes.set(key,img);tiles.appendChild(img);
+   }
    img.style.left=(x*TILE-x0)+"px";img.style.top=(y*TILE-y0)+"px";
-   img.alt="";img.decoding="async";img.draggable=false;f.appendChild(img);
   }
-  tiles.appendChild(f);
+  for(const [key,img] of tileNodes)if(!visible.has(key)){img.remove();tileNodes.delete(key);}
  }
  function drawPins(){
   pins.replaceChildren();
@@ -222,12 +347,23 @@ export async function renderRealMap(container,ctx){
  function draw(){drawRoads();drawOnline();drawPins();}
  function z(delta){const next=Math.max(MIN_Z,Math.min(MAX_Z,zoom+delta));if(next!==zoom){zoom=next;draw();}}
  plus.addEventListener("click",()=>z(1));minus.addEventListener("click",()=>z(-1));
+ const focusButtons=[];
  for(const item of AREAS){
   const btn=el(focus,"button","btn btn--secondary",item.title);btn.type="button";
-  btn.addEventListener("click",()=>{center={lat:item.lat,lng:item.lng};zoom=12;draw();});
+  btn.addEventListener("click",()=>{
+   selectedZone=item.id;center={lat:item.lat,lng:item.lng};zoom=13;
+   focusButtons.forEach(([id,b])=>b.setAttribute("aria-pressed",String(id===item.id)));
+   updatePackInfo();draw();
+  });
+  focusButtons.push([item.id,btn]);
  }
+ focusButtons[0][1].setAttribute("aria-pressed","true");
  onlineBtn.addEventListener("click",()=>{
-  online=!online;onlineBtn.textContent=online?"🌿 Оставить только офлайн-дороги":"🌐 Показать подробную онлайн-карту";
+  online=!online;
+  onlineBtn.textContent=online?"🌿 Вернуться к офлайн-карте":"🌐 Показать подробную онлайн-карту";
+  packStatus.textContent=online?
+   "Онлайн-слой загружает только видимые тайлы. Для офлайна сохрани районы отдельно.":
+   "Офлайн-карта доступна без интернета.";
   draw();
  });
  pick.addEventListener("click",()=>{
@@ -236,13 +372,31 @@ export async function renderRealMap(container,ctx){
   if(picking)frame.scrollIntoView({block:"center",behavior:"smooth"});
  });
  for(const select of [start,finish,mode])select.addEventListener("change",directions);
+ let suppressClick=false;
  frame.addEventListener("pointerdown",e=>{
   if(e.target.closest("button"))return;
-  drag={id:e.pointerId,x:e.clientX,y:e.clientY,
-    center:worldPoint(center.lat,center.lng,zoom),moved:false};
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   frame.setPointerCapture(e.pointerId);
+  if(pointers.size===1){
+   drag={id:e.pointerId,x:e.clientX,y:e.clientY,
+    center:worldPoint(center.lat,center.lng,zoom),moved:false};
+  }else if(pointers.size===2){
+   const [a,b]=[...pointers.values()];
+   pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom};
+   drag=null;suppressClick=true;
+  }
  });
  frame.addEventListener("pointermove",e=>{
+  if(!pointers.has(e.pointerId))return;
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===2&&pinch){
+   const [a,b]=[...pointers.values()];
+   const distance=Math.max(1,Math.hypot(a.x-b.x,a.y-b.y));
+   const next=Math.max(MIN_Z,Math.min(MAX_Z,
+    Math.round(pinch.zoom+Math.log2(distance/Math.max(1,pinch.distance)))));
+   if(next!==zoom){zoom=next;draw();}
+   return;
+  }
   if(!drag||e.pointerId!==drag.id)return;
   const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
   if(Math.hypot(dx,dy)>6)drag.moved=true;
@@ -250,12 +404,20 @@ export async function renderRealMap(container,ctx){
   const point=worldCoords(drag.center.x-dx,drag.center.y-dy,zoom);
   if(Number.isFinite(point.lat)&&Number.isFinite(point.lng)){center=point;draw();}
  });
- let suppressClick=false;
- frame.addEventListener("pointerup",e=>{
-  if(!drag)return;
-  suppressClick=drag.moved;drag=null;
- });
- frame.addEventListener("pointercancel",()=>{drag=null;});
+ function release(e){
+  pointers.delete(e.pointerId);
+  if(pointers.size<2)pinch=null;
+  if(drag){suppressClick=drag.moved||suppressClick;drag=null;}
+  if(pointers.size===1){
+   const [id,p]=[...pointers.entries()][0];
+   drag={id,x:p.x,y:p.y,center:worldPoint(center.lat,center.lng,zoom),moved:true};
+  }
+ }
+ frame.addEventListener("pointerup",release);
+ frame.addEventListener("pointercancel",release);
+ frame.addEventListener("wheel",e=>{
+  e.preventDefault();z(e.deltaY<0?1:-1);
+ },{passive:false});
  frame.addEventListener("click",e=>{
   if(e.target.closest("button")||!picking||suppressClick){suppressClick=false;return;}
   const rect=frame.getBoundingClientRect();
