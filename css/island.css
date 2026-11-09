@@ -1179,3 +1179,102 @@ button.naval-game__cell:not(:disabled):active{background:#74d5d7;}
 }
 .mustdo-card[hidden]{display:none;}
 .mustdo-card:focus{outline:2px solid #98f1dc;outline-offset:3px;}
+
+/* v38: actual natural-color atlas with quiet geographic details. */
+.island-atlas{border-color:#547f8f;background:#072b45;}
+.island-atlas__land{stroke:#a4d2aa;stroke-width:1.3;}
+.island-atlas__shore-shadow{fill:#103e4b;stroke:#1f7884;stroke-width:6;opacity:.4;}
+.island-atlas__shelf-wide{fill:none;stroke:#1d91a4;stroke-width:26;opacity:.22;}
+.island-atlas__shelf-narrow{fill:none;stroke:#62d7db;stroke-width:9;opacity:.30;}
+.island-atlas__relief{opacity:1;pointer-events:none;filter:saturate(1.12) contrast(1.07);}
+.island-atlas__coast-highlight{stroke:#d1e3b2;stroke-width:1.3;opacity:.85;}
+.island-atlas__geo-grid line{
+ stroke:#bbecf2;stroke-width:.7;stroke-dasharray:4 8;opacity:.22;
+}
+.island-atlas__geo-grid text{
+ fill:#d1e9f2;font-size:9px;font-weight:700;opacity:.72;
+ paint-order:stroke;stroke:#0b3d53;stroke-width:2;
+}
+.island-atlas__island-text{
+ fill:#fff7d7;stroke:#2e513e;stroke-width:3;paint-order:stroke;
+ letter-spacing:.22em;font-size:18px;opacity:.85;
+}
+.island-atlas__city-dot{fill:#ffedd3;stroke:#254a3d;stroke-width:1.8;}
+.island-atlas__city-text{
+ fill:#fff8e5;stroke:#163f44;stroke-width:3;paint-order:stroke;
+ font-size:12px;letter-spacing:.04em;
+}
+.island-atlas__sea-text{
+ fill:#bce6ef;stroke:#0a526c;stroke-width:2;paint-order:stroke;
+ font-size:10px;letter-spacing:.07em;font-weight:650;opacity:.86;
+}
+.island-atlas__compass line{stroke:#d7edf3;stroke-width:2;opacity:.8;}
+.island-atlas__compass path{fill:#ecf7f8;stroke:#0b4964;stroke-width:2;}
+.island-atlas__compass text{fill:#e4f5f7;text-anchor:middle;font-size:14px;font-weight:900;}
+.island-atlas__toolbar .island-atlas__pin-toggle{
+ grid-column:1/-1;min-height:46px;
+}
+.island-atlas__filter{grid-column:1/-1;}
+.island-atlas__toolbar button[aria-pressed="true"]{
+ border-color:#8ce4d2;color:#dffff9;background:#23555e;
+}
+@media(min-width:620px){
+ .island-atlas__toolbar{grid-template-columns:repeat(3,minmax(0,1fr));}
+ .island-atlas__toolbar .island-atlas__pin-toggle{grid-column:3;}
+ .island-atlas__toolbar .island-atlas__filter{grid-column:1/-1;}
+}
+
+/* v38 — accessible shared-phone multiplayer games. */
+.game-hub__group{
+ margin:22px 0 7px;color:#def8f1;font-size:16px;font-weight:950;
+}
+.duo-game{
+ background:#142e4b;border:1px solid #537b91;
+ border-radius:18px;padding:13px;margin:14px 0;
+ color:#f2fcff;
+}
+.duo-game__status{
+ color:#f1fbff;font-size:16px;font-weight:950;
+ text-align:center;line-height:1.45;margin:4px 0 12px;
+}
+.duo-game__hint{
+ color:#cee4f3;font-size:12px;line-height:1.5;margin:12px 0;
+ text-align:center;
+}
+.duo-game__reset{width:100%;min-height:48px;}
+.duo-four__columns,.duo-four__board{
+ display:grid;grid-template-columns:repeat(7,minmax(0,1fr));
+ gap:4px;width:100%;max-width:390px;margin:0 auto;
+}
+.duo-four__columns{margin-bottom:7px;}
+.duo-four__drop{
+ min-height:49px;min-width:0;border:1px solid #609bb2;
+ border-radius:10px;background:#2a5974;color:#e8fdff;
+ font-size:23px;font-weight:900;
+}
+.duo-four__drop:disabled{opacity:.4;}
+.duo-four__cell{
+ display:grid;place-items:center;min-width:0;aspect-ratio:1;
+ border-radius:50%;border:2px solid #3f738a;
+ background:#071d33;color:transparent;font-size:27px;
+ box-shadow:inset 0 1px 5px rgba(0,0,0,.35);
+}
+.duo-four__cell.is-yellow{color:#fff1a0;background:#e5b849;border-color:#ffe88a;}
+.duo-four__cell.is-coral{color:#ffd5db;background:#d65a6a;border-color:#faa8b3;}
+.duo-hockey__canvas{
+ display:block;width:100%;max-width:390px;height:auto;
+ aspect-ratio:360/520;margin:0 auto;border:2px solid #608da7;
+ border-radius:15px;touch-action:none;
+}
+.duo-game__actions{
+ display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px;
+}
+.duo-game__actions button{min-height:49px;min-width:0;padding:8px;font-size:13px;}
+.duo-four__drop:focus-visible,.duo-game__actions button:focus-visible{
+ outline:3px solid #a1f6ec;outline-offset:3px;
+}
+@media(max-width:360px){
+ .duo-game{padding:9px;}
+ .duo-four__columns,.duo-four__board{gap:2px;}
+ .duo-four__cell{border-width:1px;font-size:21px;}
+}

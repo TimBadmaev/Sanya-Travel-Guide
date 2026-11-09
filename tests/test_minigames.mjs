@@ -83,6 +83,6 @@ test("new UX and games are explicitly offline-cached, optional map packs remain 
   "./js/views/offline-center.js","./js/logic/minigames.js","./js/logic/travel-hub.js"]){
   assert.ok(sw.includes(JSON.stringify(path)),path);
  }
- assert.match(sw,/CACHE_VERSION = "v37"/);
+ assert.match(sw,/CACHE_VERSION = "v38"/);
  assert.doesNotMatch(sw,/"\.\/data\/sanya-detail-yalong\.json"/);
 });

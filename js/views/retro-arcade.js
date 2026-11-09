@@ -124,32 +124,31 @@ export function renderOcean(container,ctx){
  container.replaceChildren();back(container,ctx);
  el(container,"h2","view-title","🐠 Рыбка-поглотитель");
  el(container,"p","game-hub__lead",
-  "Ешь рыбок меньше себя и уворачивайся от крупных. Чем больше съел, тем крупнее стал. Пальцем веди рыбку по морю.");
+  "Плавное управление: веди пальцем по воде, чтобы рыбка следовала за ним. Ешь маленьких, избегай больших. Размеры меняются постепенно.");
  const box=el(container,"section","retro-game");
  const stats=el(box,"p","retro-game__stats","");
  const canvas=el(box,"canvas","ocean-canvas");
  canvas.width=OCEAN_WIDTH;canvas.height=OCEAN_HEIGHT;
- canvas.setAttribute("role","img");canvas.setAttribute("aria-label","Океан и рыбки: маленьких ешь, больших избегай");
+ canvas.setAttribute("role","img");canvas.setAttribute("aria-label","Океан: зелёных маленьких рыб можно съесть, красных крупных лучше избегать");
  const g=canvas.getContext("2d");
  const status=el(box,"p","retro-game__status","");status.setAttribute("role","status");
  const buttons=el(box,"div","retro-game__actions");
  const start=el(buttons,"button","btn btn--primary","▶ Начать");start.type="button";
  const restart=el(buttons,"button","btn btn--secondary","Новая игра");restart.type="button";
- const tip=el(container,"p","game-hub__note","Отправляй свою рыбку к маленьким рыбкам; большой хищник отнимет жизнь. На каждый забег — 60 секунд и 3 жизни.");
- let state=newOcean(),target={x:180,y:210},timer=null;
- function stop(){if(timer!==null){clearInterval(timer);timer=null;}}
+ el(container,"p","game-hub__note",
+  "Касайся воды или веди палец. Крупные рыбы опасны; маленькие кормят твою. У тебя 60 секунд и 3 жизни. Игра сама ставится на паузу, если свернуть приложение.");
+ let state=newOcean(),target={x:180,y:210},frameId=null,lastFrame=0;
  const bubbles=Array.from({length:16},(_,i)=>({x:(i*83+27)%360,y:(i*113+32)%420,r:i%3+2}));
+ function stop(){if(frameId!==null){cancelAnimationFrame(frameId);frameId=null;}lastFrame=0;}
  function draw(){
   if(!g)return;
   const bg=g.createLinearGradient(0,0,0,OCEAN_HEIGHT);
-  bg.addColorStop(0,"#104d77");bg.addColorStop(1,"#0a274f");
+  bg.addColorStop(0,"#155779");bg.addColorStop(1,"#092b51");
   g.fillStyle=bg;g.fillRect(0,0,OCEAN_WIDTH,OCEAN_HEIGHT);
-  g.fillStyle="#23718b";
-  for(let i=0;i<9;i++){
-   g.fillRect(i*45,0,1,OCEAN_HEIGHT);
-  }
+  g.fillStyle="rgba(97,193,214,.09)";
+  for(let i=0;i<9;i++)g.fillRect(i*45,0,1,OCEAN_HEIGHT);
   for(const b of bubbles){
-   g.fillStyle="rgba(183,243,255,.18)";
+   g.fillStyle="rgba(183,243,255,.19)";
    g.beginPath();g.arc(b.x,b.y,b.r,0,Math.PI*2);g.fill();
   }
   for(const fish of state.fish)paintFish(g,fish);
@@ -157,53 +156,77 @@ export function renderOcean(container,ctx){
   const best=storage.getGameData().stats.fishBest||0;
   stats.textContent="Счёт: "+state.score+" · Рекорд: "+best+
    " · ❤ "+state.lives+" · ⏱ "+Math.ceil(state.seconds)+" с";
-  status.textContent=state.phase==="ready"?"Выбирай маршрут пальцем и нажимай «Начать».":
-   state.phase==="paused"?"Пауза. Рыбки пока ведут переговоры.":
-   state.phase==="over"?"Заплыв окончен! Краб ставит лайк плавникам.":"Маленьких ешь — больших пропускай!";
+  status.textContent=state.phase==="ready"?"Нажми «Начать» — рыбка плавно поплывёт к пальцу.":
+   state.phase==="paused"?"Пауза. Рыбы ждут сигнала.":
+   state.phase==="over"?"Заплыв окончен! Попробуешь побить рекорд?":"Зелёных ешь, красных опасайся!";
   start.textContent=state.phase==="ready"?"▶ Начать":state.phase==="over"?"↻ Ещё заплыв":state.phase==="paused"?"▶ Продолжить":"⏸ Пауза";
  }
- function tick(){
+ function loop(now){
   if(!ctx.isCurrent()||!box.isConnected){stop();return;}
-  state=stepOcean(state,target,.05);draw();
-  if(state.phase==="over"){stop();saveBest("fishBest",state.score);draw();}
+  const dt=lastFrame?Math.min((now-lastFrame)/1000,.05):0;
+  lastFrame=now;
+  state=stepOcean(state,target,dt);
+  draw();
+  if(state.phase==="over"){
+   stop();saveBest("fishBest",state.score);draw();return;
+  }
+  frameId=requestAnimationFrame(heldLoop);
  }
+ function resume(){stop();state={...state,phase:"playing"};frameId=requestAnimationFrame(heldLoop);draw();}
  function startNew(){
-  stop();state={...newOcean(),phase:"playing"};target={x:180,y:210};
-  timer=setInterval(tick,50);draw();
+  state=newOcean();target={x:state.player.x,y:state.player.y};resume();
  }
  function toggle(){
   if(state.phase==="ready"||state.phase==="over"){startNew();return;}
-  if(state.phase==="paused"){state={...state,phase:"playing"};timer=setInterval(tick,50);}
-  else {state={...state,phase:"paused"};stop();}
-  draw();
+  if(state.phase==="paused"){resume();}
+  else{stop();state={...state,phase:"paused"};draw();}
  }
  start.addEventListener("click",toggle);
  restart.addEventListener("click",startNew);
- function pointer(e){
+ function pointAt(e){
   const rect=canvas.getBoundingClientRect();
   if(!rect.width||!rect.height)return;
-  target={x:(e.clientX-rect.left)/rect.width*OCEAN_WIDTH,
-    y:(e.clientY-rect.top)/rect.height*OCEAN_HEIGHT};
+  target={x:Math.max(0,Math.min(OCEAN_WIDTH,(e.clientX-rect.left)/rect.width*OCEAN_WIDTH)),
+    y:Math.max(0,Math.min(OCEAN_HEIGHT,(e.clientY-rect.top)/rect.height*OCEAN_HEIGHT))};
  }
- canvas.addEventListener("pointerdown",e=>{
-  canvas.setPointerCapture(e.pointerId);pointer(e);
- });
- canvas.addEventListener("pointermove",e=>{
-  if(e.buttons||e.pointerType==="touch")pointer(e);
- });
- const dir={left:[-110,0],right:[110,0],up:[0,-110],down:[0,110]};
+ canvas.addEventListener("pointerdown",e=>{canvas.setPointerCapture(e.pointerId);pointAt(e);});
+ canvas.addEventListener("pointermove",e=>{if(canvas.hasPointerCapture(e.pointerId))pointAt(e);});
+ const vectors={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]};
+ // Short nudges on tap, while holding an arrow continuously shifts the target.
+ let held=null,heldFrom=null;
  function move(key){
-  if(!dir[key])return;
-  target={x:state.player.x+dir[key][0],y:state.player.y+dir[key][1]};
+  if(!vectors[key]||state.phase!=="playing")return;
+  const [x,y]=vectors[key];target={
+   x:Math.max(0,Math.min(OCEAN_WIDTH,target.x+x*28)),
+   y:Math.max(0,Math.min(OCEAN_HEIGHT,target.y+y*28))};
  }
- controls(box,move);
- const offKeyboard=bindKeyboard(ctx,move);
- function onVisibility(){
-  if(document.hidden&&timer!==null){stop();state={...state,phase:"paused"};draw();}
+ const controlsArea=el(box,"div","retro-controls");
+ controlsArea.setAttribute("aria-label","Управление рыбкой");
+ for(const [dir,label] of [["up","↑"],["left","←"],["down","↓"],["right","→"]]){
+  const btn=el(controlsArea,"button","retro-controls__button retro-controls__"+dir,label);
+  btn.type="button";btn.setAttribute("aria-label",{up:"Вверх",left:"Влево",down:"Вниз",right:"Вправо"}[dir]);
+  btn.addEventListener("pointerdown",e=>{held=dir;heldFrom=performance.now();btn.setPointerCapture(e.pointerId);});
+  btn.addEventListener("pointerup",()=>{held=null;});
+  btn.addEventListener("pointercancel",()=>{held=null;});
+  btn.addEventListener("click",()=>{if(!heldFrom||performance.now()-heldFrom<250)move(dir);});
  }
+ // Include held direction in animation updates without a second timer.
+ const physicsLoop=loop;
+ // Wrapper delegates after advancing target while held; held keys are confined to the arena.
+ function heldLoop(now){
+  if(held&&state.phase==="playing"){
+   const [x,y]=vectors[held];const dt=Math.min(lastFrame?(now-lastFrame)/1000:.016,.05);
+   target={x:Math.max(0,Math.min(OCEAN_WIDTH,target.x+x*160*dt)),
+    y:Math.max(0,Math.min(OCEAN_HEIGHT,target.y+y*160*dt))};
+  }
+  physicsLoop(now);
+ }
+ // Rebind loop scheduling to heldLoop by replacing single RAF callback below.
+ const onKey=bindKeyboard(ctx,move);
+ function onVisibility(){if(document.hidden&&frameId!==null){stop();state={...state,phase:"paused"};draw();}}
  document.addEventListener("visibilitychange",onVisibility);
  window.addEventListener("hashchange",()=>{
-  stop();offKeyboard();document.removeEventListener("visibilitychange",onVisibility);
+  stop();onKey();document.removeEventListener("visibilitychange",onVisibility);
  },{once:true});
  draw();
 }
