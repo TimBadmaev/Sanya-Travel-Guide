@@ -143,9 +143,9 @@ export async function renderPassport(container, ctx) {
   // Прогресс и карты появляются сразу: подгрузка значков их не блокирует.
   const awardsSlot = document.createElement("div");
   awardsSlot.className = "passport-awards-slot";
-  page.appendChild(awardsSlot);
   renderOfflineAtlas(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
   renderStreetMap(page, { places, visits: state, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan() });
+  page.appendChild(awardsSlot);
   renderOverview(page, { result, content, places, state });
   renderStats(page, result);
   const adventure = appendText(page, "a", "explore-passport-link", "🚀 Вернуться к игровому пути ›");

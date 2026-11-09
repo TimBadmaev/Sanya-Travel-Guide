@@ -560,3 +560,9 @@ a, button { -webkit-tap-highlight-color: transparent; }
 @keyframes rank-turn { to { transform:rotate(360deg); } }
 @media (prefers-reduced-motion:reduce) { .atlas__reveal,.rank-card__symbol,.rank-card__spark,.rank-card__glow { animation:none!important; } }
 @media (max-width:359px) { .rank-card__lead { gap:9px; } .rank-card__emblem { flex-basis:72px; height:72px; } .rank-card__symbol { font-size:33px; } .rank-card__title { font-size:17px; } }
+
+/* v26 visual QA: labels do not compete with POI clusters */
+.atlas__area-label { font-size:31px; letter-spacing:.7px; stroke-width:7; }
+.atlas__bay-label { font-size:28px; }
+.atlas__leader { stroke:#1e9775; stroke-width:3.5; stroke-dasharray:8 7; opacity:.64; }
+.atlas__anchor { fill:#047a5a; opacity:.65; }

@@ -5,17 +5,14 @@ import { getVisit } from "../logic/passport.js";
 const NS="http://www.w3.org/2000/svg";
 const EXTENT={west:109.08,east:109.87,north:18.46,south:18.14};
 const CAT={beach:"🏖️",nature:"🌴",culture:"🏯",market:"🏮",entertainment:"🎡",shopping:"🛍️"};
+// Approximate label layout intentionally avoids clustering in Sanya's center.
 const AREAS=[
-  {label:"НАНЬШАНЬ",lat:18.34,lng:109.17},
-  {label:"ТЯНЬЯ",lat:18.33,lng:109.32},
-  {label:"САНЬЯ БЭЙ",lat:18.34,lng:109.43},
-  {label:"ГОРОД САНЬЯ",lat:18.30,lng:109.51},
-  {label:"ДАДУНХАЙ",lat:18.28,lng:109.555},
-  {label:"ЯЛУНВАНЬ",lat:18.34,lng:109.63},
-  {label:"ХАЙТАНЬ",lat:18.40,lng:109.75}
+  {label:"НАНЬШАНЬ",x:155,y:165},
+  {label:"САНЬЯ",x:525,y:210},
+  {label:"ЯЛУНВАНЬ",x:785,y:165},
+  {label:"ХАЙТАНЬ",x:1050,y:115}
 ];
-const BAYS=[["Санья Бэй",109.42,18.18],["Дадунхай",109.515,18.165],
- ["Ялонг Бэй",109.635,18.17],["Хайтань",109.755,18.26]];
+const BAYS=[{label:"Санья Бэй",x:305,y:645},{label:"Ялонг Бэй",x:900,y:648}];
 export function atlasPosition(location){
   if(!location||!Number.isFinite(location.lat)||!Number.isFinite(location.lng))return null;
   const x=45+(location.lng-EXTENT.west)/(EXTENT.east-EXTENT.west)*1110;
@@ -43,11 +40,32 @@ export function atlasCluster(items,bucket=120){
     if(!groups.has(key))groups.set(key,[]);
     groups.get(key).push({...entry,...p});
   }
-  return [...groups.values()].map(group=>({
-    x:group.reduce((s,x)=>s+x.x,0)/group.length,
-    y:group.reduce((s,x)=>s+x.y,0)/group.length,
-    entries:group
-  }));
+  const clusters=[...groups.values()].map(group=>{
+    const x=group.reduce((s,item)=>s+item.x,0)/group.length;
+    const y=group.reduce((s,item)=>s+item.y,0)/group.length;
+    return {x,y,anchorX:x,anchorY:y,entries:group};
+  });
+  // Deterministic collision relaxation. Geography remains truthful at the
+  // fine leader-line anchors; discs move slightly for better finger targets.
+  for(let iteration=0;iteration<32;iteration++){
+    for(let i=0;i<clusters.length;i++){
+      for(let j=i+1;j<clusters.length;j++){
+        const left=clusters[i],right=clusters[j];
+        let dx=right.x-left.x,dy=right.y-left.y;
+        let distance=Math.hypot(dx,dy);
+        if(distance>=116)continue;
+        if(distance<.01){dx=((i+j)%2?1:-1);dy=(i%2?1:-1);distance=Math.hypot(dx,dy);}
+        const shift=(116-distance)/2;
+        left.x-=dx/distance*shift;left.y-=dy/distance*shift;
+        right.x+=dx/distance*shift;right.y+=dy/distance*shift;
+      }
+    }
+    for(const c of clusters){
+      c.x=Math.max(70,Math.min(1130,c.x));
+      c.y=Math.max(335,Math.min(635,c.y));
+    }
+  }
+  return clusters;
 }
 export function renderOfflineAtlas(parent,{places=[],visits={},savedIds=[],myPlan={days:{}}}={}){
   const section=node(parent,"section","atlas");
@@ -88,12 +106,8 @@ export function renderOfflineAtlas(parent,{places=[],visits={},savedIds=[],myPla
    "M216 463 Q366 381 485 467 T785 456",
    "M740 146 Q850 86 993 109"].forEach(d=>svgNode(hills,"path",{d,class:"atlas__contour"}));
   svgNode(svg,"path",{d:coast,fill:"none",class:"atlas__coastline"});
-  AREAS.forEach(a=>{const p=atlasPosition(a);
-    if(p)svgNode(svg,"text",{x:p.x,y:p.y,"text-anchor":"middle",class:"atlas__area-label"},a.label);
-  });
-  BAYS.forEach(([name,lng,lat])=>{const p=atlasPosition({lng,lat});
-    if(p)svgNode(svg,"text",{x:p.x,y:Math.min(691,p.y),"text-anchor":"middle",class:"atlas__bay-label"},name);
-  });
+  AREAS.forEach(a=>svgNode(svg,"text",{x:a.x,y:a.y,"text-anchor":"middle",class:"atlas__area-label"},a.label));
+  BAYS.forEach(a=>svgNode(svg,"text",{x:a.x,y:a.y,"text-anchor":"middle",class:"atlas__bay-label"},a.label));
   svgNode(svg,"text",{x:100,y:665,class:"atlas__water-title"},"ЮЖНО-КИТАЙСКОЕ МОРЕ");
   const pins=svgNode(svg,"g",{class:"atlas__pins"});
   const preview=node(section,"div","atlas__preview");
@@ -118,6 +132,11 @@ export function renderOfflineAtlas(parent,{places=[],visits={},savedIds=[],myPla
       svgNode(pins,"circle",{cx:p.x,cy:p.y,r:38,class:"atlas__reveal"});
     });
     clusters.forEach((cluster,i)=>{
+      // A displaced group stays linked to its original WGS84 centroid.
+      if(Math.hypot(cluster.x-cluster.anchorX,cluster.y-cluster.anchorY)>17){
+        svgNode(pins,"line",{x1:cluster.anchorX,y1:cluster.anchorY,x2:cluster.x,y2:cluster.y,class:"atlas__leader"});
+        svgNode(pins,"circle",{cx:cluster.anchorX,cy:cluster.anchorY,r:5,class:"atlas__anchor"});
+      }
       const multi=cluster.entries.length>1;
       const primary=cluster.entries[0];
       const status=cluster.entries.some(e=>e.kind==="visited")?"visited":primary.kind;
