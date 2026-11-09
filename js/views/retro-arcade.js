@@ -99,10 +99,13 @@ export function renderSnake(container,ctx){
   direction(Math.abs(dx)>Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up"));
  });
  const offKeyboard=bindKeyboard(ctx,direction);
- window.addEventListener("hashchange",()=>{stop();offKeyboard();},{once:true});
- document.addEventListener("visibilitychange",()=>{
+ function onVisibility(){
   if(document.hidden&&timer!==null){paused=true;stop();paint();}
- });
+ }
+ document.addEventListener("visibilitychange",onVisibility);
+ window.addEventListener("hashchange",()=>{
+  stop();offKeyboard();document.removeEventListener("visibilitychange",onVisibility);
+ },{once:true});
  paint();
 }
 
@@ -195,9 +198,12 @@ export function renderOcean(container,ctx){
  }
  controls(box,move);
  const offKeyboard=bindKeyboard(ctx,move);
- window.addEventListener("hashchange",()=>{stop();offKeyboard();},{once:true});
- document.addEventListener("visibilitychange",()=>{
+ function onVisibility(){
   if(document.hidden&&timer!==null){stop();state={...state,phase:"paused"};draw();}
- });
+ }
+ document.addEventListener("visibilitychange",onVisibility);
+ window.addEventListener("hashchange",()=>{
+  stop();offKeyboard();document.removeEventListener("visibilitychange",onVisibility);
+ },{once:true});
  draw();
 }
