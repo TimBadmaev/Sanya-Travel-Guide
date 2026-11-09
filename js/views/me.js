@@ -90,4 +90,54 @@ export async function renderMe(container, ctx) {
     ["💾", "Сохранить данные", "Резервная копия и восстановление", "#/data"],
   ]);
   el(page, "p", "quest-me__privacy", "🔒 Без регистрации. Данные хранятся только на этом устройстве.");
+
+  const danger = el(page, "section", "quest-reset");
+  el(danger, "h3", "quest-reset__title", "🔁 Начать заново");
+  el(danger, "p", "quest-reset__description",
+    "Тестировал приложение? Можно удалить свой прогресс и снова пройти приветствие. База мест, фото и экскурсии останется.");
+  const backup = el(danger, "a", "quest-reset__backup", "💾 Сначала сохранить резервную копию");
+  backup.href = "#/data";
+  const trigger = el(danger, "button", "quest-reset__trigger", "Сбросить прогресс");
+  trigger.type = "button";
+  const panel = el(danger, "div", "quest-reset__confirm");
+  panel.hidden = true;
+  el(panel, "strong", "", "Точно начать с нуля?");
+  el(panel, "p", "", "Безвозвратно удалятся даты и адрес поездки, отметки чек-листа, посещения, заметки, избранное, план, расходы, бюджет, XP и пройденные уроки. Вернуть их можно только из заранее сохранённой копии.");
+  const label = el(panel, "label", "quest-reset__ack");
+  const acknowledge = el(label, "input", "");
+  acknowledge.type = "checkbox";
+  el(label, "span", "", "Я понимаю, что мои данные будут удалены.");
+  const actions = el(panel, "div", "quest-reset__actions");
+  const cancel = el(actions, "button", "quest-reset__cancel", "Отмена");
+  cancel.type = "button";
+  const confirm = el(actions, "button", "quest-reset__delete", "Да, удалить всё");
+  confirm.type = "button";
+  confirm.disabled = true;
+  const statusText = el(panel, "p", "quest-reset__status");
+  statusText.setAttribute("role", "status");
+  trigger.addEventListener("click", () => {
+    panel.hidden = false;
+    trigger.hidden = true;
+    acknowledge.checked = false;
+    confirm.disabled = true;
+    cancel.focus();
+  });
+  acknowledge.addEventListener("change", () => { confirm.disabled = !acknowledge.checked; });
+  cancel.addEventListener("click", () => {
+    panel.hidden = true;
+    trigger.hidden = false;
+    statusText.textContent = "";
+    trigger.focus();
+  });
+  confirm.addEventListener("click", () => {
+    if (!acknowledge.checked || !storage.isAvailable()) {
+      statusText.textContent = "Сброс не выполнен: подтвердите удаление и проверьте память браузера.";
+      return;
+    }
+    if (!storage.resetAllUserData()) {
+      statusText.textContent = "Не удалось очистить данные. Ваш прогресс сохранён; попробуйте позже.";
+      return;
+    }
+    window.location.replace("#/welcome");
+  });
 }
