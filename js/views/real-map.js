@@ -223,6 +223,33 @@ export async function renderRealMap(container,ctx){
   g.fillStyle=bg;g.fillRect(0,0,width,height);
   const wc=worldPoint(center.lat,center.lng,zoom);
   const ll=worldCoords(wc.x-width/2,wc.y-height/2,zoom),br=worldCoords(wc.x+width/2,wc.y+height/2,zoom);
+  // The optional OSM geometry is drawn only where the visitor has saved it.
+  const onscreen=r=>r.maxLng>=ll.lng&&r.minLng<=br.lng&&r.maxLat>=br.lat&&r.minLat<=ll.lat;
+  const project=(lat,lng)=>{const p=worldPoint(lat,lng,zoom);return{x:p.x-wc.x+width/2,y:p.y-wc.y+height/2};};
+  function shapePath(points,close){
+   g.beginPath();
+   points.forEach(([lng,lat],i)=>{const p=project(lat,lng);i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y);});
+   if(close)g.closePath();
+  }
+  const fills=["#e8e8df","#e3d9c9","#bad7b6","#cde5b8","#f7e3ae","#b9e0ee","#dbd8cf"];
+  const polygons=[...details.values()].flatMap(d=>d.land).filter(onscreen);
+  for(const kind of [0,1,6,2,3,4,5]){
+   g.fillStyle=fills[kind];g.strokeStyle=fills[kind];g.lineWidth=.7;
+   for(const area of polygons)if(area.kind===kind){
+    shapePath(area.points,true);g.fill();g.stroke();
+   }
+  }
+  if(zoom>=14){
+   g.fillStyle="#d9d1c4";g.strokeStyle="#b7b1a8";g.lineWidth=.6;
+   for(const area of details.values())for(const building of area.buildings){
+    if(!onscreen(building))continue;
+    shapePath(building.points,true);g.fill();if(zoom>=15)g.stroke();
+   }
+  }
+  g.strokeStyle="#74b4c9";g.lineWidth=1.8;
+  for(const area of details.values())for(const coast of area.coast){
+   if(onscreen(coast)){shapePath(coast.points,false);g.stroke();}
+  }
   const limit=zoom<11?1:zoom<12?2:zoom<13?3:zoom<14?4:5;
   const visible=segments.filter(r=>(r.kind<=limit||r.kind===6)
    &&r.maxLng>=ll.lng&&r.minLng<=br.lng&&r.maxLat>=br.lat&&r.minLat<=ll.lat);
@@ -260,6 +287,11 @@ export async function renderRealMap(container,ctx){
    g.strokeStyle="#eef5e6";g.strokeText(text,p.x,p.y);
    g.fillStyle="#285669";g.fillText(text,p.x,p.y);
   }
+  const metersPerPixel=156543.03392*Math.cos(center.lat*Math.PI/180)/2**zoom;
+  const lengths=[50,100,200,500,1000,2000,5000,10000,20000];
+  const length=lengths.filter(v=>v/metersPerPixel<=100).pop()||50;
+  scale.style.width=Math.max(34,length/metersPerPixel)+"px";
+  scale.textContent=length<1000?length+" м":length/1000+" км";
   if(!segments.length){
    g.textAlign="center";g.fillStyle="#375665";g.fillText("Улицы временно недоступны",width/2,height/2);
   }
