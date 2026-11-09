@@ -1,6 +1,6 @@
 // «Открой Хайнань»: необязательная игра поверх уже существующих мест.
 // Ни один шаг не блокирует туристические функции; без сети работает из PRECACHE.
-import { loadConfig, loadExplore, loadPassport, loadPlaces, loadErrorMessage } from "../data.js";
+import { loadConfig, loadExplore, loadPassport, loadPlaces, loadChecklist, loadErrorMessage } from "../data.js";
 import { storage } from "../storage.js";
 import { evaluatePassport, prepareContent } from "../logic/passport.js";
 import { evaluateExplore } from "../logic/explore.js";
@@ -17,8 +17,8 @@ function element(parent, tag, cls, text) {
 async function gameData(container, ctx, retry) {
   container.innerHTML = '<p class="loading">Открываем остров…</p>';
   try {
-    const [places, config, passport, explore] = await Promise.all([
-      loadPlaces(), loadConfig(), loadPassport(), loadExplore(),
+    const [places, config, passport, explore, checklist] = await Promise.all([
+      loadPlaces(), loadConfig(), loadPassport(), loadExplore(), loadChecklist(),
     ]);
     if (!ctx.isCurrent()) return null;
     const content = prepareContent(passport, config);
@@ -26,6 +26,7 @@ async function gameData(container, ctx, retry) {
     const game = evaluateExplore({
       places, savedIds: storage.getSavedIds(), myPlan: storage.getMyPlan(),
       passportResult: result, explore: storage.getExplore(), expenses: storage.getExpenses(),
+      checklist, checklistState: storage.getChecklistState(), activity: storage.getActivity(),
       chapters: explore.chapters, lessons: explore.lessons,
     });
     return { places, config, content, result, game, explore };

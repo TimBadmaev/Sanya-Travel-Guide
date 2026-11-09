@@ -24,6 +24,7 @@ jobs:
         run: |
           node --experimental-default-type=module --test tests/test_explore.mjs
           node --experimental-default-type=module --test tests/test_v24.mjs
+          node --experimental-default-type=module --test tests/test_prep_focus.mjs
       - name: Test Island Quest onboarding, gameplay, old screens and offline
         env:
           CHROME: /usr/bin/google-chrome
@@ -32,6 +33,10 @@ jobs:
         env:
           CHROME: /usr/bin/google-chrome
         run: python3 -u tests/test_v24_browser.py
+      - name: Test preflight home, checklist XP and confirmed reset
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_v25_browser.py
       - name: Check legacy data, passport, map and PWA upgrade
         env:
           CHROME: /usr/bin/google-chrome

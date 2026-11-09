@@ -774,7 +774,35 @@ function clearImportBackup() {
   }
 }
 
+// Полный сброс только пользовательских данных (не удаляет справочник/PWA).
+// Сначала сохраняем снимок всех затрагиваемых ключей и при ошибке
+// восстанавливаем их. UI обязателен к показу с явным подтверждением.
+function resetAllUserData() {
+  if (!storageAvailable) return false;
+  const keys = [...new Set([...USER_DATA_KEYS,
+    KEYS.importBackup, KEYS.expensesBackup, KEYS.passportBackup,
+    KEYS.guideCollapsed, KEYS.installHintDismissed])];
+  const before = new Map();
+  try {
+    for (const key of keys) before.set(key, window.localStorage.getItem(key));
+    for (const key of keys) window.localStorage.removeItem(key);
+    return true;
+  } catch (error) {
+    console.error("Не удалось сбросить прогресс — восстанавливаю данные", error);
+    for (const [key, value] of before) {
+      try {
+        if (value === null) window.localStorage.removeItem(key);
+        else window.localStorage.setItem(key, value);
+      } catch (restoreError) {
+        console.error("Ошибка отката сброса", restoreError);
+      }
+    }
+    return false;
+  }
+}
+
 export const storage = {
+  resetAllUserData,
   isAvailable: () => storageAvailable,
   getPlanDone,
   setPlanItemDone,

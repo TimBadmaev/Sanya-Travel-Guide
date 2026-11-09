@@ -13,6 +13,7 @@ export const XP_RULES = Object.freeze({
   sticker: 20,
   expenseDay: 12,
   appDay: 3,
+  prepTask: 4,
 });
 
 const ID_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
@@ -71,7 +72,7 @@ function nodeProgress(node, stats, completed) {
 }
 
 export function evaluateExplore({ places = [], savedIds = [], myPlan = null, passportResult = null,
-  explore = null, expenses = null, activity = null, chapters = [], lessons = [] } = {}) {
+  explore = null, expenses = null, activity = null, checklist = [], checklistState = null, chapters = [], lessons = [] } = {}) {
   const rewardPlaces = places.filter((place) => place && place.status === "verified" && isRewardPlace(place));
   const rewardIds = new Set(rewardPlaces.map((place) => place.id));
   const saved = new Set((Array.isArray(savedIds) ? savedIds : []).filter((id) => rewardIds.has(id)));
@@ -97,7 +98,9 @@ export function evaluateExplore({ places = [], savedIds = [], myPlan = null, pas
     .map((item) => item.date)).size;
   const stickers = passportResult && Array.isArray(passportResult.stickers)
     ? passportResult.stickers.filter((s) => s.earned && !s.optional).length : 0;
+  const completedPrep = Array.isArray(checklist) ? checklist.filter((item) => item && item.status === "verified" && checklistState?.[item.id]).length : 0;
   const stats = {
+    prepDone: completedPrep,
     saved: saved.size,
     planned: plannedCount(myPlan, rewardIds),
     visited: uniqueVisits.size,
@@ -115,7 +118,8 @@ export function evaluateExplore({ places = [], savedIds = [], myPlan = null, pas
     + stats.lessons * XP_RULES.lesson
     + stats.stickers * XP_RULES.sticker
     + Math.min(stats.expenseDays, 14) * XP_RULES.expenseDay
-    + Math.min(stats.appDays, 14) * XP_RULES.appDay;
+    + Math.min(stats.appDays, 14) * XP_RULES.appDay
+    + stats.prepDone * XP_RULES.prepTask;
 
   const evaluated = chapters.map((chapter) => {
     const nodes = (chapter.nodes || []).map((node) => nodeProgress(node, stats, completed));

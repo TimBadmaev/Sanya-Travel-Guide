@@ -189,7 +189,8 @@ function render(event) {
 window.addEventListener("hashchange", render);
 
 function init() {
-  storage.recordAppOpen(getTodayIso());
+  // Нельзя начислять XP до знакомства с приложением и после сброса.
+  if (!storage.getTrip().isFirstRun) storage.recordAppOpen(getTodayIso());
   // manual вместо auto (§6.4): встроенное восстановление прокрутки браузером
   // срабатывает не синхронно с hashchange и перебивает решения приложения —
   // прокруткой управляет только роутер (см. render()).
