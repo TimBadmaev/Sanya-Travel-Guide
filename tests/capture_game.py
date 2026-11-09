@@ -67,7 +67,7 @@ def run(root, prefix, output):
             pages = [
                 ("home", "#/", ".quest-world"),
                 ("passport", "#/passport", ".passport-map"),
-                ("excursions", "#/excursions", ".info-card"),
+                ("excursions", "#/excursions", ".excursion-card"),
                 ("excursion", "#/excursion/nanshan-tianya-day", ".view-title"),
                 ("expenses", "#/expenses", ".view-title"),
             ]

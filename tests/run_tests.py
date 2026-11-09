@@ -1501,7 +1501,9 @@ def run_upgrade(port):
             b.go(base, "#/place/luhuitou-park", cold=True)
             check(f"{head_version}: отметка с заметкой видна до обновления", "Закат с горы" in (b.js("(document.querySelector('.passport-block') || {}).textContent") or ""))
 
-        before = b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().map((k) => [k, localStorage.getItem(k)])))")
+        # stg:activity существует уже в v24: в каждом экземпляре PWA он
+        # может дополниться днём открытия, но остальные ключи неизменны.
+        before = b.js("JSON.stringify(Object.fromEntries(Object.keys(localStorage).sort().filter((k) => k !== \'stg:activity\').map((k) => [k, localStorage.getItem(k)])))")
         os.unlink(link)
         os.symlink(ROOT, link)
         b.js("navigator.serviceWorker.getRegistration().then((r) => r.update()).then(() => true)")
