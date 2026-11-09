@@ -78,9 +78,6 @@ def polygon(points, tol):
 
 def main():
     extracted = {}
-    land = {}
-    buildings = {}
-    coast = {}
     stats = {}
     for label, bbox in REGIONS:
         url = "https://api.openstreetmap.org/api/0.6/map?bbox=" + ",".join(map(str, bbox))
@@ -96,6 +93,9 @@ def main():
             if n.get("lon") and n.get("lat"):
                 nodes[n.get("id")] = [round(float(n.get("lon")), 6), round(float(n.get("lat")), 6)]
         count = 0
+        land = {}
+        buildings = {}
+        coast = {}
         for way in root.iter("way"):
             way_id = way.get("id")
             tags = {t.get("k"): t.get("v") for t in way.findall("tag")}
@@ -124,39 +124,50 @@ def main():
                 if shape:
                     buildings[way_id] = shape
         stats[label] = count
-        print("PASS", label, count, "roads", flush=True)
+        # Separate opt-in detail packs by neighborhood; never precache these.
+        # Each file contains only real OSM way geometry from this bbox.
+        detail = {
+            "version": 1, "area": label,
+            "source": "© OpenStreetMap contributors (ODbL)",
+            "bounds": list(bbox),
+            "land": list(land.values()),
+            "buildings": list(buildings.values())[:2500],
+            "coast": list(coast.values()),
+        }
+        def encode_detail():
+            return json.dumps(detail, ensure_ascii=False, separators=(",", ":"))
+        detail_json = encode_detail()
+        while len(detail_json.encode("utf-8")) > 850_000 and detail["buildings"]:
+            detail["buildings"] = detail["buildings"][:len(detail["buildings"]) * 3 // 4]
+            detail_json = encode_detail()
+        if len(detail_json.encode("utf-8")) > 1_200_000:
+            raise RuntimeError("Neighborhood detail exceeds 1.2 MB: " + label)
+        if not detail["land"]:
+            raise RuntimeError("No authentic landcover in neighborhood: " + label)
+        detail_dest = ROOT / ("data/sanya-detail-" + label + ".json")
+        detail_dest.write_text(detail_json, encoding="utf-8")
+        print("PASS", label, count, "roads,", len(detail["land"]), "areas,",
+              len(detail["buildings"]), "buildings,", detail_dest.stat().st_size,
+              "optional bytes", flush=True)
 
     if len(extracted) < 1200:
         raise ValueError("Insufficient authentic OSM roads: " + str(len(extracted)))
-    # Buildings matter only at street zoom; a fixed upper bound protects
-    # first-install data volume and canvas performance on older phones.
-    building_shapes = list(buildings.values())[:4500]
+    # Basic roads stay tiny and mandatory. High-detail packs are explicit
+    # downloads; do NOT add them to the PWA's mandatory precache list.
     obj = {
         "version": 2,
         "source": "© OpenStreetMap contributors (ODbL)",
         "sourceUrl": "https://www.openstreetmap.org/copyright",
-        "note": "Limited area extracts: incomplete polygons omitted. Not turn-by-turn navigation.",
+        "note": "Real road extracts only. Optional neighborhood detail files are separate.",
         "areas": stats,
         "bounds": {key: list(bbox) for key, bbox in REGIONS},
         "roads": list(extracted.values()),
-        "land": list(land.values()),
-        "buildings": building_shapes,
-        "coast": list(coast.values()),
     }
-    def encode():
-        return json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
-    result = encode()
-    while len(result.encode("utf-8")) > 2_500_000 and obj["buildings"]:
-        obj["buildings"] = obj["buildings"][:len(obj["buildings"]) * 3 // 4]
-        result = encode()
-    if len(result.encode("utf-8")) > 3_000_000:
-        raise RuntimeError("Offline vector map exceeded 3 MB")
-    if not obj["land"] or not obj["buildings"]:
-        raise RuntimeError("OSM polygons or buildings missing; check source, do not fake layers")
+    result = json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
+    if len(result.encode("utf-8")) > 650_000:
+        raise RuntimeError("Mandatory road layer exceeded 650 KB")
     DEST.write_text(result, encoding="utf-8")
-    print("PASS", len(extracted), "roads,", len(obj["land"]), "areas,",
-          len(obj["buildings"]), "buildings,", len(obj["coast"]), "coastlines,",
-          DEST.stat().st_size, "bytes", flush=True)
+    print("PASS total", len(extracted), "roads,", DEST.stat().st_size, "bytes", flush=True)
 
 if __name__ == "__main__":
     main()
