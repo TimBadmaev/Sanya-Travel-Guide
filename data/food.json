@@ -29,7 +29,10 @@
         "url": "https://m.map.360.cn/m/search/detail/pid=6a25072b4def92e0"
       }
     ],
-    "verifiedAt": "2026-09-18"
+    "verifiedAt": "2026-09-18",
+    "cuisines": [
+      "mixed"
+    ]
   },
   {
     "id": "yalong-dongrong-yexiaoji",
@@ -62,7 +65,14 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "coconut",
+      "hotpot",
+      "hainan"
+    ],
+    "avgCheckCny": 100,
+    "avgCheckSource": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/24993251.html"
   },
   {
     "id": "yalong-dongrong-hongsha-seafood",
@@ -91,7 +101,13 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "seafood",
+      "hainan"
+    ],
+    "avgCheckCny": 100,
+    "avgCheckSource": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/136629359.html"
   },
   {
     "id": "yalong-dongrong-xijia-cantonese",
@@ -120,7 +136,13 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "cantonese",
+      "seafood"
+    ],
+    "avgCheckCny": 101,
+    "avgCheckSource": "https://gs.ctrip.com/html5/you/foods/sanya61/132064.html"
   },
   {
     "id": "yalong-dongrong-qiongzhou-flavors",
@@ -148,7 +170,13 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "hainan",
+      "seafood"
+    ],
+    "avgCheckCny": 98,
+    "avgCheckSource": "https://you.ctrip.com/food/sanya61/144339076.html"
   },
   {
     "id": "yalong-baihuagu-taiqiong-sour-hotpot",
@@ -177,7 +205,13 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "hotpot",
+      "hainan"
+    ],
+    "avgCheckCny": 110,
+    "avgCheckSource": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/131895214.html"
   },
   {
     "id": "yalong-baihuagu-caidiexuan",
@@ -206,7 +240,14 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "cantonese",
+      "hainan",
+      "seafood"
+    ],
+    "avgCheckCny": 94,
+    "avgCheckSource": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/6999239.html"
   },
   {
     "id": "yalong-baihuagu-yexiaoji",
@@ -235,7 +276,12 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "coconut",
+      "hotpot",
+      "hainan"
+    ]
   },
   {
     "id": "yalong-baihuagu-hongsha-seafood",
@@ -264,7 +310,13 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "seafood",
+      "hainan"
+    ],
+    "avgCheckCny": 109,
+    "avgCheckSource": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/140932191.html"
   },
   {
     "id": "yalong-yatai-diadia-coconut-chicken",
@@ -293,7 +345,14 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "coconut",
+      "hotpot",
+      "hainan"
+    ],
+    "avgCheckCny": 110,
+    "avgCheckSource": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/148489830.html"
   },
   {
     "id": "yalong-yatai-pinzhi-qingbuliang",
@@ -322,7 +381,10 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "dessert"
+    ]
   },
   {
     "id": "yalong-yatai-xiaohaitun-seafood",
@@ -351,7 +413,12 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "seafood"
+    ],
+    "avgCheckCny": 123,
+    "avgCheckSource": "https://gs.ctrip.com/html5/you/foods/fooddetail/61/78606579.html"
   },
   {
     "id": "diadia-dadonghai",
@@ -383,7 +450,12 @@
         "url": "https://www.visitsanya.com/experiences/shopping/top-shopping-hotspots/shopping-malls/no-1-harbour-city-big-pineapple-shopping-mall"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "coconut",
+      "hotpot",
+      "hainan"
+    ]
   },
   {
     "id": "diadia-sanya-bay",
@@ -404,7 +476,12 @@
         "url": "https://m.map.360.cn/m/search/detail/pid=f0f994a0dd0defd9"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "coconut",
+      "hotpot",
+      "hainan"
+    ]
   },
   {
     "id": "diadia-luhuitou",
@@ -432,7 +509,12 @@
         "url": "https://m.map.360.cn/m/search/detail/pid=778e135d0bc45dde"
       }
     ],
-    "verifiedAt": "2026-09-18"
+    "verifiedAt": "2026-09-18",
+    "cuisines": [
+      "coconut",
+      "hotpot",
+      "hainan"
+    ]
   },
   {
     "id": "yalong-bay-baihuagu-food-street",
@@ -468,7 +550,10 @@
         "url": "https://www.visitsanya.com/destination/yalong-bay"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "mixed"
+    ]
   },
   {
     "id": "yalong-bay-buzaike-seafood",
@@ -500,7 +585,10 @@
         "url": "https://you.ctrip.com/food/61/17626006.html"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "seafood"
+    ]
   },
   {
     "id": "yalong-bay-haidilao-hotpot",
@@ -528,7 +616,12 @@
         "url": "https://you.ctrip.com/food/61/78863186.html"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "hotpot"
+    ],
+    "avgCheckCny": 105,
+    "avgCheckSource": "https://you.ctrip.com/food/sanya61/78863186-dianping168079155.html"
   },
   {
     "id": "yalong-bay-mengbao-coconut-chicken",
@@ -556,7 +649,12 @@
         "url": "https://m.map.360.cn/m/search/detail/pid=9506f3e0ff315439"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "coconut",
+      "hotpot",
+      "hainan"
+    ]
   },
   {
     "id": "dadonghai-donghai-longgong-seafood",
@@ -592,7 +690,11 @@
         "url": "https://gs.ctrip.com/html5/you/foods/sanya61/132057.html"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "seafood",
+      "cantonese"
+    ]
   },
   {
     "id": "dadonghai-jingxi-1981-roast-duck",
@@ -629,7 +731,10 @@
         "url": "https://yandex.com/maps/org/jingxi_1981/126891723283/"
       }
     ],
-    "verifiedAt": "2026-09-18"
+    "verifiedAt": "2026-09-18",
+    "cuisines": [
+      "roast"
+    ]
   },
   {
     "id": "city-alishan-food-street",
@@ -661,7 +766,10 @@
         "url": "https://m.map.360.cn/m/search/detail/pid=b4b0806ab245f703"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "mixed"
+    ]
   },
   {
     "id": "city-tunchang-herbal-duck-hexi",
@@ -689,7 +797,10 @@
         "url": "https://m.map.360.cn/m/search/detail/pid=a4571acede3667e6"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "hainan"
+    ]
   },
   {
     "id": "city-xiaochen-houan-noodles",
@@ -717,7 +828,11 @@
         "url": "https://m.map.360.cn/m/search/detail/pid=a0cfab90c7d0ba24"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "noodles",
+      "hainan"
+    ]
   },
   {
     "id": "sanya-bay-xiaogongzhu-roast-chicken",
@@ -750,7 +865,10 @@
         "url": "https://m.sohu.com/a/1043892361_121106994"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "grill"
+    ]
   },
   {
     "id": "sanya-bay-youyi-road-seafood-plaza",
@@ -786,7 +904,10 @@
         "url": "http://hain.chinadaily.com.cn/a/202307/05/WS64a5651ca310ba94c5615047.html"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "seafood"
+    ]
   },
   {
     "id": "sanya-bay-longxing-seafood-plaza",
@@ -822,7 +943,10 @@
         "url": "https://m.sohu.com/a/1043892361_121106994"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "seafood"
+    ]
   },
   {
     "id": "sanya-bay-qionghaha-coconut-chicken",
@@ -854,7 +978,12 @@
         "url": "https://you.ctrip.com/food/sanya61/143232478.html"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "coconut",
+      "hotpot",
+      "hainan"
+    ]
   },
   {
     "id": "city-huajie-qingbuliang-desserts",
@@ -879,7 +1008,12 @@
       }
     ],
     "status": "verified",
-    "verifiedAt": "2026-11-09"
+    "verifiedAt": "2026-11-09",
+    "cuisines": [
+      "dessert"
+    ],
+    "avgCheckCny": 17,
+    "avgCheckSource": "https://you.ctrip.com/food/61/18658584.html"
   },
   {
     "id": "haitang-68-food-street",
@@ -919,7 +1053,10 @@
         "url": "https://you.ctrip.com/food/61/63377786.html"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "mixed"
+    ]
   },
   {
     "id": "haitang-haichang-food-street",
@@ -955,7 +1092,10 @@
         "url": "https://www.visitsanya.com/destination/haichang-fantasy-town"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "mixed"
+    ]
   },
   {
     "id": "dadonghai-chixie-crab",
@@ -983,6 +1123,9 @@
         "url": "https://m.map.360.cn/m/search/detail/pid=ee1e0f6babb931c2"
       }
     ],
-    "verifiedAt": "2026-09-17"
+    "verifiedAt": "2026-09-17",
+    "cuisines": [
+      "seafood"
+    ]
   }
 ]

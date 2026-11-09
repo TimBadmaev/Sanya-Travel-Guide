@@ -12,6 +12,7 @@ import {
   GEO_ERROR,
 } from "../logic/geo.js";
 import { filterWithinRadius, sortByDistance, NEAR_RADIUS_KM, applySearch, FOOD_SEARCH_FIELDS } from "../logic/filters.js";
+import { applyFoodFacets, FOOD_CUISINES, FOOD_PRICES, foodPriceBand } from "../logic/food-filters.js";
 
 // Еда (ITERATION-8-CONTENT-ARCHITECTURE.md, Batch D): отдельный, короткий
 // экран по образцу views/handy.js — не карточка места, у food-записей нет
@@ -141,6 +142,23 @@ function renderFoodCard(item, area) {
   meta.textContent = [FOOD_KIND_LABELS[item.kind], area && area.name].filter(Boolean).join(" · ");
 
   body.append(title, meta);
+
+  if (Array.isArray(item.cuisines) && item.cuisines.length) {
+    const cuisine = document.createElement("p");
+    cuisine.className = "food-card__meta";
+    cuisine.textContent = item.cuisines
+      .slice(0, 2)
+      .map((id) => FOOD_CUISINES.find((c) => c.value === id)?.label)
+      .filter(Boolean).join(" · ");
+    if (cuisine.textContent) body.appendChild(cuisine);
+  }
+
+  if (foodPriceBand(item) !== "unknown") {
+    const price = document.createElement("p");
+    price.className = "food-card__price";
+    price.textContent = `Средний чек ≈${item.avgCheckCny} ¥/чел. · по каталогу`;
+    body.appendChild(price);
+  }
 
   // «X км от вас» — от текущей позиции устройства (geo.js), только для
   // валидной location и только при уже известной позиции; не влияет на
@@ -284,6 +302,11 @@ export async function renderFoodSection(container, ctx) {
   // активным режимом «Все»/«Рядом со мной», не отдельный маршрут и не URL
   // (как и остальное локальное состояние этого экрана — near/scope выше).
   let searchQuery = "";
+  const foodFacets = { area: "any", cuisine: "any", price: "any" };
+
+  function hasActiveFilters() {
+    return Boolean(searchQuery.trim()) || Object.values(foodFacets).some((value) => value !== "any");
+  }
 
   // Позиция уже известна (прайминг при старте приложения или прошлый запрос в
   // этом сеансе, geo.js) — используем её без нового запроса геолокации.
@@ -298,10 +321,9 @@ export async function renderFoodSection(container, ctx) {
   function computeNearbyResults() {
     // isValidLocation() исключает и отсутствующую точку, и заглушку {0,0}
     // (amap.js) — черновиков здесь и так уже нет (loadFood(), D-18).
-    const usable = applySearch(
-      food.filter((item) => isValidLocation(item.location)),
-      searchQuery,
-      FOOD_SEARCH_FIELDS
+    const usable = applyFoodFacets(
+      applySearch(food.filter((item) => isValidLocation(item.location)), searchQuery, FOOD_SEARCH_FIELDS),
+      foodFacets
     );
     nearbyResults = sortByDistance(filterWithinRadius(usable, nearbyOrigin, NEAR_RADIUS_KM), nearbyOrigin);
     nearbyStatus = nearbyResults.length ? FOOD_NEARBY_STATUS.SUCCESS : FOOD_NEARBY_STATUS.EMPTY;
@@ -335,7 +357,9 @@ export async function renderFoodSection(container, ctx) {
 
   function renderNearbyBody() {
     nearbyBody.innerHTML = "";
-
+    countLabel.textContent = nearbyStatus === FOOD_NEARBY_STATUS.SUCCESS
+      ? `Найдено рядом: ${nearbyResults.length}`
+      : nearbyStatus === FOOD_NEARBY_STATUS.EMPTY ? "Рядом: 0" : "";
     if (nearbyStatus === FOOD_NEARBY_STATUS.LOADING) {
       const p = document.createElement("p");
       p.className = "loading";
@@ -362,8 +386,8 @@ export async function renderFoodSection(container, ctx) {
         nearbyBody.appendChild(
           renderEmptyState(
             `Рядом не нашлось «${trimmedQuery}» в радиусе ${NEAR_RADIUS_KM} км.`,
-            "Очистить поиск",
-            clearSearch
+            "Сбросить поиск и фильтры",
+            resetFoodFilters
           )
         );
         return;
@@ -372,6 +396,7 @@ export async function renderFoodSection(container, ctx) {
       empty.className = "empty-state";
       empty.textContent = `Рядом нет проверенных мест еды в радиусе ${NEAR_RADIUS_KM} км.`;
       nearbyBody.appendChild(empty);
+      if (hasActiveFilters()) nearbyBody.appendChild(createResetButton());
       return;
     }
 
@@ -412,11 +437,12 @@ export async function renderFoodSection(container, ctx) {
 
   function renderAllBody() {
     allBody.innerHTML = "";
-    const filtered = applySearch(food, searchQuery, FOOD_SEARCH_FIELDS);
+    const filtered = applyFoodFacets(applySearch(food, searchQuery, FOOD_SEARCH_FIELDS), foodFacets);
+    countLabel.textContent = `Найдено: ${filtered.length}`;
 
     if (!filtered.length) {
       allBody.appendChild(
-        renderEmptyState(`Ничего не найдено по запросу «${searchQuery.trim()}».`, "Очистить поиск", clearSearch)
+        renderEmptyState("По выбранным условиям ничего не найдено.", "Сбросить фильтры", resetFoodFilters)
       );
       return;
     }
@@ -439,6 +465,8 @@ export async function renderFoodSection(container, ctx) {
         nearbyStatus = FOOD_NEARBY_STATUS.IDLE;
       }
       renderNearbyBody();
+    } else {
+      renderAllBody();
     }
   }
 
@@ -476,6 +504,89 @@ export async function renderFoodSection(container, ctx) {
 
   container.appendChild(searchBar);
 
+  // Compact native selects: no horizontal scrolling on narrow phones.
+  const filtersEl = document.createElement("div");
+  filtersEl.className = "food-filters";
+  const selectControls = {};
+  function addFoodSelect(key, label, choices) {
+    const wrap = document.createElement("label");
+    wrap.className = "food-filter";
+    const name = document.createElement("span");
+    name.className = "food-filter__label";
+    name.textContent = label;
+    const control = document.createElement("select");
+    control.className = "food-filter__select";
+    control.setAttribute("aria-label", label);
+    for (const choice of choices) {
+      const option = document.createElement("option");
+      option.value = choice.value;
+      option.textContent = choice.label;
+      control.appendChild(option);
+    }
+    control.value = foodFacets[key];
+    control.addEventListener("change", () => {
+      if (!ctx.isCurrent()) return;
+      foodFacets[key] = control.value;
+      updateFilterToolbar();
+      refreshVisibleBody();
+    });
+    wrap.append(name, control);
+    filtersEl.appendChild(wrap);
+    selectControls[key] = control;
+  }
+  addFoodSelect("area", "Район", [
+    { value: "any", label: "Все районы" },
+    ...config.areas.filter((area) => food.some((item) => item.area === area.id))
+      .sort((a, b) => a.id === "yalong" ? -1 : b.id === "yalong" ? 1 : 0)
+      .map((area) => ({ value: area.id, label: area.name }))
+  ]);
+  addFoodSelect("price", "Средний чек", FOOD_PRICES);
+  addFoodSelect("cuisine", "Кухня", FOOD_CUISINES);
+  container.appendChild(filtersEl);
+
+  const filterFooter = document.createElement("div");
+  filterFooter.className = "food-filter-footer";
+  const countLabel = document.createElement("p");
+  countLabel.className = "food-filter-footer__count";
+  countLabel.setAttribute("aria-live", "polite");
+  const resetButton = document.createElement("button");
+  resetButton.type = "button";
+  resetButton.className = "food-filter-footer__reset";
+  resetButton.textContent = "Сбросить";
+  resetButton.addEventListener("click", resetFoodFilters);
+  filterFooter.append(countLabel, resetButton);
+  container.appendChild(filterFooter);
+  const priceHint = document.createElement("p");
+  priceHint.className = "food-filter__hint";
+  priceHint.textContent = "Средний чек — ориентир из каталогов, не гарантированная цена. Заведения без данных доступны в разделе «Цена не указана».";
+  container.appendChild(priceHint);
+
+  function createResetButton() {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "btn btn--secondary";
+    b.textContent = "Сбросить фильтры";
+    b.addEventListener("click", resetFoodFilters);
+    return b;
+  }
+
+  function resetFoodFilters() {
+    searchQuery = "";
+    searchInput.value = "";
+    for (const key of Object.keys(foodFacets)) {
+      foodFacets[key] = "any";
+      selectControls[key].value = "any";
+    }
+    updateSearchClear();
+    updateFilterToolbar();
+    refreshVisibleBody();
+  }
+
+  function updateFilterToolbar() {
+    resetButton.hidden = !hasActiveFilters();
+  }
+  updateFilterToolbar();
+
   function updateSearchClear() {
     searchClear.hidden = !searchQuery;
   }
@@ -497,6 +608,7 @@ export async function renderFoodSection(container, ctx) {
     if (!ctx.isCurrent()) return;
     searchQuery = searchInput.value;
     updateSearchClear();
+    updateFilterToolbar();
     refreshVisibleBody();
   });
 
@@ -505,6 +617,7 @@ export async function renderFoodSection(container, ctx) {
     searchQuery = "";
     searchInput.value = "";
     updateSearchClear();
+    updateFilterToolbar();
     refreshVisibleBody();
     searchInput.focus();
   }

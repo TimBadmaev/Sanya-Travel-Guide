@@ -1821,6 +1821,77 @@ textarea.settings-field__input {
   cursor: not-allowed;
 }
 
+
+/* Food: three small facets that fit narrow devices without a scrollable chip row. */
+.food-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+}
+.food-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.food-filter:last-child { grid-column: 1 / -1; }
+.food-filter__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+.food-filter__select {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--tap-min);
+  padding: var(--space-2);
+  font: inherit;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+.food-filter__select:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.food-filter-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--tap-min);
+  gap: var(--space-2);
+}
+.food-filter-footer__count {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+.food-filter-footer__reset {
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--color-primary);
+  background: transparent;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+.food-filter__hint {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+.food-card__price {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+@media (min-width: 640px) {
+  .food-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .food-filter:last-child { grid-column: auto; }
+}
+
 /* ===== Batch D — режим «Еда» внутри #/places (js/views/food.js) —
    только новые правила ===== */
 
