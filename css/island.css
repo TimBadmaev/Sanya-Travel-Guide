@@ -1179,3 +1179,47 @@ button.naval-game__cell:not(:disabled):active{background:#74d5d7;}
 }
 .mustdo-card[hidden]{display:none;}
 .mustdo-card:focus{outline:2px solid #98f1dc;outline-offset:3px;}
+
+/* v38: actual natural-color atlas with quiet geographic details. */
+.island-atlas{border-color:#547f8f;background:#072b45;}
+.island-atlas__land{stroke:#a4d2aa;stroke-width:1.3;}
+.island-atlas__shore-shadow{fill:#103e4b;stroke:#1f7884;stroke-width:6;opacity:.4;}
+.island-atlas__shelf-wide{fill:none;stroke:#1d91a4;stroke-width:26;opacity:.22;}
+.island-atlas__shelf-narrow{fill:none;stroke:#62d7db;stroke-width:9;opacity:.30;}
+.island-atlas__relief{opacity:1;pointer-events:none;filter:saturate(1.12) contrast(1.07);}
+.island-atlas__coast-highlight{stroke:#d1e3b2;stroke-width:1.3;opacity:.85;}
+.island-atlas__geo-grid line{
+ stroke:#bbecf2;stroke-width:.7;stroke-dasharray:4 8;opacity:.22;
+}
+.island-atlas__geo-grid text{
+ fill:#d1e9f2;font-size:9px;font-weight:700;opacity:.72;
+ paint-order:stroke;stroke:#0b3d53;stroke-width:2;
+}
+.island-atlas__island-text{
+ fill:#fff7d7;stroke:#2e513e;stroke-width:3;paint-order:stroke;
+ letter-spacing:.22em;font-size:18px;opacity:.85;
+}
+.island-atlas__city-dot{fill:#ffedd3;stroke:#254a3d;stroke-width:1.8;}
+.island-atlas__city-text{
+ fill:#fff8e5;stroke:#163f44;stroke-width:3;paint-order:stroke;
+ font-size:12px;letter-spacing:.04em;
+}
+.island-atlas__sea-text{
+ fill:#bce6ef;stroke:#0a526c;stroke-width:2;paint-order:stroke;
+ font-size:10px;letter-spacing:.07em;font-weight:650;opacity:.86;
+}
+.island-atlas__compass line{stroke:#d7edf3;stroke-width:2;opacity:.8;}
+.island-atlas__compass path{fill:#ecf7f8;stroke:#0b4964;stroke-width:2;}
+.island-atlas__compass text{fill:#e4f5f7;text-anchor:middle;font-size:14px;font-weight:900;}
+.island-atlas__toolbar .island-atlas__pin-toggle{
+ grid-column:1/-1;min-height:46px;
+}
+.island-atlas__filter{grid-column:1/-1;}
+.island-atlas__toolbar button[aria-pressed="true"]{
+ border-color:#8ce4d2;color:#dffff9;background:#23555e;
+}
+@media(min-width:620px){
+ .island-atlas__toolbar{grid-template-columns:repeat(3,minmax(0,1fr));}
+ .island-atlas__toolbar .island-atlas__pin-toggle{grid-column:3;}
+ .island-atlas__toolbar .island-atlas__filter{grid-column:1/-1;}
+}
