@@ -31,6 +31,7 @@ jobs:
           node --experimental-default-type=module --test tests/test_audio_guides.mjs
           node --experimental-default-type=module --test tests/test_map_routes.mjs
           node --experimental-default-type=module --test tests/test_minigames.mjs
+          node --experimental-default-type=module --test tests/test_arcade.mjs
       - name: Test offline games, mobile boards and travel readiness
         env:
           CHROME: /usr/bin/google-chrome
