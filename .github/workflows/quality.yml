@@ -29,10 +29,15 @@ jobs:
           node --experimental-default-type=module --test tests/test_v26_content.mjs
           node --experimental-default-type=module --test tests/test_food_filters.mjs
           node --experimental-default-type=module --test tests/test_audio_guides.mjs
+          node --experimental-default-type=module --test tests/test_map_routes.mjs
       - name: Test real MP3 download and playback from offline cache
         env:
           CHROME: /usr/bin/google-chrome
         run: python3 -u tests/test_audio_offline_browser.py
+      - name: Test genuine offline streets, routing choices and narrow viewport
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_real_map_browser.py
       - name: Verify georeferenced offline Hainan atlas
         env:
           CHROME: /usr/bin/google-chrome

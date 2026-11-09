@@ -46,6 +46,6 @@ test("new audio and the real offline island map do not enlarge required precache
    assert.ok(sw.includes(JSON.stringify(path)),path);
  }
  assert.ok(!sw.includes('"./assets/audio-v2/'));
- assert.ok(sw.includes('CACHE_VERSION = "v33"'));
+ assert.ok(sw.includes('CACHE_VERSION = "v34"'));
  assert.ok(sw.includes('"./assets/maps/hainan-relief.webp"'));
 });

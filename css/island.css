@@ -768,3 +768,25 @@ a { color:var(--color-primary); }
  min-height:52px;margin:12px 0 15px;text-decoration:none;}
 @media(max-width:359px){.map-page__actions{grid-template-columns:1fr}.map-page__focus .btn{font-size:11px;}}
 @media(prefers-reduced-motion:reduce){.quest-app .quest-intro::after{filter:none;}}
+
+/* v34 contrast follow-up for previously light-only components. */
+.quest-app .passport > .settings-section:first-of-type{
+ background:#192c4a;color:#eff7ff;border-color:#3b597b;
+}
+.quest-app .passport-map__intro{color:#c8e1ec;}
+.quest-app .welcome{--welcome-bg:#10223d;background:#10223d;color:#f3f8ff;}
+.quest-app .welcome__lead,.quest-app .welcome__hint,.quest-app .welcome__secondary{color:#c5d9eb;}
+.quest-app .welcome__kicker{color:#9be0e0;}
+.quest-app .welcome__area{background:#192f4f;border-color:#48638a;color:#eff9ff;}
+.quest-app .welcome__area:has(input:checked){background:#235573;border-color:#8fe3e3;}
+.quest-app .welcome__area-name{color:#f1fbff;}
+.quest-app .welcome__mascot{background:#24486b;border-color:#80c4d1;}
+.quest-app .welcome__date{background:#1d3453;border-color:#4b6a90;color:#f0f9ff;}
+.quest-app .welcome__progress{color:#b9ddeb;}
+.quest-app .welcome__benefits span{background:#1d3453;color:#f0f8ff;border-color:#47668b;}
+.quest-app .welcome__cover{
+ background-image:linear-gradient(180deg,transparent 45%,rgba(3,30,51,.34)),
+ url('../assets/photos/yalong-bay-beach-1.webp');
+}
+.quest-app .passport-part__count,.quest-app .passport-map__caption{color:#cbdde8;}
+.quest-app .map-page__note{color:#c9daed;font-size:12px;line-height:1.55;}

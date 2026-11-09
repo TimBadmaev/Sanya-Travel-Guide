@@ -48,7 +48,7 @@ def main():
    }))()""")
    raise AssertionError(f"atlas did not load offline: {b.exceptions}, diagnostics={diagnostics}")
   check("natural-earth polygon cached offline","document.querySelector('.island-atlas__land').getAttribute('d').length>100")
-  check("relief image is in the offline app cache","(async()=>{const n=(await caches.keys()).find(n=>n.startsWith('sanya-guide-v33'));return !!n&&!!await(await caches.open(n)).match(new URL('assets/maps/hainan-relief.webp',document.baseURI))})()")
+  check("relief image is in the offline app cache","(async()=>{const n=(await caches.keys()).find(n=>n.startsWith('sanya-guide-v34'));return !!n&&!!await(await caches.open(n)).match(new URL('assets/maps/hainan-relief.webp',document.baseURI))})()")
   check("no JS errors offline","true" if not b.exceptions else "false")
   print(f"v33 {done} geographic map checks passed",flush=True)
  finally:
