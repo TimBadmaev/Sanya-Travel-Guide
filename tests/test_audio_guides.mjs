@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 
 const places=JSON.parse(readFileSync(new URL("../data/places.json",import.meta.url))).filter(x=>x.status==="verified");
 const lib=JSON.parse(readFileSync(new URL("../data/audio-guides.json",import.meta.url)));
@@ -18,6 +18,8 @@ test("every original narration has on-site length, safe path and sources",()=>{
     assert.ok(g.estimatedSeconds>=45&&g.estimatedSeconds<=300,id);
     assert.ok(g.minutes>=1&&g.minutes<=5,id);
     assert.equal(g.audio,`assets/audio/${id}.mp3`,id);
+    const wav = new URL(`../assets/audio/${id}.mp3`, import.meta.url);
+    assert.ok(statSync(wav).size>10000, `generated MP3 missing: ${id}`);
     assert.ok(g.sources.length>=1&&g.sources.every(x=>/^https?:\/\//.test(x.url)),id);
   }
 });
