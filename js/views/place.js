@@ -1,4 +1,4 @@
-import { loadPlaces, loadConfig, loadExcursions, loadPassport, loadErrorMessage } from "../data.js";
+import { loadPlaces, loadConfig, loadExcursions, loadPassport, loadErrorMessage, loadPlaceStories } from "../data.js";
 import { storage } from "../storage.js";
 import { EFFORT_LABELS, SETTING_LABELS, PRICE_LABELS, formatDuration } from "../logic/filters.js";
 import { haversineKm, formatDistance } from "../logic/distance.js";
@@ -99,16 +99,18 @@ export async function renderPlace(container, ctx) {
   // Контент паспорта — только для сообщения «Новая наклейка» в блоке
   // «Паспорт»; без него карточка и отметка работают как обычно.
   let passportContent = null;
+  let editorialStories = {};
   try {
     // Геолокацию здесь НЕ ждём (D-02 REAL-DEVICE-QA-2026-09.md): при выданном
     // разрешении и медленном GPS ожидание primeCurrentPosition() держало
     // карточку на «Загрузка места…» до 10 с. Контент рисуется сразу, строка
     // «N км от вас» дорисовывается позже — см. блок 3a.
-    [places, config, excursions, passportContent] = await Promise.all([
+    [places, config, excursions, passportContent, editorialStories] = await Promise.all([
       loadPlaces(),
       loadConfig(),
       addTo ? loadExcursions().catch(() => []) : [],
       addTo ? null : loadPassport().catch(() => null),
+      loadPlaceStories().catch(() => ({})),
     ]);
   } catch (e) {
     console.error(e);
@@ -300,6 +302,40 @@ export async function renderPlace(container, ctx) {
   // 4. Описание и «Почему стоит».
   appendParagraph(container, "place-detail__summary", place.summary);
   appendPoints(container, "Почему стоит", place.why);
+  const editorial = editorialStories[place.id];
+  if (editorial && editorial.headline && editorial.lead) {
+    const feature = document.createElement("section");
+    feature.className = "place-feature";
+    const label = document.createElement("span");
+    label.className = "place-feature__label";
+    label.textContent = "🌴 ИСТОРИЯ ОСТРОВА";
+    const heading = document.createElement("h3");
+    heading.textContent = editorial.headline;
+    const intro = document.createElement("p");
+    intro.textContent = editorial.lead;
+    feature.append(label, heading, intro);
+    if (Array.isArray(editorial.moments)) {
+      const points = document.createElement("ul");
+      points.className = "place-feature__moments";
+      editorial.moments.forEach((moment) => {
+        const li = document.createElement("li");
+        li.textContent = moment;
+        points.appendChild(li);
+      });
+      feature.appendChild(points);
+    }
+    if (editorial.tip) appendParagraph(feature, "place-feature__tip", "💡 " + editorial.tip);
+    if (editorial.source?.url) {
+      const source = document.createElement("a");
+      source.className = "place-feature__source";
+      source.href = editorial.source.url;
+      source.rel = "noopener noreferrer";
+      source.target = "_blank";
+      source.textContent = "Подробнее в источнике ›";
+      feature.appendChild(source);
+    }
+    container.appendChild(feature);
+  }
 
   // 4a. «Мой план» (Итерация 6): в режиме выбора — «Добавить на <дату>»,
   // иначе — переход к выбору дня. После описания, а не между расстоянием и
