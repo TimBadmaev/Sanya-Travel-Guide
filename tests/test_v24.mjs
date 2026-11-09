@@ -50,10 +50,10 @@ test("v23 backups do not erase activity, v24 backups can restore it", () => {
   assert.equal(snapshotReplaceKeys("v23").includes("stg:activity"),false);
   assert.equal(snapshotReplaceKeys("v24").includes("stg:activity"),true);
 });
-test("10 editorial stories link only to known excursions and verified video domains", () => {
-  assert.equal(excursions.length,36);
-  assert.equal(Object.keys(stories).length,10);
-  const ids=new Set(excursions.map(e=>e.id)), known=new Set(places.flatMap(p=>(p.photos||[]).map(x=>x.file)));
+test("22 editorial stories link only to known excursions and verified video domains", () => {
+  assert.equal(excursions.length,38);
+  assert.equal(Object.keys(stories).length,22);
+  const ids=new Set(excursions.map(e=>e.id)), known=new Set(places.flatMap(p=>(p.photos||[]).map(x=>x.file).filter(Boolean)));
   assert.ok(known.size>=12);
   for(const [id,story] of Object.entries(stories)){
     assert.ok(ids.has(id),id);

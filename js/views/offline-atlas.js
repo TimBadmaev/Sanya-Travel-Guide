@@ -124,7 +124,7 @@ export function renderOfflineAtlas(parent,{places=[],visits={},savedIds=[],myPla
       const group=svgNode(pins,"g",{class:"atlas__point atlas__point--"+status,
         tabindex:"0",role:"button","data-cluster":i,
         "aria-label":multi?cluster.entries.length+" мест, открыть список":primary.place.name.ru});
-      svgNode(group,"circle",{cx:cluster.x,cy:cluster.y,r:68,class:"atlas__hit"});
+      svgNode(group,"circle",{cx:cluster.x,cy:cluster.y,r:90,class:"atlas__hit"});
       svgNode(group,"circle",{cx:cluster.x,cy:cluster.y,r:multi?35:31,class:"atlas__pin"});
       svgNode(group,"text",{x:cluster.x,y:cluster.y+10,"text-anchor":"middle",class:"atlas__pin-label"},
         multi?String(cluster.entries.length):(CAT[primary.place.category]||"📍"));
