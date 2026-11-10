@@ -241,6 +241,8 @@ export async function renderAdventure(container, ctx) {
 
 
   renderPreflight(page, checklist, trip, game.xp);
+  const assist=el(page,"a","quest-assistant","🔎 Найти место, кафе или китайскую фразу ›");
+  assist.href="#/assistant";
   renderTravelHub(page,trip);
   const mustdo=el(page,"a","quest-mustdo","🌴 Топ-10 впечатлений Хайнаня · отмечай выполненное ›");
   mustdo.href="#/must-do";
