@@ -71,6 +71,10 @@ export function renderTravelCenter(container,ctx){
  el(hero,"span","trip-center__eyebrow","✈️ ВСЁ ДЛЯ ПОЕЗДКИ");
  el(hero,"h2","trip-center__title","Моя поездка");
  el(hero,"p","trip-center__intro","Перелёты, пересадки, отель и документы — под рукой даже без интернета.");
+ const tripDates=el(hero,"p","trip-center__dates",existing.start&&existing.end?
+  "Даты поездки: "+formatTravelDate(existing.start)+" — "+formatTravelDate(existing.end):
+  "Даты поездки не указаны.");
+ link(hero,"Изменить даты поездки ›","#/settings","trip-center__dates-link");
  const heroStats=el(hero,"div","trip-center__stats");
  const totalLegs=el(heroStats,"span","trip-center__stat","");
  const totalDocs=el(heroStats,"span","trip-center__stat","");
@@ -198,7 +202,8 @@ export function renderTravelCenter(container,ctx){
   ["email","Email отеля","email",""],
   ["booking","Номер бронирования отеля","text","Необязательно, хранится локально"],
   ["contactName","Контакт принимающей стороны","text","Имя или название компании"],
-  ["contactPhone","Телефон принимающей стороны","tel","С кодом страны"]
+  ["contactPhone","Телефон принимающей стороны","tel","С кодом страны"],
+  ["contactEmail","Email принимающей стороны","email",""]
  ];
  const contactActions=el(hotel,"div","trip-center__contacts");
  function refreshContacts(){
@@ -209,9 +214,9 @@ export function renderTravelCenter(container,ctx){
    if(!/^\+?[0-9]{6,17}$/.test(normalized))continue;
    link(contactActions,"📞 "+label,"tel:"+normalized,"trip-center__contact");
   }
-  const email=saved.hotel.email.trim();
-  if(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
-   link(contactActions,"✉️ Написать отелю","mailto:"+encodeURIComponent(email),"trip-center__contact");
+  for(const [label,email] of [["Написать отелю",saved.hotel.email],["Написать принимающей стороне",saved.hotel.contactEmail]]){
+   if(/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim()))
+    link(contactActions,"✉️ "+label,"mailto:"+email.trim(),"trip-center__contact");
   }
  }
  for(const [key,label,type,hint] of hotelSpecs){
