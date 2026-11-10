@@ -3,6 +3,7 @@ import { TRIP_STATE } from "./trip.js";
 
 export function travelActions(state, { hasHotel = false, today = "", plannedToday = false } = {}) {
   const base = [
+    { icon: "✈️", label: "Моя поездка", href: "#/my-trip" },
     { icon: "🗺️", label: "Офлайн-карта", href: "#/map" },
     { icon: "🎮", label: "Игры", href: "#/games" },
   ];
