@@ -1670,3 +1670,16 @@ textarea.trip-center__input{
 @media(prefers-reduced-motion:reduce){
  .assistant-arrival__meter span{transition:none;}
 }
+
+/* Optional Chinese audio only if the device exposes a local zh voice. */
+.handy__local-tts{
+ min-height:49px;font-size:13px;font-weight:900;
+}
+.handy__local-tts:disabled{
+ opacity:1;color:#eef8ff;background:#24435d;border:2px solid #7396ac;
+ cursor:not-allowed;
+}
+.handy__local-tts-status{
+ font-size:12px;line-height:1.5;color:#c9ebf0;
+ text-align:center;margin:6px 0;
+}
