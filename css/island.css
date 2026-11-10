@@ -1480,3 +1480,6 @@ textarea.trip-center__input{
  .trip-center__actions{grid-template-columns:repeat(3,minmax(0,1fr));}
  .trip-center__footer{grid-template-columns:1fr 1fr;}
 }
+
+.trip-center__dates{color:#d6f2e8;font-size:13px;font-weight:800;margin:3px 0 1px;}
+.trip-center__dates-link{display:inline-flex;color:#b6ffe4;min-height:37px;align-items:center;text-decoration:underline;font-size:12px;font-weight:850;}
