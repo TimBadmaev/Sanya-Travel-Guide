@@ -375,6 +375,51 @@ export async function renderHandyPhrase(container, ctx) {
     closeHref: "#/handy",
     onClose: () => ctx.back("#/handy"),
   });
+  // Optional local-only Chinese TTS. Do not call a remote speech endpoint
+  // or claim voices are available offline when the device lacks one.
+  const actions=container.querySelector(".taxi__actions");
+  if(actions){
+    const button=document.createElement("button");
+    button.type="button";button.className="btn btn--secondary handy__local-tts";
+    const status=document.createElement("p");
+    status.className="handy__local-tts-status";
+    status.setAttribute("role","status");
+    actions.insertBefore(button,actions.firstChild);
+    actions.appendChild(status);
+    const synth=window.speechSynthesis;
+    const supported=Boolean(synth&&window.SpeechSynthesisUtterance);
+    function localChinese(){
+      if(!supported)return null;
+      try{
+        return synth.getVoices().find(v=>v.localService===true&&/^zh(?:-|_)/i.test(v.lang))||null;
+      }catch{return null;}
+    }
+    function checkVoice(){
+      if(!button.isConnected)return;
+      const available=Boolean(localChinese());
+      button.disabled=!available;
+      button.textContent=available?"🔊 Произнести по-китайски":"🔇 Нет локального китайского голоса";
+      status.textContent=available?"Звук с голоса, установленного на устройстве. Не требуется сеть.":
+        "На этом телефоне нет подтверждённого офлайн-голоса. Покажи собеседнику иероглифы или скопируй фразу.";
+    }
+    button.addEventListener("click",()=>{
+      const voice=localChinese();if(!voice)return;
+      try{
+        synth.cancel();
+        const utterance=new SpeechSynthesisUtterance(phrase.zh);
+        utterance.voice=voice;utterance.lang=voice.lang;utterance.rate=.86;
+        synth.speak(utterance);
+      }catch{status.textContent="Не удалось озвучить. Китайский текст остаётся на экране.";}
+    });
+    if(supported)synth.addEventListener?.("voiceschanged",checkVoice);
+    window.addEventListener("hashchange",()=>{
+      if(supported){
+        synth.cancel();
+        synth.removeEventListener?.("voiceschanged",checkVoice);
+      }
+    },{once:true});
+    checkVoice();
+  }
 }
 
 // Адрес проживания для таксиста (#/handy/taxi). Данных из сети не нужно —
