@@ -53,7 +53,7 @@ function normalizeFlights(value){
  }
  return out;
 }
-const HOTEL_FIELDS=["name","phone","email","booking","contactName","contactPhone"];
+const HOTEL_FIELDS=["name","phone","email","booking","contactName","contactPhone","contactEmail"];
 function normalizeHotel(value){
  const raw=value&&typeof value==="object"&&!Array.isArray(value)?value:{};
  const out={};
