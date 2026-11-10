@@ -99,7 +99,7 @@ export async function renderMe(container, ctx) {
     trip.end.split("-").reverse().slice(0,2).join(".") : "Даты ещё не указаны";
   el(tripBody, "span", "", dateLabel + (area ? " · " + area.name : ""));
   const edit = el(tripCard, "a", "quest-me__trip-edit", "Изменить ›");
-  edit.href = "#/settings";
+  edit.href = "#/my-trip";
 
   section(page, "Мои открытия", [
     ["🗺️", "Живая карта", "Посещённые точки становятся цветными", "#/passport"],
@@ -107,6 +107,7 @@ export async function renderMe(container, ctx) {
     ["📸", "История путешествия", "Воспоминания и заметки", "#/passport/journey"],
   ]);
   section(page, "Всё для поездки", [
+    ["✈️", "Моя поездка", "Перелёты, пересадки, отель и документы", "#/my-trip"],
     ["🎧", "Аудиогиды · скачать все", "33 истории, около 8,6 МиБ · один раз перед поездкой", "#/audio?download=all"],
     ["📶", "Офлайн-готовность", "Карты, аудио и файлы телефона", "#/offline"],
     ["🕹️", "Игровая бухта", "Змейка, рыбка, мемори, игры для двоих", "#/games"],
@@ -135,7 +136,7 @@ export async function renderMe(container, ctx) {
   const panel = el(danger, "div", "quest-reset__confirm");
   panel.hidden = true;
   el(panel, "strong", "", "Точно начать с нуля?");
-  el(panel, "p", "", "Безвозвратно удалятся даты и адрес поездки, отметки чек-листа, посещения, заметки, избранное, план, расходы, бюджет, XP, партии и результаты мини-игр, пройденные уроки. Вернуть их можно только из заранее сохранённой копии.");
+  el(panel, "p", "", "Безвозвратно удалятся даты и адрес поездки, отметки чек-листа, посещения, заметки, избранное, план, расходы, бюджет, XP, партии и результаты мини-игр, данные перелётов и отметки документов, пройденные уроки. Вернуть их можно только из заранее сохранённой копии.");
   const label = el(panel, "label", "quest-reset__ack");
   const acknowledge = el(label, "input", "");
   acknowledge.type = "checkbox";

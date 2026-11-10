@@ -70,5 +70,5 @@ test("version 38 precaches both games and natural atlas",()=>{
  for(const fn of ["renderAirHockey","renderConnectFour"])assert.ok(app.includes("render: "+fn));
  for(const path of ["./js/views/duo-games.js","./js/logic/duo-games.js",
   "./assets/maps/hainan-relief.webp"])assert.ok(sw.includes(JSON.stringify(path)),path);
- assert.match(sw,/CACHE_VERSION = "v38"/);
+ assert.match(sw,/CACHE_VERSION = "v39"/);
 });

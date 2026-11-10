@@ -9,6 +9,7 @@ import { renderAudioCatalog } from "./views/audio.js";
 import { renderIslandAtlas } from "./views/island-atlas.js";
 import { renderRealMap } from "./views/real-map.js";
 import { renderOfflineCenter } from "./views/offline-center.js";
+import { renderTravelCenter } from "./views/travel-center.js";
 import { renderGames } from "./views/games.js";
 import { renderSnake, renderOcean } from "./views/retro-arcade.js";
 import { renderConnectFour, renderAirHockey } from "./views/duo-games.js";
@@ -44,6 +45,7 @@ const routes = [
   { pattern: /^\/island$/, render: renderIslandAtlas, nav: "/discover" },
   { pattern: /^\/map$/, render: renderRealMap, nav: "/discover" },
   { pattern: /^\/offline$/, render: renderOfflineCenter, nav: "/me" },
+  { pattern: /^\/my-trip$/, render: renderTravelCenter, nav: "/me" },
   { pattern: /^\/games$/, render: renderGames, nav: "/" },
   { pattern: /^\/games\/snake$/, render: renderSnake, nav: "/" },
   { pattern: /^\/games\/fish$/, render: renderOcean, nav: "/" },
