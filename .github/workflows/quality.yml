@@ -34,6 +34,7 @@ jobs:
           node --experimental-default-type=module --test tests/test_arcade.mjs
           node --experimental-default-type=module --test tests/test_duo_games.mjs
           node --experimental-default-type=module --test tests/test_travel_center.mjs
+          node --experimental-default-type=module --test tests/test_travel_assistant.mjs
       - name: Check dark-mode contrast across key screens
         env:
           CHROME: /usr/bin/google-chrome
@@ -42,6 +43,10 @@ jobs:
         env:
           CHROME: /usr/bin/google-chrome
         run: python3 -u tests/test_duo_games_browser.py
+      - name: Test Travel Assistant search and first-day offline experience
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: python3 -u tests/test_travel_assistant_browser.py
       - name: Test My Trip editor, saved flight data, documents and airplane mode
         env:
           CHROME: /usr/bin/google-chrome
