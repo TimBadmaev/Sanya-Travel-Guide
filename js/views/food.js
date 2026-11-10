@@ -301,7 +301,7 @@ export async function renderFoodSection(container, ctx) {
   // (нет name.en в схеме food.json, D-06/9.6.4). Тот же принцип «И» с уже
   // активным режимом «Все»/«Рядом со мной», не отдельный маршрут и не URL
   // (как и остальное локальное состояние этого экрана — near/scope выше).
-  let searchQuery = "";
+  let searchQuery = (ctx.query.get("q")||"").slice(0,120);
   const foodFacets = { area: "any", cuisine: "any", price: "any" };
 
   function hasActiveFilters() {
@@ -481,6 +481,7 @@ export async function renderFoodSection(container, ctx) {
   searchInput.type = "search";
   searchInput.className = "search-bar__input";
   searchInput.placeholder = "Поиск по названию еды";
+  searchInput.value = searchQuery;
   searchInput.setAttribute("aria-label", "Поиск по названию еды");
   searchInput.autocomplete = "off";
   searchInput.enterKeyHint = "search";
