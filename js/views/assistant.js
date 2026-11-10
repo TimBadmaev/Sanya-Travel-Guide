@@ -75,6 +75,11 @@ export async function renderAssistant(container,ctx){
   clear.hidden=!input.value;
   results.replaceChildren();
   const q=input.value.trim();
+  if(loadError){
+   count.textContent="";
+   el(results,"p","assistant-hub__empty",loadError);
+   return;
+  }
   if(!q){
    count.textContent="";
    el(results,"p","assistant-hub__empty","Введи слово или выбери подсказку. Поиск не отправляет запросы в интернет.");
@@ -82,10 +87,6 @@ export async function renderAssistant(container,ctx){
   }
   const found=searchCatalog(catalog,q,{kind:active,limit:40});
   count.textContent="Найдено: "+found.length+(found.length===40?"+":"");
-  if(loadError){
-   el(results,"p","assistant-hub__empty",loadError);
-   return;
-  }
   if(!found.length){
    el(results,"p","assistant-hub__empty",
     "Ничего не нашли. Попробуй другое слово или категорию.");
