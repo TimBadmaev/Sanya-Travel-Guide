@@ -46,8 +46,8 @@ export async function renderDiscover(container, ctx) {
   el(hero, "span", "discover__eyebrow", "ТВОЙ ПУТЕВОДИТЕЛЬ ПО ПРИКЛЮЧЕНИЯМ");
   el(hero, "h2", "", "Что откроем сегодня?");
   el(hero, "p", "", "В Санье столько всего интересного. Выбери, куда отправиться!");
-  const search = el(hero, "a", "discover__search", "🔎 Найти место по названию");
-  search.href = "#/places";
+  const search = el(hero, "a", "discover__search", "🔎 Искать по всему путеводителю");
+  search.href = "#/assistant";
 
   el(page, "h3", "discover__heading", "Выбери настроение");
   const categories = el(page, "div", "discover__categories");

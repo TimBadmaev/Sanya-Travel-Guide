@@ -22,7 +22,7 @@ test("real ODbL street paths are sourced and cover key tourist areas",()=>{
 
 test("v35 high-detail OSM layers are real opt-in regional packs",()=>{
   const sw=readFileSync(new URL("../sw.js",import.meta.url),"utf8");
-  assert.match(sw,/CACHE_VERSION = "v39"/);
+  assert.match(sw,/CACHE_VERSION = "v40"/);
   assert.match(sw,/offline-map-detail\.js/);
   assert.doesNotMatch(sw,/["']\.\/data\/sanya-detail-[a-z]+\.json["']/);
   for(const area of ["yalong","city","dadonghai","haitang","tianya"]){

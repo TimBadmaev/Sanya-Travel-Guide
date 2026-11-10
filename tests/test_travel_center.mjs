@@ -88,7 +88,7 @@ test("route and JS modules are explicitly precached, without ticket attachments"
  assert.ok(app.includes("render: renderTravelCenter"));
  for(const path of ["./js/logic/travel-center.js","./js/views/travel-center.js"])
   assert.ok(sw.includes(JSON.stringify(path)),path);
- assert.match(sw,/CACHE_VERSION = "v39"/);
+ assert.match(sw,/CACHE_VERSION = "v40"/);
  const ui=readFileSync(new URL("../js/views/travel-center.js",import.meta.url),"utf8");
  assert.doesNotMatch(ui,/input\.type="file"|type="file"/);
  assert.match(ui,/Быстрые действия/);
