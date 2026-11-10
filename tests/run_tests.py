@@ -1514,10 +1514,18 @@ def run_upgrade(port):
         os.unlink(link)
         os.symlink(ROOT, link)
         b.js("navigator.serviceWorker.getRegistration().then((r) => r.update()).then(() => true)")
-        appeared = b.wait_for("!!window.__byText('.pwa-bar button', 'Обновить')", 30)
-        check("появилась плашка «Доступна новая версия»", appeared)
-        b.js("window.__click('.pwa-bar button', 'Обновить')")
-        time.sleep(2.5)
+        # A workflow/docs-only change may not alter the service worker.
+        # Then no fake "new version" banner should appear; still verify that
+        # a normal reload keeps user data and all old screens working.
+        version_changed = head_version != CACHE
+        appeared = b.wait_for("!!window.__byText('.pwa-bar button', 'Обновить')", 30 if version_changed else 3)
+        check("плашка обновления соответствует изменению версии PWA", appeared == version_changed,
+              {"head": head_version, "current": CACHE, "banner": appeared})
+        if appeared:
+            b.js("window.__click('.pwa-bar button', 'Обновить')")
+            time.sleep(2.5)
+        else:
+            b.go(base, "#/places", cold=True)
         b.wait_ready()
         version = b.js("""new Promise((resolve) => { const ch = new MessageChannel(); ch.port1.onmessage = (e) => resolve(e.data);
             navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' }, [ch.port2]); setTimeout(() => resolve(null), 3000); })""")
