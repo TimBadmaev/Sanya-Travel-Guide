@@ -60,13 +60,15 @@ Settings → **Pages** → Source: **Deploy from a branch**, Branch: `main`,
 знает. Секретов в репозитории нет, но личные данные — есть.
 
 **Вариант B — «GitHub Actions» (публикуется только приложение).**
-Settings → **Pages** → Source: **GitHub Actions**, затем Actions →
-«Publish app to GitHub Pages» → **Run workflow**. Workflow
-`.github/workflows/pages.yml` собирает каталог публикации вручную и кладёт в
-него только `index.html`, `manifest.webmanifest`, `sw.js`, `.nojekyll`,
-`css/`, `js/`, `data/`, `assets/`. Внутренние документы остаются в
-репозитории, но не публикуются. Запуск только ручной, пока в workflow не
-раскомментирован триггер `push`.
+Settings → **Pages** → Source: **GitHub Actions**. Workflow
+`.github/workflows/pages.yml` автоматически запускается после каждого
+push или merge в ветку `main`; ручной запуск в Actions также сохранён.
+Он публикует только `index.html`, `manifest.webmanifest`, `sw.js`,
+`.nojekyll`, `css/`, `js/`, `data/`, `assets/`.
+Внутренние документы остаются в репозитории, но не входят в сайт.
+**Важно:** источник Pages в Settings должен быть `GitHub Actions` —
+если выбран `Deploy from a branch`, один лишь запуск workflow не
+гарантирует размещения артефакта.
 
 Отдельно: локальные файлы редактора и инструментов (`.idea/`, `.claude/`,
 `.mcp.json`) перечислены в `.gitignore`, но были добавлены в репозиторий

@@ -5,19 +5,17 @@
 # `yalongwan-plan.html`, `tools/` и файлы редактора. Этот workflow собирает
 # артефакт вручную и кладёт в него только те файлы, которые нужны приложению.
 #
-# Workflow НИЧЕГО не делает сам по себе: запуск только вручную
-# (workflow_dispatch). Чтобы он стал способом публикации:
-#   1. Settings → Pages → Source: **GitHub Actions**;
-#   2. Actions → «Publish app to GitHub Pages» → Run workflow;
-#   3. при желании добавить автоматический запуск — раскомментировать `push`.
-# Если оставить Source: «Deploy from a branch», workflow просто не запускается
-# и ничего не меняет: публикация идёт как раньше, из всего репозитория.
+# Автоматическая публикация после обновления основной ветки main.
+# Для успешного развёртывания нужен Settings → Pages → Source: GitHub Actions.
+# workflow_dispatch сохранён для ручного повторного развёртывания.
+# Если источник Pages переключён на Deploy from a branch, GitHub Pages может
+# продолжать публиковать из ветки; проверить источник в настройках репозитория.
 name: Publish app to GitHub Pages
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-  # push:
-  #   branches: [main]
 
 permissions:
   contents: read
@@ -46,6 +44,17 @@ jobs:
           mkdir -p _site
           cp index.html manifest.webmanifest sw.js .nojekyll _site/
           cp -R css js data assets _site/
+
+          # Быстрая защита от публикации неполного приложения.
+          test -s _site/index.html
+          test -s _site/sw.js
+          test -s _site/js/views/travel-center.js
+          test -s _site/js/logic/travel-center.js
+          grep -q 'js/views/travel-center.js' _site/sw.js
+          grep -q 'js/logic/travel-center.js' _site/sw.js
+          test ! -e _site/yalongwan-plan.html
+          test ! -e _site/README.md
+          test ! -e _site/.mcp.json
           echo "--- опубликовано будет:"
           find _site -type f | sort
 
