@@ -1683,3 +1683,13 @@ textarea.trip-center__input{
  font-size:12px;line-height:1.5;color:#c9ebf0;
  text-align:center;margin:6px 0;
 }
+
+@media(max-width:375px){
+ .quest-app .app-header__brand-name{font-size:11px;letter-spacing:0;}
+ .quest-app .app-header__brand-icon{width:37px;height:37px;flex:0 0 37px;}
+ .quest-app .app-header__assistant{width:41px;height:41px;min-width:41px;margin-right:6px;}
+}
+@media(max-width:330px){
+ .quest-app .app-header__brand-name{font-size:10px;}
+ .quest-app .app-header__brand{gap:5px;}
+}
