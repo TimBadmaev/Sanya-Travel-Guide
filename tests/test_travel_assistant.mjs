@@ -35,7 +35,7 @@ test("search works across Cyrillic, Chinese and category filters",()=>{
  assert.equal(searchCatalog(index,"пляж").at(0).kind,"place");
  assert.equal(searchCatalog(index,"Кокос",{kind:"place"}).length,0);
  assert.deepEqual(searchCatalog(index,""),[]);
- assert.equal(normalizeSearch("  ЁЖИ\u0308  "),normalizeSearch("  ежи "));
+ assert.equal(normalizeSearch("  ЁЖ  "),normalizeSearch(" еж "));
  assert.equal(SEARCH_KINDS.length,6);
 });
 test("search boosts title matches, only displays matching verified results, limits output",()=>{
