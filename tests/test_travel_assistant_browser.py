@@ -64,6 +64,12 @@ def main():
   check("phrase shows Chinese characters","document.querySelector('.taxi__name').textContent.length>0")
   check("local voice control is explicit","!!document.querySelector('.handy__local-tts')")
   check("local voice is not enabled unless a trusted local voice exists","document.querySelector('.handy__local-tts').disabled||document.querySelector('.handy__local-tts').textContent.includes('Произнести')")
+  # A genuinely new install shows welcome before the quest home.
+  # Mark onboarding completed for this shortcut check only.
+  browser.js("""(()=>{
+   localStorage.setItem('stg:trip',JSON.stringify({start:null,end:null,area:null,stay:null,home:null}));
+   return true;
+  })()""")
   open_view("#/",".quest-home")
   check("home links to search","!!document.querySelector('a.quest-assistant[href=\"#/assistant\"]')")
   open_view("#/discover",".discover__search")
