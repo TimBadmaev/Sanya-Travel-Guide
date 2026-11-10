@@ -31,6 +31,7 @@ export const SECTION_LABELS = {
   "stg:games": "Мини-игры и результаты",
   "stg:mustdo": "10 впечатлений Хайнаня",
   "stg:travelcenter": "Перелёты, контакты отеля и список документов",
+  "stg:arrival": "Первые 24 часа в Китае",
   "stg:saved": "Избранные места",
   "stg:checklist": "Отметки подготовки",
   "stg:trip": "Даты, район и адрес проживания",
@@ -45,6 +46,7 @@ const SECTION_SINCE = {
   "stg:games": 36,
   "stg:mustdo": 37,
   "stg:travelcenter": 39,
+  "stg:arrival": 40,
 };
 
 function versionNumber(appVersion) {
@@ -178,6 +180,8 @@ export function countSection(key, value) {
     case "stg:games":
       return (value.match ? 1 : 0) + Object.values(value.stats || {}).filter(Number.isFinite).length;
     case "stg:mustdo":
+      return Array.isArray(value.done) ? value.done.length : 0;
+    case "stg:arrival":
       return Array.isArray(value.done) ? value.done.length : 0;
     case "stg:travelcenter":
       return (Array.isArray(value.outbound) ? value.outbound.length : 0) + (Array.isArray(value.inbound) ? value.inbound.length : 0) + Object.keys(value.docs || {}).length + (value.hotel?.name ? 1 : 0);
