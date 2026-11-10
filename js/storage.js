@@ -8,6 +8,7 @@ import { normalizeActivity, withOpenedDay } from "./logic/activity.js";
 import { normalizeGameData } from "./logic/minigames.js";
 import { normalizeMustDo } from "./logic/must-do.js";
 import { normalizeTravelCenter } from "./logic/travel-center.js";
+import { normalizeArrival } from "./logic/arrival.js";
 
 const SCHEMA_VERSION = 1;
 
@@ -52,12 +53,13 @@ export const KEYS = {
   games: "stg:games",
   mustdo: "stg:mustdo",
   travelCenter: "stg:travelcenter",
+  arrival: "stg:arrival",
 };
 
 // Данные пользователя, которые переносит копия (Iteration 9, экспорт/импорт):
 // только то, что нельзя восстановить из контента. Служебные флаги
 // (stg:schema, подсказка установки) и аварийные копии (…:backup) не входят.
-export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget, KEYS.passport, KEYS.explore, KEYS.activity, KEYS.games, KEYS.mustdo, KEYS.travelCenter];
+export const USER_DATA_KEYS = [KEYS.trip, KEYS.checklist, KEYS.saved, KEYS.myplan, KEYS.planDone, KEYS.expenses, KEYS.budget, KEYS.passport, KEYS.explore, KEYS.activity, KEYS.games, KEYS.mustdo, KEYS.travelCenter, KEYS.arrival];
 
 // Сырые копии повреждённых значений: перед записью поверх неразбираемого
 // значения (в том числе при импорте) оно один раз сохраняется сюда.
@@ -699,6 +701,8 @@ function normalizeSection(key, value) {
       return value && typeof value === "object" && !Array.isArray(value) ? normalizeMustDo(value) : null;
     case KEYS.travelCenter:
       return value && typeof value === "object" && !Array.isArray(value) ? normalizeTravelCenter(value) : null;
+    case KEYS.arrival:
+      return value && typeof value === "object" && !Array.isArray(value) ? normalizeArrival(value) : null;
     default:
       return null;
   }
@@ -800,6 +804,19 @@ function setMustDo(value){
 
 // Игры входят в пользовательский экспорт и очищаются общим сбросом.
 // Travel Center lives in its own key, never mutates stg:trip or existing plans.
+function getArrival(){
+ if(!storageAvailable)return normalizeArrival(null);
+ try{
+  const raw=window.localStorage.getItem(KEYS.arrival);
+  return normalizeArrival(raw?JSON.parse(raw):null);
+ }catch(error){console.error("Не удалось прочитать первый день",error);return normalizeArrival(null);}
+}
+function setArrival(value){
+ if(!storageAvailable)return false;
+ try{
+  window.localStorage.setItem(KEYS.arrival,JSON.stringify(normalizeArrival(value)));return true;
+ }catch(error){console.error("Не удалось сохранить первый день",error);return false;}
+}
 function getTravelCenter(){
  if(!storageAvailable)return normalizeTravelCenter(null);
  try{
@@ -863,6 +880,8 @@ export const storage = {
   setMustDo,
   getTravelCenter,
   setTravelCenter,
+  getArrival,
+  setArrival,
   isAvailable: () => storageAvailable,
   getPlanDone,
   setPlanItemDone,
