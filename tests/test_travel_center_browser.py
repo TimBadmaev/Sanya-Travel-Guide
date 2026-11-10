@@ -55,7 +55,7 @@ def main():
     const items=[...document.querySelectorAll('.trip-center__hotel-fields .trip-center__field')];
     const name=items[0].querySelector('input');
     name.value='Отель в Ялунване';name.dispatchEvent(new Event('change',{bubbles:true}));
-    const email=items[7].querySelector('input');
+    const email=items[8].querySelector('input');
     email.value='host@example.com';email.dispatchEvent(new Event('change',{bubbles:true}));
     return true;
   })()""")
