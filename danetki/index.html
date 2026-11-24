@@ -16,13 +16,18 @@
 @media(max-width:900px){.library{grid-template-columns:repeat(2,minmax(0,1fr))}.gameGrid{grid-template-columns:1fr}.host{position:static}.gameMain,.host{padding:22px}.heroArt{display:none}}
 @media(max-width:550px){.app{padding:0 14px 100px}.top{padding:16px 0 20px}.brand strong{font-size:17px}.logo{width:41px;height:41px;border-radius:13px}.righttop .pill:nth-child(2){display:none}.hero{padding:25px 22px;border-radius:22px}.hero h1{font-size:35px}.hero p{font-size:14px}.heroActions .btn{flex:1}.library{grid-template-columns:1fr;gap:10px}.item{min-height:155px;padding:15px}.item p{-webkit-line-clamp:2}.tools .search{flex:1 0 100%}.tools select{flex:1 1 calc(50% - 5px);width:calc(50% - 5px);min-width:0}.sectionline{margin-top:25px}.gameMain,.host{padding:21px 17px;border-radius:19px}.gameNav .btn{font-size:13px}.story{font-size:23px}.answerButtons button{min-height:70px;font-size:16px}.feedback{font-size:24px}.hostFooter .btn{font-size:13px}.pill{font-size:11px;padding:7px 9px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+/* Ручная проверка обновлений, доступна и в установленном PWA. */
+.updateBtn{min-height:40px;padding:8px 13px;font-size:13px;border-color:#426f80;background:#173543;color:#b8f7ee;white-space:nowrap}
+.updateBtn:hover{background:#235264;border-color:#56bfba}
+.updateBtn:disabled{opacity:.75}
+@media(max-width:550px){.righttop .progressPill{display:none}.updateBtn{min-height:41px;padding:8px 10px;font-size:12px}}
 </style>
 </head>
 <body>
 <div class="app">
 <header class="top">
  <a class="brand" href="#catalog" id="logoHome" aria-label="Открыть каталог"><span class="logo">?</span><span><strong>ДАНЕТКИ</strong><small>100 историй · без интернета</small></span></a>
- <div class="righttop"><span class="pill">Пройдено <b id="doneTop">0/50</b></span><span class="pill">✦ Без подписки</span></div>
+ <div class="righttop"><span class="pill progressPill">Пройдено <b id="doneTop">0/100</b></span><button id="checkUpdate" class="btn updateBtn" type="button" aria-label="Проверить и установить обновление игры">↻ Обновить</button></div>
 </header>
 <main>
 <section id="catalog" class="catalog">
@@ -55,7 +60,7 @@
  <div class="helper"><strong>Совет ведущему:</strong> ответьте «Да», если вопрос соответствует разгадке, «Нет», если противоречит ей, и «Неважно», если деталь не влияет на историю. Проверочные вопросы под развязкой помогут придерживаться логики.</div>
 </section>
 </main>
-<footer class="footer">50 оригинальных историй · 100% бесплатно · работает офлайн · без регистрации и рекламы<br><button id="resetAll" class="btn ghost" style="font-size:12px;margin-top:12px">Сбросить весь прогресс</button></footer>
+<footer class="footer">100 историй · бесплатно · работает офлайн · без регистрации и рекламы<br><span id="updateStatus" role="status" aria-live="polite">Версия 3.0 · для проверки обновлений нужен интернет</span><br><button id="resetAll" class="btn ghost" style="font-size:12px;margin-top:12px">Сбросить весь прогресс</button></footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="modalback" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><h3 id="modalTitle">Сбросить прогресс?</h3><p>Будут удалены отметки о пройденных историях и избранное. Сами истории останутся.</p><div class="modalButtons"><button class="btn" id="cancelReset">Отмена</button><button class="btn primary" id="confirmReset">Да, сбросить</button></div></div></div>
@@ -96,7 +101,62 @@ el('markDone').addEventListener('click',()=>{if(!current)return;state.done=state
 el('copyStory').addEventListener('click',async()=>{if(!current)return;const t=`Данетка: ${current.title}\n\n${current.story}`;try{await navigator.clipboard.writeText(t);toast('История скопирована')}catch(e){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('История скопирована')}catch(e){toast('Копирование не поддерживается')}ta.remove()}});
 el('resetAll').addEventListener('click',()=>el('modal').classList.add('on'));el('cancelReset').addEventListener('click',()=>el('modal').classList.remove('on'));el('modal').addEventListener('click',e=>{if(e.target===el('modal'))el('modal').classList.remove('on')});el('confirmReset').addEventListener('click',()=>{state={done:[],fav:[]};save();setDoneLabel();draw();updateGameStatus();el('modal').classList.remove('on');toast('Прогресс сброшен')});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&el('modal').classList.contains('on')){el('modal').classList.remove('on');return}if(!el('game').classList.contains('on')||e.target.matches('input,select,textarea')||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='1')answer('Да');if(e.key==='2')answer('Нет');if(e.key==='3')answer('Не имеет значения')});
-if ('serviceWorker' in navigator && location.protocol==='https:') { navigator.serviceWorker.register('./sw.js', {scope:'./'}).catch(()=>{}); }
+// Видимая ручная проверка новой версии установленного приложения.
+// sw.js сознательно не лежит в precache, поэтому этот запрос идёт в сеть.
+const APP_CACHE_VERSION='danetki-100-curated-v3-update-button';
+let refreshOnControllerChange=false;
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(refreshOnControllerChange){refreshOnControllerChange=false;location.reload()}
+  });
+}
+async function checkForUpdates(){
+  const btn=el('checkUpdate'), status=el('updateStatus');
+  if(location.protocol!=='https:' || !('serviceWorker' in navigator)){
+    status.textContent='Обновление доступно в онлайн-версии игры на GitHub Pages';
+    toast('Для обновлений откройте игру по онлайн-ссылке');return;
+  }
+  btn.disabled=true;
+  btn.textContent='↻ Проверяю…';
+  status.textContent='Проверяем новую версию…';
+  try{
+    const response=await fetch('./sw.js?check='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw Error('Ответ сервера '+response.status);
+    const swText=await response.text();
+    const match=/const CACHE\s*=\s*['\"]([^'\"]+)['\"]/.exec(swText);
+    if(!match)throw Error('Неизвестная версия сервера');
+    if(match[1]===APP_CACHE_VERSION){
+      status.textContent='Версия 3.0 актуальна';
+      toast('Уже установлена последняя версия');
+      return;
+    }
+    status.textContent='Новая версия найдена. Загружаем…';
+    btn.textContent='↻ Загружаю…';
+    refreshOnControllerChange=true;
+    let reg=await navigator.serviceWorker.getRegistration('./');
+    if(!reg)reg=await navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'});
+    await reg.update();
+    if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});
+    // iOS иногда откладывает перехват: не выдаём ложное «установлено».
+    setTimeout(()=>{
+      if(!refreshOnControllerChange)return;
+      refreshOnControllerChange=false;
+      btn.disabled=false;btn.textContent='↻ Обновить';
+      status.textContent='Новая версия загружена. Закройте игру и откройте снова.';
+      toast('Закройте и снова откройте приложение');
+    },8000);
+  }catch(e){
+    refreshOnControllerChange=false;
+    status.textContent='Не удалось проверить обновление. Проверьте интернет.';
+    toast('Не удалось связаться с сервером');
+  }finally{
+    if(!refreshOnControllerChange){btn.disabled=false;btn.textContent='↻ Обновить';}
+  }
+}
+el('checkUpdate').addEventListener('click',checkForUpdates);
+if ('serviceWorker' in navigator && location.protocol==='https:') {
+  navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).catch(()=>{});
+}
 categories();draw();setDoneLabel();const init=/^#game-(\d+)$/.exec(location.hash);if(init)show(Number(init[1]));
 </script>
 </body>
