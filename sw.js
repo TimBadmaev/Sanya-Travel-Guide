@@ -5,7 +5,7 @@
 
 // ЕДИНСТВЕННАЯ версия кэша. При каждой публикации обновления меняйте это
 // значение (README.md, «Как выпустить новую версию»).
-const CACHE_VERSION = "v40";
+const CACHE_VERSION = "v41";
 
 // Префикс нужен, чтобы activate удалял только кэши этого приложения: у всех
 // репозиториев на <аккаунт>.github.io общий origin и общее хранилище кэшей.
@@ -188,6 +188,10 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
   if (new URL(request.url).origin !== self.location.origin) return;
+
+  // Самостоятельная игра «Данетки» имеет свой service worker и отдельный кэш.
+  // Не подменять её навигацию index.html туристического приложения.
+  if (new URL(request.url).pathname.startsWith(new URL('./danetki/', self.location.href).pathname)) return;
 
   // Hash-роутинг (D-24): единственный документ приложения — index.html.
   const lookup = request.mode === "navigate" ? INDEX_URL : request;
