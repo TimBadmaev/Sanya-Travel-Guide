@@ -44,6 +44,10 @@ jobs:
           mkdir -p _site
           cp index.html manifest.webmanifest sw.js .nojekyll _site/
           cp -R css js data assets _site/
+          cp -R danetki _site/
+          test -s _site/danetki/index.html
+          test -s _site/danetki/sw.js
+          test -s _site/danetki/manifest.webmanifest
 
           # Быстрая защита от публикации неполного приложения.
           test -s _site/index.html
