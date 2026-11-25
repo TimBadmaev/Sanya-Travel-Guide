@@ -1,1 +1,19 @@
-{"name":"Данетки: 100 историй","short_name":"Данетки","description":"Бесплатная игра в данетки для компании. 100 загадочных историй и ответы ведущего.","lang":"ru","start_url":"./","scope":"./","display":"standalone","background_color":"#080f1c","theme_color":"#080f1c","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "name": "Данетки: 184 истории по темам",
+  "short_name": "Данетки",
+  "description": "Бесплатная игра для компании. 184 загадки в 11 категориях, ответы, подсказки, офлайн.",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080f1c",
+  "theme_color": "#080f1c",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
