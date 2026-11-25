@@ -1,5 +1,5 @@
-// Данетки: отдельный офлайн-кэш, 184 загадки по темам.
-const CACHE = 'danetki-184-themes-v4';
+// Данетки: отдельный офлайн-кэш, 275 загадок с уровнями сложности.
+const CACHE = 'danetki-275-levels-v5';
 const ASSETS = ['./', './index.html', './icon.svg', './manifest.webmanifest'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('danetki-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
